@@ -38,6 +38,9 @@
 /* ── Base ────────────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* Safety net: never let a wide child (e.g. the 480px popup) create a horizontal
+ * scroll that clips the whole page on small screens. */
+html, body { overflow-x: hidden; max-width: 100%; }
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -175,11 +178,25 @@ a { color: var(--p-primary); text-decoration: none; }
 }
 @media (max-width: 560px) {
   .browser { width: 100%; }
-  .popup-anchor { position: static; margin: 0 auto; max-width: 100%; }
-  .popup-anchor::before { display: none; }
-  .popup-frame { width: 100%; max-width: 480px; }
-  .browser__viewport { min-height: 0; padding: 0; }
+  .browser__viewport { min-height: 0; padding: 0; overflow: hidden; }
   .browser__page-skeleton { display: none; }
+
+  /* The popup is a fixed 480px-wide UI (its CSS assumes exactly 480px). On a
+   * phone, squishing the iframe to `width:100%` would break that layout, so we
+   * keep the popup at its real 480px and SCALE the whole thing down to fit the
+   * screen — like pinch-zooming out. transform-origin:top left + the explicit
+   * scaled height make the popup fill the screen edge-to-edge with no gap. */
+  .popup-anchor {
+    position: static;
+    margin: 0;
+    --popup-scale: calc((100vw - 48px) / 480);   /* 480 design width vs. screen */
+    width: 480px;
+    height: calc(600px * var(--popup-scale));     /* reserve only the scaled height */
+    transform: scale(var(--popup-scale));
+    transform-origin: top left;
+  }
+  .popup-anchor::before { display: none; }
+  .popup-frame { width: 480px; height: 600px; }
 }
 
 /* ── Section scaffolding ─────────────────────────────────────────────────── */
