@@ -1,0 +1,51 @@
+/**
+ * demo.css — tiny overrides for the standalone popup demo.
+ * Everything visual comes from vendor/popup.css (the real extension styles).
+ * This file only smooths a few things for the in-iframe promo context.
+ */
+
+/* ── Scroll handling for the in-iframe demo ──────────────────────────────────
+ * The real popup is exactly 480px wide. Inside an iframe the vertical
+ * scrollbar steals ~15px of width, which pushes the 480px body sideways and
+ * creates a stray HORIZONTAL scrollbar. Hiding the scrollbars reclaims that
+ * width (kills the horizontal scroll) while wheel/touch scrolling still works
+ * for the taller tabs (Record & Play). */
+html, body {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* old Edge/IE */
+  overflow-x: hidden;           /* never scroll sideways */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar { width: 0; height: 0; display: none; }  /* Chrome/Safari */
+/* Note: with the scrollbars hidden, the ~15px they used to steal is returned,
+ * so the original 600px height (from vendor/popup.css) is enough for the
+ * Capture/Settings tabs to fit without any vertical scroll. */
+
+/* Disable the real file-picker affordance feel — demo has no backend. */
+input[type="file"] { cursor: pointer; }
+
+/* Subtle "demo data" shimmer when a freshly-recorded action appears. */
+@keyframes demoActionIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#actions li.action.demo-new { animation: demoActionIn 0.25s ease both; }
+
+/* Make clearly-decorative demo links inherit the popup look. */
+a { color: var(--primary); }
+
+/* ── Static preview mode ─────────────────────────────────────────────────────
+ * This promo demo is a faithful look-alike preview, not a working sandbox.
+ * Only tab switching and the theme toggle are interactive (see demo.js → the
+ * "STATIC GUARD"). Every other control is shown for display only — flag that
+ * with a not-allowed cursor, plus a faint dim on hover, so visitors can tell
+ * it's a preview rather than a broken button. */
+button:not(.tab-btn):not(.capture-tab-btn):not(#toggleTheme),
+[role="button"]:not(.tab-btn):not(.capture-tab-btn),
+input, select, textarea, label.switch, .switch, [data-color] {
+  cursor: not-allowed !important;
+}
+button:not(.tab-btn):not(.capture-tab-btn):not(#toggleTheme):hover,
+[role="button"]:not(.tab-btn):not(.capture-tab-btn):hover {
+  opacity: 0.85;
+}

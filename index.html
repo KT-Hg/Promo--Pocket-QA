@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--
+  index.html — Promotional landing page for "Fast Recorder & Playback".
+  The popup preview is the REAL extension UI (vendored as vendor/popup.css)
+  rendered inside an <iframe> (popup-demo.html) so it stays pixel-perfect. It is
+  a STATIC preview: only tab switching and the theme toggle are interactive (see
+  demo.js); every other control is shown for display only.
+-->
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fast Recorder &amp; Playback — Record web workflows, no code</title>
+  <meta name="description" content="Record &amp; replay web workflows with variables, CSV data runs, screenshots, conditions and one-tap export to Selenium or a JS bookmarklet. Preview the popup." />
+  <link rel="icon" type="image/png" href="vendor/icon128.png" />
+  <link rel="stylesheet" href="promo.css" />
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="nav__brand" href="#top">
+        <img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" />
+        Fast Recorder &amp; Playback
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a class="nav__link" href="#demo">Preview</a>
+        <a class="nav__link" href="#features">Features</a>
+        <a class="nav__link" href="#how">How it works</a>
+      </nav>
+      <div class="nav__actions">
+        <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
+        <a class="btn btn--primary" href="#demo">Try it free</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <main id="top">
+    <section class="hero">
+      <div class="container hero__grid" id="demo">
+        <div class="hero__copy reveal">
+          <span class="hero__badge">⚡ No code · Chrome · Edge · Firefox</span>
+          <h1 class="hero__title">Record any web workflow.<br /><span class="grad">Replay it forever.</span></h1>
+          <p class="hero__sub">
+            Capture clicks, inputs and navigation with one tap. Add variables, CSV data runs,
+            conditions and screenshots — then export to Selenium Python or a JS bookmarklet.
+          </p>
+          <div class="hero__cta">
+            <a class="btn btn--primary btn--lg" href="#demo">▶ See the popup</a>
+            <a class="btn btn--ghost btn--lg" href="#features">See features</a>
+          </div>
+          <div class="hero__meta">
+            <span><b>5</b> action types &amp; logic</span>
+            <span><b>CSV</b> data-driven runs</span>
+            <span><b>1-tap</b> code export</span>
+          </div>
+        </div>
+
+        <!-- Browser mockup with the REAL popup inside -->
+        <div class="hero__mockup reveal">
+          <div class="browser">
+            <div class="browser__bar">
+              <div class="browser__dots" aria-hidden="true">
+                <span class="browser__dot browser__dot--r"></span>
+                <span class="browser__dot browser__dot--y"></span>
+                <span class="browser__dot browser__dot--g"></span>
+              </div>
+              <div class="browser__url">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm3 8H9V6a3 3 0 1 1 6 0z"/></svg>
+                app.example.com/login
+              </div>
+              <div class="browser__toolbar">
+                <span class="browser__ext-pin" aria-hidden="true">🧩</span>
+                <button class="browser__ext-btn" id="extBtn" type="button" title="Fast Recorder &amp; Playback" aria-label="Open extension popup">
+                  <img src="vendor/icon128.png" alt="" />
+                </button>
+              </div>
+            </div>
+
+            <div class="browser__viewport">
+              <!-- faux website behind the popup -->
+              <div class="browser__page-skeleton" aria-hidden="true">
+                <div class="skeleton skeleton--title"></div>
+                <div class="skeleton skeleton--80"></div>
+                <div class="skeleton skeleton--60"></div>
+                <div class="skeleton skeleton--block"></div>
+                <div class="skeleton skeleton--40"></div>
+                <div class="skeleton skeleton--60"></div>
+              </div>
+
+              <!-- the popup, anchored under the toolbar icon -->
+              <div class="popup-anchor">
+                <iframe class="popup-frame" id="popupFrame" src="popup-demo.html"
+                        title="Fast Recorder & Playback — static popup preview"
+                        loading="eager"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <p class="tryline reveal">
+          👆 This is the real popup UI — a live preview. Switch between
+          <span class="kbd">tabs</span> and toggle the theme <span class="kbd">🌙</span>
+          to explore every panel.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== FEATURES ===== -->
+    <section class="section section--alt" id="features">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="section__eyebrow">Everything in one popup</span>
+          <h2 class="section__title">Built for real automation</h2>
+          <p class="section__sub">From a quick smoke test to data-driven batch runs across hundreds of rows.</p>
+        </div>
+        <div class="features">
+          <article class="feature reveal">
+            <div class="feature__icon">⏺</div>
+            <h3 class="feature__title">One-click recording</h3>
+            <p class="feature__text">Capture clicks, typing, hovers, drag-and-drop, dropdowns and navigation as editable, reorderable steps.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature__icon">🔣</div>
+            <h3 class="feature__title">Variables &amp; logic</h3>
+            <p class="feature__text">Static, random, pick-from-list and fallback variables. Add conditions, switches and read-DOM steps.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature__icon">📊</div>
+            <h3 class="feature__title">CSV data-driven runs</h3>
+            <p class="feature__text">Upload a CSV — headers become <code>${variables}</code>. Run a scenario once per row and export results.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature__icon">📷</div>
+            <h3 class="feature__title">Powerful screenshots</h3>
+            <p class="feature__text">Visible, full-page, scrolling, segment and element captures — with crop, watermark and image-diff tools.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature__icon">🐍</div>
+            <h3 class="feature__title">One-tap code export</h3>
+            <p class="feature__text">Turn any scenario into a standalone Selenium Python script or a runnable JS bookmarklet.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature__icon">🖍️</div>
+            <h3 class="feature__title">Highlights &amp; scheduling</h3>
+            <p class="feature__text">Highlight text per URL pattern, queue scenario sequences, and schedule daily playback.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <section class="section" id="how">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="section__eyebrow">How it works</span>
+          <h2 class="section__title">From click to replay in seconds</h2>
+        </div>
+        <div class="steps">
+          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Record</h3><p class="step__text">Hit Start Recording and do the task once in your browser.</p></div>
+          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Refine</h3><p class="step__text">Edit steps, add variables, conditions and waits as needed.</p></div>
+          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Run</h3><p class="step__text">Replay once, loop it, sequence scenarios, or drive it from CSV.</p></div>
+          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Export</h3><p class="step__text">Ship it as Selenium Python or a JS bookmarklet — or schedule it.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CTA ===== -->
+    <section class="section cta">
+      <div class="container reveal">
+        <div class="cta__card">
+          <h2 class="cta__title">Stop repeating yourself</h2>
+          <p class="cta__sub">Record it once. Let Fast Recorder &amp; Playback handle the rest.</p>
+          <a class="btn btn--primary btn--lg" href="#demo">See the popup</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Fast Recorder &amp; Playback</div>
+      <div>v1.0.7 · Manifest V3 · Chrome 109+</div>
+      <div>Built for the web. The popup above is the real extension UI.</div>
+    </div>
+  </footer>
+
+  <script src="landing.js"></script>
+</body>
+</html>

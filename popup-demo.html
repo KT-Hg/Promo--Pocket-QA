@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<!--
+  popup-demo.html — Standalone, STATIC preview of the extension popup.
+  AUTO-GENERATED from vendor/popup.html by sync-from-source.mjs — do NOT edit
+  by hand; re-run the sync script instead. Real chrome.* logic is gone; demo.js
+  keeps only tab switching + the theme toggle live and seeds demo data — every
+  other control is display-only. Rendered inside an <iframe> by index.html.
+-->
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=480, initial-scale=1" />
+  <title>Fast Recorder &amp; Playback — Popup Preview</title>
+
+  <!-- Reuse the vendored extension stylesheet → guarantees pixel-perfect UI -->
+  <link rel="stylesheet" href="vendor/popup.css" />
+  <link rel="stylesheet" href="demo.css" />
+</head>
+
+<body>
+  <div id="recordingTopBar" role="status" aria-live="polite">● RECORDING — Actions are being captured</div>
+  <div id="pickerInstructionBar" role="status" aria-live="polite"></div>
+
+  <!-- ===== STICKY HEADER: Status Bar + Tab Nav ===== -->
+  <div class="sticky-header" id="activationCard">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-label" id="activationStatus">Checking...</span>
+      <span class="status-label" id="connectionStatus"></span>
+      <span class="status-spacer"></span>
+      <span class="status-progress" id="statusText"></span>
+      <button id="activateTab" class="success" style="display:none;">Activate</button>
+      <button id="deactivateTab" class="danger" style="display:none;">Remove</button>
+      <button class="icon-btn" id="toggleTheme" title="Toggle theme" aria-label="Toggle dark or light theme"><span aria-hidden="true">🌙</span></button>
+    </div>
+    <!-- Now Playing bar (click to toggle mini panel) -->
+    <div class="now-playing-bar" id="nowPlayingBar" style="display:none;">
+      <span class="now-playing-icon" id="nowPlayingIcon">▶</span>
+      <span class="now-playing-name" id="nowPlayingName"></span>
+      <span class="now-playing-step" id="nowPlayingStep"></span>
+      <span class="now-playing-caret" id="nowPlayingCaret">▾</span>
+    </div>
+    <!-- Mini panel dropdown -->
+    <div class="playback-panel" id="playbackPanel" style="display:none;">
+      <div class="pb-panel-row">
+        <span class="pb-panel-label">Scenario</span>
+        <span class="pb-panel-value" id="pbPanelName"></span>
+      </div>
+      <div class="pb-panel-row" id="pbPanelSwitchedRow" style="display:none;">
+        <span class="pb-panel-label">Started as</span>
+        <span class="pb-panel-value pb-panel-orig" id="pbPanelOrigName"></span>
+      </div>
+      <div class="pb-panel-row">
+        <span class="pb-panel-label">Step</span>
+        <span class="pb-panel-value" id="pbPanelProgress"></span>
+      </div>
+      <div class="pb-panel-progress">
+        <div class="pb-panel-fill" id="pbPanelFill" style="width:0%"></div>
+      </div>
+      <!-- CSV badges + dual-bar + countdown (shown during CSV runs) -->
+      <div id="pbPanelCsvSection" style="display:none; margin-top:6px;">
+        <div class="pb-panel-csv-badges">
+          <span id="pbPanelCsvProgText" class="csv-prog-text"></span>
+          <span id="pbPanelCsvBadgeOk"   class="csv-badge csv-badge-ok">✓ 0</span>
+          <span id="pbPanelCsvBadgeFail" class="csv-badge csv-badge-fail">✗ 0</span>
+        </div>
+        <div class="csv-dual-bar" style="margin-top:4px;">
+          <div id="pbPanelBarOk"   class="csv-bar-ok"   style="width:0%"></div>
+          <div id="pbPanelBarFail" class="csv-bar-fail"  style="width:0%"></div>
+        </div>
+        <div id="pbPanelCsvCountdown" class="csv-countdown-wrap" style="display:none;">
+          <div class="csv-cd-header">
+            <span id="pbPanelCsvCdText" class="csv-countdown-text"></span>
+            <span class="csv-cd-next-label">next row</span>
+          </div>
+          <div class="csv-cd-bar-track">
+            <div id="pbPanelCsvCdBar" class="csv-cd-bar"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Stop: single for regular playback, split for CSV -->
+      <button id="pbPanelStop" class="danger" style="width:100%;margin-top:6px;font-size:12px;padding:5px;">■ Stop</button>
+      <div id="pbPanelCsvStopSplit" class="pb-panel-csv-stop" style="display:none; margin-top:6px;">
+        <button id="pbStopCsvNow"      title="Abort immediately — current row result discarded">■ Now</button>
+        <button id="pbStopCsvAfterRow" title="Finish current row then stop gracefully">⏸ After row</button>
+      </div>
+    </div>
+    <!-- Progress Bar (inline, below) -->
+    <div class="playback-progress-wrap" id="playbackProgressWrap" style="margin:0;padding:0;">
+      <div class="playback-progress-bar" style="border-radius:0;">
+        <div class="playback-progress-fill" id="playbackProgressFill" style="width:0%;border-radius:0;"></div>
+      </div>
+    </div>
+    <span id="playbackProgressLabel" style="display:none;"></span>
+    <!-- Tab Navigation -->
+    <div class="tab-nav" id="tabNav">
+      <button class="tab-btn" data-tab="tabRecord">Record & Play</button>
+      <button class="tab-btn" data-tab="tabData">Data</button>
+      <button class="tab-btn" data-tab="tabCapture">Capture</button>
+      <button class="tab-btn" data-tab="tabHighlight">Highlight <span id="hlTabBadge" class="count-badge" style="display:none;"></span></button>
+      <button class="tab-btn" data-tab="tabSettings">Settings</button>
+    </div>
+  </div>
+
+  <!-- Status indicator (hidden, used by JS) -->
+  <div id="statusIndicator" style="display:none;"></div>
+
+  <!-- Spacer to offset fixed header -->
+  <div id="headerSpacer" style="height:72px;"></div>
+
+  <!-- ===== TAB: RECORD & PLAY ===== -->
+  <div class="tab-panel active" id="tabRecord">
+    <div class="main-content" id="mainContent" role="main">
+
+    <!-- Recording badge (floating) -->
+    <span id="recordingBadge" class="recording-badge">● Recording</span>
+
+    <!-- RECORD -->
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+        <h3 style="margin: 0;">Recording</h3>
+        <button class="card-help-btn" data-card="recording" title="Recording guide">?</button>
+      </div>
+      <div class="row">
+        <button id="startRecord" class="primary-gradient">▶ Start Recording</button>
+        <button id="stopRecord" class="secondary">■ Stop</button>
+      </div>
+      <div class="row" style="margin-top: 6px; gap: 4px;">
+        <button id="undoAction" class="secondary" disabled style="flex: 0 0 auto; width: auto; padding: 6px 12px; font-size: 14px;" title="Undo">↩</button>
+        <button id="redoAction" class="secondary" disabled style="flex: 0 0 auto; width: auto; padding: 6px 12px; font-size: 14px;" title="Redo">↪</button>
+        <button id="preview" class="secondary" style="flex: 1; font-size: 12px;">Preview Actions <span id="actionCount" class="count-badge" style="display:none;"></span></button>
+      </div>
+      <ul id="actions" class="actions"></ul>
+    </div>
+
+    <!-- ADD MANUAL ACTION -->
+    <div class="card collapsible" id="addManualActionCard">
+      <h3 role="button" tabindex="0" aria-expanded="true" style="display:flex;align-items:center;">Add Manual Action <span class="caret">▾</span><button class="card-help-btn" data-card="addManual" title="Manual action guide" style="margin-left:auto;">?</button></h3>
+
+      <!-- Action Type — always first -->
+      <div class="step-label">Action Type</div>
+      <select id="manualActionType">
+        <option value="">-- Select Action Type --</option>
+        <optgroup label="Interactions">
+          <option value="click">Click</option>
+          <option value="input">Input</option>
+          <option value="hover">Hover</option>
+          <option value="dropdown">Open Dropdown</option>
+          <option value="dragdrop">Drag &amp; Drop</option>
+        </optgroup>
+        <optgroup label="Navigation &amp; Code">
+          <option value="navigate">Navigate</option>
+          <option value="wait">Wait (ms)</option>
+          <option value="script">Run JS</option>
+        </optgroup>
+        <optgroup label="Logic">
+          <option value="condition">Condition (If)</option>
+          <option value="switch">Switch (Variable → Scenario)</option>
+          <option value="readdom">Read DOM → Variable</option>
+        </optgroup>
+        <optgroup label="Screenshots">
+          <option value="screenshot">Screenshot (Visible)</option>
+          <option value="screenshot_full">Screenshot (Full Page)</option>
+          <option value="screenshot_element">Screenshot (Element)</option>
+          <option value="screenshot_tovar">Screenshot → Variable (CSV)</option>
+        </optgroup>
+        <optgroup label="Files">
+          <option value="uploadFile">Upload File</option>
+        </optgroup>
+      </select>
+
+      <!-- SELECTOR SECTION — shown only when selected type needs a selector -->
+      <div class="hidden-by-default" id="selectorSection">
+        <div class="step-label" id="selectorStepLabel">Selector</div>
+        <div class="row" id="selectorRow">
+          <select id="selectorType" class="w-100" style="font-size: 11px;">
+            <option value="css">CSS</option>
+            <option value="xpath">XPath</option>
+            <option value="id">ID</option>
+            <option value="name">Name</option>
+            <option value="text">Text</option>
+            <option value="fullXpath">Full XPath</option>
+          </select>
+          <input id="manualSelector" class="flex-1" placeholder="Selector (e.g., #btn, .class, //div)" />
+          <button id="pickElement" class="secondary w-auto" aria-label="Pick element on page" title="Pick element"><span aria-hidden="true">🎯</span></button>
+        </div>
+        <div id="pickedSelectorsWrap" class="hidden-by-default">
+          <div id="pickedSelectorsInfo"></div>
+          <button id="clearPickedSelectorsBtn" class="secondary w-auto" title="Clear picked selector">✕ Clear</button>
+        </div>
+      </div>
+
+      <!-- READ DOM SETTINGS — shown for readdom type -->
+      <div class="hidden-by-default" id="readdomWrapper" style="margin-top:6px;">
+        <div class="step-label" id="readdomStepLabel">Read DOM Settings</div>
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap;">Save to var</label>
+          <input id="readdomVarName" placeholder="${varName}" style="flex:1; margin:0;" />
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap;">Read from</label>
+          <select id="readdomReadFrom" style="flex:1; margin:0;">
+            <option value="text">Text content</option>
+            <option value="value">Input value</option>
+            <option value="attr">Attribute</option>
+          </select>
+          <input id="readdomAttrName" placeholder="attr name" style="width:90px; margin:0; display:none;" />
+        </div>
+      </div>
+
+      <!-- SCREENSHOT → VARIABLE SETTINGS — shown for screenshot_tovar type -->
+      <div class="hidden-by-default" id="screenshotTovarWrapper" style="margin-top:6px;">
+        <div class="step-label" id="screenshotTovarStepLabel">Screenshot Settings</div>
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Target</label>
+          <select id="screenshotTovarTarget" style="flex:1; margin:0;">
+            <option value="page">Visible (viewport)</option>
+            <option value="full">Full Page (scroll)</option>
+            <option value="element">Element (CSS selector)</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Variable name</label>
+          <input id="screenshotTovarVarName" placeholder="screenshot_col" style="flex:1; margin:0;" />
+        </div>
+        <span class="helper-text">Image saved to disk + stored in variable for HTML/XLSX export</span>
+      </div>
+
+      <!-- DROP TARGET — shown for dragdrop type (after source selector) -->
+      <div class="hidden-by-default" id="dragdropWrapper" style="margin-top:6px;">
+        <div class="step-label" id="dragdropStepLabel">Drop Target</div>
+        <div class="row" id="dragdropTargetRow">
+          <select id="dragdropTargetSelectorType" class="w-100" style="font-size: 11px;">
+            <option value="css">CSS</option>
+            <option value="xpath">XPath</option>
+            <option value="id">ID</option>
+            <option value="name">Name</option>
+            <option value="text">Text</option>
+            <option value="fullXpath">Full XPath</option>
+          </select>
+          <input id="dragdropTarget" class="flex-1" placeholder="CSS selector of drop target" />
+          <button id="dragdropTargetPick" class="secondary w-auto" title="Pick drop target element on page" aria-label="Pick drop target element on page"><span aria-hidden="true">🎯</span></button>
+        </div>
+        <div id="pickedDragdropTargetWrap" class="hidden-by-default">
+          <div id="pickedDragdropTargetInfo"></div>
+          <button id="clearDragdropTargetBtn" class="secondary w-auto" title="Clear picked drop target">✕ Clear</button>
+        </div>
+        <span class="helper-text">Source = main selector above. Target = where to drop.</span>
+      </div>
+
+      <!-- UPLOAD FILE SETTINGS — shown for uploadFile type -->
+      <div class="hidden-by-default" id="uploadFileWrapper" style="margin-top:6px;">
+        <div class="step-label" id="uploadFileStepLabel">File to Upload</div>
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Upload mode</label>
+          <select id="uploadMode" style="flex:1; margin:0;">
+            <option value="input">File Input (&lt;input type="file"&gt;)</option>
+            <option value="dropzone">DropZone (drag-and-drop area)</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Folder path</label>
+          <input id="uploadFolderPath" placeholder="e.g. C:\Data\Uploads" style="flex:1; margin:0;" />
+        </div>
+        <div style="display:flex; gap:6px; align-items:flex-start;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px; padding-top:4px;">File name(s)</label>
+          <textarea id="uploadFileNames" rows="3" placeholder="invoice_001.pdf&#10;report_${date}.xlsx&#10;${filename}" style="flex:1; margin:0; resize:vertical; font-family:inherit; font-size:inherit;"></textarea>
+        </div>
+        <span class="helper-text">One file name per line. Each name supports <code>${variable}</code>. Combine with CSV to upload different files per row.</span>
+      </div>
+
+      <!-- CONDITION SETTINGS — shown for condition type -->
+      <div class="hidden-by-default" id="conditionWrapper">
+        <div class="step-label" id="conditionStepLabel">Condition</div>
+        <div class="row" style="margin-top: 6px; gap: 6px;">
+          <select id="conditionType" style="flex: 1; margin: 0;">
+            <option value="elementExists">Element Exists</option>
+            <option value="elementNotExists">Element Not Exists</option>
+            <option value="elementVisible">Element Visible</option>
+            <option value="elementHidden">Element Hidden</option>
+            <option value="textContains">Text Contains</option>
+            <option value="textEquals">Text Equals</option>
+            <option value="valueEquals">Value Equals</option>
+            <option value="valueContains">Value Contains</option>
+            <option value="urlContains">URL Contains</option>
+            <option value="urlEquals">URL Equals</option>
+            <option value="hasClass">Has Class</option>
+            <option value="hasAttribute">Has Attribute</option>
+          </select>
+          <button id="conditionHelpBtn" class="secondary" style="width: auto; flex: 0 0 auto; margin: 0; padding: 6px 10px; font-size: 13px; font-weight: 700;" title="Condition types guide">?</button>
+        </div>
+        <div id="conditionExpectedValueWrapper" style="margin-top: 6px;">
+          <input id="conditionExpectedValue" placeholder="Expected value (for text/url checks)" />
+        </div>
+        <input id="conditionSkipCount" type="number" min="1" value="1" placeholder="Actions to skip if false" style="margin-top: 6px;" />
+        <span class="helper-text">If condition is FALSE, skip next N actions</span>
+      </div>
+
+      <!-- SWITCH SETTINGS — shown for switch type -->
+      <div class="hidden-by-default" id="switchWrapper" style="margin-top:6px;">
+        <div class="step-label" id="switchStepLabel">Switch Variable</div>
+        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
+          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Variable</label>
+          <input id="switchVar" placeholder="${varName}  e.g. ${role}" style="flex:1; margin:0;" />
+        </div>
+        <div id="switchCaseList" style="display:flex; flex-direction:column; gap:4px; margin-bottom:6px;"></div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <input id="switchCaseValue" placeholder="Case value  (e.g. admin)" style="flex:1; margin:0; font-size:12px;" />
+          <select id="switchCaseScenario" style="flex:1.5; margin:0; font-size:12px;"></select>
+          <button id="switchAddCase" class="secondary" style="width:auto; flex:0 0 auto; margin:0; padding:4px 8px; font-size:12px;">+ Add</button>
+        </div>
+        <span class="helper-text">Leave case value empty to set as <strong>default</strong>. Cases are checked top-to-bottom; first match wins.</span>
+      </div>
+
+      <!-- CHILD CONDITION (optional collapsible) — shown for click/input/hover -->
+      <div class="hidden-by-default child-cond-outer" id="childConditionWrapper" style="margin-top:8px;">
+        <button type="button" class="child-cond-toggle" id="childConditionToggle" aria-expanded="false">
+          <span class="child-cond-caret">▸</span>
+          Child Condition
+          <span class="child-cond-subtitle">(optional — find child element to act on)</span>
+          <span class="child-cond-badge" id="childConditionBadge" style="display:none;">●</span>
+        </button>
+        <div class="child-cond-body" id="childConditionBody" style="display:none;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+            <span style="font-size:11px;color:var(--muted);white-space:nowrap;">Match</span>
+            <div style="display:flex;gap:4px;">
+              <label class="cond-match-label" id="condMatchLabelAny">
+                <input type="radio" name="condChildMatchMode" id="condChildMatchAny" value="any" checked />
+                ANY <span style="font-size:10px;color:var(--muted);">(OR)</span>
+              </label>
+              <label class="cond-match-label" id="condMatchLabelAll">
+                <input type="radio" name="condChildMatchMode" id="condChildMatchAll" value="all" />
+                ALL <span style="font-size:10px;color:var(--muted);">(AND)</span>
+              </label>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">value equals</label>
+            <input id="condChildValueEquals" placeholder='e.g. 1, 2, ${myVar}' style="flex:1;margin:0;font-size:12px;" />
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">text contains</label>
+            <input id="condChildTextContains" placeholder='e.g. Abc, ${myVar}' style="flex:1;margin:0;font-size:12px;" />
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">id contains</label>
+            <input id="condChildIdContains" placeholder='e.g. submit-btn, ${myVar}' style="flex:1;margin:0;font-size:12px;" />
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
+            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">class contains</label>
+            <input id="condChildClassContains" placeholder='e.g. active, btn-primary' style="flex:1;margin:0;font-size:12px;" />
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">type</label>
+            <select id="condChildType" style="flex:1;margin:0;font-size:12px;">
+              <option value="">(any)</option>
+              <option value="text">text</option>
+              <option value="checkbox">checkbox</option>
+              <option value="radio">radio</option>
+              <option value="submit">submit</option>
+              <option value="button">button</option>
+              <option value="select">select</option>
+              <option value="textarea">textarea</option>
+              <option value="hidden">hidden</option>
+              <option value="number">number</option>
+              <option value="email">email</option>
+              <option value="password">password</option>
+              <option value="file">file</option>
+              <option value="date">date</option>
+              <option value="url">url</option>
+              <option value="range">range</option>
+            </select>
+          </div>
+          <span class="helper-text" style="margin-top:6px;display:block;">Selector above = parent container. Child matching the condition will be acted on. Supports <code>${varName}</code> variables &amp; CSV columns.</span>
+        </div>
+      </div>
+
+      <!-- VALUE FIELD — shown for input/navigate/script/wait/screenshot/screenshot_full -->
+      <div class="hidden-by-default" id="manualValueWrapper">
+        <div class="step-label" id="valueStepLabel">Value</div>
+        <textarea id="manualValue" placeholder="Value (for input/navigate) or JS code (for script)" style="width:100%; height:80px; margin-top:6px;"></textarea>
+      </div>
+
+      <!-- DELAY -->
+      <div class="hidden-by-default" id="manualDelayWrapper">
+        <div class="step-label step-label-optional step-label-divider-top" id="delayStepLabel">Delay</div>
+        <div class="row" style="gap:6px; margin-top:0;">
+          <select id="manualDelayPreset" style="flex: 1;">
+            <option value="500" selected>0.5s (default)</option>
+            <option value="1000">1s</option>
+            <option value="2000">2s</option>
+            <option value="3000">3s</option>
+            <option value="5000">5s</option>
+            <option value="10000">10s</option>
+            <option value="custom">Custom…</option>
+          </select>
+          <input id="manualDelay" type="number" min="0" placeholder="ms"
+                 style="display:none; width: 80px; flex: 0 0 80px;" />
+        </div>
+      </div>
+
+      <!-- LABEL -->
+      <div class="hidden-by-default" id="manualLabelWrapper">
+        <div class="step-label step-label-optional" id="labelStepLabel">Label</div>
+        <input id="manualLabel" placeholder="Short description for this action" />
+      </div>
+
+      <div class="row">
+        <button id="addManualAction">Add Action</button>
+        <button id="cancelEdit" class="secondary w-auto" style="display: none;">Cancel</button>
+      </div>
+    </div>
+
+    <!-- SAVE -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">Save Scenario</h3>
+        <button class="card-help-btn" data-card="save" title="Save scenario guide">?</button>
+      </div>
+      <input id="scenarioName" placeholder="Scenario name *" class="required-field" />
+      <span class="helper-text">Required field for saving your scenario</span>
+      <div class="row equalize">
+        <select id="scenarioFolder">
+          <option value="">No Folder</option>
+        </select>
+        <button id="createFolder" class="secondary">+ Folder</button>
+      </div>
+      <div class="row">
+        <button id="newFlow" class="secondary">New</button>
+        <button id="saveFlow" class="primary-gradient">Save Scenario</button>
+      </div>
+    </div>
+
+    <!-- MANAGE SCENARIOS -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">Manage Scenarios</h3>
+        <button class="card-help-btn" data-card="manage" title="Manage scenarios guide">?</button>
+      </div>
+      <div class="row equalize">
+        <input id="scenarioSearch" placeholder="Search..." />
+        <select id="scenarioSort">
+          <option value="createdDesc">Newest</option>
+          <option value="createdAsc">Oldest</option>
+          <option value="nameAsc">Name A→Z</option>
+          <option value="nameDesc">Name Z→A</option>
+        </select>
+      </div>
+      <select id="filterFolder" style="margin-top: 6px;">
+        <option value="">All Folders</option>
+      </select>
+      <select id="scenarioList"></select>
+
+      <div class="row" style="margin-top: 6px; gap: 4px;">
+        <button id="playScenario" class="primary-gradient" style="flex: 1;">▶ Play</button>
+        <button id="stopPlay" class="secondary" style="flex: 1;" title="Stop playback">■ Stop</button>
+      </div>
+      <div class="loop-controls-row">
+        <div class="loop-chip">
+          <span class="loop-chip-label">Loop</span>
+          <input id="loopCount" type="number" min="1" max="999" value="1" title="Number of times to repeat" />
+          <span class="loop-chip-x">×</span>
+        </div>
+        <span class="loop-delay-lbl">delay</span>
+        <select id="loopDelayPreset" class="loop-delay-select" title="Delay between loops">
+          <option value="500" selected>0.5s</option>
+          <option value="1000">1s</option>
+          <option value="2000">2s</option>
+          <option value="3000">3s</option>
+          <option value="5000">5s</option>
+          <option value="10000">10s</option>
+          <option value="custom">Custom…</option>
+        </select>
+        <input id="loopDelay" type="number" min="500" placeholder="ms" class="loop-delay-custom" style="display:none;" title="Delay between loops (ms)" />
+        <div class="loop-actions">
+          <button id="renameScenario" class="secondary loop-action-btn" title="Rename scenario">✎</button>
+          <button id="duplicateScenario" class="secondary loop-action-btn" title="Duplicate scenario">⧉</button>
+          <button id="showMoveSection" class="secondary loop-action-btn" title="Move to folder">⇄</button>
+        </div>
+      </div>
+
+      <div id="renameSection" style="display: none; margin-top: 6px;">
+        <input id="renameInput" placeholder="New name..." />
+        <div class="row" style="margin-top: 4px; gap: 4px;">
+          <button id="confirmRename" class="success" style="flex: 1;">✓ Rename</button>
+          <button id="cancelRename" class="secondary" style="flex: 0 0 auto; width: auto; padding: 6px 12px;">✕</button>
+        </div>
+      </div>
+
+      <div id="moveSection" style="display: none; margin-top: 6px;">
+        <div class="row equalize">
+          <select id="moveToFolderSelect">
+            <option value="">No Folder</option>
+          </select>
+          <button id="doMoveToFolder" class="secondary">Move</button>
+        </div>
+      </div>
+
+      <div class="danger-zone">
+        <button id="deleteScenario" class="danger">🗑 Delete Scenario</button>
+      </div>
+    </div>
+
+    <!-- MANAGE FOLDERS -->
+    <div class="card collapsible collapsed" id="manageFoldersCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Manage Folders <span class="caret">▸</span><button class="card-help-btn" data-card="folders" title="Folder management guide" style="margin-left:auto;">?</button></h3>
+      <div class="row">
+        <input id="newFolderInput" placeholder="Folder name..." />
+        <button id="createFolderAction" class="secondary">Create</button>
+      </div>
+      <div style="margin-top: 10px; font-size: 12px; color: var(--muted);">
+        <div id="foldersList"></div>
+      </div>
+    </div>
+
+    <!-- SEQUENCE PLAYBACK -->
+    <div class="card collapsible collapsed" id="sequencePlaybackCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Sequence Scenarios <span class="caret">▸</span><button class="card-help-btn" data-card="sequence" title="Sequence guide" style="margin-left:auto;">?</button></h3>
+      <div class="row">
+        <select id="sequenceScenarioList" class="flex-1"></select>
+        <button id="addToRunList" class="secondary w-auto">+ Add</button>
+      </div>
+      <div class="row" style="gap: 4px; margin-top: 4px; align-items: center;">
+        <select id="delayPreset" style="flex: 1;">
+          <option value="500" selected>0.5s (default)</option>
+          <option value="1000">1s</option>
+          <option value="2000">2s</option>
+          <option value="3000">3s</option>
+          <option value="5000">5s</option>
+          <option value="10000">10s</option>
+          <option value="custom">Custom…</option>
+        </select>
+        <input id="delayAfterScenario" type="number" min="0" placeholder="ms"
+               style="display:none; width: 80px; flex: 0 0 80px;" />
+      </div>
+      <span class="helper-text">Add scenarios to queue with optional delay between each</span>
+      <ul id="runListDisplay" class="actions"></ul>
+      <div id="sequenceNameWrapper">
+        <input id="sequenceName" placeholder="Sequence name *" />
+      </div>
+      <div class="row">
+        <button id="startSequence" class="primary-gradient">▶ Start Sequence</button>
+        <button id="stopSequence" class="secondary">■ Stop</button>
+      </div>
+      <button id="saveSequenceAsScenario" class="secondary" style="margin-top: 6px;">Save as Scenario</button>
+    </div>
+
+    </div> <!-- End main-content -->
+  </div>
+
+  <!-- ===== TAB: DATA ===== -->
+  <div class="tab-panel" id="tabData">
+    <div class="main-content" id="mainContentData" role="complementary">
+
+    <!-- VARIABLES -->
+    <div class="card">
+      <h3>Variables</h3>
+      <ul class="var-list" id="variablesTableBody"></ul>
+      <button id="addVariableRow">+ Add Row</button>
+      <p style="font-size:12px; color: var(--muted); margin:6px 0 0;">Use ${var} in selector/value/url/code. Saved per extension.</p>
+    </div>
+
+    <!-- EXPORT CODE -->
+    <div class="card">
+      <h3>Export Code</h3>
+      <select id="exportCodeSelect" style="margin-bottom:10px;">
+        <option value="">-- Select scenario --</option>
+      </select>
+      <div class="export-code-grid">
+        <button id="exportBookmarklet" class="export-code-btn export-code-js" title="Export as JS Bookmarklet">
+          <span class="export-code-icon">⚡</span>
+          <div class="export-code-info">
+            <span class="export-code-name">JS Bookmarklet</span>
+            <span class="export-code-desc">Runs in browser</span>
+          </div>
+        </button>
+        <button id="exportSelenium" class="export-code-btn export-code-py" title="Export as Selenium Python">
+          <span class="export-code-icon">🐍</span>
+          <div class="export-code-info">
+            <span class="export-code-name">Selenium Python</span>
+            <span class="export-code-desc">Standalone .py file</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- SCHEDULED PLAYBACK -->
+    <div class="card collapsible collapsed" id="scheduledPlaybackCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Scheduled Playback <span class="caret">▸</span><button class="card-help-btn" data-card="schedule" title="Schedule guide" style="margin-left:auto;">?</button></h3>
+      <div class="row equalize">
+        <select id="scheduleScenarioSelect">
+          <option value="">-- Select scenario --</option>
+        </select>
+        <input id="scheduleTime" type="time" style="display:none;" />
+        <div class="schedule-time-picker">
+          <input id="stHour" type="number" min="1" max="12" value="12" title="Hour" />
+          <span class="st-colon">:</span>
+          <input id="stMin" type="number" min="0" max="59" value="0" title="Minute" />
+          <button type="button" id="stAmPm" class="secondary">AM</button>
+        </div>
+      </div>
+      <input id="scheduleLabel" placeholder="Schedule label (optional)" style="margin-top: 6px;" />
+      <div class="row" style="margin-top: 6px; align-items: center; gap: 8px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;flex:1;margin:0;">
+          <input type="checkbox" id="scheduleRepeat" style="width:auto;margin:0;" /> Repeat daily
+        </label>
+        <button id="addSchedule" class="secondary" style="flex:0 0 auto;width:auto;">+ Add</button>
+      </div>
+      <span class="helper-text">Runs at the selected time (background must be active)</span>
+      <ul id="scheduleList" class="actions" style="margin-top: 8px;"></ul>
+    </div>
+
+    <!-- CSV DATA-DRIVEN RUN -->
+    <div class="card collapsible collapsed" id="csvRunCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">CSV Data-Driven Run <span class="caret">▸</span><button class="card-help-btn" data-card="csv" title="CSV run guide" style="margin-left:auto;">?</button></h3>
+      <select id="csvScenarioSelect" style="margin-bottom: 6px;">
+        <option value="">-- Select scenario --</option>
+      </select>
+      <input type="file" id="csvFile" accept=".csv,.txt" />
+      <span class="helper-text">First row = column headers → used as variable names (e.g. ${email})</span>
+      <div id="csvPreview" style="margin-top: 6px; font-size: 12px; color: var(--muted);"></div>
+
+      <!-- Delay between rows -->
+      <div class="row" style="gap:6px; margin-top: 6px;">
+        <select id="csvDelayBetweenPreset" style="flex: 1;">
+          <option value="500" selected>0.5s (default)</option>
+          <option value="1000">1s</option>
+          <option value="2000">2s</option>
+          <option value="3000">3s</option>
+          <option value="5000">5s</option>
+          <option value="10000">10s</option>
+          <option value="custom">Custom…</option>
+        </select>
+        <input id="csvDelayBetween" type="number" min="0" placeholder="ms"
+               style="display:none; width: 80px; flex: 0 0 80px;" />
+      </div>
+
+      <!-- Export format + Feature 3: locked warning -->
+      <div id="csvFormatRow" style="margin-top:6px;">
+        <div class="row" style="align-items:center;">
+          <label class="csv-format-label">Export format:</label>
+          <select id="csvExportFormat" style="flex:1; margin:0; font-size:12px;">
+            <option value="xlsx" selected>Excel XLSX (images in cells)</option>
+            <option value="html">HTML (embedded images)</option>
+            <option value="zip">ZIP (screenshots + CSV)</option>
+          </select>
+        </div>
+        <div id="csvFormatLocked" class="csv-format-locked" style="display:none;">
+          <span class="csv-format-lock-icon">⚠</span>
+          <span class="csv-format-lock-text">Changing format will clear results</span>
+          <button id="csvChangeFormat" class="csv-format-clear-btn">🗑 Clear &amp; change</button>
+        </div>
+      </div>
+
+      <!-- Status text: idle messages / run summary -->
+      <div id="csvStatus" style="font-size:12px; color:var(--muted); margin-top:4px;"></div>
+
+      <!-- Start button (disabled while running) -->
+      <div class="row csv-action-row" style="margin-top:6px;">
+        <button id="startCsvRun" class="primary-gradient" style="flex:1;">▶ Start CSV Run</button>
+      </div>
+
+      <button id="csvDownloadResult" class="secondary" style="display:none; margin-top:6px; width:100%; font-size:12px;">⬇ Download result</button>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TAB: CAPTURE ===== -->
+  <div class="tab-panel" id="tabCapture">
+
+    <div class="card">
+      <!-- Tab bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <h3 style="margin:0;">Capture</h3>
+      </div>
+      <div class="capture-tab-nav" id="captureTabNav">
+        <button class="capture-tab-btn active" data-capture-tab="all">All</button>
+        <button class="capture-tab-btn" data-capture-tab="visible">Visible</button>
+        <button class="capture-tab-btn" data-capture-tab="scroll">Scroll</button>
+        <button class="capture-tab-btn" data-capture-tab="segment">Segment</button>
+        <button class="capture-tab-btn" data-capture-tab="element">Element</button>
+      </div>
+
+      <!-- All -->
+      <div class="capture-group" id="captureGroup-all">
+        <div class="capture-group-row">
+          <span class="capture-group-label">Visible</span>
+          <div class="capture-btn-row">
+            <button id="screenshotVisible"  class="cap-save-btn" title="Capture visible viewport">📷 Page</button>
+            <button id="screenshotFull"     class="cap-save-btn" title="Capture full page">📄 Full</button>
+            <button id="cropVisible"        class="cap-edit-btn" title="Capture visible then crop/edit">✂ Page</button>
+            <button id="cropFull"           class="cap-edit-btn" title="Capture full page then crop/edit">✂ Full</button>
+          </div>
+        </div>
+        <div class="capture-group-row">
+          <span class="capture-group-label">Scroll</span>
+          <div class="capture-btn-row">
+            <button id="screenshotScrollV"  class="cap-save-btn" title="Capture full vertical scroll">↕ V</button>
+            <button id="screenshotScrollH"  class="cap-save-btn" title="Capture full horizontal scroll">↔ H</button>
+            <button id="cropScrollV"        class="cap-edit-btn" title="Capture vertical scroll then crop/edit">✂ ↕V</button>
+            <button id="cropScrollH"        class="cap-edit-btn" title="Capture horizontal scroll then crop/edit">✂ ↔H</button>
+          </div>
+        </div>
+        <div class="capture-group-row">
+          <span class="capture-group-label">Segment</span>
+          <div class="capture-btn-row">
+            <button id="segmentScrollV"     class="cap-save-btn" title="Mark start, scroll to end, then stop">⬍ V</button>
+            <button id="segmentScrollH"     class="cap-save-btn" title="Mark start, scroll right to end, then stop">⬌ H</button>
+            <button id="cropSegmentScrollV" class="cap-edit-btn" title="Segment capture then open editor">✂ ⬍V</button>
+            <button id="cropSegmentScrollH" class="cap-edit-btn" title="Segment capture then open editor">✂ ⬌H</button>
+          </div>
+        </div>
+        <div class="capture-group-row">
+          <span class="capture-group-label">Element</span>
+          <div class="capture-btn-row">
+            <button id="screenshotElement"     class="cap-save-btn" title="Capture a specific element">📌 Pick</button>
+            <button id="cropScreenshotElement" class="cap-edit-btn" title="Capture element then open editor">✂ Pick</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visible -->
+      <div class="capture-group" id="captureGroup-visible" style="display:none;">
+        <div class="capture-group-row">
+          <span class="capture-group-label">Page</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="screenshotVisible" title="Capture visible viewport">📷 Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropVisible" title="Capture then open editor">✂ Edit</button>
+          </div>
+        </div>
+        <div class="capture-group-row">
+          <span class="capture-group-label">Full</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="screenshotFull" title="Capture full page">📄 Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropFull" title="Capture full page then edit">✂ Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll -->
+      <div class="capture-group" id="captureGroup-scroll" style="display:none;">
+        <div class="capture-group-row">
+          <span class="capture-group-label">Vertical</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="screenshotScrollV" title="Capture full vertical scroll">↕ Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropScrollV" title="Capture then edit">✂ Edit</button>
+          </div>
+        </div>
+        <div class="capture-group-row">
+          <span class="capture-group-label">Horizontal</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="screenshotScrollH" title="Capture full horizontal scroll">↔ Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropScrollH" title="Capture then edit">✂ Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segment -->
+      <div class="capture-group" id="captureGroup-segment" style="display:none;">
+        <div class="capture-group-row">
+          <span class="capture-group-label">Vertical</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="segmentScrollV" title="Segment vertical">⬍ Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropSegmentScrollV" title="Segment then edit">✂ Edit</button>
+          </div>
+        </div>
+        <div class="capture-group-row">
+          <span class="capture-group-label">Horizontal</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="segmentScrollH" title="Segment horizontal">⬌ Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropSegmentScrollH" title="Segment then edit">✂ Edit</button>
+          </div>
+        </div>
+        <span class="helper-text">Press hotkey/button to mark start, scroll to desired end, then press again to capture.</span>
+      </div>
+
+      <!-- Element -->
+      <div class="capture-group" id="captureGroup-element" style="display:none;">
+        <div class="capture-group-row">
+          <span class="capture-group-label">Element</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="screenshotElement" title="Capture a specific element">📌 Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropScreenshotElement" title="Capture element then edit">✂ Edit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools row (always visible) -->
+      <div class="capture-tools-row">
+        <button id="diffScreenshots" class="secondary" style="font-size:11px;margin:0;padding:5px 12px;" title="Compare two screenshots and highlight differences">🔍 Image Diff</button>
+        <button id="openImageEditor" class="btn-img-editor" title="Edit an image from clipboard or file">🖼 Image Editor</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: HIGHLIGHT ===== -->
+  <div class="tab-panel" id="tabHighlight">
+    <div class="main-content" role="complementary">
+
+      <div class="card">
+        <!-- Header: mode pill + export + toggle -->
+        <div class="hl-header" id="hlToggleRow">
+          <div class="hl-mode-pill" id="hlModePill">
+            <span class="hl-mode-dot"></span>
+            <span class="hl-mode-label" id="hlModeLabel">Highlight ON</span>
+          </div>
+          <button class="hl-export-btn" id="hlExportBtn" title="Export highlights as JSON">⬇ Export</button>
+          <label class="hl-toggle-switch">
+            <input type="checkbox" id="hlToggle" checked>
+            <span class="hl-toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Stats: compact 1-line bar (expandable) -->
+        <div class="hl-stats-bar" id="hlStatsBar">
+          <span>📄 <span class="hl-stats-bar-val" id="hlStatPage">0</span> this page</span>
+          <span class="hl-stats-bar-sep">·</span>
+          <span><span class="hl-stats-bar-val" id="hlStatTotal">0</span> total</span>
+          <span class="hl-stats-bar-sep">·</span>
+          <span><span class="hl-stats-bar-val" id="hlStatPages">—</span> pages</span>
+          <button class="hl-stats-detail-btn" id="hlStatsDetailBtn">▾ Details</button>
+        </div>
+        <!-- Expanded stats detail (hidden by default) -->
+        <div class="hl-stats-detail" id="hlStatsDetail">
+          <div class="hl-stat-pill">
+            <div class="hl-stat-num" id="hlStatPageDetail">0</div>
+            <div class="hl-stat-lbl">This page</div>
+            <div class="hl-stat-colorbar" id="hlStatBarPage"></div>
+          </div>
+          <div class="hl-stat-pill">
+            <div class="hl-stat-num" id="hlStatTotalDetail">0</div>
+            <div class="hl-stat-lbl">Total</div>
+            <div class="hl-stat-colorbar" id="hlStatBarTotal"></div>
+          </div>
+          <div class="hl-stat-pill">
+            <div class="hl-stat-num" id="hlStatPagesDetail">—</div>
+            <div class="hl-stat-lbl">Pages</div>
+          </div>
+        </div>
+
+        <!-- Current page context card -->
+        <div class="hl-page-ctx" id="hlCurrentPage" style="display:none;" title="View current tab's highlights">
+          <span class="hl-page-favicon">🌐</span>
+          <span class="hl-page-domain" id="hlPageDomain"></span>
+          <span class="hl-page-badge" id="hlPageCount">0</span>
+        </div>
+
+        <!-- Other pages selector -->
+        <div class="hl-page-row" id="hlPagePicker">
+          <select id="hlUrlSelect" class="hl-url-select">
+            <option value="">Loading…</option>
+          </select>
+          <button id="hlUrlClearBtn" class="hl-url-clear-btn" title="Clear highlights for this page" style="display:none;">🗑</button>
+        </div>
+
+        <!-- Unified search + colour filter + add button -->
+        <div class="hl-search-filter">
+          <span class="hl-search-icon">🔍</span>
+          <input type="text" id="hlSearch" class="hl-search" placeholder="Search highlights…" autocomplete="off">
+          <div class="hl-filter-row" id="hlFilterRow">
+            <button class="hl-pill-all active" data-color="">All</button>
+            <div class="hl-swatch-divider"></div>
+            <div class="hl-swatches">
+              <button class="hl-swatch" data-color="yellow" title="Yellow"><span class="hl-swatch-badge" id="hlBadgeYellow"></span></button>
+              <button class="hl-swatch" data-color="green"  title="Green" ><span class="hl-swatch-badge" id="hlBadgeGreen" ></span></button>
+              <button class="hl-swatch" data-color="pink"   title="Pink"  ><span class="hl-swatch-badge" id="hlBadgePink"  ></span></button>
+              <button class="hl-swatch" data-color="blue"   title="Blue"  ><span class="hl-swatch-badge" id="hlBadgeBlue"  ></span></button>
+              <button class="hl-swatch" data-color="orange" title="Orange"><span class="hl-swatch-badge" id="hlBadgeOrange"></span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fixed-height slot: empty state + list share the same space -->
+        <div class="hl-list-slot">
+          <div class="hl-empty" id="hlEmpty">
+            <div class="hl-empty-icon">✎</div>
+            <div>Select text on the page to highlight</div>
+          </div>
+          <ul class="actions" id="hlList"></ul>
+        </div>
+
+        <!-- Clear page highlights -->
+        <button id="hlClearBtn" class="danger" style="visibility:hidden;width:100%;margin-top:4px;font-size:12px;padding:6px;">🗑 Clear page highlights</button>
+
+      </div>
+
+      <!-- URL Patterns card -->
+      <div class="card hl-pattern-card">
+        <div class="hl-pattern-header" id="hlPatternHeader">
+          <span class="hl-pattern-icon">🔗</span>
+          <span class="hl-pattern-title">URL Patterns</span>
+          <button class="hl-pattern-copy-all" id="hlPatternCopyAll" title="Copy all patterns to clipboard" style="display:none;">⧉ Copy all</button>
+          <span class="hl-pattern-caret" id="hlPatternCaret">▾</span>
+        </div>
+        <div class="hl-pattern-body" id="hlPatternBody" style="display:none;">
+          <!-- Build pattern from current tab URL -->
+          <div class="hl-url-builder" id="hlUrlBuilder" style="display:none;">
+            <button class="hl-builder-trigger" id="hlBuilderTrigger" type="button">
+              <span class="hl-builder-trigger-icon">🌐</span>
+              <span class="hl-builder-trigger-host" id="hlBuilderHost"></span>
+              <span class="hl-builder-trigger-caret" id="hlBuilderCaret">▾</span>
+            </button>
+            <div class="hl-builder-panel" id="hlBuilderPanel" style="display:none;">
+              <div class="hl-builder-hint">Click <b>subdomain</b> to toggle exact↔* &nbsp;|&nbsp; Click <b>path</b>: <span class="hl-seg hl-seg--exact hl-seg--sm">exact</span> → <span class="hl-seg hl-seg--any hl-seg--sm">*</span> → <span class="hl-seg hl-seg--end hl-seg--sm">off</span></div>
+              <div class="hl-builder-segments" id="hlBuilderSegments"></div>
+              <div class="hl-builder-footer">
+                <div class="hl-builder-preview" id="hlBuilderPreview"></div>
+                <button class="hl-builder-use" id="hlBuilderUse" type="button">↑ Use</button>
+              </div>
+            </div>
+          </div>
+          <div class="hl-pattern-hint">Use <code>*</code> in path <em>and</em> subdomain. E.g. <code>site.com/*/settings</code> or <code>*.myapp.com/app/*</code></div>
+          <div class="hl-pattern-input-row">
+            <input type="text" id="hlPatternInput" class="hl-pattern-input" placeholder="example.com/account/*/settings">
+            <button id="hlPatternAddBtn" class="hl-pattern-add-btn">Add</button>
+          </div>
+          <div class="hl-val-msg" id="hlValMsg" style="display:none;"></div>
+          <ul id="hlPatternList" class="hl-pattern-list"></ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== TAB: SETTINGS ===== -->
+  <div class="tab-panel" id="tabSettings">
+
+    <!-- Hotkeys card -->
+    <div class="card">
+      <h3>Hotkeys</h3>
+      <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div class="hotkey-row" data-requires-activation>
+          <span class="hotkey-label">Start Recording</span>
+          <span class="hotkey-badge" id="hotkeyStartRecord">Alt+R</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="startRecord">Set</button>
+        </div>
+        <div class="hotkey-row" data-requires-activation>
+          <span class="hotkey-label">Stop Recording</span>
+          <span class="hotkey-badge" id="hotkeyStopRecord">Alt+S</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="stopRecord">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Screenshot (Visible)</span>
+          <span class="hotkey-badge" id="hotkeyScreenshot">Alt+P</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="screenshot">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Screenshot (Full Page)</span>
+          <span class="hotkey-badge" id="hotkeyScreenshotFull">Alt+F</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="screenshotFull">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Screenshot (Scroll V)</span>
+          <span class="hotkey-badge" id="hotkeyScreenshotScrollV">Alt+V</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="screenshotScrollV">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Screenshot (Scroll H)</span>
+          <span class="hotkey-badge" id="hotkeyScreenshotScrollH">Alt+H</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="screenshotScrollH">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Seg V — Start</span>
+          <span class="hotkey-badge" id="hotkeySegV">Alt+Shift+V</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="segV">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Seg H — Start</span>
+          <span class="hotkey-badge" id="hotkeySegH">Alt+Shift+H</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="segH">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Seg — Stop &amp; Capture</span>
+          <span class="hotkey-badge" id="hotkeySegStop">Alt+X</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="segStop">Set</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-label">Screenshot (Element)</span>
+          <span class="hotkey-badge" id="hotkeyScreenshotElement">Alt+E</span>
+          <button class="hotkey-set-btn secondary" data-hotkey="screenshotElement">Set</button>
+        </div>
+      </div>
+      <div class="activation-required-notice" role="status">
+        🔒 Recording hotkeys are available after activating on the current tab
+      </div>
+      <span class="helper-text" style="margin-top: 4px; display: block;">Click Set → press any key combo. ESC to cancel.</span>
+      <button id="resetHotkeys" class="secondary" style="margin-top: 6px; font-size: 11px; padding: 5px 10px;">Reset to defaults</button>
+    </div>
+
+    <!-- Screenshot settings card -->
+    <div class="card">
+      <h3>Screenshot</h3>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
+        <input type="radio" name="screenshotSaveMode" value="auto" id="saveModeAuto" style="width: auto; margin: 0; cursor: pointer;" />
+        Auto (save to Downloads/screenshots/)
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0; margin-top: 4px;">
+        <input type="radio" name="screenshotSaveMode" value="ask" id="saveModeAsk" style="width: auto; margin: 0; cursor: pointer;" />
+        Ask before saving
+      </label>
+      <input id="screenshotPrefix" placeholder="Filename prefix (e.g. screenshot)" style="margin-top: 8px;" />
+      <span class="helper-text">Format: {prefix}_{YYYY-MM-DD_HH-MM-SS}.png</span>
+
+      <div class="step-label step-label-divider-top">Countdown</div>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; padding:3px 0;">
+        <input type="checkbox" id="screenshotCountdownEnabled" style="width:auto; margin:0; cursor:pointer;" />
+        Countdown before capture (to keep dropdown open)
+      </label>
+      <div id="screenshotCountdownRow" style="display:none; align-items:center; gap:8px; margin-top:6px;">
+        <span style="font-size:12px; color:var(--muted); white-space:nowrap;">Seconds</span>
+        <select id="screenshotCountdownSeconds" style="width:auto; margin:0; font-size:13px;">
+          <option value="3">3 seconds</option>
+          <option value="5">5 seconds</option>
+          <option value="10">10 seconds</option>
+        </select>
+      </div>
+      <span class="helper-text">On: press hotkey/button → countdown → open dropdown → auto capture. Off: capture immediately (default).</span>
+
+      <div class="step-label step-label-divider-top">Watermark</div>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; padding:3px 0;">
+        <input type="checkbox" id="watermarkEnabled" style="width:auto; margin:0; cursor:pointer;" />
+        Overlay watermark on screenshots
+      </label>
+      <input id="watermarkFormat" placeholder="{url}  {datetime}" style="margin-top:6px;" />
+      <span class="helper-text">Variables: {url} = page URL, {datetime} = date &amp; time</span>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+        <span style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Font size</span>
+        <input id="watermarkFontSize" type="range" min="8" max="48" step="1" style="flex:1; margin:0; cursor:pointer;" />
+        <input id="watermarkFontSizeNum" type="number" min="8" max="48" step="1" style="width:52px; margin:0; font-size:12px; padding:3px 4px;" />
+        <span style="font-size:12px; color:var(--muted);">px</span>
+      </div>
+
+      <div class="step-label step-label-divider-top">Segment Scroll Speed</div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:12px; color:var(--muted); width:80px;">↕ Vertical</span>
+          <input id="segScrollSpeedV" type="range" min="0.1" max="10" step="0.1" style="flex:1; margin:0; cursor:pointer;" />
+          <input id="segScrollSpeedVNum" type="number" min="0.1" max="10" step="0.1" style="width:52px; margin:0; font-size:12px; padding:3px 4px;" />
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:12px; color:var(--muted); width:80px;">↔ Horizontal</span>
+          <input id="segScrollSpeedH" type="range" min="0.1" max="10" step="0.1" style="flex:1; margin:0; cursor:pointer;" />
+          <input id="segScrollSpeedHNum" type="number" min="0.1" max="10" step="0.1" style="width:52px; margin:0; font-size:12px; padding:3px 4px;" />
+        </div>
+        <span class="helper-text">px / frame — 0.1 = slowest, 10 = fastest</span>
+      </div>
+      <button id="saveScreenshotSettings" class="success" style="margin-top: 8px;">Save Settings</button>
+    </div>
+
+    <!-- Notifications card -->
+    <div class="card">
+      <h3>Notifications</h3>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
+        <input type="checkbox" id="notifyOnComplete" style="width: auto; margin: 0; cursor: pointer;" />
+        Show notification when playback/sequence finishes
+      </label>
+    </div>
+
+    <!-- Import / Export card (collapsible) -->
+    <div class="card collapsible collapsed" id="importExportCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Import / Export <span class="caret">▸</span></h3>
+      <div class="row">
+        <select id="exportScenarioSelect" class="flex-1">
+          <option value="">-- Select scenario --</option>
+        </select>
+        <button id="exportScenario" class="secondary flex-1">Export Scenario</button>
+      </div>
+      <div class="row" style="margin-top: 6px;">
+        <select id="exportFolderSelect" class="flex-1">
+          <option value="">-- Select folder --</option>
+        </select>
+        <button id="exportFolder" class="secondary flex-1">Export Folder</button>
+      </div>
+      <span class="helper-text">Exports all scenarios in selected folder</span>
+      <input type="file" id="importFile" accept=".json" />
+      <button id="importScenario" class="secondary">Import Scenario</button>
+    </div>
+
+    <!-- Backup / Restore card (collapsible) -->
+    <div class="card collapsible collapsed" id="backupRestoreCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Backup / Restore <span class="caret">▸</span></h3>
+      <input type="file" id="restoreFile" accept=".json" />
+      <div class="row" style="gap:6px;">
+        <button id="backupAll" class="secondary flex-1">⬇ Backup All Data</button>
+        <button id="restoreAll" class="secondary flex-1">⬆ Restore All Data</button>
+      </div>
+    </div>
+
+  </div><!-- end tabSettings -->
+
+  <!-- ===== COMPACT VIEW (hidden, kept for JS compatibility) ===== -->
+  <div style="display:none;" id="compactView">
+    <select id="scenarioListCompact"></select>
+    <button id="startRecordCompact"></button>
+    <button id="stopRecordCompact"></button>
+    <button id="playScenarioCompact"></button>
+    <button id="stopPlayCompact"></button>
+    <input id="scenarioNameCompact" />
+    <select id="scenarioFolderCompact"></select>
+    <button id="saveFlowCompact"></button>
+    <button id="previewCompact"></button>
+    <ul id="actionsCompact"></ul>
+    <button id="previewScenarioCompact"></button>
+    <ul id="actionsScenarioCompact"></ul>
+    <label id="toggleAdvancedMode"></label>
+  </div>
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Variable Modal (Add / Edit) -->
+  <div id="randomModal" class="random-modal" role="dialog" aria-modal="true" aria-labelledby="randomModalTitle" aria-hidden="true">
+    <div class="random-modal-content">
+      <h4 id="randomModalTitle">Add Variable</h4>
+      <label>Variable Name:</label>
+      <input id="randomVarName" placeholder="e.g., username" />
+
+      <!-- Mode tabs: S Static | R Random | P Pick | F Fallback -->
+      <div class="rnd-mode-tabs" role="tablist" aria-label="Variable type">
+        <button class="rnd-mode-tab active" id="rndTabStatic" role="tab" aria-selected="true" data-mode="static">
+          <span class="vt-i s">S</span> Static
+        </button>
+        <button class="rnd-mode-tab" id="rndTabString" role="tab" aria-selected="false" data-mode="string">
+          <span class="vt-i r">R</span> Random
+        </button>
+        <button class="rnd-mode-tab" id="rndTabPick" role="tab" aria-selected="false" data-mode="pick">
+          <span class="vt-i p">P</span> Pick
+        </button>
+        <button class="rnd-mode-tab" id="rndTabFallback" role="tab" aria-selected="false" data-mode="fallback">
+          <span class="vt-i f">F</span> Fallback
+        </button>
+      </div>
+
+      <!-- Static panel -->
+      <div id="rndStaticSection">
+        <label>Value:</label>
+        <input id="staticValue" placeholder="Enter value…" />
+      </div>
+
+      <!-- Random String panel -->
+      <div id="rndStringSection" style="display:none">
+        <label>Type:</label>
+        <select id="randomType">
+          <option value="alpha">Letters Only (a-z, A-Z)</option>
+          <option value="numeric">Numbers Only (0-9)</option>
+          <option value="alphanumeric">Letters + Numbers</option>
+          <option value="datetime">Datetime (YYYY-MM-DD_HH-MM-SS)</option>
+        </select>
+        <span id="rndLengthRow">
+          <label>Length:</label>
+          <input id="randomLength" type="number" value="8" min="1" max="50" />
+        </span>
+      </div>
+
+      <!-- Pick from List panel -->
+      <div id="rndPickSection" style="display:none">
+        <label style="margin-bottom:6px">Values <span style="font-weight:400;color:var(--muted);font-size:11px">(one picked randomly · CSV column overrides)</span>:</label>
+        <div id="pickValuesList"></div>
+        <button id="addPickValue" class="secondary" style="width:100%;margin-top:5px;font-size:12px;padding:5px 0">+ Add Value</button>
+      </div>
+
+      <!-- Fallback List panel -->
+      <div id="rndFallbackSection" style="display:none">
+        <label style="margin-bottom:6px">Fallback order <span style="font-weight:400;color:var(--muted);font-size:11px">(tries A → B → C in Child Condition, stops on first match)</span>:</label>
+        <div id="fallbackValuesList"></div>
+        <button id="addFallbackValue" class="secondary" style="width:100%;margin-top:5px;font-size:12px;padding:5px 0">+ Add Value</button>
+      </div>
+
+      <div class="row" style="margin-top: 12px;">
+        <button id="cancelRandom" class="secondary">Cancel</button>
+        <button id="confirmRandom">Add Variable</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Help Modal -->
+  <div id="cardHelpModal" class="condition-help-modal" role="dialog" aria-modal="true" aria-labelledby="cardHelpTitle" aria-hidden="true">
+    <div class="condition-help-content">
+      <div class="condition-help-header">
+        <h4 id="cardHelpTitle">Hướng dẫn</h4>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button id="cardHelpLangToggle" class="secondary">EN</button>
+          <button id="cardHelpClose" class="secondary">✕ Đóng</button>
+        </div>
+      </div>
+      <div class="condition-help-body" id="cardHelpBody"></div>
+    </div>
+  </div>
+
+  <!-- Condition Help Modal -->
+  <div id="conditionHelpModal" class="condition-help-modal" role="dialog" aria-modal="true" aria-labelledby="condHelpTitle" aria-hidden="true">
+    <div class="condition-help-content">
+      <div class="condition-help-header">
+        <h4 id="condHelpTitle">Hướng dẫn Condition (If)</h4>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button id="condLangToggle" class="secondary">EN</button>
+          <button id="conditionHelpClose" class="secondary">✕ Đóng</button>
+        </div>
+      </div>
+      <div class="condition-help-body" id="conditionHelpBody"></div>
+    </div>
+  </div>
+
+  <!-- Confirm / Alert Modal -->
+  <div id="confirmModal" class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle" aria-describedby="confirmModalMsg" aria-hidden="true">
+    <div class="confirm-modal-content">
+      <h4 id="confirmModalTitle">Confirm</h4>
+      <p id="confirmModalMsg"></p>
+      <div class="row">
+        <button id="confirmModalCancel" class="secondary">Cancel</button>
+        <button id="confirmModalOk">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+  <!-- RESUME BANNER -->
+  <div id="resumeBanner" class="resume-banner" role="alert" aria-live="polite">
+    <span id="resumeBannerMsg" class="resume-banner-msg"></span>
+    <button id="resumeBtn" class="resume-banner-btn">▶ Resume</button>
+    <button id="resumeDismissBtn" class="resume-banner-dismiss" aria-label="Dismiss resume banner">✕</button>
+  </div>
+
+  <!-- DIFF MODAL -->
+  <div id="diffModal" class="random-modal" role="dialog" aria-modal="true" aria-labelledby="diffModalTitle" aria-hidden="true" style="align-items:flex-start; padding-top:30px;">
+    <div class="random-modal-content" style="width:380px; max-height:85vh; overflow-y:auto;">
+      <h4 id="diffModalTitle" style="margin:0 0 10px;"><span aria-hidden="true">🔍</span> Image Diff</h4>
+      <label style="font-size:12px; color:var(--muted);">Image A (source)</label>
+      <input type="file" id="diffFileA" accept="image/*" style="margin-top:4px;" />
+      <label style="font-size:12px; color:var(--muted); margin-top:8px; display:block;">Image B (compare)</label>
+      <input type="file" id="diffFileB" accept="image/*" style="margin-top:4px;" />
+      <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+        <label style="font-size:12px; white-space:nowrap;">Sensitivity</label>
+        <input id="diffThreshold" type="range" min="1" max="50" value="10" style="flex:1; margin:0;" />
+        <span id="diffThresholdVal" style="font-size:12px; min-width:24px;">10</span>
+      </div>
+      <div style="display:flex; gap:6px; margin-top:10px;">
+        <button id="diffRun" class="success" style="flex:1;">▶ Compare</button>
+        <button id="diffClose" class="secondary" style="flex:0 0 auto; width:auto; padding:5px 12px;">✕</button>
+      </div>
+      <div id="diffResult" style="display:none; margin-top:10px;">
+        <div id="diffStats" style="font-size:12px; color:var(--muted); margin-bottom:6px;"></div>
+        <img id="diffPreview" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+        <button id="diffDownload" class="secondary" style="margin-top:6px; font-size:12px; width:100%;">⬇ Save result</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Bookmarklet Modal -->
+  <div id="exportBmModal" class="export-bm-modal" role="dialog" aria-modal="true" aria-labelledby="exportBmTitle" aria-hidden="true">
+    <div class="export-bm-content">
+
+      <div class="export-bm-header">
+        <div class="export-bm-accent-bar export-bm-accent-js"></div>
+        <div class="export-bm-header-inner">
+          <div class="export-bm-lang-badge export-bm-lang-badge-js">JS</div>
+          <div class="export-bm-header-text">
+            <div class="export-bm-header-title" id="exportBmTitle">Export JS Bookmarklet</div>
+            <div class="export-bm-header-sub" id="exportBmSub">scenario.js · 0 steps</div>
+          </div>
+          <div class="export-bm-header-actions">
+            <button class="export-bm-icon-btn export-bm-icon-btn-danger" id="exportBmClose" aria-label="Close">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-bm-tabs" role="tablist">
+        <button class="export-bm-tab active" data-tab="preview" role="tab" aria-selected="true">Code</button>
+        <button class="export-bm-tab" data-tab="variables" role="tab" aria-selected="false">Variables <span class="export-bm-tab-count" id="exportBmVarCount">0</span></button>
+        <button class="export-bm-tab" data-tab="actions" role="tab" aria-selected="false">Actions <span class="export-bm-tab-count" id="exportBmActCount">0</span></button>
+        <button class="export-bm-tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
+      </div>
+
+      <div id="exportBmWarning" class="export-bm-warning" style="display:none;">
+        <span class="export-bm-warning-icon">⚠</span>
+        <span id="exportBmSkipMsg"></span>
+      </div>
+
+      <!-- Tab: Preview Code -->
+      <div id="exportBmTabPreview" class="export-bm-tab-panel">
+        <div class="export-bm-code-toolbar">
+          <span class="export-bm-code-label" id="exportBmCodeLabel">scenario.js</span>
+          <div class="export-bm-code-toolbar-btns">
+            <button class="export-bm-code-toolbar-btn" id="exportBmWrapBtn">wrap</button>
+            <button class="export-bm-code-toolbar-btn" id="exportBmSelectAllBtn">select all</button>
+          </div>
+        </div>
+        <pre id="exportBmCode" class="export-bm-code"><code></code></pre>
+      </div>
+
+      <!-- Tab: Variables -->
+      <div id="exportBmTabVariables" class="export-bm-tab-panel" hidden>
+        <div id="exportBmNoVars" class="export-bm-no-vars">No variables defined</div>
+        <div id="exportBmVarList"></div>
+      </div>
+
+      <!-- Tab: Actions Review -->
+      <div id="exportBmTabActions" class="export-bm-tab-panel" hidden>
+        <div class="export-bm-act-summary" id="exportBmActSummary"></div>
+        <div id="exportBmActList"></div>
+      </div>
+
+      <!-- Tab: Settings -->
+      <div id="exportBmTabSettings" class="export-bm-tab-panel" hidden>
+        <div class="export-bm-setting-row">
+          <div class="export-bm-setting-label">
+            Delay between steps
+            <small>Time to wait after each action</small>
+          </div>
+          <input type="number" id="exportBmStepDelay" class="export-bm-setting-input" value="300" min="0" max="10000" />
+          <span class="export-bm-setting-unit">ms</span>
+        </div>
+        <div class="export-bm-setting-row">
+          <div class="export-bm-setting-label">
+            Element timeout
+            <small>Max wait time for elements</small>
+          </div>
+          <input type="number" id="exportBmElTimeout" class="export-bm-setting-input" value="5000" min="500" max="30000" />
+          <span class="export-bm-setting-unit">ms</span>
+        </div>
+        <button id="exportBmRegenerate" class="export-bm-regen-btn">↺ Regenerate Code</button>
+      </div>
+
+      <!-- Stats pills -->
+      <div class="export-bm-stats-row">
+        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-blue"></span><span id="exportBmStatSteps">0 steps</span></div>
+        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-green"></span><span id="exportBmStatVars">0 variables</span></div>
+        <div class="export-bm-stat-pill" id="exportBmStatWarnPill" style="display:none;"><span class="export-bm-dot dot-orange"></span><span id="exportBmStatWarn">0 verify</span></div>
+        <div class="export-bm-stat-pill" id="exportBmStatSkippedPill" style="display:none;"><span class="export-bm-dot dot-red"></span><span id="exportBmStatSkipped">0 skipped</span></div>
+      </div>
+
+      <div class="export-bm-footer">
+        <div class="export-bm-footer-spacer"></div>
+        <div class="export-bm-footer-btns">
+          <button id="exportBmCancel" class="export-bm-nf-btn">Cancel</button>
+          <button id="exportBmDownload" class="export-bm-nf-btn">⬇ .js</button>
+          <button id="exportBmCopy" class="export-bm-nf-btn export-bm-nf-btn-primary">📋 Copy Code</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Export Selenium Python Modal -->
+  <div id="exportSeleniumModal" class="export-bm-modal" role="dialog" aria-modal="true" aria-labelledby="exportSeleniumTitle" aria-hidden="true">
+    <div class="export-bm-content">
+
+      <div class="export-bm-header">
+        <div class="export-bm-accent-bar export-bm-accent-py"></div>
+        <div class="export-bm-header-inner">
+          <div class="export-bm-lang-badge export-bm-lang-badge-py">PY</div>
+          <div class="export-bm-header-text">
+            <div class="export-bm-header-title" id="exportSeleniumTitle">Export Selenium Python</div>
+            <div class="export-bm-header-sub" id="exportSeleniumSub">scenario.py · 0 steps</div>
+          </div>
+          <div class="export-bm-header-actions">
+            <button class="export-bm-icon-btn export-bm-icon-btn-danger" id="exportSeleniumClose" aria-label="Close">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-bm-tabs" role="tablist">
+        <button class="export-py-tab active" data-tab="preview" role="tab" aria-selected="true">Code</button>
+        <button class="export-py-tab" data-tab="variables" role="tab" aria-selected="false">Variables <span class="export-bm-tab-count" id="exportSeleniumVarCount">0</span></button>
+        <button class="export-py-tab" data-tab="actions" role="tab" aria-selected="false">Actions <span class="export-bm-tab-count" id="exportSeleniumActCount">0</span></button>
+        <button class="export-py-tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
+      </div>
+
+      <div id="exportSeleniumWarning" class="export-bm-warning" style="display:none;">
+        <span class="export-bm-warning-icon">⚠</span>
+        <span id="exportSeleniumSkipMsg"></span>
+      </div>
+
+      <!-- Tab: Preview Code -->
+      <div id="exportSeleniumTabPreview" class="export-bm-tab-panel">
+        <div class="export-bm-code-toolbar">
+          <span class="export-bm-code-label" id="exportSeleniumCodeLabel">scenario.py</span>
+          <div class="export-bm-code-toolbar-btns">
+            <button class="export-bm-code-toolbar-btn" id="exportSeleniumWrapBtn">wrap</button>
+            <button class="export-bm-code-toolbar-btn" id="exportSeleniumSelectAllBtn">select all</button>
+          </div>
+        </div>
+        <pre id="exportSeleniumCode" class="export-bm-code"><code></code></pre>
+      </div>
+
+      <!-- Tab: Variables -->
+      <div id="exportSeleniumTabVariables" class="export-bm-tab-panel" hidden>
+        <div id="exportSeleniumNoVars" class="export-bm-no-vars">No variables defined</div>
+        <div id="exportSeleniumVarList"></div>
+      </div>
+
+      <!-- Tab: Actions Review -->
+      <div id="exportSeleniumTabActions" class="export-bm-tab-panel" hidden>
+        <div class="export-bm-act-summary" id="exportSeleniumActSummary"></div>
+        <div id="exportSeleniumActList"></div>
+      </div>
+
+      <!-- Tab: Settings -->
+      <div id="exportSeleniumTabSettings" class="export-bm-tab-panel" hidden>
+        <div class="export-bm-setting-row">
+          <div class="export-bm-setting-label">
+            Starting URL
+            <small>Initial page to navigate to</small>
+          </div>
+          <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
+            <span class="export-bm-url-from-tab" id="exportSeleniumUrlFromTab" style="display:none;">📍 Current tab</span>
+            <input type="url" id="exportSeleniumStartUrl" class="export-bm-setting-input" placeholder="https://…" style="width:130px;" />
+            <button id="exportSeleniumGetUrl" class="export-bm-icon-btn" title="Get URL from current tab" style="font-size:11px;">🔄</button>
+          </div>
+        </div>
+        <div class="export-bm-setting-row">
+          <div class="export-bm-setting-label">WebDriver</div>
+          <select id="exportSeleniumDriver" class="export-bm-setting-select">
+            <option value="Chrome" selected>Chrome</option>
+            <option value="Firefox">Firefox</option>
+            <option value="Edge">Edge</option>
+            <option value="Safari">Safari</option>
+          </select>
+        </div>
+        <div class="export-bm-setting-row">
+          <div class="export-bm-setting-label">
+            Delay between steps
+            <small>Time to wait after each action</small>
+          </div>
+          <input type="number" id="exportSeleniumStepDelay" class="export-bm-setting-input" value="500" min="0" max="10000" />
+          <span class="export-bm-setting-unit">ms</span>
+        </div>
+        <div class="export-bm-setting-row">
+          <div class="export-bm-setting-label">
+            Element timeout
+            <small>Max wait time for elements</small>
+          </div>
+          <input type="number" id="exportSeleniumElTimeout" class="export-bm-setting-input" value="10000" min="500" max="60000" />
+          <span class="export-bm-setting-unit">ms</span>
+        </div>
+        <button id="exportSeleniumRegenerate" class="export-bm-regen-btn">↺ Regenerate Code</button>
+      </div>
+
+      <!-- Stats pills -->
+      <div class="export-bm-stats-row">
+        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-blue"></span><span id="exportSeleniumStatSteps">0 steps</span></div>
+        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-green"></span><span id="exportSeleniumStatVars">0 variables</span></div>
+        <div class="export-bm-stat-pill" id="exportSeleniumStatWarnPill" style="display:none;"><span class="export-bm-dot dot-orange"></span><span id="exportSeleniumStatWarn">0 verify</span></div>
+        <div class="export-bm-stat-pill" id="exportSeleniumStatSkippedPill" style="display:none;"><span class="export-bm-dot dot-red"></span><span id="exportSeleniumStatSkipped">0 skipped</span></div>
+      </div>
+
+      <div class="export-bm-footer">
+        <div class="export-bm-footer-spacer"></div>
+        <div class="export-bm-footer-btns">
+          <button id="exportSeleniumCancel" class="export-bm-nf-btn">Cancel</button>
+          <button id="exportSeleniumDownload" class="export-bm-nf-btn">⬇ .py</button>
+          <button id="exportSeleniumCopy" class="export-bm-nf-btn export-bm-nf-btn-primary">📋 Copy Code</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Lock overlays (always in DOM for smooth transitions) -->
+  <div class="lock-overlay" id="lockOverlayRecord">
+    <div class="lock-overlay-card">
+      <div class="lock-overlay-icon">🔒</div>
+      <h3 class="lock-overlay-title" id="lockOverlayRecordTitle">Activate on Tab</h3>
+      <p class="lock-overlay-sub" id="lockOverlayRecordSub">Click Activate to enable recording and playback on the current tab.</p>
+      <button class="lock-overlay-activate-btn" id="lockOverlayRecordBtn">Activate</button>
+    </div>
+  </div>
+  <div class="lock-overlay" id="lockOverlayData">
+    <div class="lock-overlay-card">
+      <div class="lock-overlay-icon">🔒</div>
+      <h3 class="lock-overlay-title" id="lockOverlayDataTitle">Activate on Tab</h3>
+      <p class="lock-overlay-sub" id="lockOverlayDataSub">Click Activate to enable recording and playback on the current tab.</p>
+      <button class="lock-overlay-activate-btn" id="lockOverlayDataBtn">Activate</button>
+    </div>
+  </div>
+
+  <!-- Image Editor Modal -->
+  <div id="imageEditorModal" class="random-modal" role="dialog" aria-modal="true" aria-labelledby="imgEditorModalTitle" aria-hidden="true">
+    <div class="random-modal-content" style="width:360px;">
+      <h4 id="imgEditorModalTitle" style="margin:0 0 12px;display:flex;align-items:center;gap:8px;">
+        <span aria-hidden="true">🖼</span> Image Editor
+      </h4>
+
+      <!-- Drop zone -->
+      <div id="imgEditorDropZone" class="img-editor-drop-zone">
+        <div class="img-editor-dz-icon">🖼️</div>
+        <div class="img-editor-dz-title">Kéo thả ảnh vào đây</div>
+        <div class="img-editor-dz-sub">
+          hoặc nhấn <kbd>Ctrl+V</kbd> để paste
+          <span style="margin:0 3px;">·</span>
+          PNG · JPG · WebP · GIF
+        </div>
+      </div>
+
+      <!-- Hidden file input -->
+      <input type="file" id="imgEditorFileInput" accept="image/*" style="display:none;" />
+
+      <div style="text-align:center;font-size:11px;color:var(--muted);margin:-2px 0 10px;">hoặc chọn từ nguồn</div>
+
+      <!-- Source buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
+        <button id="imgEditorBrowseBtn" class="secondary" style="font-size:12px;padding:8px;">📁 Browse File</button>
+        <button id="imgEditorClipboardBtn" class="secondary" style="font-size:12px;padding:8px;">📋 From Clipboard</button>
+      </div>
+
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button id="imgEditorCancel" class="secondary" style="flex:1;">✕ Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo interactivity (replaces popup/init.js + chrome.* logic) -->
+  <script src="demo.js"></script>
+</body>
+</html>
