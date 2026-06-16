@@ -109,8 +109,12 @@ a { color: var(--p-primary); text-decoration: none; }
 .hero__meta b { color: var(--p-text); }
 
 @media (max-width: 980px) {
-  .hero__grid { grid-template-columns: 1fr; gap: 36px; }
-  .hero__mockup { justify-self: center; }
+  /* `minmax(0, 1fr)` (not the default `1fr` = `minmax(auto, 1fr)`) lets the
+   * single column shrink below its min-content. Without this, the popup's
+   * intrinsic 480px floors the track at 480px and the mockup overflows narrow
+   * screens regardless of the overflow:hidden viewport. */
+  .hero__grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .hero__mockup { justify-self: center; min-width: 0; }
 }
 
 /* ── Browser mockup + popup ──────────────────────────────────────────────── */
@@ -177,6 +181,13 @@ a { color: var(--p-primary); text-decoration: none; }
   border-radius: 12px; background: var(--p-card); overflow: hidden; display: block;
 }
 @media (max-width: 560px) {
+  /* `.hero__mockup` is `justify-self: center` (from the ≤980 rule), so a grid
+   * item with no explicit width shrinks to its max-content — which is the
+   * popup's intrinsic 480px, NOT the screen. That makes the mockup (and the
+   * viewport we measure) 480px wide even on a 360px phone, so fitPopup reads
+   * avail ≥ 480 and never scales down → the popup overflows and gets clipped.
+   * Forcing the mockup to fill the grid cell ties its width to the screen. */
+  .hero__mockup { width: 100%; }
   .browser { width: 100%; }
   .browser__viewport { min-height: 0; padding: 0; overflow: hidden; }
   .browser__page-skeleton { display: none; }
