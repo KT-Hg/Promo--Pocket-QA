@@ -43,6 +43,33 @@
     }
   });
 
+  /* ── Scale the popup to fit on small screens ──────────────────────────────
+   * The popup is a fixed 480x600 UI (its CSS assumes exactly 480px), so we can't
+   * just shrink the iframe without breaking its layout. Instead we keep it at
+   * 480px and zoom the whole thing down with transform:scale(). The scale factor
+   * has to be a unitless number derived from the live available width — which
+   * pure CSS can't compute — so we measure it here and feed promo.css two custom
+   * properties (--popup-scale and the matching reserved height). */
+  var anchor = document.querySelector('.popup-anchor');
+  var DESIGN_W = 480, DESIGN_H = 600;
+  var mq = window.matchMedia('(max-width: 560px)');
+  function fitPopup() {
+    if (!anchor) return;
+    var host = anchor.parentElement;            // .browser__viewport
+    if (mq.matches && host) {
+      var avail = host.clientWidth;             // padding is 0 at this breakpoint
+      var scale = Math.min(1, avail / DESIGN_W);
+      anchor.style.setProperty('--popup-scale', String(scale));
+      anchor.style.setProperty('--popup-scaled-h', (DESIGN_H * scale) + 'px');
+    } else {
+      anchor.style.removeProperty('--popup-scale');
+      anchor.style.removeProperty('--popup-scaled-h');
+    }
+  }
+  fitPopup();
+  window.addEventListener('resize', fitPopup);
+  window.addEventListener('load', fitPopup);     // re-measure once the iframe lays out
+
   /* ── Reveal-on-scroll ─────────────────────────────────────────────────── */
   var els = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
   if ('IntersectionObserver' in window) {

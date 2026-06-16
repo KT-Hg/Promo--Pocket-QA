@@ -184,15 +184,17 @@ a { color: var(--p-primary); text-decoration: none; }
   /* The popup is a fixed 480px-wide UI (its CSS assumes exactly 480px). On a
    * phone, squishing the iframe to `width:100%` would break that layout, so we
    * keep the popup at its real 480px and SCALE the whole thing down to fit the
-   * screen — like pinch-zooming out. transform-origin:top left + the explicit
-   * scaled height make the popup fill the screen edge-to-edge with no gap. */
+   * screen — like pinch-zooming out. The scale factor must be a UNITLESS number,
+   * which pure CSS can't derive from the viewport width, so landing.js measures
+   * the available width and sets --popup-scale / --popup-scaled-h (it falls back
+   * to 1 / 600px before the script runs). transform-origin:top left + the scaled
+   * height make the popup fill the screen edge-to-edge with no gap below. */
   .popup-anchor {
     position: static;
     margin: 0;
-    --popup-scale: calc((100vw - 48px) / 480);   /* 480 design width vs. screen */
     width: 480px;
-    height: calc(600px * var(--popup-scale));     /* reserve only the scaled height */
-    transform: scale(var(--popup-scale));
+    height: var(--popup-scaled-h, 600px);   /* reserve only the scaled height */
+    transform: scale(var(--popup-scale, 1));
     transform-origin: top left;
   }
   .popup-anchor::before { display: none; }
