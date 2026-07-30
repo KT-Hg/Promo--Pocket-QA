@@ -16,6 +16,10 @@
  * capture-phase blocker swallows clicks on them, and demo.css flags them with a
  * `not-allowed` cursor so visitors know it's a preview.
  *
+ * That blocker doubles as the fence that keeps the REAL extension out of this
+ * frame when a visitor has it installed — see the STATIC GUARD and
+ * "KEEP THE REAL EXTENSION OUT" sections at the bottom.
+ *
  * No build step, no dependencies — plain ES5-ish DOM code so it runs anywhere.
  */
 (function () {
@@ -24,7 +28,8 @@
   /* ── Tiny DOM helpers ───────────────────────────────────────────────────── */
   var $  = function (id) { return document.getElementById(id); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
-  var on = function (el, ev, fn) { if (el) el.addEventListener(ev, fn); };
+  // No per-element listeners on purpose: every event in this frame is handled by
+  // the single capture-phase guard in §9 — see the note there.
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -45,7 +50,11 @@
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 1. THEME TOGGLE  (persisted, like the real settings) — INTERACTIVE
+   *    The click itself is dispatched by the STATIC GUARD (§9), not by a
+   *    listener on the button — the guard has to be the only listener in the
+   *    frame that ever sees a click. This just publishes the action.
    * ────────────────────────────────────────────────────────────────────────── */
+  var toggleTheme = function () {};
   (function theme() {
     var root = document.documentElement;
     var saved = null;
@@ -62,40 +71,37 @@
       var icon = btn.querySelector('span');
       if (icon) icon.textContent = dark ? '☀️' : '🌙';
     }
-    on($('toggleTheme'), 'click', function () {
+    toggleTheme = function () {
       var dark = root.getAttribute('data-theme') === 'dark';
       var next = dark ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('demoPopupTheme', next); } catch (e) {}
       sync();
-    });
+    };
     sync();
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
-   * 2. MAIN TAB NAVIGATION — INTERACTIVE
+   * 2. MAIN TAB NAVIGATION — INTERACTIVE  (invoked by the guard, §9)
    * ────────────────────────────────────────────────────────────────────────── */
-  on($('tabNav'), 'click', function (e) {
-    var btn = e.target.closest('.tab-btn');
-    if (!btn) return;
+  function switchMainTab(btn) {
     var id = btn.getAttribute('data-tab');
     $$('.tab-btn', $('tabNav')).forEach(function (b) { b.classList.toggle('active', b === btn); });
     $$('.tab-panel').forEach(function (p) { p.classList.toggle('active', p.id === id); });
-    document.querySelector('.main-content') && (document.querySelector('.main-content').scrollTop = 0);
-  });
+    var main = document.querySelector('.main-content');
+    if (main) main.scrollTop = 0;
+  }
 
   /* ───────────────────────────────────────────────────────────────────────────
-   * 3. CAPTURE SUB-TABS — INTERACTIVE
+   * 3. CAPTURE SUB-TABS — INTERACTIVE  (invoked by the guard, §9)
    * ────────────────────────────────────────────────────────────────────────── */
-  on($('captureTabNav'), 'click', function (e) {
-    var btn = e.target.closest('.capture-tab-btn');
-    if (!btn) return;
+  function switchCaptureTab(btn) {
     var key = btn.getAttribute('data-capture-tab');
     $$('.capture-tab-btn', $('captureTabNav')).forEach(function (b) { b.classList.toggle('active', b === btn); });
     $$('.capture-group').forEach(function (g) {
       g.style.display = (g.id === 'captureGroup-' + key) ? '' : 'none';
     });
-  });
+  }
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 4. SEED "ACTIVATED" STATUS  (display only)
@@ -311,17 +317,44 @@
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 9. STATIC GUARD — block every interaction except tab switching + theme.
-   *     Runs in the capture phase so it pre-empts any control before it acts,
-   *     and prevents inputs/selects gaining focus (so nothing can be edited).
-   *     demo.css pairs this with a `not-allowed` cursor on the same controls.
+   *     Runs in the capture phase on `document` so it pre-empts any control
+   *     before it acts, and prevents inputs/selects gaining focus (so nothing
+   *     can be edited). demo.css pairs this with a `not-allowed` cursor on the
+   *     same controls.
+   *
+   *     It is deliberately the ONLY listener in this frame that sees an event:
+   *     the two live controls are dispatched from here (§1–§3) and then the
+   *     event is killed with stopImmediatePropagation(). That matters because a
+   *     visitor may have the real extension installed — its content script is
+   *     injected into every frame (manifest: all_frames) and listens for
+   *     click/mouseover/keydown on `document` too. Since this script runs while
+   *     the frame is still parsing and the content script only at
+   *     document_idle, ours is registered first and stops the event before the
+   *     extension can see it. Without that, ticking 🎯 Pick element in the real
+   *     popup would let a click on this MOCK ui report a real ELEMENT_PICKED
+   *     (and recording would capture the demo's own controls as steps).
+   *
+   *     Two event groups: CANCEL_EVENTS also lose their default action, the
+   *     rest are only stopped from travelling (cancelling them would break
+   *     scrolling, focus and text selection inside the preview).
    * ────────────────────────────────────────────────────────────────────────── */
   var ALLOW = '.tab-btn, .capture-tab-btn, #toggleTheme';
+  var CANCEL_EVENTS = ['mousedown', 'click', 'dblclick', 'change', 'input', 'submit'];
+  var SILENT_EVENTS = ['mouseover', 'mousemove', 'mouseup', 'keydown', 'keyup'];
+
   function staticGuard(e) {
-    if (e.target.closest && e.target.closest(ALLOW)) return; // tabs + theme stay live
-    e.preventDefault();
-    e.stopPropagation();
+    var live = e.target && e.target.closest ? e.target.closest(ALLOW) : null;
+    if (live && e.type === 'click') {
+      if (live.id === 'toggleTheme') toggleTheme();
+      else if (live.classList.contains('tab-btn')) switchMainTab(live);
+      else switchCaptureTab(live);
+    }
+    // Live controls keep their default action (so mousedown still focuses them
+    // and Enter/Space still produces the click we handle above).
+    if (!live && CANCEL_EVENTS.indexOf(e.type) !== -1) e.preventDefault();
+    e.stopImmediatePropagation();
   }
-  ['mousedown', 'click', 'dblclick', 'change', 'input', 'submit'].forEach(function (ev) {
+  CANCEL_EVENTS.concat(SILENT_EVENTS).forEach(function (ev) {
     document.addEventListener(ev, staticGuard, true);
   });
 
@@ -343,6 +376,46 @@
       $$('.tab-btn', $('tabNav')).forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-tab') === tab); });
       $$('.tab-panel').forEach(function (p) { p.classList.toggle('active', p.id === tab); });
     }
+  })();
+
+  /* ───────────────────────────────────────────────────────────────────────────
+   * 11. KEEP THE REAL EXTENSION OUT OF THE PREVIEW
+   *     The guard (§9) fences off everything event-driven, but the extension
+   *     also mounts UI from a runtime broadcast, which no page code can
+   *     intercept: hitting 🎯 Pick element in the real popup sends
+   *     START_PICK_MODE to every frame of the tab, so the live "🎯 Click an
+   *     element to select it" bar and its hover outline would appear INSIDE
+   *     this mock popup, and <body> would go crosshair.
+   *
+   *     Every overlay the extension injects carries one marker attribute
+   *     (content.js → _EXT_OVERLAY_ATTR = "data-ext-overlay"), so a single rule
+   *     catches all of them, now and for overlays added later. demo.css hides
+   *     them by attribute too, so nothing flashes before we remove it here.
+   *
+   *     Scope: this frame only. The landing page around it is a normal web page
+   *     and the extension keeps working there as it does anywhere else.
+   * ────────────────────────────────────────────────────────────────────────── */
+  (function keepExtensionOut() {
+    var MARK = 'data-ext-overlay';
+    var SEL = '[' + MARK + ']';
+
+    function scrub(node) {
+      if (!node || node.nodeType !== 1) return;
+      if (node.hasAttribute(MARK)) { node.remove(); return; }
+      $$(SEL, node).forEach(function (el) { el.remove(); });
+    }
+    scrub(document.documentElement);
+
+    if (!('MutationObserver' in window)) return;
+    new MutationObserver(function (records) {
+      records.forEach(function (r) {
+        if (r.type === 'childList') Array.prototype.forEach.call(r.addedNodes, scrub);
+        // The picker paints its crosshair straight onto <body>.style.
+        else if (r.target === document.body && r.target.style.cursor) r.target.style.cursor = '';
+      });
+    }).observe(document.documentElement, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ['style']
+    });
   })();
 
   console.log('%cFast Recorder & Playback — static demo preview ready', 'color:#3b82f6;font-weight:bold');

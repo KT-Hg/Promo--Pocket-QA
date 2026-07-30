@@ -90,6 +90,28 @@ with realistic demo data so the UI looks complete, but is **display only**. A
 capture-phase guard in `demo.js` swallows clicks on those controls, and `demo.css`
 gives them a `not-allowed` cursor so visitors can tell it's a preview.
 
+## Visitors who already have the extension installed
+The extension's content script is injected into **every frame** of a page
+(`manifest.json` → `all_frames: true`), this preview iframe included. Left alone,
+hitting 🎯 **Pick element** in the *real* popup broadcasts `START_PICK_MODE` to
+every frame, so the live picker bar, its hover outline and the crosshair cursor
+would show up **inside the mock popup** — and a click on the fake UI would report
+a real `ELEMENT_PICKED` selector back into the user's scenario.
+
+The preview fences itself off, in the iframe only:
+
+| Where | What it does |
+|-------|--------------|
+| `demo.js` §9 | The guard is the **only** listener in the frame: it dispatches the two live controls itself, then `stopImmediatePropagation()`. It runs while the frame is parsing, the content script only at `document_idle`, so ours is registered first and the extension never sees a click/mouseover/keydown in here. |
+| `demo.js` §11 | A `MutationObserver` removes any node carrying the extension's `data-ext-overlay` marker (`content.js` → `_EXT_OVERLAY_ATTR`) and clears the crosshair it paints on `<body>` — needed because that UI is mounted from a runtime message, which no page code can intercept. |
+| `demo.css` | Hides `[data-ext-overlay]` outright, so nothing flashes before the observer removes it. |
+
+**Scope:** the iframe only. The landing page around it is a normal web page and
+the extension keeps working there exactly as it does anywhere else. Not covered:
+the highlight feature's injected `<mark>`/`<style>` nodes, which aren't marked as
+overlays — they only appear if the visitor has saved highlights matching the
+promo's URL.
+
 ## Deep links
 The demo supports query params so you can link straight to a tab / theme:
 

@@ -49,3 +49,14 @@ button:not(.tab-btn):not(.capture-tab-btn):not(#toggleTheme):hover,
 [role="button"]:not(.tab-btn):not(.capture-tab-btn):hover {
   opacity: 0.85;
 }
+
+/* ── Keep the REAL extension's chrome out of the preview ─────────────────────
+ * If a visitor has Fast Recorder & Playback installed, its content script is
+ * injected into this frame too (manifest: all_frames), and a broadcast such as
+ * START_PICK_MODE mounts the live picker bar / hover outline right inside the
+ * mock popup. demo.js (§11) removes those nodes; this hides them in the same
+ * frame the browser paints, so nothing flashes first. Every overlay the
+ * extension injects carries this marker (content.js → _EXT_OVERLAY_ATTR), and
+ * an author !important beats the inline `display` it sets on itself.
+ * Scope: the preview iframe only — the landing page around it is untouched. */
+[data-ext-overlay] { display: none !important; }
