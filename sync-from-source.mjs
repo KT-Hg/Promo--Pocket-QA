@@ -18,10 +18,22 @@
  * Exit:   0 = synced (or already up to date), 1 = transform target missing.
  */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
+
+/* Cache-busting stamp. Browsers (and the GitHub Pages CDN) hold on to demo.js /
+ * demo.css hard, and a stale copy of either silently disables the fence that
+ * keeps a visitor's installed extension out of this frame — the picker bar then
+ * shows up inside the mock popup again. Hashing the asset into its URL means a
+ * changed file is always a changed URL. Deterministic: same input, same output. */
+const stamp = (rel) => {
+  const f = join(here, rel);
+  if (!existsSync(f)) return rel;
+  return rel + '?v=' + createHash('md5').update(readFileSync(f)).digest('hex').slice(0, 8);
+};
 const SRC = join(here, 'vendor', 'popup.html');
 const OUT = join(here, 'popup-demo.html');
 
@@ -67,8 +79,8 @@ const HEAD_TO =
   <title>Fast Recorder &amp; Playback — Popup Preview</title>
 
   <!-- Reuse the vendored extension stylesheet → guarantees pixel-perfect UI -->
-  <link rel="stylesheet" href="vendor/popup.css" />
-  <link rel="stylesheet" href="demo.css" />
+  <link rel="stylesheet" href="${stamp('vendor/popup.css')}" />
+  <link rel="stylesheet" href="${stamp('demo.css')}" />
 </head>`;
 
 if (html.includes(eol(HEAD_FROM))) html = html.replace(eol(HEAD_FROM), eol(HEAD_TO));
@@ -78,7 +90,7 @@ else fail.push('head block (lines 1-9 of vendor/popup.html changed format)');
 const SCRIPT_FROM = `  <script type="module" src="popup/init.js"></script>`;
 const SCRIPT_TO =
 `  <!-- Demo interactivity (replaces popup/init.js + chrome.* logic) -->
-  <script src="demo.js"></script>`;
+  <script src="${stamp('demo.js')}"></script>`;
 
 if (html.includes(eol(SCRIPT_FROM))) html = html.replace(eol(SCRIPT_FROM), eol(SCRIPT_TO));
 else fail.push('init.js <script> tag');

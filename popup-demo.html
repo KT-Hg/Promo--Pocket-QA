@@ -13,8 +13,8 @@
   <title>Fast Recorder &amp; Playback — Popup Preview</title>
 
   <!-- Reuse the vendored extension stylesheet → guarantees pixel-perfect UI -->
-  <link rel="stylesheet" href="vendor/popup.css" />
-  <link rel="stylesheet" href="demo.css" />
+  <link rel="stylesheet" href="vendor/popup.css?v=eca8e8bf" />
+  <link rel="stylesheet" href="demo.css?v=5cc8248b" />
 </head>
 
 <body>
@@ -23,6 +23,19 @@
 
   <!-- ===== STICKY HEADER: Status Bar + Tab Nav ===== -->
   <div class="sticky-header" id="activationCard">
+    <!-- Update banner — shown by popup/update-banner.js when a newer version is on the Web Store -->
+    <div class="update-banner" id="updateBanner" role="status" aria-live="polite" hidden>
+      <span class="update-banner-icon" aria-hidden="true">⬆</span>
+      <span class="update-banner-text">
+        <span class="update-banner-headline" id="updateBannerHeadline">Update available</span>
+        <span class="update-banner-sub" id="updateBannerSub"></span>
+      </span>
+      <button type="button" id="updateBannerWhatsNew" class="update-banner-link">What's new</button>
+      <button type="button" id="updateBannerApply" class="update-banner-cta"
+              title="Restarts the extension to apply the update">Update</button>
+      <button type="button" id="updateBannerDismiss" class="update-banner-x"
+              aria-label="Dismiss update notice" title="Dismiss">×</button>
+    </div>
     <!-- Status Bar -->
     <div class="status-bar">
       <div class="status-dot" id="statusDot"></div>
@@ -681,6 +694,7 @@
         <button class="capture-tab-btn" data-capture-tab="scroll">Scroll</button>
         <button class="capture-tab-btn" data-capture-tab="segment">Segment</button>
         <button class="capture-tab-btn" data-capture-tab="element">Element</button>
+        <button class="capture-tab-btn" data-capture-tab="window">Window</button>
       </div>
 
       <!-- All -->
@@ -690,8 +704,8 @@
           <div class="capture-btn-row">
             <button id="screenshotVisible"  class="cap-save-btn" title="Capture visible viewport">📷 Page</button>
             <button id="screenshotFull"     class="cap-save-btn" title="Capture full page">📄 Full</button>
-            <button id="cropVisible"        class="cap-edit-btn" title="Capture visible then crop/edit">✂ Page</button>
-            <button id="cropFull"           class="cap-edit-btn" title="Capture full page then crop/edit">✂ Full</button>
+            <button id="cropVisible"        class="cap-edit-btn" title="Capture visible viewport, then open the editor">✂ Page</button>
+            <button id="cropFull"           class="cap-edit-btn" title="Capture full page, then open the editor">✂ Full</button>
           </div>
         </div>
         <div class="capture-group-row">
@@ -699,24 +713,31 @@
           <div class="capture-btn-row">
             <button id="screenshotScrollV"  class="cap-save-btn" title="Capture full vertical scroll">↕ V</button>
             <button id="screenshotScrollH"  class="cap-save-btn" title="Capture full horizontal scroll">↔ H</button>
-            <button id="cropScrollV"        class="cap-edit-btn" title="Capture vertical scroll then crop/edit">✂ ↕V</button>
-            <button id="cropScrollH"        class="cap-edit-btn" title="Capture horizontal scroll then crop/edit">✂ ↔H</button>
+            <button id="cropScrollV"        class="cap-edit-btn" title="Capture full vertical scroll, then open the editor">✂ ↕V</button>
+            <button id="cropScrollH"        class="cap-edit-btn" title="Capture full horizontal scroll, then open the editor">✂ ↔H</button>
           </div>
         </div>
         <div class="capture-group-row">
           <span class="capture-group-label">Segment</span>
           <div class="capture-btn-row">
-            <button id="segmentScrollV"     class="cap-save-btn" title="Mark start, scroll to end, then stop">⬍ V</button>
-            <button id="segmentScrollH"     class="cap-save-btn" title="Mark start, scroll right to end, then stop">⬌ H</button>
-            <button id="cropSegmentScrollV" class="cap-edit-btn" title="Segment capture then open editor">✂ ⬍V</button>
-            <button id="cropSegmentScrollH" class="cap-edit-btn" title="Segment capture then open editor">✂ ⬌H</button>
+            <button id="segmentScrollV"     class="cap-save-btn" title="Mark start, scroll down to the end, then stop to capture">⬍ V</button>
+            <button id="segmentScrollH"     class="cap-save-btn" title="Mark start, scroll right to the end, then stop to capture">⬌ H</button>
+            <button id="cropSegmentScrollV" class="cap-edit-btn" title="Vertical segment capture, then open the editor">✂ ⬍V</button>
+            <button id="cropSegmentScrollH" class="cap-edit-btn" title="Horizontal segment capture, then open the editor">✂ ⬌H</button>
           </div>
         </div>
         <div class="capture-group-row">
           <span class="capture-group-label">Element</span>
           <div class="capture-btn-row">
             <button id="screenshotElement"     class="cap-save-btn" title="Capture a specific element">📌 Pick</button>
-            <button id="cropScreenshotElement" class="cap-edit-btn" title="Capture element then open editor">✂ Pick</button>
+            <button id="cropScreenshotElement" class="cap-edit-btn" title="Capture a specific element, then open the editor">✂ Pick</button>
+          </div>
+        </div>
+        <div class="capture-group-row">
+          <span class="capture-group-label">Window</span>
+          <div class="capture-btn-row">
+            <button id="screenshotWindow"     class="cap-save-btn" title="Capture a whole application window (browser with DevTools, editor, terminal…)">🖥 Pick</button>
+            <button id="cropScreenshotWindow" class="cap-edit-btn" title="Capture a whole application window, then open the editor">✂ Pick</button>
           </div>
         </div>
       </div>
@@ -727,14 +748,14 @@
           <span class="capture-group-label">Page</span>
           <div class="capture-btn-row">
             <button class="cap-save-btn" data-capture-action="screenshotVisible" title="Capture visible viewport">📷 Save</button>
-            <button class="cap-edit-btn" data-capture-action="cropVisible" title="Capture then open editor">✂ Edit</button>
+            <button class="cap-edit-btn" data-capture-action="cropVisible" title="Capture visible viewport, then open the editor">✂ Edit</button>
           </div>
         </div>
         <div class="capture-group-row">
           <span class="capture-group-label">Full</span>
           <div class="capture-btn-row">
             <button class="cap-save-btn" data-capture-action="screenshotFull" title="Capture full page">📄 Save</button>
-            <button class="cap-edit-btn" data-capture-action="cropFull" title="Capture full page then edit">✂ Edit</button>
+            <button class="cap-edit-btn" data-capture-action="cropFull" title="Capture full page, then open the editor">✂ Edit</button>
           </div>
         </div>
       </div>
@@ -745,14 +766,14 @@
           <span class="capture-group-label">Vertical</span>
           <div class="capture-btn-row">
             <button class="cap-save-btn" data-capture-action="screenshotScrollV" title="Capture full vertical scroll">↕ Save</button>
-            <button class="cap-edit-btn" data-capture-action="cropScrollV" title="Capture then edit">✂ Edit</button>
+            <button class="cap-edit-btn" data-capture-action="cropScrollV" title="Capture full vertical scroll, then open the editor">✂ Edit</button>
           </div>
         </div>
         <div class="capture-group-row">
           <span class="capture-group-label">Horizontal</span>
           <div class="capture-btn-row">
             <button class="cap-save-btn" data-capture-action="screenshotScrollH" title="Capture full horizontal scroll">↔ Save</button>
-            <button class="cap-edit-btn" data-capture-action="cropScrollH" title="Capture then edit">✂ Edit</button>
+            <button class="cap-edit-btn" data-capture-action="cropScrollH" title="Capture full horizontal scroll, then open the editor">✂ Edit</button>
           </div>
         </div>
       </div>
@@ -762,15 +783,15 @@
         <div class="capture-group-row">
           <span class="capture-group-label">Vertical</span>
           <div class="capture-btn-row">
-            <button class="cap-save-btn" data-capture-action="segmentScrollV" title="Segment vertical">⬍ Save</button>
-            <button class="cap-edit-btn" data-capture-action="cropSegmentScrollV" title="Segment then edit">✂ Edit</button>
+            <button class="cap-save-btn" data-capture-action="segmentScrollV" title="Mark start, scroll down to the end, then stop to capture">⬍ Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropSegmentScrollV" title="Vertical segment capture, then open the editor">✂ Edit</button>
           </div>
         </div>
         <div class="capture-group-row">
           <span class="capture-group-label">Horizontal</span>
           <div class="capture-btn-row">
-            <button class="cap-save-btn" data-capture-action="segmentScrollH" title="Segment horizontal">⬌ Save</button>
-            <button class="cap-edit-btn" data-capture-action="cropSegmentScrollH" title="Segment then edit">✂ Edit</button>
+            <button class="cap-save-btn" data-capture-action="segmentScrollH" title="Mark start, scroll right to the end, then stop to capture">⬌ Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropSegmentScrollH" title="Horizontal segment capture, then open the editor">✂ Edit</button>
           </div>
         </div>
         <span class="helper-text">Press hotkey/button to mark start, scroll to desired end, then press again to capture.</span>
@@ -782,9 +803,21 @@
           <span class="capture-group-label">Element</span>
           <div class="capture-btn-row">
             <button class="cap-save-btn" data-capture-action="screenshotElement" title="Capture a specific element">📌 Save</button>
-            <button class="cap-edit-btn" data-capture-action="cropScreenshotElement" title="Capture element then edit">✂ Edit</button>
+            <button class="cap-edit-btn" data-capture-action="cropScreenshotElement" title="Capture a specific element, then open the editor">✂ Edit</button>
           </div>
         </div>
+      </div>
+
+      <!-- Window -->
+      <div class="capture-group" id="captureGroup-window" style="display:none;">
+        <div class="capture-group-row">
+          <span class="capture-group-label">Window</span>
+          <div class="capture-btn-row">
+            <button class="cap-save-btn" data-capture-action="screenshotWindow" title="Capture a whole application window">🖥 Save</button>
+            <button class="cap-edit-btn" data-capture-action="cropScreenshotWindow" title="Capture a whole application window, then open the editor">✂ Edit</button>
+          </div>
+        </div>
+        <span class="helper-text">Captures any application window through the OS — a browser window with DevTools open, an editor, a terminal. A picker window opens so you can choose which one; the first use asks for the screen-capture permission.</span>
       </div>
 
       <!-- Tools row (always visible) -->
@@ -1002,7 +1035,11 @@
         Ask before saving
       </label>
       <input id="screenshotPrefix" placeholder="Filename prefix (e.g. screenshot)" style="margin-top: 8px;" />
-      <span class="helper-text">Format: {prefix}_{YYYY-MM-DD_HH-MM-SS}.png</span>
+      <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; padding:3px 0; margin-top:6px;">
+        <input type="checkbox" id="screenshotTypeInName" style="width:auto; margin:0; cursor:pointer;" />
+        Include capture type in filename
+      </label>
+      <span class="helper-text" id="screenshotNameHint">Format: {prefix}_{YYYY-MM-DD_HH-MM-SS}.png</span>
 
       <div class="step-label step-label-divider-top">Countdown</div>
       <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; padding:3px 0;">
@@ -1050,13 +1087,49 @@
       <button id="saveScreenshotSettings" class="success" style="margin-top: 8px;">Save Settings</button>
     </div>
 
-    <!-- Notifications card -->
+    <!-- Notifications card — one toggle per category in bg/utils.js (NOTIFY_KEY). -->
     <div class="card">
       <h3>Notifications</h3>
       <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
         <input type="checkbox" id="notifyOnComplete" style="width: auto; margin: 0; cursor: pointer;" />
-        Show notification when playback/sequence finishes
+        Run finished — playback, sequence, CSV
       </label>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
+        <input type="checkbox" id="notifyOnError" style="width: auto; margin: 0; cursor: pointer;" />
+        Errors &amp; warnings — failed actions, closed tab, storage full
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
+        <input type="checkbox" id="notifyOnCapture" style="width: auto; margin: 0; cursor: pointer;" />
+        Capture results — where a hotkey screenshot was saved
+      </label>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
+        <input type="checkbox" id="notifyOnSchedule" style="width: auto; margin: 0; cursor: pointer;" />
+        Scheduled runs starting on their own
+      </label>
+      <span class="helper-text">Once an update deadline has passed, the "update required" notice is always shown — it is the only thing explaining why an action did nothing. The reminder before the deadline follows "Errors &amp; warnings".</span>
+    </div>
+
+    <!-- Version / update card — status written by bg/update-check.js -->
+    <div class="card">
+      <h3>Version</h3>
+      <div class="update-info-row">
+        <span class="update-info-label">Installed</span>
+        <span class="update-info-value" id="updateInfoCurrent">—</span>
+      </div>
+      <div class="update-info-row">
+        <span class="update-info-label">Latest on store</span>
+        <span class="update-info-value" id="updateInfoLatest">—</span>
+      </div>
+      <div class="update-info-row">
+        <span class="update-info-label">Last checked</span>
+        <span class="update-info-value" id="updateInfoChecked">—</span>
+      </div>
+      <div class="update-info-row" id="updateInfoDeadlineRow" hidden>
+        <span class="update-info-label">Update deadline</span>
+        <span class="update-info-value" id="updateInfoDeadline">—</span>
+      </div>
+      <span class="helper-text" id="updateInfoNote">Checked automatically once a day.</span>
+      <button id="checkForUpdateNow" class="secondary" style="margin-top: 8px;">Check for updates</button>
     </div>
 
     <!-- Import / Export card (collapsible) -->
@@ -1090,23 +1163,6 @@
     </div>
 
   </div><!-- end tabSettings -->
-
-  <!-- ===== COMPACT VIEW (hidden, kept for JS compatibility) ===== -->
-  <div style="display:none;" id="compactView">
-    <select id="scenarioListCompact"></select>
-    <button id="startRecordCompact"></button>
-    <button id="stopRecordCompact"></button>
-    <button id="playScenarioCompact"></button>
-    <button id="stopPlayCompact"></button>
-    <input id="scenarioNameCompact" />
-    <select id="scenarioFolderCompact"></select>
-    <button id="saveFlowCompact"></button>
-    <button id="previewCompact"></button>
-    <ul id="actionsCompact"></ul>
-    <button id="previewScenarioCompact"></button>
-    <ul id="actionsScenarioCompact"></ul>
-    <label id="toggleAdvancedMode"></label>
-  </div>
 
   <!-- ===== MODALS ===== -->
 
@@ -1179,10 +1235,10 @@
   <div id="cardHelpModal" class="condition-help-modal" role="dialog" aria-modal="true" aria-labelledby="cardHelpTitle" aria-hidden="true">
     <div class="condition-help-content">
       <div class="condition-help-header">
-        <h4 id="cardHelpTitle">Hướng dẫn</h4>
+        <h4 id="cardHelpTitle">Guide</h4>
         <div style="display:flex;gap:6px;align-items:center;">
           <button id="cardHelpLangToggle" class="secondary">EN</button>
-          <button id="cardHelpClose" class="secondary">✕ Đóng</button>
+          <button id="cardHelpClose" class="secondary">✕ Close</button>
         </div>
       </div>
       <div class="condition-help-body" id="cardHelpBody"></div>
@@ -1193,10 +1249,10 @@
   <div id="conditionHelpModal" class="condition-help-modal" role="dialog" aria-modal="true" aria-labelledby="condHelpTitle" aria-hidden="true">
     <div class="condition-help-content">
       <div class="condition-help-header">
-        <h4 id="condHelpTitle">Hướng dẫn Condition (If)</h4>
+        <h4 id="condHelpTitle">Condition (If) Guide</h4>
         <div style="display:flex;gap:6px;align-items:center;">
           <button id="condLangToggle" class="secondary">EN</button>
-          <button id="conditionHelpClose" class="secondary">✕ Đóng</button>
+          <button id="conditionHelpClose" class="secondary">✕ Close</button>
         </div>
       </div>
       <div class="condition-help-body" id="conditionHelpBody"></div>
@@ -1208,6 +1264,7 @@
     <div class="confirm-modal-content">
       <h4 id="confirmModalTitle">Confirm</h4>
       <p id="confirmModalMsg"></p>
+      <input id="confirmModalInput" type="text" style="display:none;" />
       <div class="row">
         <button id="confirmModalCancel" class="secondary">Cancel</button>
         <button id="confirmModalOk">OK</button>
@@ -1215,13 +1272,21 @@
     </div>
   </div>
 
-  <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+  <!-- role/aria-live are swapped to alert/assertive by showToast() for errors. -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- RESUME BANNER -->
   <div id="resumeBanner" class="resume-banner" role="alert" aria-live="polite">
     <span id="resumeBannerMsg" class="resume-banner-msg"></span>
     <button id="resumeBtn" class="resume-banner-btn">▶ Resume</button>
     <button id="resumeDismissBtn" class="resume-banner-dismiss" aria-label="Dismiss resume banner">✕</button>
+  </div>
+
+  <!-- CSV RESUME BANNER — an interrupted data run detected at service-worker startup -->
+  <div id="csvResumeBanner" class="resume-banner" role="alert" aria-live="polite">
+    <span id="csvResumeBannerMsg" class="resume-banner-msg"></span>
+    <button id="csvResumeBtn" class="resume-banner-btn">▶ Resume run</button>
+    <button id="csvResumeDismissBtn" class="resume-banner-dismiss" aria-label="Dismiss CSV resume banner">✕</button>
   </div>
 
   <!-- DIFF MODAL -->
@@ -1487,9 +1552,9 @@
       <!-- Drop zone -->
       <div id="imgEditorDropZone" class="img-editor-drop-zone">
         <div class="img-editor-dz-icon">🖼️</div>
-        <div class="img-editor-dz-title">Kéo thả ảnh vào đây</div>
+        <div class="img-editor-dz-title">Drag &amp; drop an image here</div>
         <div class="img-editor-dz-sub">
-          hoặc nhấn <kbd>Ctrl+V</kbd> để paste
+          or press <kbd>Ctrl+V</kbd> to paste
           <span style="margin:0 3px;">·</span>
           PNG · JPG · WebP · GIF
         </div>
@@ -1498,7 +1563,7 @@
       <!-- Hidden file input -->
       <input type="file" id="imgEditorFileInput" accept="image/*" style="display:none;" />
 
-      <div style="text-align:center;font-size:11px;color:var(--muted);margin:-2px 0 10px;">hoặc chọn từ nguồn</div>
+      <div style="text-align:center;font-size:11px;color:var(--muted);margin:-2px 0 10px;">or pick a source</div>
 
       <!-- Source buttons -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
@@ -1507,12 +1572,12 @@
       </div>
 
       <div style="display:flex;gap:6px;margin-top:8px;">
-        <button id="imgEditorCancel" class="secondary" style="flex:1;">✕ Đóng</button>
+        <button id="imgEditorCancel" class="secondary" style="flex:1;">✕ Close</button>
       </div>
     </div>
   </div>
 
   <!-- Demo interactivity (replaces popup/init.js + chrome.* logic) -->
-  <script src="demo.js"></script>
+  <script src="demo.js?v=e282bf21"></script>
 </body>
 </html>

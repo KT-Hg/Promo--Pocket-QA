@@ -418,5 +418,10 @@
     });
   })();
 
-  console.log('%cFast Recorder & Playback — static demo preview ready', 'color:#3b82f6;font-weight:bold');
+  /* A build marker for the one failure mode we cannot see from here: a browser
+   * still running a cached copy of this file, where the fence above does not
+   * exist yet. Check it from the frame's console: __promoDemoGuard. */
+  try { window.__promoDemoGuard = 'extension-fence v2'; } catch (e) {}
+  console.log('%cFast Recorder & Playback — static demo preview ready %c(extension-fence v2)',
+    'color:#3b82f6;font-weight:bold', 'color:#6b7280');
 })();

@@ -105,6 +105,13 @@ The preview fences itself off, in the iframe only:
 | `demo.js` §9 | The guard is the **only** listener in the frame: it dispatches the two live controls itself, then `stopImmediatePropagation()`. It runs while the frame is parsing, the content script only at `document_idle`, so ours is registered first and the extension never sees a click/mouseover/keydown in here. |
 | `demo.js` §11 | A `MutationObserver` removes any node carrying the extension's `data-ext-overlay` marker (`content.js` → `_EXT_OVERLAY_ATTR`) and clears the crosshair it paints on `<body>` — needed because that UI is mounted from a runtime message, which no page code can intercept. |
 | `demo.css` | Hides `[data-ext-overlay]` outright, so nothing flashes before the observer removes it. |
+| `sync-from-source.mjs` | Stamps `demo.js` / `demo.css` / `vendor/popup.css` URLs with a content hash (`demo.js?v=e282bf21`). A stale cached copy of `demo.js` silently disables the fence above, and that is exactly what it looks like when the picker bar shows up inside the mock popup again. |
+
+**Is the fence actually live in my browser?** Open the console *in the preview
+frame* (DevTools → frame selector, or right-click the popup → *This Frame* →
+*Reload frame*) and check `__promoDemoGuard` — it reads `extension-fence v2`.
+If it is `undefined`, the page is running a cached `demo.js`: hard-reload
+(Ctrl+Shift+R), and on GitHub Pages give the deploy a minute first.
 
 **Scope:** the iframe only. The landing page around it is a normal web page and
 the extension keeps working there exactly as it does anywhere else. Not covered:
