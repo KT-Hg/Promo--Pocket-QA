@@ -88,6 +88,9 @@
     var id = btn.getAttribute('data-tab');
     $$('.tab-btn', $('tabNav')).forEach(function (b) { b.classList.toggle('active', b === btn); });
     $$('.tab-panel').forEach(function (p) { p.classList.toggle('active', p.id === id); });
+    // popup/init.js -> switchTab stamps this too, and popup.css keys the lock
+    // overlays off it. Keeping it in sync is what makes the preview match.
+    document.body.dataset.activeTab = id;
     var main = document.querySelector('.main-content');
     if (main) main.scrollTop = 0;
   }
@@ -112,6 +115,16 @@
     var status = $('activationStatus');
     if (status) status.textContent = 'Active on this tab';
     // Activate / Remove buttons stay hidden (demo is already "active").
+
+    // The real popup stamps its state onto <body> at runtime (popup/main.js ->
+    // data-activation, popup/init.js -> data-active-tab) and popup.css keys off
+    // it. Without data-activation="active" every [data-requires-activation] row
+    // renders at 38% opacity with its Set button hidden and the "🔒 available
+    // after activating" notice showing — the preview would contradict its own
+    // "Active on this tab" header.
+    document.body.dataset.activation = 'active';
+    var open = document.querySelector('.tab-panel.active');
+    document.body.dataset.activeTab = open ? open.id : 'tabRecord';
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
@@ -306,6 +319,7 @@
   fillScenarioSelect($('scheduleScenarioSelect'), '-- Select scenario --');
   fillScenarioSelect($('sequenceScenarioList'), '');
   fillScenarioSelect($('exportScenarioSelect'), '-- Select scenario --');
+  fillScenarioSelect($('switchCaseScenario'), '-- Select scenario --');
   // Folder selects
   ['scenarioFolder', 'filterFolder', 'moveToFolderSelect', 'exportFolderSelect'].forEach(function (id) {
     var sel = $(id);
@@ -314,6 +328,28 @@
       var o = document.createElement('option'); o.value = f; o.textContent = f; sel.appendChild(o);
     });
   });
+
+  /* ───────────────────────────────────────────────────────────────────────────
+   * 8b. SETTINGS › VERSION CARD  (display only)
+   *     The real popup fills this from chrome.runtime.getManifest() plus the
+   *     stored update-check status (popup/settings.js -> loadUpdateInfo). Left
+   *     alone it renders three "—" placeholders, which no installed copy of the
+   *     extension ever shows. The version comes from the <meta> that
+   *     sync-from-source.mjs stamps out of vendor/version.txt, so it tracks the
+   *     vendored snapshot instead of drifting behind it.
+   * ────────────────────────────────────────────────────────────────────────── */
+  (function seedVersionCard() {
+    var meta = document.querySelector('meta[name="ext-version"]');
+    var v = (meta && meta.getAttribute('content')) || '';
+    if (!v) return;
+    var setText = function (id, val) { var el = $(id); if (el) el.textContent = val; };
+    setText('updateInfoCurrent', v);
+    setText('updateInfoLatest', v);          // up to date — same as installed
+    // formatWhen() in the real popup is `new Date(ts).toLocaleString()`; a check
+    // runs daily, so an hour ago is what a healthy install actually shows.
+    var checked = new Date(Date.now() - 60 * 60 * 1000);
+    setText('updateInfoChecked', checked.toLocaleString());
+  })();
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 9. STATIC GUARD — block every interaction except tab switching + theme.
@@ -372,10 +408,8 @@
       if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
     }
     var tab = params.get('tab');
-    if (tab && $(tab)) {
-      $$('.tab-btn', $('tabNav')).forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-tab') === tab); });
-      $$('.tab-panel').forEach(function (p) { p.classList.toggle('active', p.id === tab); });
-    }
+    var btn = tab && $('tabNav') ? $('tabNav').querySelector('[data-tab="' + tab + '"]') : null;
+    if (btn) switchMainTab(btn);
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────

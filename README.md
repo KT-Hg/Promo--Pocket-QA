@@ -24,6 +24,7 @@ What gets vendored (by `update-vendor.mjs`):
 | `vendor/popup.css`     | `css/popup.css`     | `popup-demo.html` (the real stylesheet → pixel-perfect) |
 | `vendor/popup.html`    | `popup.html`        | source markup the demo is generated from |
 | `vendor/icon128.png`   | `icons/icon128.png` | `index.html` favicon / logo |
+| `vendor/version.txt`   | `manifest.json` → `version` | stamped into the demo as `<meta name="ext-version">`; `demo.js` fills the Settings › Version card from it. `update-vendor.mjs` also rewrites the version in the `index.html` footer, so neither can drift behind the extension again. |
 
 - **Behaviour (`popup/*.js`) is NOT mirrored.** `demo.js` is a STATIC preview, not
   a sandbox. After a markup change `sync-from-source.mjs` prints control ids not
@@ -89,6 +90,20 @@ collapsible cards, highlight search/filter, toggles, sliders, modals, …) is se
 with realistic demo data so the UI looks complete, but is **display only**. A
 capture-phase guard in `demo.js` swallows clicks on those controls, and `demo.css`
 gives them a `not-allowed` cursor so visitors can tell it's a preview.
+
+### Runtime state the preview has to fake
+`popup.css` styles several things off state that only the running popup sets, so
+the raw markup alone does **not** look like the real popup. `demo.js` reproduces
+the state of a healthy, activated install:
+
+| State | Set by the real popup in | Left alone, the preview shows |
+|-------|--------------------------|-------------------------------|
+| `<body data-activation="active">` | `popup/main.js` | every `[data-requires-activation]` hotkey row at 38% opacity with its **Set** button hidden, plus the 🔒 *"available after activating on the current tab"* notice — contradicting the demo's own "Active on this tab" header |
+| `<body data-active-tab="…">` | `popup/init.js` → `switchTab` | lock overlays lose the selector that positions them per tab |
+| Settings › Version card | `popup/settings.js` → `loadUpdateInfo` | three `—` placeholders no installed copy ever shows |
+
+When a sync pulls in new markup, re-check this list: anything the real popup
+fills from `chrome.*` at startup is a candidate for the same treatment.
 
 ## Visitors who already have the extension installed
 The extension's content script is injected into **every frame** of a page

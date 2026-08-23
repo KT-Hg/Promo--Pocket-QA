@@ -20,7 +20,7 @@
  *
  * Exit: 0 = vendored + synced, 1 = extension repo / files not found.
  */
-import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
@@ -48,6 +48,27 @@ mkdirSync(join(here, 'vendor'), { recursive: true });
 for (const f of files) {
   copyFileSync(f.from, f.to);
   console.log('✓ vendored', f.to.replace(here + '\\', '').replace(here + '/', ''));
+}
+
+/* ── Version: keep the promo's own copy in step with the extension ──────────
+ * The demo's Version card and the landing page footer both quote the shipped
+ * version. They used to be hand-edited, and drifted (footer said 1.0.7 while
+ * the extension was on 1.0.13), which is exactly the kind of "the demo doesn't
+ * match the real thing" gap this script exists to close. */
+// Read straight from the extension's manifest — only the string is vendored,
+// so sync-from-source.mjs stays able to run from vendor/ alone.
+const version = JSON.parse(readFileSync(join(ext, 'manifest.json'), 'utf8')).version;
+writeFileSync(join(here, 'vendor', 'version.txt'), version + '\n', 'utf8');
+console.log('✓ vendored vendor/version.txt (' + version + ')');
+
+const indexPath = join(here, 'index.html');
+const indexSrc = readFileSync(indexPath, 'utf8');
+const indexOut = indexSrc.replace(/<div>v\d+\.\d+\.\d+ · Manifest V3/, `<div>v${version} · Manifest V3`);
+if (indexOut !== indexSrc) {
+  writeFileSync(indexPath, indexOut, 'utf8');
+  console.log('✓ index.html footer → v' + version);
+} else if (!indexSrc.includes(`<div>v${version} · Manifest V3`)) {
+  console.warn('⚠ index.html footer version not found — update it by hand.');
 }
 
 /* Regenerate popup-demo.html from the freshly vendored popup.html. */

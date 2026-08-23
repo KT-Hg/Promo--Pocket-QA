@@ -29,6 +29,13 @@ const here = dirname(fileURLToPath(import.meta.url));
  * keeps a visitor's installed extension out of this frame — the picker bar then
  * shows up inside the mock popup again. Hashing the asset into its URL means a
  * changed file is always a changed URL. Deterministic: same input, same output. */
+/* The shipped version, vendored by update-vendor.mjs. demo.js reads it back off
+ * the <meta> to fill the Settings > Version card, which the real popup fills
+ * from chrome.runtime.getManifest() — a card left at "—" is one of the tells
+ * that gives a static preview away. */
+const versionFile = join(here, 'vendor', 'version.txt');
+const extVersion = existsSync(versionFile) ? readFileSync(versionFile, 'utf8').trim() : '';
+
 const stamp = (rel) => {
   const f = join(here, rel);
   if (!existsSync(f)) return rel;
@@ -76,6 +83,7 @@ const HEAD_TO =
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=480, initial-scale=1" />
+  <meta name="ext-version" content="${extVersion}" />
   <title>Fast Recorder &amp; Playback — Popup Preview</title>
 
   <!-- Reuse the vendored extension stylesheet → guarantees pixel-perfect UI -->
