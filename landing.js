@@ -70,6 +70,37 @@
   window.addEventListener('resize', fitPopup);
   window.addEventListener('load', fitPopup);     // re-measure once the iframe lays out
 
+  /* ── Shrink the whole mockup so it's fully visible without scrolling ──────
+   * The browser chrome + popup is ~694px tall on its own; add the sticky nav
+   * (64px) and the hero's own top padding and it routinely doesn't fit above
+   * the fold on real laptops (1366×768, 1440×900 — and browser chrome eats
+   * another 100-150px on top of that). Visitors land on the page and the
+   * "live popup preview" the hero promises is already cut off at the bottom.
+   * Same trick as fitPopup() above (measure natural size, scale it, reserve
+   * only the scaled height so nothing below jumps), applied one level up to
+   * `.mockup-scale` so the browser bar and faux page shrink along with the
+   * popup, not just the popup itself. Desktop/tablet only — ≤560px already
+   * gets its own width-driven scale on the popup (fitPopup) and the two must
+   * not compound. */
+  var mockupScale = document.querySelector('.mockup-scale');
+  function fitHeroHeight() {
+    if (!mockupScale) return;
+    mockupScale.style.removeProperty('--mockup-scale');
+    mockupScale.style.removeProperty('height');
+    if (mq.matches) return;               // fitPopup owns the mobile case
+    var naturalH = mockupScale.offsetHeight;
+    var top = mockupScale.getBoundingClientRect().top;
+    var avail = window.innerHeight - top - 24;   // small breathing room below
+    if (naturalH > 0 && avail > 0 && avail < naturalH) {
+      var scale = Math.max(0.6, avail / naturalH);   // never shrink past legibility
+      mockupScale.style.setProperty('--mockup-scale', String(scale));
+      mockupScale.style.height = (naturalH * scale) + 'px';
+    }
+  }
+  fitHeroHeight();
+  window.addEventListener('resize', fitHeroHeight);
+  window.addEventListener('load', fitHeroHeight);
+
   /* ── Reveal-on-scroll ─────────────────────────────────────────────────── */
   var els = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
   if ('IntersectionObserver' in window) {

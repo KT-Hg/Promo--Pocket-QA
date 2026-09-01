@@ -119,6 +119,15 @@ a { color: var(--p-primary); text-decoration: none; }
 
 /* ── Browser mockup + popup ──────────────────────────────────────────────── */
 .hero__mockup { position: relative; }
+/* Wraps `.browser` so the height-fit script (landing.js → fitHeroHeight) can
+ * scale + reserve space independently of `.hero__mockup`'s own reveal-on-
+ * scroll transform — same "scale + explicit shorter height, no clipping"
+ * trick as `.popup-anchor` further down, just one level up so the browser bar
+ * and faux page shrink along with the popup instead of only the popup. */
+.mockup-scale {
+  transform: scale(var(--mockup-scale, 1));
+  transform-origin: top center;
+}
 .browser {
   width: 540px; max-width: 100%;
   background: var(--p-card); border: 1px solid var(--p-border);
@@ -225,10 +234,13 @@ a { color: var(--p-primary); text-decoration: none; }
 @media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
 .feature {
+  display: block; color: inherit; text-decoration: none; cursor: pointer;
   background: var(--p-card); border: 1px solid var(--p-border); border-radius: var(--p-radius);
   padding: 26px 22px; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 .feature:hover { transform: translateY(-4px); box-shadow: var(--p-shadow); border-color: color-mix(in srgb, var(--p-primary) 40%, var(--p-border)); }
+.feature:hover .feature__more { color: var(--p-primary-dark); transform: translateX(2px); }
+.feature:focus-visible { outline: 2px solid var(--p-primary); outline-offset: 3px; }
 .feature__icon {
   width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
   font-size: 24px; margin-bottom: 16px;
@@ -236,6 +248,10 @@ a { color: var(--p-primary); text-decoration: none; }
 }
 .feature__title { font-size: 18px; font-weight: 700; margin: 0 0 8px; }
 .feature__text { color: var(--p-muted); font-size: 15px; margin: 0; }
+.feature__more {
+  display: inline-block; margin-top: 14px; color: var(--p-primary); font-size: 14px; font-weight: 700;
+  transition: transform .18s ease, color .18s ease;
+}
 
 /* ── Steps ───────────────────────────────────────────────────────────────── */
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; counter-reset: step; }
@@ -279,3 +295,72 @@ a { color: var(--p-primary); text-decoration: none; }
   .btn:hover, .feature:hover { transform: none; }
   html { scroll-behavior: auto; }
 }
+
+/* ── Feature detail page (feature.html) ─────────────────────────────────── */
+.crumb { display: flex; align-items: center; gap: 6px; color: var(--p-muted); font-size: 14px; margin-bottom: 28px; }
+.crumb a { color: var(--p-muted); font-weight: 600; }
+.crumb a:hover { color: var(--p-primary); }
+
+.detail-hero { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; max-width: 760px; }
+@media (max-width: 560px) { .detail-hero { grid-template-columns: 1fr; } }
+.detail-hero__icon {
+  width: 64px; height: 64px; border-radius: 16px; display: grid; place-items: center;
+  font-size: 32px; background: color-mix(in srgb, var(--p-primary) 12%, transparent);
+}
+.detail-hero__eyebrow { color: var(--p-primary); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+.detail-hero__title { font-size: clamp(26px, 3.6vw, 40px); font-weight: 800; letter-spacing: -0.02em; margin: 8px 0 12px; }
+.detail-hero__lead { color: var(--p-muted); font-size: 17px; margin: 0; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-top: 48px; }
+.detail-grid > * { min-width: 0; } /* let a track shrink below a child's content size (e.g. the 480px popup iframe) instead of forcing the whole grid wider */
+@media (max-width: 860px) { .detail-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+.detail-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.detail-points li {
+  position: relative;
+  background: var(--p-card); border: 1px solid var(--p-border); border-radius: var(--p-radius);
+  padding: 16px 18px 16px 44px; font-size: 15px; overflow-wrap: break-word;
+}
+.detail-points li::before {
+  content: "✓"; color: var(--p-accent); font-weight: 800;
+  position: absolute; left: 18px; top: 16px;
+}
+
+.detail-preview { position: sticky; top: 88px; }
+.detail-preview__label { font-weight: 700; font-size: 14px; margin: 0 0 10px; color: var(--p-muted); }
+.detail-preview__frame-wrap {
+  overflow-x: auto; border-radius: var(--p-radius); border: 1px solid var(--p-border);
+  background: var(--p-bg-alt); box-shadow: var(--p-shadow); padding: 10px;
+}
+.detail-preview__frame { display: block; width: 480px; height: 600px; border: 0; border-radius: 10px; }
+.detail-preview__cta { margin-top: 14px; display: flex; }
+
+.detail-extra { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--p-border); }
+.detail-extra__title { font-size: clamp(20px, 2.6vw, 26px); font-weight: 800; margin: 0 0 10px; }
+.detail-extra__lead { color: var(--p-muted); font-size: 15px; margin: 0 0 20px; max-width: 640px; }
+/* The screenshots are fixed UI captures with a light and a dark twin (see
+ * feature.js) — the frame around them uses the same card token as the rest
+ * of the page so it switches with the theme instead of staying one fixed
+ * shade. margin-bottom on the wrapper (not just between shots) keeps the
+ * points list below from crowding the last row of images. */
+#detailExtraShots { margin-bottom: 32px; }
+.detail-extra__shot {
+  margin: 0 0 24px; padding: 10px; background: var(--p-card); border-radius: calc(var(--p-radius) + 6px);
+  border: 1px solid var(--p-border); box-shadow: var(--p-shadow);
+}
+.detail-extra__shot img { display: block; width: 100%; height: auto; border-radius: var(--p-radius); }
+.detail-extra__shot figcaption { margin: 10px 2px 0; font-size: 13px; color: var(--p-muted); text-align: center; }
+
+/* Shots captured at the popup's real 480×600 size are tall and narrow —
+ * side by side, centred as a group, reads as a step-by-step story instead
+ * of one giant stack or a lopsided left-aligned pair. */
+.detail-extra__shots--row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+.detail-extra__shots--row .detail-extra__shot { flex: 1 1 380px; max-width: 480px; margin: 0; }
+@media (max-width: 560px) { .detail-extra__shots--row .detail-extra__shot { flex-basis: 100%; max-width: 400px; margin: 0 auto; } }
+.detail-extra__points { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 640px) { .detail-extra__points { grid-template-columns: 1fr; } }
+
+.detail-cta { margin-top: 56px; text-align: center; }
+
+.detail-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--p-border); flex-wrap: wrap; }
+.detail-nav__link { font-weight: 600; }

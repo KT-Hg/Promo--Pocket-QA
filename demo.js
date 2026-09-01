@@ -55,12 +55,18 @@
    *    frame that ever sees a click. This just publishes the action.
    * ────────────────────────────────────────────────────────────────────────── */
   var toggleTheme = function () {};
+  // Read-only broadcast of this frame's *own* theme, for whatever page embeds
+  // this preview to react to (feature.html's screenshots follow it — see
+  // syncExtraShots() there). One-way and informational only: the popup still
+  // keeps its own theme independent of the page's — this doesn't let the page
+  // change it, it just lets the page know what it currently is. postMessage
+  // rather than the parent reaching into contentDocument directly, since the
+  // page/frame split is file:// in local use and some browsers restrict
+  // cross-document DOM access there even for same-folder files (see README).
+  var notifyParentTheme = function () {};
   (function theme() {
     var root = document.documentElement;
     var saved = null;
-    // The popup keeps its OWN theme, independent of the landing page. It uses a
-    // separate storage key and never messages the parent, so toggling the
-    // popup's theme does not change the page around it (and vice-versa).
     try { saved = localStorage.getItem('demoPopupTheme'); } catch (e) {}
     if (saved) root.setAttribute('data-theme', saved);
 
@@ -71,12 +77,21 @@
       var icon = btn.querySelector('span');
       if (icon) icon.textContent = dark ? '☀️' : '🌙';
     }
+    notifyParentTheme = function () {
+      try {
+        window.parent.postMessage({
+          source: 'fastRecorderPromoDemo', type: 'theme',
+          theme: root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+        }, '*');
+      } catch (e) {}
+    };
     toggleTheme = function () {
       var dark = root.getAttribute('data-theme') === 'dark';
       var next = dark ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('demoPopupTheme', next); } catch (e) {}
       sync();
+      notifyParentTheme();
     };
     sync();
   })();
@@ -410,6 +425,10 @@
     var tab = params.get('tab');
     var btn = tab && $('tabNav') ? $('tabNav').querySelector('[data-tab="' + tab + '"]') : null;
     if (btn) switchMainTab(btn);
+
+    // Theme is fully settled now (deep-link ?theme= wins over the saved one
+    // above if both were present) — tell the parent what it ended up being.
+    notifyParentTheme();
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────

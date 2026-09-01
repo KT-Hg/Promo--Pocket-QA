@@ -62,13 +62,16 @@ index.html        ← open this
 | File | Purpose | Lines |
 |------|---------|-------|
 | `index.html`     | Landing page: nav, hero, browser mockup, features, steps, CTA, footer (BEM markup) | ~210 |
+| `feature.html`   | Feature detail page template (BEM), shared by all `.feature` cards — `feature.html?id=<key>` | ~100 |
 | `promo.css`      | Landing-page styles only (BEM, fully self-contained, brand colours match the extension) | ~330 |
 | `landing.js`     | Promo chrome: theme sync ↔ iframe, scroll reveals, toolbar-icon focus | ~80 |
+| `feature.js`     | Fills in `feature.html` from the `id` query param (content, prev/next, deep-linked popup preview) | ~200 |
 | `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup.css` + `demo.js` | ~1530 |
 | `demo.css`       | A few tiny tweaks for the in-iframe demo context | ~25 |
 | `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~330 |
 | `sync-from-source.mjs` | Regenerates `popup-demo.html` from `vendor/popup.html` (deterministic) | ~110 |
 | `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~55 |
+| `stamp-feature-js.mjs` | Cache-busts `feature.html`'s `<script src="feature.js?v=…">` with a content hash — run after every `feature.js` edit | ~35 |
 | `vendor/`        | Vendored extension snapshot (`popup.html`, `popup.css`, `icon128.png`) | — |
 
 ## Architecture — why an `<iframe>`
@@ -76,8 +79,17 @@ The real `popup.css` styles global elements (`body`, `button`, `input`, `.card`�
 Loading it directly on the landing page would restyle the whole site. Rendering
 the popup inside an `<iframe src="popup-demo.html">` gives perfect CSS isolation:
 `popup.css` applies **only** inside the frame (where `body { width: 480px }` is
-exactly right), while the landing page keeps its own `promo.css`. The two
-documents communicate theme changes via `postMessage`.
+exactly right), while the landing page keeps its own `promo.css`.
+
+Theme is deliberately **not** synced on `index.html`: the page's toggle and the
+popup's own toggle inside the frame are fully independent, on purpose (see
+"Theme" in `landing.js`) — so a visitor can put the popup in dark mode without
+the marketing page around it going dark too, and vice versa. `feature.html`
+does read the popup's theme, one-way: `demo.js` `postMessage`s its current
+theme to the parent on load and on every toggle (never the other way, and the
+page's own toggle still doesn't touch the popup's), so the "Inside the …"
+screenshots on feature pages can follow whichever theme the live popup preview
+actually ends up showing, not assume it always mirrors the page.
 
 ## What's interactive in the demo
 The preview is intentionally **static** — it showcases the UI without acting as a
@@ -122,6 +134,8 @@ The preview fences itself off, in the iframe only:
 | `demo.css` | Hides `[data-ext-overlay]` outright, so nothing flashes before the observer removes it. |
 | `sync-from-source.mjs` | Stamps `demo.js` / `demo.css` / `vendor/popup.css` URLs with a content hash (`demo.js?v=e282bf21`). A stale cached copy of `demo.js` silently disables the fence above, and that is exactly what it looks like when the picker bar shows up inside the mock popup again. |
 
+`feature.html` guards its own script the same way, just by hand — `stamp-feature-js.mjs` stamps `<script src="feature.js?v=…">` with a content hash. A stale cached `feature.js` doesn't break anything as loudly as the fence above; it just quietly keeps running whatever the page could already do before the last edit — e.g. a build that predates dark-mode screenshot support keeps showing the light PNG after the theme toggle, with no error to point at why. Run `node stamp-feature-js.mjs` after every `feature.js` edit, and hard-reload (Ctrl+Shift+R) if a change to that file doesn't seem to be taking effect in a browser that already had a `feature.html?id=…` page open.
+
 **Is the fence actually live in my browser?** Open the console *in the preview
 frame* (DevTools → frame selector, or right-click the popup → *This Frame* →
 *Reload frame*) and check `__promoDemoGuard` — it reads `extension-fence v2`.
@@ -152,5 +166,21 @@ See [`screenshots/`](screenshots/):
 | `shot-landing-hero.png`   | Full landing hero with the popup embedded in the browser mockup |
 | `shot-tab-data.png`       | Data tab — variables, export-code, collapsibles |
 | `shot-tab-highlight.png`  | Highlight tab in **dark** mode — colour-coded highlights, stats, switch |
+| `shot-image-editor.png` / `-dark.png`   | `editor.html`'s Crop & Edit UI, used on `feature.html?id=screenshots` — real editor, sample dashboard image, an arrow + rectangle annotation and the Stamp panel open |
+| `shot-sqlcases-analysis.png` / `-dark.png` | `sqlcases.html`'s full 3-column workspace, used on `feature.html?id=sql-test-designer` — query rail, a real generated case list (71 cases), and one case's fixture data open in the inspector |
+| `shot-export-js.png` / `-dark.png`      | The real Export JS modal for a sample "Login flow" scenario — actual generated bookmarklet code, stats and the skipped-step warning, used on `feature.html?id=export` |
+| `shot-export-py.png` / `-dark.png`      | The real Export Python modal for that same scenario — actual generated Selenium code, used on `feature.html?id=export` |
+
+These are real UI, not mockups — `editor.html` and `sqlcases.html` don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a minimal harness page imported only the real `popup/export-bookmarklet.js` + `popup/export-selenium.js` + `popup/utils.js` against the real `popup.html` markup and `css/popup.css`, stubbed just `chrome.runtime.sendMessage` (`GET_SCENARIOS`/`GET_VARIABLES`) with one sample scenario, and let the real generator functions (`generateBookmarklet` / the Selenium equivalent) produce the code shown — so the code in the screenshots is genuinely generated, not typed by hand.
+
+The export modals use `position:fixed`, which sizes off the *browser viewport*, not the harness page's own width — capturing them at a normal desktop viewport rendered a modal far wider than the real ~480px popup ever shows. Fixed by moving the modal into a 480×600 `position:fixed` div standing in for the real popup window (matching `popup.css`'s own `body { width: 480px; max-height: 600px; }`) and re-anchoring the modal to `position:absolute` inside it, then capturing that div — so the shots are pixel-accurate to the real popup size, not a stretched approximation.
+
+Each shot has a `-dark` twin, captured the same way with `data-theme="dark"` set first (`popup.css`/`editor.css`'s `[data-theme="dark"]` / `body:not(.light)`) — `feature.js` swaps between the pair to follow the **"Live popup preview" iframe's own theme**, not the page's (see "Architecture — why an `<iframe>`" above for how the two stay in sync via `postMessage`, one-way, popup → page).
+
+Two `html2canvas` gotchas worth knowing if these ever need re-capturing:
+- **`<textarea>` value renders blank / unwrapped.** html2canvas can't render a form control's *native* text layout — the fix is to swap the real `<textarea>` for a plain `<div>` with the same box (font, padding, border) and `white-space: pre-wrap`, capture that, then swap back.
+- **`<button>`/`<select>` render with the browser's default chrome** (square corners, black 1px border) **instead of the real CSS** — same native-widget cause. Fix: inject `button, select, input, textarea { appearance: none !important; }` before capturing.
+
+If the real UI changes, redo the capture (funnelling both fixes above through it again) rather than hand-editing these PNGs.
 
 The original vs demo pair is the parity proof: same CSS, same markup → same pixels.

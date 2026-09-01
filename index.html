@@ -11,7 +11,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fast Recorder &amp; Playback — Record web workflows, no code</title>
-  <meta name="description" content="Record &amp; replay web workflows with variables, CSV data runs, screenshots, conditions and one-tap export to Selenium or a JS bookmarklet. Preview the popup." />
+  <meta name="description" content="Record &amp; replay web workflows with variables, CSV data runs, screenshots, conditions, a SQL test case designer and one-tap export to Selenium or a JS bookmarklet. Preview the popup." />
   <link rel="icon" type="image/png" href="vendor/icon128.png" />
   <link rel="stylesheet" href="promo.css" />
 </head>
@@ -60,6 +60,12 @@
 
         <!-- Browser mockup with the REAL popup inside -->
         <div class="hero__mockup reveal">
+          <!-- Scales the whole chrome (bar + faux page + popup) down together
+               when the viewport is too short to show it in full — see
+               fitHeroHeight() in landing.js. Kept separate from .hero__mockup
+               itself because that element already owns the reveal-on-scroll
+               transform above, and one element can only have one `transform`. -->
+          <div class="mockup-scale">
           <div class="browser">
             <div class="browser__bar">
               <div class="browser__dots" aria-hidden="true">
@@ -98,6 +104,7 @@
               </div>
             </div>
           </div>
+          </div>
         </div>
       </div>
 
@@ -119,36 +126,48 @@
           <p class="section__sub">From a quick smoke test to data-driven batch runs across hundreds of rows.</p>
         </div>
         <div class="features">
-          <article class="feature reveal">
+          <a class="feature reveal" href="feature.html?id=recording">
             <div class="feature__icon">⏺</div>
             <h3 class="feature__title">One-click recording</h3>
             <p class="feature__text">Capture clicks, typing, hovers, drag-and-drop, dropdowns and navigation as editable, reorderable steps.</p>
-          </article>
-          <article class="feature reveal">
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=variables">
             <div class="feature__icon">🔣</div>
             <h3 class="feature__title">Variables &amp; logic</h3>
             <p class="feature__text">Static, random, pick-from-list and fallback variables. Add conditions, switches and read-DOM steps.</p>
-          </article>
-          <article class="feature reveal">
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=csv">
             <div class="feature__icon">📊</div>
             <h3 class="feature__title">CSV data-driven runs</h3>
             <p class="feature__text">Upload a CSV — headers become <code>${variables}</code>. Run a scenario once per row and export results.</p>
-          </article>
-          <article class="feature reveal">
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=screenshots">
             <div class="feature__icon">📷</div>
             <h3 class="feature__title">Powerful screenshots</h3>
             <p class="feature__text">Visible, full-page, scrolling, segment, element and whole-window captures — with crop, watermark and image-diff tools.</p>
-          </article>
-          <article class="feature reveal">
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=export">
             <div class="feature__icon">🐍</div>
             <h3 class="feature__title">One-tap code export</h3>
             <p class="feature__text">Turn any scenario into a standalone Selenium Python script or a runnable JS bookmarklet.</p>
-          </article>
-          <article class="feature reveal">
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=highlights">
             <div class="feature__icon">🖍️</div>
             <h3 class="feature__title">Highlights &amp; scheduling</h3>
             <p class="feature__text">Highlight text per URL pattern, queue scenario sequences, and schedule daily playback.</p>
-          </article>
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=sql-test-designer">
+            <div class="feature__icon">🧪</div>
+            <h3 class="feature__title">SQL Test Case Designer</h3>
+            <p class="feature__text">Paste a SQL query and get an EP/BVA and decision-table test case list, plus NULL and JOIN scenarios — exported as CSV or JSON.</p>
+            <span class="feature__more">Learn more →</span>
+          </a>
         </div>
       </div>
     </section>
@@ -185,7 +204,7 @@
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Fast Recorder &amp; Playback</div>
-      <div>v1.0.13 · Manifest V3 · Chrome 109+</div>
+      <div>v1.0.14 · Manifest V3 · Chrome 109+</div>
       <div>Built for the web. The popup above is the real extension UI.</div>
     </div>
   </footer>

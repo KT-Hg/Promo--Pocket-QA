@@ -61,14 +61,16 @@ const version = JSON.parse(readFileSync(join(ext, 'manifest.json'), 'utf8')).ver
 writeFileSync(join(here, 'vendor', 'version.txt'), version + '\n', 'utf8');
 console.log('✓ vendored vendor/version.txt (' + version + ')');
 
-const indexPath = join(here, 'index.html');
-const indexSrc = readFileSync(indexPath, 'utf8');
-const indexOut = indexSrc.replace(/<div>v\d+\.\d+\.\d+ · Manifest V3/, `<div>v${version} · Manifest V3`);
-if (indexOut !== indexSrc) {
-  writeFileSync(indexPath, indexOut, 'utf8');
-  console.log('✓ index.html footer → v' + version);
-} else if (!indexSrc.includes(`<div>v${version} · Manifest V3`)) {
-  console.warn('⚠ index.html footer version not found — update it by hand.');
+for (const name of ['index.html', 'feature.html']) {
+  const p = join(here, name);
+  const src = readFileSync(p, 'utf8');
+  const out = src.replace(/<div>v\d+\.\d+\.\d+ · Manifest V3/, `<div>v${version} · Manifest V3`);
+  if (out !== src) {
+    writeFileSync(p, out, 'utf8');
+    console.log('✓ ' + name + ' footer → v' + version);
+  } else if (!src.includes(`<div>v${version} · Manifest V3`)) {
+    console.warn('⚠ ' + name + ' footer version not found — update it by hand.');
+  }
 }
 
 /* Regenerate popup-demo.html from the freshly vendored popup.html. */

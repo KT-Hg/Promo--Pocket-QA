@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+  feature.html — Feature detail page template, shared by every card in
+  index.html's #features grid (linked as feature.html?id=<key>). Content is
+  filled in by feature.js based on the `id` query param, so nav/footer/CSS
+  live once instead of being duplicated across seven near-identical pages.
+-->
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feature — Fast Recorder &amp; Playback</title>
+  <meta name="description" content="A closer look at a Fast Recorder & Playback feature." />
+  <link rel="icon" type="image/png" href="vendor/icon128.png" />
+  <link rel="stylesheet" href="promo.css" />
+</head>
+<body>
+
+  <!-- ===== NAV ===== -->
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="nav__brand" href="index.html">
+        <img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" />
+        Fast Recorder &amp; Playback
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a class="nav__link" href="index.html#demo">Preview</a>
+        <a class="nav__link" href="index.html#features">Features</a>
+        <a class="nav__link" href="index.html#how">How it works</a>
+      </nav>
+      <div class="nav__actions">
+        <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
+        <a class="btn btn--primary" href="index.html#demo">Try it free</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== FEATURE DETAIL ===== -->
+  <main id="top">
+    <section class="section" style="padding-bottom: 0;">
+      <div class="container">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="index.html#features">Features</a>
+          <span aria-hidden="true">/</span>
+          <span id="crumbCurrent">…</span>
+        </nav>
+
+        <div class="detail-hero reveal">
+          <div class="detail-hero__icon" id="heroIcon" aria-hidden="true">⏺</div>
+          <div>
+            <span class="detail-hero__eyebrow" id="heroEyebrow">Feature</span>
+            <h1 class="detail-hero__title" id="heroTitle">…</h1>
+            <p class="detail-hero__lead" id="heroLead">…</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="reveal">
+            <ul class="detail-points" id="detailPoints"></ul>
+            <div class="detail-preview__cta">
+              <a class="btn btn--primary" href="index.html#demo">▶ See the full popup preview</a>
+            </div>
+          </div>
+
+          <div class="detail-preview reveal">
+            <p class="detail-preview__label">Live popup preview — <span id="previewTabLabel"></span></p>
+            <div class="detail-preview__frame-wrap">
+              <iframe class="detail-preview__frame" id="previewFrame" src=""
+                      title="Fast Recorder & Playback — popup preview" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optional deeper look at a screen this feature opens (Image Editor,
+             SQL analysis screen, …) — filled in and unhidden by feature.js only
+             when the current feature has one. -->
+        <section class="detail-extra reveal" id="detailExtra" hidden>
+          <h2 class="detail-extra__title" id="detailExtraTitle">…</h2>
+          <p class="detail-extra__lead" id="detailExtraLead"></p>
+          <!-- One or more <figure class="detail-extra__shot"> get built and
+               appended here by feature.js — see the note there about why
+               they can't use loading="lazy". -->
+          <div class="detail-extra__shots" id="detailExtraShots" hidden></div>
+          <ul class="detail-points detail-extra__points" id="detailExtraPoints"></ul>
+        </section>
+
+        <div class="detail-nav">
+          <a class="detail-nav__link" id="prevFeatureLink" href="index.html#features">← Previous feature</a>
+          <a class="detail-nav__link" id="nextFeatureLink" href="index.html#features">Next feature →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== CTA ===== -->
+  <section class="section cta">
+    <div class="container">
+      <div class="cta__card">
+        <h2 class="cta__title">Stop repeating yourself</h2>
+        <p class="cta__sub">Record it once. Let Fast Recorder &amp; Playback handle the rest.</p>
+        <a class="btn btn--primary btn--lg" href="index.html#demo">See the popup</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Fast Recorder &amp; Playback</div>
+      <div>v1.0.14 · Manifest V3 · Chrome 109+</div>
+      <div>Built for the web. The popup above is the real extension UI.</div>
+    </div>
+  </footer>
+
+  <!-- ?v=<content hash> — same cache-busting demo.js already uses (see
+       sync-from-source.mjs). Without it, a returning visitor's browser can
+       keep running an old cached feature.js after an edit (e.g. it would
+       silently miss dark-mode image support), same failure mode as a stale
+       demo.js. Regenerate with: node stamp-feature-js.mjs -->
+  <script src="feature.js?v=33ceb9d4"></script>
+</body>
+</html>
