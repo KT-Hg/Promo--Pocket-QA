@@ -14,9 +14,9 @@
  * extension repo.
  *
  * Extension repo location (first match wins):
- *   1. CLI arg:   node update-vendor.mjs "D:/path/to/Fast Recorder & Playback"
+ *   1. CLI arg:   node update-vendor.mjs "D:/path/to/Pocket QA"
  *   2. Env var:   EXT_REPO="D:/path/..." node update-vendor.mjs
- *   3. Default:   ../Fast Recorder & Playback  (sibling folder on this machine)
+ *   3. Default:   ../Pocket QA  (sibling folder on this machine)
  *
  * Exit: 0 = vendored + synced, 1 = extension repo / files not found.
  */
@@ -27,7 +27,7 @@ import { dirname, join, resolve } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const ext = resolve(
-  process.argv[2] || process.env.EXT_REPO || join(here, '..', 'Fast Recorder & Playback')
+  process.argv[2] || process.env.EXT_REPO || join(here, '..', 'Pocket QA')
 );
 
 const files = [

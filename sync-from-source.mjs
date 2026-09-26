@@ -65,7 +65,7 @@ const HEAD_FROM =
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Scenario Recorder</title>
+  <title>Pocket QA</title>
 
   <link rel="stylesheet" href="css/popup.css" />
 </head>`;
@@ -84,7 +84,7 @@ const HEAD_TO =
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=480, initial-scale=1" />
   <meta name="ext-version" content="${extVersion}" />
-  <title>Fast Recorder &amp; Playback — Popup Preview</title>
+  <title>Pocket QA — Popup Preview</title>
 
   <!-- Reuse the vendored extension stylesheet → guarantees pixel-perfect UI -->
   <link rel="stylesheet" href="${stamp('vendor/popup.css')}" />

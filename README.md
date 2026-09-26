@@ -1,4 +1,4 @@
-# Promotional Page — Fast Recorder & Playback
+# Promotional Page — Pocket QA
 
 A marketing landing page that shows the **real extension popup UI**
 (100% fidelity) as a **static preview**, with no extension installed. Only tab
@@ -35,9 +35,9 @@ What gets vendored (by `update-vendor.mjs`):
 ### Where the extension repo lives
 `update-vendor.mjs` finds the extension repo via (first match wins):
 
-1. CLI arg — `node update-vendor.mjs "D:/path/to/Fast Recorder & Playback"`
+1. CLI arg — `node update-vendor.mjs "D:/path/to/Pocket QA"`
 2. Env var — `EXT_REPO="D:/path/..." node update-vendor.mjs`
-3. Default — `../Fast Recorder & Playback` (sibling folder on this machine)
+3. Default — `../Pocket QA` (sibling folder on this machine)
 
 ## Why it's pixel-perfect
 The popup demo **reuses the extension's actual stylesheet** (vendored as

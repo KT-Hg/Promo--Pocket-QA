@@ -3,17 +3,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Scenario Recorder</title>
+  <title>Pocket QA</title>
 
   <link rel="stylesheet" href="css/popup.css" />
 </head>
 
 <body>
-  <div id="recordingTopBar" role="status" aria-live="polite">● RECORDING — Actions are being captured</div>
-  <div id="pickerInstructionBar" role="status" aria-live="polite"></div>
-
   <!-- ===== STICKY HEADER: Status Bar + Tab Nav ===== -->
   <div class="sticky-header" id="activationCard">
+    <!-- This bar must live INSIDE .sticky-header (not as a sibling before it):
+         the header is position:fixed and pinned to viewport top regardless of what
+         precedes it in the DOM, so a sibling bar would (a) get visually covered by
+         the fixed header and (b) still consume flow height above #headerSpacer,
+         which only measures .sticky-header's own offsetHeight — producing a gap
+         between the tab row and the content below whenever the bar shows. Keeping
+         it as the header's first child makes its height part of the header and
+         lets initHeaderSpacer's MutationObserver (subtree:true) pick up .show
+         toggles automatically. -->
+    <div id="pickerInstructionBar" role="status" aria-live="polite"></div>
     <!-- Update banner — shown by popup/update-banner.js when a newer version is on the Web Store -->
     <div class="update-banner" id="updateBanner" role="status" aria-live="polite" hidden>
       <span class="update-banner-icon" aria-hidden="true">⬆</span>
@@ -116,9 +123,6 @@
   <!-- ===== TAB: RECORD & PLAY ===== -->
   <div class="tab-panel active" id="tabRecord">
     <div class="main-content" id="mainContent" role="main">
-
-    <!-- Recording badge (floating) -->
-    <span id="recordingBadge" class="recording-badge">● Recording</span>
 
     <!-- RECORD -->
     <div class="card">
@@ -312,9 +316,10 @@
         <div style="display:flex; gap:6px; align-items:center;">
           <input id="switchCaseValue" placeholder="Case value  (e.g. admin)" style="flex:1; margin:0; font-size:12px;" />
           <select id="switchCaseScenario" style="flex:1.5; margin:0; font-size:12px;"></select>
+          <input id="switchCaseStart" class="sw-start-input" type="number" min="1" placeholder="#1" title="Start at action # (1 = first)" />
           <button id="switchAddCase" class="secondary" style="width:auto; flex:0 0 auto; margin:0; padding:4px 8px; font-size:12px;">+ Add</button>
         </div>
-        <span class="helper-text">Leave case value empty to set as <strong>default</strong>. Cases are checked top-to-bottom; first match wins.</span>
+        <span class="helper-text">Leave case value empty to set as <strong>default</strong>. Cases are checked top-to-bottom; first match wins. <strong>#</strong> = action number to start from (default 1). <strong>↻ This scenario</strong> jumps to that action in the scenario being played instead of running another one.</span>
       </div>
 
       <!-- CHILD CONDITION (optional collapsible) — shown for click/input/hover -->
@@ -434,6 +439,10 @@
         <button id="newFlow" class="secondary">New</button>
         <button id="saveFlow" class="primary-gradient">Save Scenario</button>
       </div>
+      <!-- Shown instead of Save while an existing scenario is selected — its edits
+           already save straight to storage, so Save here would only invite a
+           duplicate. Name/Folder/New stay usable to start a brand-new scenario. -->
+      <span class="helper-text" id="autoSaveNotice" style="display:none;color:var(--success);">✓ Changes save automatically</span>
     </div>
 
     <!-- MANAGE SCENARIOS -->
@@ -559,7 +568,10 @@
 
     <!-- VARIABLES -->
     <div class="card">
-      <h3>Variables</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">Variables</h3>
+        <button class="card-help-btn" data-card="variables" title="Variables guide">?</button>
+      </div>
       <ul class="var-list" id="variablesTableBody"></ul>
       <button id="addVariableRow">+ Add Row</button>
       <p style="font-size:12px; color: var(--muted); margin:6px 0 0;">Use ${var} in selector/value/url/code. Saved per extension.</p>
@@ -567,7 +579,10 @@
 
     <!-- EXPORT CODE -->
     <div class="card">
-      <h3>Export Code</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">Export Code</h3>
+        <button class="card-help-btn" data-card="exportCode" title="Export Code guide">?</button>
+      </div>
       <select id="exportCodeSelect" style="margin-bottom:10px;">
         <option value="">-- Select scenario --</option>
       </select>
@@ -591,7 +606,10 @@
 
     <!-- SQL TEST CASE DESIGNER -->
     <div class="card">
-      <h3>SQL Test Case Designer</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">SQL Test Case Designer</h3>
+        <button class="card-help-btn" data-card="sqlcases" title="SQL Test Case Designer guide">?</button>
+      </div>
       <button id="openSqlCases" class="export-code-btn" style="width:100%;" title="Parse a SQL query and generate a test case list">
         <span class="export-code-icon">🧪</span>
         <div class="export-code-info">
@@ -600,6 +618,34 @@
         </div>
       </button>
       <p style="font-size:12px; color: var(--muted); margin:6px 0 0;">Opens in a full tab — test case tables need the width.</p>
+    </div>
+
+    <!-- DB TEST SESSION (ADMINER) -->
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <h3 style="margin:0 auto 0 0;">DB Test Session</h3>
+        <button class="card-help-btn" data-card="dbtools" title="DB Test Session guide">?</button>
+        <label class="hl-toggle-switch" title="Adminer panel — show it and record changes. Off: no panel on Adminer pages and nothing is recorded. Takes effect on open Adminer tabs straight away.">
+          <input type="checkbox" id="dbEnabledToggle" role="switch" aria-label="Adminer panel: show it and record changes" />
+          <span class="hl-toggle-slider" aria-hidden="true"></span>
+        </label>
+      </div>
+      <button id="dbStatus" class="db-status" type="button" hidden></button>
+      <button id="openDbTools" class="export-code-btn" style="width:100%;" title="Review and roll back data changed through Adminer">
+        <span class="export-code-icon">↺</span>
+        <div class="export-code-info">
+          <span class="export-code-name">Test sessions &amp; rollback</span>
+          <span class="export-code-desc">Changes made in Adminer, with the SQL to undo them</span>
+        </div>
+      </button>
+      <p style="font-size:12px; color: var(--muted); margin:6px 0 0;">Recording happens in the Adminer tab itself; this page reviews and rolls back.</p>
+      <label class="switch-row" title="Snapshot the chosen tables before every Playback run and roll the database back when it ends">
+        <span class="switch-text">Roll the database back after each Playback run</span>
+        <span class="hl-toggle-switch">
+          <input type="checkbox" id="dbGuardToggle" role="switch" />
+          <span class="hl-toggle-slider" aria-hidden="true"></span>
+        </span>
+      </label>
     </div>
 
     <!-- The two cards below are the only ones on this tab that need a live,
@@ -714,6 +760,7 @@
       <!-- Tab bar -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
         <h3 style="margin:0;">Capture</h3>
+        <button class="card-help-btn" data-card="capture" title="Capture guide">?</button>
       </div>
       <div class="capture-tab-nav" id="captureTabNav">
         <button class="capture-tab-btn active" data-capture-tab="all">All</button>
@@ -868,6 +915,7 @@
             <span class="hl-mode-label" id="hlModeLabel">Highlight ON</span>
           </div>
           <button class="hl-export-btn" id="hlExportBtn" title="Export highlights as JSON">⬇ Export</button>
+          <button class="card-help-btn" data-card="highlight" title="Highlight guide">?</button>
           <label class="hl-toggle-switch">
             <input type="checkbox" id="hlToggle" checked>
             <span class="hl-toggle-slider"></span>
@@ -990,7 +1038,10 @@
 
     <!-- Hotkeys card -->
     <div class="card">
-      <h3>Hotkeys</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">Hotkeys</h3>
+        <button class="card-help-btn" data-card="hotkeys" title="Hotkeys guide">?</button>
+      </div>
       <div style="display: flex; flex-direction: column; gap: 2px;">
         <div class="hotkey-row" data-requires-activation>
           <span class="hotkey-label">Start Recording</span>
@@ -1009,7 +1060,7 @@
         </div>
         <div class="hotkey-row">
           <span class="hotkey-label">Screenshot (Full Page)</span>
-          <span class="hotkey-badge" id="hotkeyScreenshotFull">Alt+F</span>
+          <span class="hotkey-badge" id="hotkeyScreenshotFull">Alt+Shift+F</span>
           <button class="hotkey-set-btn secondary" data-hotkey="screenshotFull">Set</button>
         </div>
         <div class="hotkey-row">
@@ -1052,7 +1103,10 @@
 
     <!-- Screenshot settings card -->
     <div class="card">
-      <h3>Screenshot</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">Screenshot</h3>
+        <button class="card-help-btn" data-card="screenshot" title="Screenshot settings guide">?</button>
+      </div>
       <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
         <input type="radio" name="screenshotSaveMode" value="auto" id="saveModeAuto" style="width: auto; margin: 0; cursor: pointer;" />
         Auto (save to Downloads/screenshots/)
@@ -1116,7 +1170,10 @@
 
     <!-- Notifications card — one toggle per category in bg/utils.js (NOTIFY_KEY). -->
     <div class="card">
-      <h3>Notifications</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">Notifications</h3>
+        <button class="card-help-btn" data-card="notifications" title="Notifications guide">?</button>
+      </div>
       <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
         <input type="checkbox" id="notifyOnComplete" style="width: auto; margin: 0; cursor: pointer;" />
         Run finished — playback, sequence, CSV
@@ -1161,7 +1218,7 @@
 
     <!-- Import / Export card (collapsible) -->
     <div class="card collapsible collapsed" id="importExportCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Import / Export <span class="caret">▸</span></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Import / Export <span class="caret">▸</span><button class="card-help-btn" data-card="importExport" title="Import / Export guide" style="margin-left:auto;">?</button></h3>
       <div class="row">
         <select id="exportScenarioSelect" class="flex-1">
           <option value="">-- Select scenario --</option>
@@ -1181,7 +1238,7 @@
 
     <!-- Backup / Restore card (collapsible) -->
     <div class="card collapsible collapsed" id="backupRestoreCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Backup / Restore <span class="caret">▸</span></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Backup / Restore <span class="caret">▸</span><button class="card-help-btn" data-card="backup" title="Backup / Restore guide" style="margin-left:auto;">?</button></h3>
       <input type="file" id="restoreFile" accept=".json" />
       <div class="row" style="gap:6px;">
         <button id="backupAll" class="secondary flex-1">⬇ Backup All Data</button>

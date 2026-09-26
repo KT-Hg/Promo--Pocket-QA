@@ -80,7 +80,7 @@
     notifyParentTheme = function () {
       try {
         window.parent.postMessage({
-          source: 'fastRecorderPromoDemo', type: 'theme',
+          source: 'pocketQaPromoDemo', type: 'theme',
           theme: root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
         }, '*');
       } catch (e) {}
@@ -367,6 +367,21 @@
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
+   * 8c. DATA › DB TEST SESSION CARD  (display only)
+   *     Mirrors popup/init.js -> initDbGuardToggle: the Adminer switch defaults
+   *     to on, and the "roll back after each Playback run" row is hidden while
+   *     dbtools/features.js keeps TABLE_COPIES off — otherwise the static
+   *     preview would advertise a switch no installed copy shows.
+   * ────────────────────────────────────────────────────────────────────────── */
+  (function seedDbCard() {
+    var enabled = $('dbEnabledToggle');
+    if (enabled) enabled.checked = true;
+    var guard = $('dbGuardToggle');
+    var row = guard && guard.closest('label');
+    if (row) row.style.display = 'none';
+  })();
+
+  /* ───────────────────────────────────────────────────────────────────────────
    * 9. STATIC GUARD — block every interaction except tab switching + theme.
    *     Runs in the capture phase on `document` so it pre-empts any control
    *     before it acts, and prevents inputs/selects gaining focus (so nothing
@@ -475,6 +490,6 @@
    * still running a cached copy of this file, where the fence above does not
    * exist yet. Check it from the frame's console: __promoDemoGuard. */
   try { window.__promoDemoGuard = 'extension-fence v2'; } catch (e) {}
-  console.log('%cFast Recorder & Playback — static demo preview ready %c(extension-fence v2)',
+  console.log('%cPocket QA — static demo preview ready %c(extension-fence v2)',
     'color:#3b82f6;font-weight:bold', 'color:#6b7280');
 })();

@@ -1,7 +1,7 @@
 /**
  * feature.js — Feature detail pages (feature.html?id=<key>).
  * One template, driven by the `id` query param, so nav/footer/CSS live in a
- * single place instead of being copy-pasted across seven near-identical pages.
+ * single place instead of being copy-pasted across nine near-identical pages.
  * Keep in sync with the `.feature` cards in index.html (href="feature.html?id=…").
  */
 (function () {
@@ -16,13 +16,30 @@
       icon: '⏺',
       eyebrow: 'Record & Play',
       title: 'One-click recording',
-      lead: 'Hit Start Recording and every click, keystroke and navigation on the page becomes an editable step — no selectors to write by hand.',
+      lead: 'Hit Start Recording and every click and every field you type into becomes an editable step — no selectors to write by hand.',
       points: [
-        'Captures clicks, typed input, hovers, drag-and-drop, dropdown opens and page navigation automatically while you work.',
+        'Records clicks and typed input automatically — typing is debounced to one step per field, so a long value doesn’t turn into dozens of steps.',
+        'Everything else is one of 16 action types you add by hand: hover, native dropdowns, drag-and-drop, navigate, wait, Run JS, conditions, switches, Read DOM, screenshots and file uploads.',
         'Every recorded step is editable and reorderable afterwards — fix a selector, change a value, or drag steps into a new order.',
-        'Undo/redo and a live step counter let you review a run before replaying it.',
-        'Add manual steps by hand across five groups: Interactions, Navigation & Code, Logic, Screenshots and Files.',
-        'Pick any element visually with 🎯 Pick element instead of writing a selector — CSS, XPath, ID, Name, Text or Full XPath.'
+        'Undo/redo up to 50 steps while you edit, cleared when you start a new scenario or load another one.',
+        'Pick any element visually with 🎯 Pick element instead of writing a selector — CSS, XPath, ID, Name, Text or Full XPath.',
+        'Child Condition targets a container and finds the right child by its value, text, id, class or input type — handy for lists and tables whose rows keep moving.'
+      ],
+      tab: 'tabRecord',
+      tabLabel: 'Record & Play tab'
+    },
+    playback: {
+      icon: '▶',
+      eyebrow: 'Record & Play',
+      title: 'Playback that keeps going',
+      lead: 'Replay a scenario once, loop it, or chain several — and let it carry on through iframes, page reloads and file pickers that stop most recorders.',
+      points: [
+        'Run a single scenario, loop it N times with a delay between loops, or build a sequence where each scenario gets its own delay.',
+        'Steps run inside iframes, and a run picks up where it left off after the page reloads mid-playback.',
+        'Upload File injects local files into an <code>&lt;input type="file"&gt;</code> or a drag-and-drop zone — several at once, with <code>${variable}</code> file names.',
+        'Native dropdowns that ignore a synthetic click get a real, trusted click instead.',
+        'Run JS executes your own script on the page, even where the site’s Content Security Policy would block it.',
+        'A progress bar shows where the run is, and an optional notification tells you when it has finished.'
       ],
       tab: 'tabRecord',
       tabLabel: 'Record & Play tab'
@@ -98,7 +115,7 @@
         '🐍 Selenium Python — a standalone .py file you can drop into an existing test suite or CI pipeline.',
         'Pick the scenario from a dropdown; export regenerates fresh code from its current steps every time.',
         'Works with variables and conditions already in the scenario — the exported code mirrors the same logic.',
-        'Settings tab tunes step delay and element timeout before regenerating — Selenium also picks a starting URL and a WebDriver (Chrome, Firefox, Edge, Safari).',
+        'Settings tab tunes step delay and element timeout before regenerating — Selenium also picks a starting URL.',
         'The JS export skips screenshot/switch steps with a clear warning — a bookmarklet can’t call the Extension API. Selenium doesn’t hit that limit.'
       ],
       tab: 'tabData',
@@ -139,7 +156,9 @@
       points: [
         'Five highlight colours, full-text search and a colour filter across every saved highlight.',
         'Per-page and total stats, broken down by page, so you can see highlight coverage at a glance.',
-        'URL Patterns decide which pages a highlight re-appears on — copy every pattern at once or export highlights as JSON.',
+        'Add a note to any highlight; highlights come back on your next visit, even on content that loads late.',
+        'URL Patterns with wildcards in the path and subdomain group several pages under one set of highlights — a builder turns the current tab’s URL into a pattern.',
+        'Export every highlight as JSON.',
         'Scheduled Playback queues a scenario for a specific time, once or repeating daily, running in the background.'
       ],
       tab: 'tabHighlight',
@@ -177,9 +196,26 @@
           'Click a case to open its inspector: the rationale, the fixture rows to prepare, and the query to run — self-checking against the recorded expected result.'
         ]
       }
+    },
+    'db-test-session': {
+      icon: '↺',
+      eyebrow: 'Data tab',
+      title: 'DB Test Session & Rollback',
+      lead: 'Change test data freely in Adminer — every write is recorded into a session, and one click puts the database back the way it was, with the exact SQL shown before it runs.',
+      points: [
+        'Start a session from the small panel Adminer shows bottom-right; nothing is recorded until you do.',
+        'Captures the edit form, grid cell edits, bulk and whole-result deletes, mass edits, <code>INSERT</code>s and the <code>UPDATE</code>/<code>DELETE</code> you type on the SQL page.',
+        '↺ Roll back all, or ↺ Undo last (<code>Alt+Shift+Z</code>) for the change you just made — always behind a preview of each change and the SQL underneath.',
+        'A drift check re-reads every row first: if someone else changed it after you, you see the recorded and current values side by side and choose to skip or overwrite.',
+        '↷ Re-apply puts the test’s values back when a rollback turned out to be the wrong call.',
+        'Refuses what it can’t undo safely — tables without a key, statements with no <code>WHERE</code>, too many rows — and says why on the change itself.',
+        'Nothing leaves your browser; export a session as <code>.sql</code> or <code>.json</code>. The manager page switches between English and Vietnamese.'
+      ],
+      tab: 'tabData',
+      tabLabel: 'Data tab'
     }
   };
-  var ORDER = ['recording', 'variables', 'csv', 'screenshots', 'export', 'highlights', 'sql-test-designer'];
+  var ORDER = ['recording', 'playback', 'variables', 'csv', 'screenshots', 'export', 'highlights', 'sql-test-designer', 'db-test-session'];
 
   /* ── Theme (same storage key as landing.js, so the two pages agree) ──────── */
   var root = document.documentElement;
@@ -218,7 +254,7 @@
     return;
   }
 
-  document.title = data.title.replace(/<[^>]+>/g, '') + ' — Fast Recorder & Playback';
+  document.title = data.title.replace(/<[^>]+>/g, '') + ' — Pocket QA';
   var metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) metaDesc.setAttribute('content', data.lead.replace(/<[^>]+>/g, ''));
 
@@ -315,7 +351,7 @@
   }
   window.addEventListener('message', function (e) {
     var msg = e.data;
-    if (!msg || msg.source !== 'fastRecorderPromoDemo' || msg.type !== 'theme') return;
+    if (!msg || msg.source !== 'pocketQaPromoDemo' || msg.type !== 'theme') return;
     lastKnownPopupTheme = msg.theme === 'dark' ? 'dark' : 'light';
     syncExtraShots();
   });
