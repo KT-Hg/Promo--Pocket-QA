@@ -21,11 +21,17 @@ What gets vendored (by `update-vendor.mjs`):
 
 | Vendored file | From the extension repo | Used by |
 |---------------|-------------------------|---------|
-| `vendor/popup.css`     | `css/popup.css`     | `popup-demo.html` (the real stylesheet → pixel-perfect) |
+| `vendor/popup/*.css`   | `css/popup/*.css` — every stylesheet `popup.html` links (`01-base.css` … `12-switch-blocks.css`), verbatim | `popup-demo.html` links each one, in the same order as `popup.html` (the real stylesheets → pixel-perfect) |
 | `vendor/popup.html`    | `popup.html`        | source markup the demo is generated from |
 | `vendor/icon128.png`   | `icons/icon128.png` | `index.html` favicon / logo |
 | `vendor/version.txt`   | `manifest.json` → `version` | stamped into the demo as `<meta name="ext-version">`; `demo.js` fills the Settings › Version card from it. `update-vendor.mjs` also rewrites the version in the `index.html` footer, so neither can drift behind the extension again. |
 
+- **The stylesheet list is read from `popup.html`'s `<head>`**, not hard-coded:
+  `update-vendor.mjs` copies whatever it links under `css/` (and clears
+  `vendor/popup/` first, so a file the extension dropped doesn't linger), and
+  `sync-from-source.mjs` repoints each `<link>` at its `vendor/` copy. A
+  stylesheet added, removed or renamed in the extension needs no script change;
+  anything else in the `<head>` changing still fails the sync loudly.
 - **Behaviour (`popup/*.js`) is NOT mirrored.** `demo.js` is a STATIC preview, not
   a sandbox. After a markup change `sync-from-source.mjs` prints control ids not
   referenced in `demo.js` — that's expected (they're display-only, neutralised by
@@ -40,8 +46,8 @@ What gets vendored (by `update-vendor.mjs`):
 3. Default — `../Pocket QA` (sibling folder on this machine)
 
 ## Why it's pixel-perfect
-The popup demo **reuses the extension's actual stylesheet** (vendored as
-`vendor/popup.css`) and the exact markup from `vendor/popup.html`. Nothing was
+The popup demo **reuses the extension's actual stylesheets** (vendored as
+`vendor/popup/*.css`, linked in the same order) and the exact markup from `vendor/popup.html`. Nothing was
 re-implemented in CSS, so the demo can never visually drift from the shipped
 product. Only the *behaviour* is mocked (the real popup needs `chrome.*` APIs
 that don't exist on a web page).
@@ -66,19 +72,19 @@ index.html        ← open this
 | `promo.css`      | Landing-page styles only (BEM, fully self-contained, brand colours match the extension) | ~430 |
 | `landing.js`     | Promo chrome: theme sync ↔ iframe, scroll reveals, toolbar-icon focus | ~80 |
 | `feature.js`     | The eleven features' content (written against the extension README) + the renderer that fills `feature.html` from the `id` query param (sections, tables, scroll spy, deep-linked popup preview, light/dark screenshots) | ~1200 |
-| `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup.css` + `demo.js` | ~1530 |
+| `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup/*.css` + `demo.js` | ~2010 |
 | `demo.css`       | A few tiny tweaks for the in-iframe demo context | ~25 |
-| `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~330 |
-| `sync-from-source.mjs` | Regenerates `popup-demo.html` from `vendor/popup.html` (deterministic) | ~110 |
-| `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~55 |
+| `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~590 |
+| `sync-from-source.mjs` | Regenerates `popup-demo.html` from `vendor/popup.html` (deterministic) | ~145 |
+| `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~95 |
 | `stamp-feature-js.mjs` | Cache-busts `feature.html`'s `<script src="feature.js?v=…">` with a content hash — run after every `feature.js` edit | ~35 |
-| `vendor/`        | Vendored extension snapshot (`popup.html`, `popup.css`, `icon128.png`) | — |
+| `vendor/`        | Vendored extension snapshot (`popup.html`, `popup/*.css`, `icon128.png`, `version.txt`) | — |
 
 ## Architecture — why an `<iframe>`
-The real `popup.css` styles global elements (`body`, `button`, `input`, `.card`…).
+The real popup stylesheets style global elements (`body`, `button`, `input`, `.card`…).
 Loading it directly on the landing page would restyle the whole site. Rendering
 the popup inside an `<iframe src="popup-demo.html">` gives perfect CSS isolation:
-`popup.css` applies **only** inside the frame (where `body { width: 480px }` is
+the popup CSS applies **only** inside the frame (where `body { width: 480px }` is
 exactly right), while the landing page keeps its own `promo.css`.
 
 Theme is deliberately **not** synced on `index.html`: the page's toggle and the
@@ -104,7 +110,7 @@ capture-phase guard in `demo.js` swallows clicks on those controls, and `demo.cs
 gives them a `not-allowed` cursor so visitors can tell it's a preview.
 
 ### Runtime state the preview has to fake
-`popup.css` styles several things off state that only the running popup sets, so
+The popup CSS styles several things off state that only the running popup sets, so
 the raw markup alone does **not** look like the real popup. `demo.js` reproduces
 the state of a healthy, activated install:
 
@@ -113,6 +119,12 @@ the state of a healthy, activated install:
 | `<body data-activation="active">` | `popup/main.js` | every `[data-requires-activation]` hotkey row at 38% opacity with its **Set** button hidden, plus the 🔒 *"available after activating on the current tab"* notice — contradicting the demo's own "Active on this tab" header |
 | `<body data-active-tab="…">` | `popup/init.js` → `switchTab` | lock overlays lose the selector that positions them per tab |
 | Settings › Version card | `popup/settings.js` → `loadUpdateInfo` | three `—` placeholders no installed copy ever shows |
+| Last run card (top of Record & Play) | `popup/run/last-run.js` → `_render`, from the stored `lastRun` | nothing — the card stays `hidden`, as if no scenario had ever been played. The demo shows a `✓ Passed` run of the selected scenario |
+| Action list rows | `popup/record/preview.js` → `createActionListItem` | (demo.js builds them itself) — rows must use the real two-line `.value-main` / `.value-sub` markup, and rows a Condition guards nest under it (`sw-in-block`, `--sw-depth`, `--sw-color`), or the list no longer matches the real one |
+| Export Code card | `popup/export/code-card.js` → takes Manage Scenarios' scenario | `-- Select scenario --` and all five format buttons disabled |
+| Settings › Screenshot + Notifications | `popup/settings.js` → `loadScreenshotSettings` / `loadNotificationSetting` | no save mode picked, an empty prefix, blank speed boxes and every notification off — instead of the defaults a fresh install shows |
+| Data › DB Test Session status line | `popup/init.js` → `initDbStatus` | the line stays `hidden` |
+| Schedule start URL | `popup/run/time-picker.js` → `prefillScheduleUrl` | an empty field instead of this tab's address |
 
 When a sync pulls in new markup, re-check this list: anything the real popup
 fills from `chrome.*` at startup is a candidate for the same treatment.
@@ -132,7 +144,7 @@ The preview fences itself off, in the iframe only:
 | `demo.js` §9 | The guard is the **only** listener in the frame: it dispatches the two live controls itself, then `stopImmediatePropagation()`. It runs while the frame is parsing, the content script only at `document_idle`, so ours is registered first and the extension never sees a click/mouseover/keydown in here. |
 | `demo.js` §11 | A `MutationObserver` removes any node carrying the extension's `data-ext-overlay` marker (`content.js` → `_EXT_OVERLAY_ATTR`) and clears the crosshair it paints on `<body>` — needed because that UI is mounted from a runtime message, which no page code can intercept. |
 | `demo.css` | Hides `[data-ext-overlay]` outright, so nothing flashes before the observer removes it. |
-| `sync-from-source.mjs` | Stamps `demo.js` / `demo.css` / `vendor/popup.css` URLs with a content hash (`demo.js?v=e282bf21`). A stale cached copy of `demo.js` silently disables the fence above, and that is exactly what it looks like when the picker bar shows up inside the mock popup again. |
+| `sync-from-source.mjs` | Stamps `demo.js` / `demo.css` / `vendor/popup/*.css` URLs with a content hash (`demo.js?v=e282bf21`) — of the file's LF form, what git stores and Pages serves, so a CRLF checkout stamps the same URL. A stale cached copy of `demo.js` silently disables the fence above, and that is exactly what it looks like when the picker bar shows up inside the mock popup again. |
 
 `feature.html` guards its own script the same way, just by hand — `stamp-feature-js.mjs` stamps `<script src="feature.js?v=…">` with a content hash. A stale cached `feature.js` doesn't break anything as loudly as the fence above; it just quietly keeps running whatever the page could already do before the last edit — e.g. a build that predates dark-mode screenshot support keeps showing the light PNG after the theme toggle, with no error to point at why. Run `node stamp-feature-js.mjs` after every `feature.js` edit, and hard-reload (Ctrl+Shift+R) if a change to that file doesn't seem to be taking effect in a browser that already had a `feature.html?id=…` page open.
 

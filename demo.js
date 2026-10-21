@@ -39,7 +39,7 @@
   /* ── Reference tables copied from the real source (for rendering only) ───── */
   var ACTION_ICONS = {
     click: '🖱', input: '⌨', navigate: '🔗', script: '⚡', hover: '👆',
-    wait: '⏱', condition: '❓', switch: '🔀', dragdrop: '↕', readdom: '📖',
+    wait: '⏱', condition: '❓', assert: '✅', switch: '🔀', dragdrop: '↕', readdom: '📖',
     screenshot: '📷', screenshot_full: '📄', screenshot_element: '📌',
     screenshot_tovar: '📸', dropdown: '🔽', uploadFile: '📂'
   };
@@ -144,31 +144,49 @@
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 5. DEMO DATA — ACTION LIST  (display only; buttons are inert)
+   *    Rows are built the way record/preview.js -> createActionListItem builds
+   *    them (value-main / value-sub lines, a Condition's block). `guards` is how
+   *    many of the next actions a Condition guards: those rows nest under it.
    * ────────────────────────────────────────────────────────────────────────── */
   var demoActions = [
     { type: 'navigate', value: 'https://app.example.com/login' },
     { type: 'input', value: '#email  →  ${email}', label: 'Type the login email' },
     { type: 'input', value: '#password  →  ••••••••' },
     { type: 'click', value: 'button.btn-login', delay: 500 },
-    { type: 'wait', value: '1500ms' },
-    { type: 'condition', value: 'Element Exists: .dashboard' },
+    { type: 'assert', value: 'textContains: .welcome = "Welcome back"' },
+    { type: 'condition', value: 'elementVisible: .promo-modal', guards: 1 },
+    { type: 'click', value: '.promo-modal .close' },
     { type: 'screenshot', value: 'Visible viewport' },
     { type: 'click', value: '#logout', disabled: true }
   ];
 
-  function buildActionLi(a, i) {
+  function buildActionLi(a, i, cond) {
     var li = document.createElement('li');
     li.className = 'action action-' + a.type + (a.disabled ? ' action-disabled' : '');
     li.dataset.index = i;
+    if (cond != null) {
+      // A row a Condition guards (preview.js -> _applyBlockStyle, "cond" colour).
+      li.classList.add('sw-in-block');
+      li.style.setProperty('--sw-depth', 1);
+      li.style.setProperty('--sw-color', 'var(--sw-cond)');
+      li.dataset.blocks = cond;
+    }
     var delayText = (a.delay && a.type !== 'wait') ? ' (' + a.delay + 'ms)' : '';
-    var labelHtml = a.label
-      ? '<span style="display:block;font-size:10px;color:var(--primary);opacity:0.8;font-style:italic;margin-top:1px;">' + esc(a.label) + '</span>'
-      : '';
+    var typeAttrs = '', toggleHtml = '', subHtml = '';
+    if (a.guards) {
+      var n = a.guards;
+      typeAttrs = ' class="type sw-type-toggle" title="Collapse / expand what this Condition guards"';
+      toggleHtml = '<span class="sw-toggle" role="button" tabindex="0" data-switch="' + i + '" aria-label="Collapse or expand the actions this Condition guards" aria-expanded="true"><span class="chev" aria-hidden="true">▸</span></span>';
+      var full = 'If true: runs ' + (i + 2) + (n > 1 ? '–' + (i + 1 + n) : '') + '\nIf false: skips them';
+      subHtml = '<span class="sw-summary" title="' + esc(full) + '">if true → runs ' + n + ' action' + (n === 1 ? '' : 's') + '</span><span class="sw-hidden-count"></span>';
+    }
+    if (a.label) subHtml = '<span class="value-label">' + esc(a.label) + '</span>' + subHtml;
     li.innerHTML =
-      '<span class="index">' + (i + 1) + '.</span>' +
-      '<span class="type">' + (ACTION_ICONS[a.type] || '') + esc(a.type) + '</span>' +
+      '<span class="index" title="#' + (i + 1) + '">' + (i + 1) + '.</span>' +
+      '<span' + (typeAttrs || ' class="type"') + '>' + (ACTION_ICONS[a.type] || '') + esc(a.type) + toggleHtml + '</span>' +
       '<span class="value" title="' + esc(a.value) + esc(delayText) + '">' +
-        esc(a.value) + esc(delayText) + labelHtml +
+        '<span class="value-main">' + esc(a.value) + esc(delayText) + '</span>' +
+        (subHtml ? '<span class="value-sub">' + subHtml + '</span>' : '') +
       '</span>';
 
     var btnRow = document.createElement('div');
@@ -188,9 +206,32 @@
     var ul = $('actions');
     if (!ul) return;
     ul.innerHTML = '';
-    demoActions.forEach(function (a, i) { ul.appendChild(buildActionLi(a, i)); });
+    var cond = null, left = 0;
+    demoActions.forEach(function (a, i) {
+      ul.appendChild(buildActionLi(a, i, left-- > 0 ? cond : null));
+      if (a.guards) { cond = i; left = a.guards; }
+    });
     var badge = $('actionCount');
     if (badge) { badge.textContent = demoActions.length; badge.style.display = demoActions.length ? 'inline-block' : 'none'; }
+  })();
+
+  /* ───────────────────────────────────────────────────────────────────────────
+   * 5b. LAST RUN CARD  (display only)
+   *     run/last-run.js -> _render shows how the last Play came out, from the
+   *     lastRun the background keeps. An install that has ever played a
+   *     scenario shows it, so the preview does too: the scenario above, passed,
+   *     a few minutes ago. A pass has no failures and no Bug report button.
+   * ────────────────────────────────────────────────────────────────────────── */
+  (function seedLastRun() {
+    var card = $('lastRunCard');
+    if (!card) return;
+    card.dataset.status = 'passed';
+    var set = function (sel, text) { var el = card.querySelector(sel); if (el) el.textContent = text; };
+    set('.lr-verdict', '✓ Passed');           // shared/verdict.js -> verdictLabel
+    set('.lr-name', 'Login flow');
+    set('.lr-when', '3 minutes ago');         // Intl.RelativeTimeFormat, like _ago()
+    card.querySelector('.lr-name').title = 'Login flow';
+    card.hidden = false;
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
@@ -343,6 +384,19 @@
       var o = document.createElement('option'); o.value = f; o.textContent = f; sel.appendChild(o);
     });
   });
+  // Export Code takes the scenario Manage Scenarios has (export/code-card.js),
+  // and its format buttons are on once there is one, each titled with what it makes.
+  (function seedExportCode() {
+    var sel = $('exportCodeSelect');
+    if (sel) sel.value = '0';
+    $$('.export-code-grid > .export-code-btn').forEach(function (btn) {
+      btn.disabled = !sel || !sel.value;
+      btn.title = btn.disabled ? 'Select a scenario first' : btn.dataset.desc;
+    });
+  })();
+  // run/time-picker.js -> prefillScheduleUrl: the start URL starts as this tab's.
+  var scheduleUrl = $('scheduleUrl');
+  if (scheduleUrl) scheduleUrl.value = 'https://app.example.com/dashboard';
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 8b. SETTINGS › VERSION CARD  (display only)
@@ -367,7 +421,39 @@
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
-   * 8c. DATA › DB TEST SESSION CARD  (display only)
+   * 8c. SETTINGS › SCREENSHOT + NOTIFICATIONS  (display only)
+   *     popup/settings.js fills both cards from storage, falling back to its
+   *     defaults when nothing was ever saved. Left alone the markup shows no
+   *     save mode picked, an empty prefix, both speed boxes blank and every
+   *     notification off — the defaults are what a fresh install shows.
+   * ────────────────────────────────────────────────────────────────────────── */
+  (function seedSettings() {
+    var check = function (id, on) { var el = $(id); if (el) el.checked = on; };
+    var val = function (id, v) { var el = $(id); if (el) el.value = v; };
+    // loadScreenshotSettings()
+    check('saveModeAuto', true);
+    val('screenshotPrefix', 'screenshot');
+    check('screenshotTypeInName', true);
+    var hint = $('screenshotNameHint');
+    if (hint) hint.textContent = 'Format: screenshot_full_2026-01-31_09-45-00.png (type tag: _full, _elem, _window, _scrollV…)';
+    [['segScrollSpeedV', 2], ['segScrollSpeedH', 2], ['watermarkFontSize', 13]].forEach(function (s) {
+      var slider = $(s[0]);
+      val(s[0] + 'Num', s[1]);
+      if (!slider) return;
+      slider.value = s[1];
+      // updateRangeFill(): the track is painted up to --pct.
+      var min = parseFloat(slider.min) || 0, max = parseFloat(slider.max) || 100;
+      slider.style.setProperty('--pct', ((s[1] - min) / (max - min) * 100).toFixed(2) + '%');
+    });
+    // loadNotificationSetting() — NOTIFY_TOGGLES defaults (bg/notify.js).
+    check('notifyOnComplete', false);
+    check('notifyOnError', true);
+    check('notifyOnCapture', true);
+    check('notifyOnSchedule', true);
+  })();
+
+  /* ───────────────────────────────────────────────────────────────────────────
+   * 8d. DATA › DB TEST SESSION CARD  (display only)
    *     Mirrors popup/init.js -> initDbGuardToggle: the Adminer switch defaults
    *     to on, and the "roll back after each Playback run" row is hidden while
    *     dbtools/features.js keeps TABLE_COPIES off — otherwise the static
@@ -379,6 +465,15 @@
     var guard = $('dbGuardToggle');
     var row = guard && guard.closest('label');
     if (row) row.style.display = 'none';
+    // initDbStatus: with the switch on, the line names the last session used.
+    var line = $('dbStatus');
+    if (line) {
+      line.innerHTML = '<span class="dot"></span>' +
+        '<span class="label"><span>Last session: </span><b>Checkout regression</b></span>' +
+        '<span class="sub">12 changes · ended</span>';
+      line.title = 'Open this session on the Test sessions & rollback page';
+      line.hidden = false;
+    }
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────

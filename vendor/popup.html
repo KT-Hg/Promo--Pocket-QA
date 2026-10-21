@@ -5,7 +5,18 @@
   <meta charset="UTF-8" />
   <title>Pocket QA</title>
 
-  <link rel="stylesheet" href="css/popup.css" />
+  <link rel="stylesheet" href="css/popup/01-base.css" />
+  <link rel="stylesheet" href="css/popup/02-action-list.css" />
+  <link rel="stylesheet" href="css/popup/03-variables.css" />
+  <link rel="stylesheet" href="css/popup/04-lists-cards-forms.css" />
+  <link rel="stylesheet" href="css/popup/05-shell.css" />
+  <link rel="stylesheet" href="css/popup/06-modals-toast.css" />
+  <link rel="stylesheet" href="css/popup/07-switch-loop-csv.css" />
+  <link rel="stylesheet" href="css/popup/08-capture.css" />
+  <link rel="stylesheet" href="css/popup/09-header-update-playback.css" />
+  <link rel="stylesheet" href="css/popup/10-motion-export-lock.css" />
+  <link rel="stylesheet" href="css/popup/11-highlight.css" />
+  <link rel="stylesheet" href="css/popup/12-switch-blocks.css" />
 </head>
 
 <body>
@@ -38,7 +49,6 @@
     <div class="status-bar">
       <div class="status-dot" id="statusDot"></div>
       <span class="status-label" id="activationStatus">Checking...</span>
-      <span class="status-label" id="connectionStatus"></span>
       <span class="status-spacer"></span>
       <span class="status-progress" id="statusText"></span>
       <button id="activateTab" class="success" style="display:none;">Activate</button>
@@ -50,7 +60,7 @@
       <span class="now-playing-icon" id="nowPlayingIcon">▶</span>
       <span class="now-playing-name" id="nowPlayingName"></span>
       <span class="now-playing-step" id="nowPlayingStep"></span>
-      <span class="now-playing-caret" id="nowPlayingCaret">▾</span>
+      <span class="chev chev--menu" id="nowPlayingCaret" aria-hidden="true">▾</span>
     </div>
     <!-- Mini panel dropdown -->
     <div class="playback-panel" id="playbackPanel" style="display:none;">
@@ -124,6 +134,18 @@
   <div class="tab-panel active" id="tabRecord">
     <div class="main-content" id="mainContent" role="main">
 
+    <!-- LAST RUN — how the last Play or Resume came out (popup/run/last-run.js) -->
+    <div class="card last-run" id="lastRunCard" hidden>
+      <div class="lr-head">
+        <span class="lr-verdict"></span>
+        <span class="lr-name"></span>
+        <span class="lr-when"></span>
+        <button type="button" id="lastRunDismiss" class="lr-dismiss" title="Hide until the next run" aria-label="Hide the last run until the next one">✕</button>
+      </div>
+      <ul class="lr-failures" aria-label="Failures of the last run"></ul>
+      <button type="button" id="lastRunBugReport" class="secondary lr-report" hidden>📋 Bug report</button>
+    </div>
+
     <!-- RECORD -->
     <div class="card">
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
@@ -135,16 +157,17 @@
         <button id="stopRecord" class="secondary">■ Stop</button>
       </div>
       <div class="row" style="margin-top: 6px; gap: 4px;">
-        <button id="undoAction" class="secondary" disabled style="flex: 0 0 auto; width: auto; padding: 6px 12px; font-size: 14px;" title="Undo">↩</button>
-        <button id="redoAction" class="secondary" disabled style="flex: 0 0 auto; width: auto; padding: 6px 12px; font-size: 14px;" title="Redo">↪</button>
+        <button id="undoAction" class="secondary" disabled style="flex: 0 0 auto; width: auto; padding: 3.5px 12px; font-size: 14px;" title="Undo">↩</button>
+        <button id="redoAction" class="secondary" disabled style="flex: 0 0 auto; width: auto; padding: 3.5px 12px; font-size: 14px;" title="Redo">↪</button>
         <button id="preview" class="secondary" style="flex: 1; font-size: 12px;">Preview Actions <span id="actionCount" class="count-badge" style="display:none;"></span></button>
       </div>
+      <div id="scenarioClickThroughNote" class="ct-scenario-note" style="display:none;">⊘ Click through is off for this scenario — every action is checked</div>
       <ul id="actions" class="actions"></ul>
     </div>
 
     <!-- ADD MANUAL ACTION -->
     <div class="card collapsible" id="addManualActionCard">
-      <h3 role="button" tabindex="0" aria-expanded="true" style="display:flex;align-items:center;">Add Manual Action <span class="caret">▾</span><button class="card-help-btn" data-card="addManual" title="Manual action guide" style="margin-left:auto;">?</button></h3>
+      <h3 role="button" tabindex="0" aria-expanded="true" style="display:flex;align-items:center;"><span id="manualCardTitle">Add Manual Action</span> <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="addManual" title="Manual action guide" style="margin-left:auto;">?</button></h3>
 
       <!-- Action Type — always first -->
       <div class="step-label">Action Type</div>
@@ -154,17 +177,18 @@
           <option value="click">Click</option>
           <option value="input">Input</option>
           <option value="hover">Hover</option>
-          <option value="dropdown">Open Dropdown</option>
+          <option value="dropdown">Dropdown (open / choose item)</option>
           <option value="dragdrop">Drag &amp; Drop</option>
         </optgroup>
         <optgroup label="Navigation &amp; Code">
           <option value="navigate">Navigate</option>
-          <option value="wait">Wait (ms)</option>
+          <option value="wait">Wait</option>
           <option value="script">Run JS</option>
         </optgroup>
         <optgroup label="Logic">
           <option value="condition">Condition (If)</option>
-          <option value="switch">Switch (Variable → Scenario)</option>
+          <option value="assert">Assert (Expect)</option>
+          <option value="switch">Switch (branch)</option>
           <option value="readdom">Read DOM → Variable</option>
         </optgroup>
         <optgroup label="Screenshots">
@@ -178,198 +202,127 @@
         </optgroup>
       </select>
 
+      <!-- CONDITION "If" — ahead of the selector, which a URL condition hides, so
+           choosing the type never moves the field just used. Shown for the
+           condition and assert types by CSS (02-action-list.css); the rest of the
+           Condition is #conditionWrapper, after the selector. An Assert has the
+           same fields ("Expect" for "If") without "Then run". -->
+      <div class="hidden-by-default" id="conditionIfWrapper">
+        <div class="step-label" id="conditionStepLabel">Condition</div>
+        <div class="form-grid">
+          <label class="form-label" for="conditionType">If</label>
+          <div class="form-inline">
+            <select id="conditionType">
+              <optgroup label="Element">
+                <option value="elementExists">Element exists</option>
+                <option value="elementNotExists">Element does not exist</option>
+                <option value="elementVisible">Element is visible</option>
+                <option value="elementHidden">Element is hidden</option>
+              </optgroup>
+              <optgroup label="Text &amp; value">
+                <option value="textContains">Text contains</option>
+                <option value="textEquals">Text equals</option>
+                <option value="valueContains">Value contains</option>
+                <option value="valueEquals">Value equals</option>
+              </optgroup>
+              <optgroup label="Page URL">
+                <option value="urlContains">URL contains</option>
+                <option value="urlEquals">URL equals</option>
+              </optgroup>
+              <optgroup label="Class &amp; attribute">
+                <option value="hasClass">Has class</option>
+                <option value="hasAttribute">Has attribute</option>
+              </optgroup>
+            </select>
+            <button id="conditionHelpBtn" class="card-help-btn" type="button" title="Condition types guide" aria-label="Condition types guide">?</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREENSHOT → VARIABLE target — ahead of the selector, which only the
+           Element target shows. Shown for screenshot_tovar by CSS. -->
+      <div class="hidden-by-default" id="ssTovarTargetWrapper">
+        <div class="step-label">Screenshot</div>
+        <div class="form-grid">
+          <label class="form-label" for="screenshotTovarTarget">Target</label>
+          <select id="screenshotTovarTarget">
+            <option value="page">Visible (viewport)</option>
+            <option value="full">Full Page (scroll)</option>
+            <option value="element">Element</option>
+          </select>
+        </div>
+      </div>
+
       <!-- SELECTOR SECTION — shown only when selected type needs a selector -->
       <div class="hidden-by-default" id="selectorSection">
         <div class="step-label" id="selectorStepLabel">Selector</div>
+        <!-- [type ▾ | selector] 🎯 — the button stands for the hidden #selectorType
+             (record/selector-type-menu.js), which every other part of the form reads -->
         <div class="row" id="selectorRow">
-          <select id="selectorType" class="w-100" style="font-size: 11px;">
+          <div class="sel-group">
+            <button type="button" class="sel-group-type" id="selectorTypeBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="selectorTypeMenu"></button>
+            <input id="manualSelector" />
+            <div class="sel-menu" id="selectorTypeMenu" role="menu" aria-label="Selector type" hidden></div>
+          </div>
+          <select id="selectorType" hidden>
             <option value="css">CSS</option>
             <option value="xpath">XPath</option>
+            <option value="fullXpath">Full XPath</option>
             <option value="id">ID</option>
             <option value="name">Name</option>
             <option value="text">Text</option>
-            <option value="fullXpath">Full XPath</option>
           </select>
-          <input id="manualSelector" class="flex-1" placeholder="Selector (e.g., #btn, .class, //div)" />
           <button id="pickElement" class="secondary w-auto" aria-label="Pick element on page" title="Pick element"><span aria-hidden="true">🎯</span></button>
         </div>
+        <span id="pickedFrameNote" class="helper-text sw-frame-note" style="display:none;"></span>
         <div id="pickedSelectorsWrap" class="hidden-by-default">
-          <div id="pickedSelectorsInfo"></div>
-          <button id="clearPickedSelectorsBtn" class="secondary w-auto" title="Clear picked selector">✕ Clear</button>
+          <span id="pickedSelectorsInfo"></span>
+          <button id="clearPickedSelectorsBtn" class="link-btn" type="button" title="Forget the picked element">✕ Clear</button>
         </div>
       </div>
 
-      <!-- READ DOM SETTINGS — shown for readdom type -->
-      <div class="hidden-by-default" id="readdomWrapper" style="margin-top:6px;">
-        <div class="step-label" id="readdomStepLabel">Read DOM Settings</div>
-        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap;">Save to var</label>
-          <input id="readdomVarName" placeholder="${varName}" style="flex:1; margin:0;" />
-        </div>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap;">Read from</label>
-          <select id="readdomReadFrom" style="flex:1; margin:0;">
-            <option value="text">Text content</option>
-            <option value="value">Input value</option>
-            <option value="attr">Attribute</option>
-          </select>
-          <input id="readdomAttrName" placeholder="attr name" style="width:90px; margin:0; display:none;" />
-        </div>
-      </div>
-
-      <!-- SCREENSHOT → VARIABLE SETTINGS — shown for screenshot_tovar type -->
-      <div class="hidden-by-default" id="screenshotTovarWrapper" style="margin-top:6px;">
-        <div class="step-label" id="screenshotTovarStepLabel">Screenshot Settings</div>
-        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Target</label>
-          <select id="screenshotTovarTarget" style="flex:1; margin:0;">
-            <option value="page">Visible (viewport)</option>
-            <option value="full">Full Page (scroll)</option>
-            <option value="element">Element (CSS selector)</option>
-          </select>
-        </div>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Variable name</label>
-          <input id="screenshotTovarVarName" placeholder="screenshot_col" style="flex:1; margin:0;" />
-        </div>
-        <span class="helper-text">Image saved to disk + stored in variable for HTML/XLSX export</span>
-      </div>
-
-      <!-- DROP TARGET — shown for dragdrop type (after source selector) -->
-      <div class="hidden-by-default" id="dragdropWrapper" style="margin-top:6px;">
-        <div class="step-label" id="dragdropStepLabel">Drop Target</div>
-        <div class="row" id="dragdropTargetRow">
-          <select id="dragdropTargetSelectorType" class="w-100" style="font-size: 11px;">
-            <option value="css">CSS</option>
-            <option value="xpath">XPath</option>
-            <option value="id">ID</option>
-            <option value="name">Name</option>
-            <option value="text">Text</option>
-            <option value="fullXpath">Full XPath</option>
-          </select>
-          <input id="dragdropTarget" class="flex-1" placeholder="CSS selector of drop target" />
-          <button id="dragdropTargetPick" class="secondary w-auto" title="Pick drop target element on page" aria-label="Pick drop target element on page"><span aria-hidden="true">🎯</span></button>
-        </div>
-        <div id="pickedDragdropTargetWrap" class="hidden-by-default">
-          <div id="pickedDragdropTargetInfo"></div>
-          <button id="clearDragdropTargetBtn" class="secondary w-auto" title="Clear picked drop target">✕ Clear</button>
-        </div>
-        <span class="helper-text">Source = main selector above. Target = where to drop.</span>
-      </div>
-
-      <!-- UPLOAD FILE SETTINGS — shown for uploadFile type -->
-      <div class="hidden-by-default" id="uploadFileWrapper" style="margin-top:6px;">
-        <div class="step-label" id="uploadFileStepLabel">File to Upload</div>
-        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Upload mode</label>
-          <select id="uploadMode" style="flex:1; margin:0;">
-            <option value="input">File Input (&lt;input type="file"&gt;)</option>
-            <option value="dropzone">DropZone (drag-and-drop area)</option>
-          </select>
-        </div>
-        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Folder path</label>
-          <input id="uploadFolderPath" placeholder="e.g. C:\Data\Uploads" style="flex:1; margin:0;" />
-        </div>
-        <div style="display:flex; gap:6px; align-items:flex-start;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px; padding-top:4px;">File name(s)</label>
-          <textarea id="uploadFileNames" rows="3" placeholder="invoice_001.pdf&#10;report_${date}.xlsx&#10;${filename}" style="flex:1; margin:0; resize:vertical; font-family:inherit; font-size:inherit;"></textarea>
-        </div>
-        <span class="helper-text">One file name per line. Each name supports <code>${variable}</code>. Combine with CSV to upload different files per row.</span>
-      </div>
-
-      <!-- CONDITION SETTINGS — shown for condition type -->
-      <div class="hidden-by-default" id="conditionWrapper">
-        <div class="step-label" id="conditionStepLabel">Condition</div>
-        <div class="row" style="margin-top: 6px; gap: 6px;">
-          <select id="conditionType" style="flex: 1; margin: 0;">
-            <option value="elementExists">Element Exists</option>
-            <option value="elementNotExists">Element Not Exists</option>
-            <option value="elementVisible">Element Visible</option>
-            <option value="elementHidden">Element Hidden</option>
-            <option value="textContains">Text Contains</option>
-            <option value="textEquals">Text Equals</option>
-            <option value="valueEquals">Value Equals</option>
-            <option value="valueContains">Value Contains</option>
-            <option value="urlContains">URL Contains</option>
-            <option value="urlEquals">URL Equals</option>
-            <option value="hasClass">Has Class</option>
-            <option value="hasAttribute">Has Attribute</option>
-          </select>
-          <button id="conditionHelpBtn" class="secondary" style="width: auto; flex: 0 0 auto; margin: 0; padding: 6px 10px; font-size: 13px; font-weight: 700;" title="Condition types guide">?</button>
-        </div>
-        <div id="conditionExpectedValueWrapper" style="margin-top: 6px;">
-          <input id="conditionExpectedValue" placeholder="Expected value (for text/url checks)" />
-        </div>
-        <input id="conditionSkipCount" type="number" min="1" value="1" placeholder="Actions to skip if false" style="margin-top: 6px;" />
-        <span class="helper-text">If condition is FALSE, skip next N actions</span>
-      </div>
-
-      <!-- SWITCH SETTINGS — shown for switch type -->
-      <div class="hidden-by-default" id="switchWrapper" style="margin-top:6px;">
-        <div class="step-label" id="switchStepLabel">Switch Variable</div>
-        <div style="display:flex; gap:6px; align-items:center; margin-bottom:6px;">
-          <label style="font-size:12px; color:var(--muted); white-space:nowrap; width:80px;">Variable</label>
-          <input id="switchVar" placeholder="${varName}  e.g. ${role}" style="flex:1; margin:0;" />
-        </div>
-        <div id="switchCaseList" style="display:flex; flex-direction:column; gap:4px; margin-bottom:6px;"></div>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <input id="switchCaseValue" placeholder="Case value  (e.g. admin)" style="flex:1; margin:0; font-size:12px;" />
-          <select id="switchCaseScenario" style="flex:1.5; margin:0; font-size:12px;"></select>
-          <input id="switchCaseStart" class="sw-start-input" type="number" min="1" placeholder="#1" title="Start at action # (1 = first)" />
-          <button id="switchAddCase" class="secondary" style="width:auto; flex:0 0 auto; margin:0; padding:4px 8px; font-size:12px;">+ Add</button>
-        </div>
-        <span class="helper-text">Leave case value empty to set as <strong>default</strong>. Cases are checked top-to-bottom; first match wins. <strong>#</strong> = action number to start from (default 1). <strong>↻ This scenario</strong> jumps to that action in the scenario being played instead of running another one.</span>
-      </div>
-
-      <!-- CHILD CONDITION (optional collapsible) — shown for click/input/hover -->
+      <!-- CHILD CONDITION (optional, collapsible) — click / input / hover / readdom,
+           right under the selector it narrows down -->
       <div class="hidden-by-default child-cond-outer" id="childConditionWrapper" style="margin-top:8px;">
         <button type="button" class="child-cond-toggle" id="childConditionToggle" aria-expanded="false">
-          <span class="child-cond-caret">▸</span>
+          <span class="chev" aria-hidden="true">▸</span>
           Child Condition
-          <span class="child-cond-subtitle">(optional — find child element to act on)</span>
+          <span class="child-cond-subtitle" id="childConditionSubtitle">(optional — find child element to act on)</span>
           <span class="child-cond-badge" id="childConditionBadge" style="display:none;">●</span>
         </button>
         <div class="child-cond-body" id="childConditionBody" style="display:none;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border);">
-            <span style="font-size:11px;color:var(--muted);white-space:nowrap;">Match</span>
-            <div style="display:flex;gap:4px;">
+          <div class="form-grid">
+            <span class="form-label">Match</span>
+            <div class="cond-match-row">
               <label class="cond-match-label" id="condMatchLabelAny">
                 <input type="radio" name="condChildMatchMode" id="condChildMatchAny" value="any" checked />
-                ANY <span style="font-size:10px;color:var(--muted);">(OR)</span>
+                ANY <span class="cond-match-sub">(OR)</span>
               </label>
               <label class="cond-match-label" id="condMatchLabelAll">
                 <input type="radio" name="condChildMatchMode" id="condChildMatchAll" value="all" />
-                ALL <span style="font-size:10px;color:var(--muted);">(AND)</span>
+                ALL <span class="cond-match-sub">(AND)</span>
               </label>
             </div>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
-            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">value equals</label>
-            <input id="condChildValueEquals" placeholder='e.g. 1, 2, ${myVar}' style="flex:1;margin:0;font-size:12px;" />
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
-            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">text contains</label>
-            <input id="condChildTextContains" placeholder='e.g. Abc, ${myVar}' style="flex:1;margin:0;font-size:12px;" />
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
-            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">id contains</label>
-            <input id="condChildIdContains" placeholder='e.g. submit-btn, ${myVar}' style="flex:1;margin:0;font-size:12px;" />
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
-            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">class contains</label>
-            <input id="condChildClassContains" placeholder='e.g. active, btn-primary' style="flex:1;margin:0;font-size:12px;" />
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;">
-            <label style="font-size:11px;color:var(--muted);white-space:nowrap;width:90px;">type</label>
-            <select id="condChildType" style="flex:1;margin:0;font-size:12px;">
+            <label class="form-label" for="condChildValueEquals">Value is</label>
+            <input id="condChildValueEquals" placeholder="e.g. 2 or ${myVar}" />
+            <label class="form-label" for="condChildTextContains">Text has</label>
+            <input id="condChildTextContains" placeholder="e.g. Edit or ${myVar}" />
+            <label class="form-label" for="condChildIdContains">ID has</label>
+            <input id="condChildIdContains" placeholder="e.g. submit-btn" />
+            <label class="form-label" for="condChildClassContains">Class has</label>
+            <input id="condChildClassContains" placeholder="e.g. active" />
+            <label class="form-label" for="condChildType">Type is</label>
+            <select id="condChildType">
               <option value="">(any)</option>
               <option value="text">text</option>
               <option value="checkbox">checkbox</option>
               <option value="radio">radio</option>
               <option value="submit">submit</option>
               <option value="button">button</option>
+              <!-- "select": any <select> (single or multiple) — playback and both exporters match it by tag -->
               <option value="select">select</option>
+              <!-- What 20464f1 saved for "select": kept so editing such an action keeps its condition -->
+              <option value="select-one" hidden>select (single)</option>
               <option value="textarea">textarea</option>
               <option value="hidden">hidden</option>
               <option value="number">number</option>
@@ -381,14 +334,238 @@
               <option value="range">range</option>
             </select>
           </div>
-          <span class="helper-text" style="margin-top:6px;display:block;">Selector above = parent container. Child matching the condition will be acted on. Supports <code>${varName}</code> variables &amp; CSV columns.</span>
+          <span class="form-hint">The selector above is the parent; the first child that matches is used. <code>${varName}</code> and CSV columns work.</span>
         </div>
       </div>
 
-      <!-- VALUE FIELD — shown for input/navigate/script/wait/screenshot/screenshot_full -->
+      <!-- DROPDOWN — shown for dropdown type: open it only, or choose item #.
+           data-mode ("" | index) shows the item fields; see updateDropdownForm. -->
+      <div class="hidden-by-default" id="dropdownWrapper" data-mode="" style="margin-top:6px;">
+        <div class="step-label" id="dropdownStepLabel">Dropdown</div>
+        <div class="form-grid">
+          <label class="form-label" for="dropdownPickMode">Then</label>
+          <select id="dropdownPickMode">
+            <option value="">Only open it</option>
+            <option value="index">Choose item #</option>
+          </select>
+
+          <label class="form-label dd-pick" for="dropdownPickIndex">Item #</label>
+          <div class="dd-pick">
+            <input id="dropdownPickIndex" placeholder="e.g. 2, -1, random, ${row}" spellcheck="false" autocomplete="off"
+                   title="Counts from 1 as the list shows it, a &quot;-- Select --&quot; line included. -1 = last, random = any enabled item." />
+            <span class="form-hint">From 1, as the list shows it · <code>-1</code> = last · <code>random</code> = any</span>
+          </div>
+
+          <label class="form-label dd-pick" for="dropdownItemSelector">Items</label>
+          <div class="dd-pick">
+            <input id="dropdownItemSelector" placeholder="optional, e.g. .menu li" spellcheck="false" autocomplete="off"
+                   title="A &lt;select&gt; needs nothing here. Any other dropdown is opened, then the item clicked; its items are found by role=&quot;option&quot; unless you give their CSS selector." />
+            <span class="form-hint">Leave empty for a <code>&lt;select&gt;</code> or a <code>role="option"</code> list.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- READ DOM SETTINGS — shown for readdom type. data-mode (whole | part)
+           shows the fields of the chosen Save mode; see updateReaddomForm. -->
+      <div class="hidden-by-default" id="readdomWrapper" data-mode="whole" style="margin-top:6px;">
+        <div class="step-label" id="readdomStepLabel">Read DOM Settings</div>
+        <div class="form-grid">
+          <label class="form-label" for="readdomReadFrom">Read from</label>
+          <div class="form-inline">
+            <select id="readdomReadFrom">
+              <option value="text">Text content</option>
+              <option value="visible">Visible text</option>
+              <option value="value">Input value</option>
+              <option value="attr">Attribute</option>
+            </select>
+            <input id="readdomAttrName" placeholder="attr name" aria-label="Attribute name" style="display:none;" />
+          </div>
+
+          <span class="form-label" id="readdomModeLabel">Save</span>
+          <div class="sw-seg" role="radiogroup" aria-labelledby="readdomModeLabel">
+            <label><input type="radio" name="readdomMode" value="whole" checked /><span>Whole text</span></label>
+            <label><input type="radio" name="readdomMode" value="part" /><span>Part of the text</span></label>
+          </div>
+
+          <label class="form-label rd-whole" for="readdomVarName">Variable</label>
+          <div class="rd-whole">
+            <input id="readdomVarName" placeholder="e.g. orderId" spellcheck="false" autocomplete="off" />
+            <span class="form-hint" id="readdomVarHint">Use it as <code>${name}</code> in later steps.</span>
+          </div>
+
+          <label class="form-label rd-part" for="readdomPattern">Pattern</label>
+          <div class="rd-part">
+            <input id="readdomPattern" placeholder="e.g. Order #${orderId} ·" spellcheck="false" autocomplete="off" />
+            <span class="form-hint">Copy the text as it reads and put <code>${name}</code> on the part to keep — each one becomes a variable.</span>
+            <label class="form-check"><input type="checkbox" id="readdomMatchCase" /> Match case</label>
+          </div>
+
+          <label class="form-label rd-part" for="readdomTryText">Try on</label>
+          <div class="rd-part">
+            <input id="readdomTryText" placeholder="paste the element's text" spellcheck="false" autocomplete="off" />
+            <div id="readdomTryResult" class="readdom-try-result" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREENSHOT → VARIABLE: where the capture goes (its target is above) -->
+      <div class="hidden-by-default" id="screenshotTovarWrapper" style="margin-top:6px;">
+        <div class="step-label" id="screenshotTovarStepLabel">Save as</div>
+        <div class="form-grid">
+          <label class="form-label" for="screenshotTovarVarName">Variable</label>
+          <div>
+            <input id="screenshotTovarVarName" placeholder="e.g. screenshot_col" spellcheck="false" autocomplete="off" />
+            <span class="form-hint">Saved to disk; the variable gets the filename and the image goes into the HTML / XLSX export. ZIP: the image is named by Filename below.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DROP TARGET — shown for dragdrop type (after the source selector) -->
+      <div class="hidden-by-default" id="dragdropWrapper" style="margin-top:6px;">
+        <div class="step-label" id="dragdropStepLabel">Drop on</div>
+        <div class="row" id="dragdropTargetRow">
+          <div class="sel-group">
+            <button type="button" class="sel-group-type" id="dragdropTargetTypeBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="dragdropTargetTypeMenu"></button>
+            <input id="dragdropTarget" />
+            <div class="sel-menu" id="dragdropTargetTypeMenu" role="menu" aria-label="Drop target selector type" hidden></div>
+          </div>
+          <select id="dragdropTargetSelectorType" hidden>
+            <option value="css">CSS</option>
+            <option value="xpath">XPath</option>
+            <option value="fullXpath">Full XPath</option>
+            <option value="id">ID</option>
+            <option value="name">Name</option>
+            <option value="text">Text</option>
+          </select>
+          <button id="dragdropTargetPick" class="secondary w-auto" title="Pick drop target element on page" aria-label="Pick drop target element on page"><span aria-hidden="true">🎯</span></button>
+        </div>
+        <div id="pickedDragdropTargetWrap" class="hidden-by-default">
+          <span id="pickedDragdropTargetInfo"></span>
+          <button id="clearDragdropTargetBtn" class="link-btn" type="button" title="Forget the picked drop target">✕ Clear</button>
+        </div>
+      </div>
+
+      <!-- UPLOAD FILE SETTINGS — shown for uploadFile type -->
+      <div class="hidden-by-default" id="uploadFileWrapper" style="margin-top:6px;">
+        <div class="step-label" id="uploadFileStepLabel">File to Upload</div>
+        <div class="form-grid">
+          <label class="form-label" for="uploadMode">Mode</label>
+          <select id="uploadMode">
+            <option value="input">File input field</option>
+            <option value="dropzone">Drop zone (drag &amp; drop area)</option>
+          </select>
+          <label class="form-label" for="uploadFolderPath">Folder</label>
+          <input id="uploadFolderPath" placeholder="e.g. C:\Data\Uploads" />
+          <label class="form-label" for="uploadFileNames">Files</label>
+          <div>
+            <textarea id="uploadFileNames" rows="3" placeholder="invoice_001.pdf&#10;report_${date}.xlsx&#10;${filename}"></textarea>
+            <span class="form-hint">One name per line. <code>${variable}</code> works, so a CSV run can upload a different file per row.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONDITION: what the condition compares and what it guards. Its "If" is
+           #conditionIfWrapper, before the selector. -->
+      <div class="hidden-by-default" id="conditionWrapper" style="margin-top:8px;">
+        <div class="form-grid">
+          <!-- display: contents — the label and field are grid cells hidden together -->
+          <div id="conditionExpectedValueWrapper">
+            <label class="form-label" id="conditionExpectedLabel" for="conditionExpectedValue">Value</label>
+            <input id="conditionExpectedValue" placeholder="value to compare" spellcheck="false" autocomplete="off" />
+          </div>
+
+          <!-- display: contents, as above; hidden for an Assert -->
+          <div id="conditionRunWrapper">
+            <label class="form-label" for="conditionRunTo">Then run</label>
+            <div>
+              <select id="conditionRunTo"></select>
+              <ol id="conditionGuarded" class="cond-guarded" aria-label="Actions this Condition guards"></ol>
+              <span class="form-hint" id="conditionRunHint">If the condition is false, these are skipped.</span>
+            </div>
+          </div>
+        </div>
+        <!-- skipCount is still what is saved; "Then run" picks it by unit -->
+        <input id="conditionSkipCount" type="hidden" value="1" />
+      </div>
+
+      <!-- SWITCH SETTINGS — shown for switch type -->
+      <div class="hidden-by-default sw-form" id="switchWrapper" data-mode="var" style="margin-top:6px;">
+        <div class="step-label" id="switchStepLabel">Branch</div>
+        <div class="sw-seg sw-mode" role="radiogroup" aria-label="Switch on">
+          <label><input type="radio" name="switchMode" value="var" checked /><span>On a variable</span></label>
+          <label><input type="radio" name="switchMode" value="always" /><span>Always</span></label>
+        </div>
+        <input id="switchVar" class="sw-var-only" placeholder="${role}" aria-label="Variable to switch on" style="margin:0;" />
+        <span class="sw-hint sw-var-only">Its value at run time picks the case, e.g. <code>${role}</code>.</span>
+        <span class="sw-hint sw-always-only">Plays this scenario every time — no variable needed — then carries on with the rest of this one.</span>
+
+        <div class="sw-section-head sw-var-only">
+          <span class="sw-section-title">Cases</span>
+          <span class="sw-section-sub">checked top to bottom · first match wins</span>
+        </div>
+        <div id="switchCaseList" class="sw-case-list sw-var-only"></div>
+
+        <!-- One editor for both a new case and the case being edited -->
+        <div id="switchCaseEditor" class="sw-case-editor">
+          <div class="sw-editor-title sw-var-only" id="switchCaseEditorTitle">+ New case</div>
+          <label class="sw-field sw-var-only" for="switchCaseValue">
+            <span class="sw-field-label">Value</span>
+            <input id="switchCaseValue" placeholder="e.g. admin — empty = default" />
+          </label>
+          <div class="sw-field sw-var-only">
+            <span class="sw-field-label">Then</span>
+            <div class="sw-seg" role="radiogroup" aria-label="What this case does">
+              <label><input type="radio" name="switchCaseMode" value="self" checked /><span>↻ Run actions here</span></label>
+              <label><input type="radio" name="switchCaseMode" value="other" /><span>▶ Play another scenario</span></label>
+            </div>
+          </div>
+          <div id="switchCaseRangeRow" class="sw-field">
+            <span class="sw-field-label">Actions</span>
+            <div class="sw-range-row">
+              <select id="switchCaseFrom" aria-label="First action of the case"></select>
+              <span class="sw-to">to</span>
+              <select id="switchCaseTo" aria-label="Last action of the case"></select>
+            </div>
+          </div>
+          <div id="switchCaseOtherRow" class="sw-field" style="display:none;">
+            <span class="sw-field-label">Scenario</span>
+            <div class="sw-other-row">
+              <select id="switchCaseScenario" aria-label="Scenario to play"></select>
+              <span class="sw-to">#</span>
+              <input id="switchCaseStart" class="sw-start-input" type="number" min="1" placeholder="1" title="First action to play (empty = 1)" aria-label="First action to play" />
+              <span class="sw-to">to #</span>
+              <input id="switchCaseEnd" class="sw-start-input" type="number" min="1" placeholder="end" title="Last action to play (empty = to the end)" aria-label="Last action to play" />
+            </div>
+          </div>
+          <div class="sw-editor-actions sw-var-only">
+            <button id="switchCaseCancel" class="secondary" type="button" style="display:none;">Cancel</button>
+            <button id="switchAddCase" class="secondary" type="button">+ Add case</button>
+          </div>
+        </div>
+
+        <div id="switchContinueRow" class="sw-field sw-continue" style="display:none;">
+          <span class="sw-field-label">Afterwards, continue at</span>
+          <select id="switchContinueAt"></select>
+        </div>
+        <div id="switchValidation" class="sw-validation" style="display:none;"></div>
+        <details class="sw-help">
+          <summary><span class="chev" aria-hidden="true">▸</span>How Switch works</summary>
+          <ul>
+            <li>Cases are checked top to bottom; the first whose value equals the variable runs. A case with an empty value is the <strong>default</strong> — it runs when nothing else matches.</li>
+            <li><strong>↻ Run actions here</strong> — the case owns a block of this scenario's actions (<strong>Actions</strong> from / to). Only the matching case's block runs, then playback continues after the Switch. Drag the Switch above those actions first, then pick them.</li>
+            <li><strong>To the end</strong> in the second list keeps the old jump: play from that action to the end of the scenario.</li>
+            <li><strong>▶ Play another scenario</strong> — <strong>#</strong> / <strong>to #</strong> are its first / last action (empty = from the start / to the end).</li>
+            <li><strong>Always</strong> — no variable and no cases: the chosen scenario plays every time (from <strong>#</strong> to <strong>to #</strong>), then the rest of this scenario runs.</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- VALUE FIELD — one box, a different thing per type (VALUE_BOX in
+           record/form-table.js): its data-kind sizes it — see 02-action-list.css -->
       <div class="hidden-by-default" id="manualValueWrapper">
         <div class="step-label" id="valueStepLabel">Value</div>
-        <textarea id="manualValue" placeholder="Value (for input/navigate) or JS code (for script)" style="width:100%; height:80px; margin-top:6px;"></textarea>
+        <textarea id="manualValue" spellcheck="false"></textarea>
+        <button id="useTabUrl" class="secondary w-auto" type="button" title="Fill in the URL of the tab this popup was opened on">Use this tab's URL</button>
       </div>
 
       <!-- DELAY -->
@@ -402,6 +579,7 @@
             <option value="3000">3s</option>
             <option value="5000">5s</option>
             <option value="10000">10s</option>
+            <option value="">No delay</option>
             <option value="custom">Custom…</option>
           </select>
           <input id="manualDelay" type="number" min="0" placeholder="ms"
@@ -415,7 +593,16 @@
         <input id="manualLabel" placeholder="Short description for this action" />
       </div>
 
-      <div class="row">
+      <!-- CLICK THROUGH — click / hover / input / dropdown / dragdrop / uploadFile
+           (shared/click-through.js). The scenario has its own switch too. -->
+      <div class="hidden-by-default" id="clickThroughWrapper">
+        <label class="form-check" title="Off: the action fails (retry / skip / stop) when its element is disabled, read-only, not visible or covered by another element, as a user would be stopped. The scenario has its own Click through switch; both must allow it.">
+          <input type="checkbox" id="clickThrough" checked /> Click through — act even on a disabled or covered element
+        </label>
+      </div>
+
+      <!-- Hidden until an action type is chosen (02-action-list.css) -->
+      <div class="row" id="manualActionButtons">
         <button id="addManualAction">Add Action</button>
         <button id="cancelEdit" class="secondary w-auto" style="display: none;">Cancel</button>
       </div>
@@ -428,7 +615,7 @@
         <button class="card-help-btn" data-card="save" title="Save scenario guide">?</button>
       </div>
       <input id="scenarioName" placeholder="Scenario name *" class="required-field" />
-      <span class="helper-text">Required field for saving your scenario</span>
+      <span class="helper-text"><b>New</b> with a name creates the scenario now and saves every edit into it; with no name it starts an unsaved draft.</span>
       <div class="row equalize">
         <select id="scenarioFolder">
           <option value="">No Folder</option>
@@ -490,6 +677,7 @@
           <button id="renameScenario" class="secondary loop-action-btn" title="Rename scenario">✎</button>
           <button id="duplicateScenario" class="secondary loop-action-btn" title="Duplicate scenario">⧉</button>
           <button id="showMoveSection" class="secondary loop-action-btn" title="Move to folder">⇄</button>
+          <button id="scenarioClickThrough" class="secondary loop-action-btn ct-toggle" aria-pressed="false" title="Click through">⊘</button>
         </div>
       </div>
 
@@ -517,7 +705,7 @@
 
     <!-- MANAGE FOLDERS -->
     <div class="card collapsible collapsed" id="manageFoldersCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Manage Folders <span class="caret">▸</span><button class="card-help-btn" data-card="folders" title="Folder management guide" style="margin-left:auto;">?</button></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Manage Folders <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="folders" title="Folder management guide" style="margin-left:auto;">?</button></h3>
       <div class="row">
         <input id="newFolderInput" placeholder="Folder name..." />
         <button id="createFolderAction" class="secondary">Create</button>
@@ -529,7 +717,7 @@
 
     <!-- SEQUENCE PLAYBACK -->
     <div class="card collapsible collapsed" id="sequencePlaybackCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Sequence Scenarios <span class="caret">▸</span><button class="card-help-btn" data-card="sequence" title="Sequence guide" style="margin-left:auto;">?</button></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Sequence Scenarios <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="sequence" title="Sequence guide" style="margin-left:auto;">?</button></h3>
       <div class="row">
         <select id="sequenceScenarioList" class="flex-1"></select>
         <button id="addToRunList" class="secondary w-auto">+ Add</button>
@@ -570,7 +758,18 @@
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
         <h3 style="margin:0;">Variables</h3>
-        <button class="card-help-btn" data-card="variables" title="Variables guide">?</button>
+        <div class="var-head-tools">
+          <select id="variableSort" class="var-sort-select" title="Sort variables" aria-label="Sort variables">
+            <option value="custom">Custom (drag)</option>
+            <option value="createdDesc">Newest</option>
+            <option value="createdAsc">Oldest</option>
+            <option value="updatedDesc">Recently edited</option>
+            <option value="nameAsc">Name A→Z</option>
+            <option value="nameDesc">Name Z→A</option>
+            <option value="type">Type</option>
+          </select>
+          <button class="card-help-btn" data-card="variables" title="Variables guide">?</button>
+        </div>
       </div>
       <ul class="var-list" id="variablesTableBody"></ul>
       <button id="addVariableRow">+ Add Row</button>
@@ -586,20 +785,27 @@
       <select id="exportCodeSelect" style="margin-bottom:10px;">
         <option value="">-- Select scenario --</option>
       </select>
+      <!-- Two by two, the description in the title (popup/export/code-card.js). -->
       <div class="export-code-grid">
-        <button id="exportBookmarklet" class="export-code-btn export-code-js" title="Export as JS Bookmarklet">
-          <span class="export-code-icon">⚡</span>
-          <div class="export-code-info">
-            <span class="export-code-name">JS Bookmarklet</span>
-            <span class="export-code-desc">Runs in browser</span>
-          </div>
+        <button id="exportBookmarklet" class="export-code-btn export-code-js" data-desc="JS Bookmarklet: runs in the browser, from a bookmark">
+          <span class="export-code-icon" aria-hidden="true">⚡</span>
+          <span class="export-code-name">JS Bookmarklet</span>
         </button>
-        <button id="exportSelenium" class="export-code-btn export-code-py" title="Export as Selenium Python">
-          <span class="export-code-icon">🐍</span>
-          <div class="export-code-info">
-            <span class="export-code-name">Selenium Python</span>
-            <span class="export-code-desc">Standalone .py file</span>
-          </div>
+        <button id="exportSelenium" class="export-code-btn export-code-py" data-desc="Selenium Python: a script or a pytest test">
+          <span class="export-code-icon" aria-hidden="true">🐍</span>
+          <span class="export-code-name">Selenium Python</span>
+        </button>
+        <button id="exportPlaywright" class="export-code-btn export-code-pw" data-desc="Playwright Test: a .spec.js for npx playwright test">
+          <span class="export-code-icon" aria-hidden="true">🎭</span>
+          <span class="export-code-name">Playwright Test</span>
+        </button>
+        <button id="exportRobot" class="export-code-btn export-code-rf" data-desc="Robot Framework: a .robot test for robot, with SeleniumLibrary">
+          <span class="export-code-icon" aria-hidden="true">🤖</span>
+          <span class="export-code-name">Robot Framework</span>
+        </button>
+        <button id="exportJava" class="export-code-btn export-code-java" data-desc="Selenium Java: a TestNG test class for mvn test">
+          <span class="export-code-icon" aria-hidden="true">☕</span>
+          <span class="export-code-name">Selenium Java</span>
         </button>
       </div>
     </div>
@@ -657,7 +863,7 @@
 
     <!-- SCHEDULED PLAYBACK -->
     <div class="card collapsible collapsed" id="scheduledPlaybackCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Scheduled Playback <span class="caret">▸</span><button class="card-help-btn" data-card="schedule" title="Schedule guide" style="margin-left:auto;">?</button></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Scheduled Playback <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="schedule" title="Schedule guide" style="margin-left:auto;">?</button></h3>
       <div class="row equalize">
         <select id="scheduleScenarioSelect">
           <option value="">-- Select scenario --</option>
@@ -671,6 +877,8 @@
         </div>
       </div>
       <input id="scheduleLabel" placeholder="Schedule label (optional)" style="margin-top: 6px;" />
+      <input id="scheduleUrl" type="url" placeholder="Start URL — each run opens it in a new tab" style="margin-top: 6px;"
+             title="Filled in with this tab's address. Without a start URL a run plays on whatever tab is active at the time." />
       <div class="row" style="margin-top: 6px; align-items: center; gap: 8px;">
         <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;flex:1;margin:0;">
           <input type="checkbox" id="scheduleRepeat" style="width:auto;margin:0;" /> Repeat daily
@@ -683,7 +891,7 @@
 
     <!-- CSV DATA-DRIVEN RUN -->
     <div class="card collapsible collapsed" id="csvRunCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">CSV Data-Driven Run <span class="caret">▸</span><button class="card-help-btn" data-card="csv" title="CSV run guide" style="margin-left:auto;">?</button></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">CSV Data-Driven Run <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="csv" title="CSV run guide" style="margin-left:auto;">?</button></h3>
       <select id="csvScenarioSelect" style="margin-bottom: 6px;">
         <option value="">-- Select scenario --</option>
       </select>
@@ -722,6 +930,20 @@
           <button id="csvChangeFormat" class="csv-format-clear-btn">🗑 Clear &amp; change</button>
         </div>
       </div>
+
+      <!-- ZIP only (07-switch-loop-csv.css); never locked, so a finished run
+           can be downloaded again under other names -->
+      <details id="csvZipAdvanced">
+        <summary><span class="chev" aria-hidden="true">▸</span>Advanced</summary>
+        <div class="form-grid">
+          <label class="form-label" for="csvZipFolderName">Folder name</label>
+          <div>
+            <input id="csvZipFolderName" placeholder="row_01" spellcheck="false" autocomplete="off" />
+            <span class="form-hint">Empty = row_01. ${column} from the CSV, e.g. abc ${name}</span>
+            <label class="form-check" title="The row's number in the CSV after the name: abc john_01, abc kate_02. Off: a name used twice gets _2."><input type="checkbox" id="csvZipRowNumber" /> Add row number</label>
+          </div>
+        </div>
+      </details>
 
       <!-- Status text: idle messages / run summary -->
       <div id="csvStatus" style="font-size:12px; color:var(--muted); margin-top:4px;"></div>
@@ -929,7 +1151,7 @@
           <span><span class="hl-stats-bar-val" id="hlStatTotal">0</span> total</span>
           <span class="hl-stats-bar-sep">·</span>
           <span><span class="hl-stats-bar-val" id="hlStatPages">—</span> pages</span>
-          <button class="hl-stats-detail-btn" id="hlStatsDetailBtn">▾ Details</button>
+          <button class="hl-stats-detail-btn" id="hlStatsDetailBtn" aria-expanded="false"><span class="chev" aria-hidden="true">▸</span>Details</button>
         </div>
         <!-- Expanded stats detail (hidden by default) -->
         <div class="hl-stats-detail" id="hlStatsDetail">
@@ -1001,7 +1223,7 @@
           <span class="hl-pattern-icon">🔗</span>
           <span class="hl-pattern-title">URL Patterns</span>
           <button class="hl-pattern-copy-all" id="hlPatternCopyAll" title="Copy all patterns to clipboard" style="display:none;">⧉ Copy all</button>
-          <span class="hl-pattern-caret" id="hlPatternCaret">▾</span>
+          <span class="chev" id="hlPatternCaret" aria-hidden="true">▸</span>
         </div>
         <div class="hl-pattern-body" id="hlPatternBody" style="display:none;">
           <!-- Build pattern from current tab URL -->
@@ -1009,7 +1231,7 @@
             <button class="hl-builder-trigger" id="hlBuilderTrigger" type="button">
               <span class="hl-builder-trigger-icon">🌐</span>
               <span class="hl-builder-trigger-host" id="hlBuilderHost"></span>
-              <span class="hl-builder-trigger-caret" id="hlBuilderCaret">▾</span>
+              <span class="chev chev--menu" id="hlBuilderCaret" aria-hidden="true">▾</span>
             </button>
             <div class="hl-builder-panel" id="hlBuilderPanel" style="display:none;">
               <div class="hl-builder-hint">Click <b>subdomain</b> to toggle exact↔* &nbsp;|&nbsp; Click <b>path</b>: <span class="hl-seg hl-seg--exact hl-seg--sm">exact</span> → <span class="hl-seg hl-seg--any hl-seg--sm">*</span> → <span class="hl-seg hl-seg--end hl-seg--sm">off</span></div>
@@ -1168,7 +1390,7 @@
       <button id="saveScreenshotSettings" class="success" style="margin-top: 8px;">Save Settings</button>
     </div>
 
-    <!-- Notifications card — one toggle per category in bg/utils.js (NOTIFY_KEY). -->
+    <!-- Notifications card — one toggle per category in bg/notify.js (NOTIFY_KEY). -->
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
         <h3 style="margin:0;">Notifications</h3>
@@ -1176,15 +1398,15 @@
       </div>
       <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
         <input type="checkbox" id="notifyOnComplete" style="width: auto; margin: 0; cursor: pointer;" />
-        Run finished — playback, sequence, CSV
+        Run passed or stopped — playback, sequence, CSV
       </label>
       <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
         <input type="checkbox" id="notifyOnError" style="width: auto; margin: 0; cursor: pointer;" />
-        Errors &amp; warnings — failed actions, closed tab, storage full
+        Errors &amp; warnings — a failed run or action, a paused run, closed tab, storage full
       </label>
       <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
         <input type="checkbox" id="notifyOnCapture" style="width: auto; margin: 0; cursor: pointer;" />
-        Capture results — where a hotkey screenshot was saved
+        Capture results — where a screenshot was saved, when the popup is closed
       </label>
       <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
         <input type="checkbox" id="notifyOnSchedule" style="width: auto; margin: 0; cursor: pointer;" />
@@ -1218,7 +1440,7 @@
 
     <!-- Import / Export card (collapsible) -->
     <div class="card collapsible collapsed" id="importExportCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Import / Export <span class="caret">▸</span><button class="card-help-btn" data-card="importExport" title="Import / Export guide" style="margin-left:auto;">?</button></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Import / Export <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="importExport" title="Import / Export guide" style="margin-left:auto;">?</button></h3>
       <div class="row">
         <select id="exportScenarioSelect" class="flex-1">
           <option value="">-- Select scenario --</option>
@@ -1238,7 +1460,7 @@
 
     <!-- Backup / Restore card (collapsible) -->
     <div class="card collapsible collapsed" id="backupRestoreCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Backup / Restore <span class="caret">▸</span><button class="card-help-btn" data-card="backup" title="Backup / Restore guide" style="margin-left:auto;">?</button></h3>
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Backup / Restore <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="backup" title="Backup / Restore guide" style="margin-left:auto;">?</button></h3>
       <input type="file" id="restoreFile" accept=".json" />
       <div class="row" style="gap:6px;">
         <button id="backupAll" class="secondary flex-1">⬇ Backup All Data</button>
@@ -1298,14 +1520,22 @@
       <div id="rndPickSection" style="display:none">
         <label style="margin-bottom:6px">Values <span style="font-weight:400;color:var(--muted);font-size:11px">(one picked randomly · CSV column overrides)</span>:</label>
         <div id="pickValuesList"></div>
-        <button id="addPickValue" class="secondary" style="width:100%;margin-top:5px;font-size:12px;padding:5px 0">+ Add Value</button>
+        <div class="pv-add-row">
+          <button id="addPickValue" class="secondary" type="button">+ Add Value</button>
+          <button id="addPickBlank" class="secondary pv-add-blank" type="button" title="Add an entry that is the empty string">+ Add ∅ Blank</button>
+        </div>
+        <span class="pv-hint"><b>∅ Blank</b> = the empty string. It can be picked like any other value — e.g. to test a field left empty.</span>
       </div>
 
       <!-- Fallback List panel -->
       <div id="rndFallbackSection" style="display:none">
         <label style="margin-bottom:6px">Fallback order <span style="font-weight:400;color:var(--muted);font-size:11px">(tries A → B → C in Child Condition, stops on first match)</span>:</label>
         <div id="fallbackValuesList"></div>
-        <button id="addFallbackValue" class="secondary" style="width:100%;margin-top:5px;font-size:12px;padding:5px 0">+ Add Value</button>
+        <div class="pv-add-row">
+          <button id="addFallbackValue" class="secondary" type="button">+ Add Value</button>
+          <button id="addFallbackBlank" class="secondary pv-add-blank" type="button" title="Add an entry that matches an empty field">+ Add ∅ Blank</button>
+        </div>
+        <span class="pv-hint"><b>∅ Blank</b> matches a child whose field is <b>empty</b> — e.g. Value equals ∅ finds an input nobody typed in.</span>
       </div>
 
       <div class="row" style="margin-top: 12px;">
@@ -1373,6 +1603,20 @@
     <button id="csvResumeDismissBtn" class="resume-banner-dismiss" aria-label="Dismiss CSV resume banner">✕</button>
   </div>
 
+  <!-- BUG REPORT — the last run's report in Markdown, to copy into an issue (popup/run/last-run.js) -->
+  <div id="bugReportModal" class="random-modal" aria-labelledby="bugReportTitle" aria-hidden="true">
+    <div class="random-modal-content bug-report-content">
+      <h4 id="bugReportTitle" style="margin:0 0 8px;"><span aria-hidden="true">📋</span> Bug report</h4>
+      <textarea id="bugReportText" class="bug-report-text" readonly spellcheck="false" aria-label="Bug report in Markdown"></textarea>
+      <label class="bug-report-values"><input type="checkbox" id="bugReportShowValues"> Include typed values</label>
+      <div class="bug-report-buttons">
+        <button type="button" id="bugReportCopy" class="success">Copy</button>
+        <button type="button" id="bugReportShot" class="secondary">Download screenshot</button>
+        <button type="button" id="bugReportClose" class="secondary bug-report-close" aria-label="Close the bug report">✕</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DIFF MODAL -->
   <div id="diffModal" class="random-modal" role="dialog" aria-modal="true" aria-labelledby="diffModalTitle" aria-hidden="true" style="align-items:flex-start; padding-top:30px;">
     <div class="random-modal-content" style="width:380px; max-height:85vh; overflow-y:auto;">
@@ -1398,210 +1642,307 @@
     </div>
   </div>
 
-  <!-- Export Bookmarklet Modal -->
-  <div id="exportBmModal" class="export-bm-modal" role="dialog" aria-modal="true" aria-labelledby="exportBmTitle" aria-hidden="true">
+  <!-- Export Code Modal: one for every format. popup/export-modal.js puts in what is
+       the format's own (strip, chip, title, Settings block, Download label). -->
+  <div id="exportModal" class="export-bm-modal" role="dialog" aria-modal="true" aria-labelledby="exportTitle" aria-hidden="true">
     <div class="export-bm-content">
 
       <div class="export-bm-header">
-        <div class="export-bm-accent-bar export-bm-accent-js"></div>
+        <div class="export-bm-accent-bar" id="exportAccent"></div>
         <div class="export-bm-header-inner">
-          <div class="export-bm-lang-badge export-bm-lang-badge-js">JS</div>
+          <div class="export-bm-lang-badge" id="exportBadge"></div>
           <div class="export-bm-header-text">
-            <div class="export-bm-header-title" id="exportBmTitle">Export JS Bookmarklet</div>
-            <div class="export-bm-header-sub" id="exportBmSub">scenario.js · 0 steps</div>
+            <div class="export-bm-header-title" id="exportTitle">Export</div>
+            <div class="export-bm-header-sub" id="exportSub"></div>
           </div>
           <div class="export-bm-header-actions">
-            <button class="export-bm-icon-btn export-bm-icon-btn-danger" id="exportBmClose" aria-label="Close">✕</button>
+            <button class="export-bm-icon-btn export-bm-icon-btn-danger" id="exportClose" aria-label="Close">✕</button>
           </div>
         </div>
       </div>
 
-      <div class="export-bm-tabs" role="tablist">
-        <button class="export-bm-tab active" data-tab="preview" role="tab" aria-selected="true">Code</button>
-        <button class="export-bm-tab" data-tab="variables" role="tab" aria-selected="false">Variables <span class="export-bm-tab-count" id="exportBmVarCount">0</span></button>
-        <button class="export-bm-tab" data-tab="actions" role="tab" aria-selected="false">Actions <span class="export-bm-tab-count" id="exportBmActCount">0</span></button>
-        <button class="export-bm-tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
-      </div>
-
-      <div id="exportBmWarning" class="export-bm-warning" style="display:none;">
-        <span class="export-bm-warning-icon">⚠</span>
-        <span id="exportBmSkipMsg"></span>
+      <!-- The open tab alone is in the Tab order; ← → Home End move between them. -->
+      <div class="export-bm-tabs" role="tablist" aria-label="Export">
+        <button class="export-bm-tab active" data-tab="preview" role="tab" id="exportTabBtnPreview" aria-controls="exportTabPreview" aria-selected="true">Code</button>
+        <button class="export-bm-tab" data-tab="variables" role="tab" id="exportTabBtnVariables" aria-controls="exportTabVariables" aria-selected="false" tabindex="-1">Variables <span class="export-bm-tab-count" id="exportVarCount">0</span></button>
+        <button class="export-bm-tab" data-tab="actions" role="tab" id="exportTabBtnActions" aria-controls="exportTabActions" aria-selected="false" tabindex="-1">Actions <span class="export-bm-tab-count" id="exportActCount">0</span></button>
+        <button class="export-bm-tab" data-tab="settings" role="tab" id="exportTabBtnSettings" aria-controls="exportTabSettings" aria-selected="false" tabindex="-1">Settings</button>
       </div>
 
       <!-- Tab: Preview Code -->
-      <div id="exportBmTabPreview" class="export-bm-tab-panel">
+      <div id="exportTabPreview" class="export-bm-tab-panel" role="tabpanel" aria-labelledby="exportTabBtnPreview">
+        <!-- One line counting what the Actions tab lists; a click opens it. -->
+        <button id="exportWarning" class="export-bm-warning" hidden>
+          <span class="export-bm-warning-icon" aria-hidden="true">⚠</span>
+          <span id="exportWarningText" class="export-bm-warning-text"></span>
+        </button>
         <div class="export-bm-code-toolbar">
-          <span class="export-bm-code-label" id="exportBmCodeLabel">scenario.js</span>
+          <span class="export-bm-code-label" id="exportCodeLabel"></span>
           <div class="export-bm-code-toolbar-btns">
-            <button class="export-bm-code-toolbar-btn" id="exportBmWrapBtn">wrap</button>
-            <button class="export-bm-code-toolbar-btn" id="exportBmSelectAllBtn">select all</button>
+            <button class="export-bm-code-toolbar-btn" id="exportStepsBtn" title="Go to the first step">↧ Steps</button>
+            <button class="export-bm-code-toolbar-btn" id="exportWrapBtn" aria-pressed="false" title="Fold long lines">wrap</button>
+            <button class="export-bm-code-toolbar-btn" id="exportSelectAllBtn">select all</button>
           </div>
         </div>
-        <pre id="exportBmCode" class="export-bm-code"><code></code></pre>
+        <pre id="exportCode" class="export-bm-code" tabindex="0" aria-label="Exported code"><code></code></pre>
       </div>
 
       <!-- Tab: Variables -->
-      <div id="exportBmTabVariables" class="export-bm-tab-panel" hidden>
-        <div id="exportBmNoVars" class="export-bm-no-vars">No variables defined</div>
-        <div id="exportBmVarList"></div>
+      <div id="exportTabVariables" class="export-bm-tab-panel" role="tabpanel" aria-labelledby="exportTabBtnVariables" tabindex="0" hidden>
+        <div id="exportNoVars" class="export-bm-no-vars">No variables defined</div>
+        <div id="exportVarList"></div>
       </div>
 
       <!-- Tab: Actions Review -->
-      <div id="exportBmTabActions" class="export-bm-tab-panel" hidden>
-        <div class="export-bm-act-summary" id="exportBmActSummary"></div>
-        <div id="exportBmActList"></div>
+      <div id="exportTabActions" class="export-bm-tab-panel" role="tabpanel" aria-labelledby="exportTabBtnActions" hidden>
+        <!-- What is not exported as is: by status, one line per reason; then notes. -->
+        <div class="export-bm-act-summary" id="exportActSummary"></div>
+        <div id="exportActList"></div>
       </div>
 
-      <!-- Tab: Settings -->
-      <div id="exportBmTabSettings" class="export-bm-tab-panel" hidden>
-        <div class="export-bm-setting-row">
-          <div class="export-bm-setting-label">
-            Delay between steps
-            <small>Time to wait after each action</small>
+      <!-- Tab: Settings: one block per format, the open one shown -->
+      <div id="exportTabSettings" class="export-bm-tab-panel" role="tabpanel" aria-labelledby="exportTabBtnSettings" hidden>
+        <div data-format="js" hidden>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Delay between steps
+              <small>Time to wait after each action</small>
+            </div>
+            <input type="number" id="exportBmStepDelay" class="export-bm-setting-input" value="300" min="0" max="10000" />
+            <span class="export-bm-setting-unit">ms</span>
           </div>
-          <input type="number" id="exportBmStepDelay" class="export-bm-setting-input" value="300" min="0" max="10000" />
-          <span class="export-bm-setting-unit">ms</span>
-        </div>
-        <div class="export-bm-setting-row">
-          <div class="export-bm-setting-label">
-            Element timeout
-            <small>Max wait time for elements</small>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Element timeout
+              <small>Max wait time for elements</small>
+            </div>
+            <input type="number" id="exportBmElTimeout" class="export-bm-setting-input" value="5000" min="500" max="30000" />
+            <span class="export-bm-setting-unit">ms</span>
           </div>
-          <input type="number" id="exportBmElTimeout" class="export-bm-setting-input" value="5000" min="500" max="30000" />
-          <span class="export-bm-setting-unit">ms</span>
         </div>
-        <button id="exportBmRegenerate" class="export-bm-regen-btn">↺ Regenerate Code</button>
-      </div>
-
-      <!-- Stats pills -->
-      <div class="export-bm-stats-row">
-        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-blue"></span><span id="exportBmStatSteps">0 steps</span></div>
-        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-green"></span><span id="exportBmStatVars">0 variables</span></div>
-        <div class="export-bm-stat-pill" id="exportBmStatWarnPill" style="display:none;"><span class="export-bm-dot dot-orange"></span><span id="exportBmStatWarn">0 verify</span></div>
-        <div class="export-bm-stat-pill" id="exportBmStatSkippedPill" style="display:none;"><span class="export-bm-dot dot-red"></span><span id="exportBmStatSkipped">0 skipped</span></div>
+        <div data-format="py" hidden>
+          <div class="export-bm-setting-row export-bm-setting-row-stack">
+            <div class="export-bm-setting-label">
+              Starting URL <span class="export-bm-url-from-tab" id="exportSeleniumUrlFromTab" style="display:none;">📍 Current tab</span>
+              <small>Initial page to navigate to</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="url" id="exportSeleniumStartUrl" class="export-bm-setting-input" placeholder="https://…" />
+              <button id="exportSeleniumGetUrl" class="export-bm-icon-btn" title="Get URL from current tab" style="font-size:11px;">🔄</button>
+            </div>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">WebDriver</div>
+            <select id="exportSeleniumDriver" class="export-bm-setting-select">
+              <option value="Chrome" selected>Chrome</option>
+              <option value="Firefox">Firefox</option>
+              <option value="Edge">Edge</option>
+              <option value="Safari">Safari</option>
+            </select>
+          </div>
+          <label class="export-bm-setting-row" id="exportSeleniumHeadlessRow">
+            <span class="export-bm-setting-label">
+              Headless
+              <small>No browser window, as on a CI server</small>
+            </span>
+            <span class="hl-toggle-switch">
+              <input type="checkbox" id="exportSeleniumHeadless" role="switch" />
+              <span class="hl-toggle-slider" aria-hidden="true"></span>
+            </span>
+          </label>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Output
+              <small>pytest: a test_….py with a browser fixture</small>
+            </div>
+            <select id="exportSeleniumOutput" class="export-bm-setting-select">
+              <option value="script" selected>Script</option>
+              <option value="pytest">pytest</option>
+            </select>
+          </div>
+          <div class="export-bm-setting-row export-bm-setting-row-stack" id="exportSeleniumDataRow" hidden>
+            <div class="export-bm-setting-label">
+              Data file (CSV)
+              <small>A test per row; a column wins over the variable of its name. Read beside the test file.</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="text" id="exportSeleniumData" class="export-bm-setting-input" placeholder="data.csv" />
+            </div>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Delay between steps
+              <small>Time to wait after each action</small>
+            </div>
+            <input type="number" id="exportSeleniumStepDelay" class="export-bm-setting-input" value="500" min="0" max="10000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Element timeout
+              <small>Max wait time for elements</small>
+            </div>
+            <input type="number" id="exportSeleniumElTimeout" class="export-bm-setting-input" value="10000" min="500" max="60000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+        </div>
+        <div data-format="pw" hidden>
+          <div class="export-bm-setting-row export-bm-setting-row-stack">
+            <div class="export-bm-setting-label">
+              Starting URL <span class="export-bm-url-from-tab" id="exportPwUrlFromTab" style="display:none;">📍 Current tab</span>
+              <small>Opened first, unless the scenario starts with a Navigate</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="url" id="exportPwStartUrl" class="export-bm-setting-input" placeholder="https://…" />
+              <button id="exportPwGetUrl" class="export-bm-icon-btn" title="Get URL from current tab" style="font-size:11px;">🔄</button>
+            </div>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Delay between steps
+              <small>Time to wait after each action</small>
+            </div>
+            <input type="number" id="exportPwStepDelay" class="export-bm-setting-input" value="300" min="0" max="10000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Element timeout
+              <small>Max wait time for elements</small>
+            </div>
+            <input type="number" id="exportPwElTimeout" class="export-bm-setting-input" value="10000" min="500" max="60000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+          <div class="export-bm-setting-row export-bm-setting-row-stack">
+            <div class="export-bm-setting-label">
+              Data file (CSV)
+              <small>A test per row; a column wins over the variable of its name. Read beside the spec.</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="text" id="exportPwData" class="export-bm-setting-input" placeholder="data.csv" />
+            </div>
+          </div>
+        </div>
+        <div data-format="rf" hidden>
+          <div class="export-bm-setting-row export-bm-setting-row-stack">
+            <div class="export-bm-setting-label">
+              Starting URL <span class="export-bm-url-from-tab" id="exportRfUrlFromTab" style="display:none;">📍 Current tab</span>
+              <small>Opened first, unless the scenario starts with a Navigate</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="url" id="exportRfStartUrl" class="export-bm-setting-input" placeholder="https://…" />
+              <button id="exportRfGetUrl" class="export-bm-icon-btn" title="Get URL from current tab" style="font-size:11px;">🔄</button>
+            </div>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">Browser</div>
+            <select id="exportRfBrowser" class="export-bm-setting-select">
+              <option value="Chrome" selected>Chrome</option>
+              <option value="Firefox">Firefox</option>
+              <option value="Edge">Edge</option>
+              <option value="Safari">Safari</option>
+            </select>
+          </div>
+          <label class="export-bm-setting-row" id="exportRfHeadlessRow">
+            <span class="export-bm-setting-label">
+              Headless
+              <small>No browser window, as on a CI server</small>
+            </span>
+            <span class="hl-toggle-switch">
+              <input type="checkbox" id="exportRfHeadless" role="switch" />
+              <span class="hl-toggle-slider" aria-hidden="true"></span>
+            </span>
+          </label>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Delay between steps
+              <small>Time to wait after each action</small>
+            </div>
+            <input type="number" id="exportRfStepDelay" class="export-bm-setting-input" value="500" min="0" max="10000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Element timeout
+              <small>Max wait time for elements</small>
+            </div>
+            <input type="number" id="exportRfElTimeout" class="export-bm-setting-input" value="10000" min="500" max="60000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+          <div class="export-bm-setting-row export-bm-setting-row-stack">
+            <div class="export-bm-setting-label">
+              Data file (CSV)
+              <small>A test per row (DataDriver); a column wins over the variable of its name. Read beside the test, through pqa_csv_reader.py, which Download saves too.</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="text" id="exportRfData" class="export-bm-setting-input" placeholder="data.csv" />
+            </div>
+          </div>
+        </div>
+        <div data-format="java" hidden>
+          <div class="export-bm-setting-row export-bm-setting-row-stack">
+            <div class="export-bm-setting-label">
+              Starting URL <span class="export-bm-url-from-tab" id="exportJavaUrlFromTab" style="display:none;">📍 Current tab</span>
+              <small>Opened first, unless the scenario starts with a Navigate</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="url" id="exportJavaStartUrl" class="export-bm-setting-input" placeholder="https://…" />
+              <button id="exportJavaGetUrl" class="export-bm-icon-btn" title="Get URL from current tab" style="font-size:11px;">🔄</button>
+            </div>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">WebDriver</div>
+            <select id="exportJavaDriver" class="export-bm-setting-select">
+              <option value="Chrome" selected>Chrome</option>
+              <option value="Firefox">Firefox</option>
+              <option value="Edge">Edge</option>
+              <option value="Safari">Safari</option>
+            </select>
+          </div>
+          <label class="export-bm-setting-row" id="exportJavaHeadlessRow">
+            <span class="export-bm-setting-label">
+              Headless
+              <small>No browser window, as on a CI server</small>
+            </span>
+            <span class="hl-toggle-switch">
+              <input type="checkbox" id="exportJavaHeadless" role="switch" />
+              <span class="hl-toggle-slider" aria-hidden="true"></span>
+            </span>
+          </label>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Delay between steps
+              <small>Time to wait after each action</small>
+            </div>
+            <input type="number" id="exportJavaStepDelay" class="export-bm-setting-input" value="500" min="0" max="10000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+          <div class="export-bm-setting-row">
+            <div class="export-bm-setting-label">
+              Element timeout
+              <small>Max wait time for elements</small>
+            </div>
+            <input type="number" id="exportJavaElTimeout" class="export-bm-setting-input" value="10000" min="500" max="60000" />
+            <span class="export-bm-setting-unit">ms</span>
+          </div>
+          <div class="export-bm-setting-row export-bm-setting-row-stack">
+            <div class="export-bm-setting-label">
+              Data file (CSV)
+              <small>A test per row; a column wins over the variable of its name. Read in the folder the test runs in.</small>
+            </div>
+            <div class="export-bm-url-field">
+              <input type="text" id="exportJavaData" class="export-bm-setting-input" placeholder="data.csv" />
+            </div>
+          </div>
+        </div>
+        <button id="exportReload" class="export-bm-regen-btn" title="Read the saved scenario again; the code already follows these Settings">↻ Reload scenario</button>
       </div>
 
       <div class="export-bm-footer">
         <div class="export-bm-footer-spacer"></div>
         <div class="export-bm-footer-btns">
-          <button id="exportBmCancel" class="export-bm-nf-btn">Cancel</button>
-          <button id="exportBmDownload" class="export-bm-nf-btn">⬇ .js</button>
-          <button id="exportBmCopy" class="export-bm-nf-btn export-bm-nf-btn-primary">📋 Copy Code</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Export Selenium Python Modal -->
-  <div id="exportSeleniumModal" class="export-bm-modal" role="dialog" aria-modal="true" aria-labelledby="exportSeleniumTitle" aria-hidden="true">
-    <div class="export-bm-content">
-
-      <div class="export-bm-header">
-        <div class="export-bm-accent-bar export-bm-accent-py"></div>
-        <div class="export-bm-header-inner">
-          <div class="export-bm-lang-badge export-bm-lang-badge-py">PY</div>
-          <div class="export-bm-header-text">
-            <div class="export-bm-header-title" id="exportSeleniumTitle">Export Selenium Python</div>
-            <div class="export-bm-header-sub" id="exportSeleniumSub">scenario.py · 0 steps</div>
-          </div>
-          <div class="export-bm-header-actions">
-            <button class="export-bm-icon-btn export-bm-icon-btn-danger" id="exportSeleniumClose" aria-label="Close">✕</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="export-bm-tabs" role="tablist">
-        <button class="export-py-tab active" data-tab="preview" role="tab" aria-selected="true">Code</button>
-        <button class="export-py-tab" data-tab="variables" role="tab" aria-selected="false">Variables <span class="export-bm-tab-count" id="exportSeleniumVarCount">0</span></button>
-        <button class="export-py-tab" data-tab="actions" role="tab" aria-selected="false">Actions <span class="export-bm-tab-count" id="exportSeleniumActCount">0</span></button>
-        <button class="export-py-tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
-      </div>
-
-      <div id="exportSeleniumWarning" class="export-bm-warning" style="display:none;">
-        <span class="export-bm-warning-icon">⚠</span>
-        <span id="exportSeleniumSkipMsg"></span>
-      </div>
-
-      <!-- Tab: Preview Code -->
-      <div id="exportSeleniumTabPreview" class="export-bm-tab-panel">
-        <div class="export-bm-code-toolbar">
-          <span class="export-bm-code-label" id="exportSeleniumCodeLabel">scenario.py</span>
-          <div class="export-bm-code-toolbar-btns">
-            <button class="export-bm-code-toolbar-btn" id="exportSeleniumWrapBtn">wrap</button>
-            <button class="export-bm-code-toolbar-btn" id="exportSeleniumSelectAllBtn">select all</button>
-          </div>
-        </div>
-        <pre id="exportSeleniumCode" class="export-bm-code"><code></code></pre>
-      </div>
-
-      <!-- Tab: Variables -->
-      <div id="exportSeleniumTabVariables" class="export-bm-tab-panel" hidden>
-        <div id="exportSeleniumNoVars" class="export-bm-no-vars">No variables defined</div>
-        <div id="exportSeleniumVarList"></div>
-      </div>
-
-      <!-- Tab: Actions Review -->
-      <div id="exportSeleniumTabActions" class="export-bm-tab-panel" hidden>
-        <div class="export-bm-act-summary" id="exportSeleniumActSummary"></div>
-        <div id="exportSeleniumActList"></div>
-      </div>
-
-      <!-- Tab: Settings -->
-      <div id="exportSeleniumTabSettings" class="export-bm-tab-panel" hidden>
-        <div class="export-bm-setting-row">
-          <div class="export-bm-setting-label">
-            Starting URL
-            <small>Initial page to navigate to</small>
-          </div>
-          <div style="display:flex;gap:5px;align-items:center;flex-shrink:0;">
-            <span class="export-bm-url-from-tab" id="exportSeleniumUrlFromTab" style="display:none;">📍 Current tab</span>
-            <input type="url" id="exportSeleniumStartUrl" class="export-bm-setting-input" placeholder="https://…" style="width:130px;" />
-            <button id="exportSeleniumGetUrl" class="export-bm-icon-btn" title="Get URL from current tab" style="font-size:11px;">🔄</button>
-          </div>
-        </div>
-        <div class="export-bm-setting-row">
-          <div class="export-bm-setting-label">WebDriver</div>
-          <select id="exportSeleniumDriver" class="export-bm-setting-select">
-            <option value="Chrome" selected>Chrome</option>
-            <option value="Firefox">Firefox</option>
-            <option value="Edge">Edge</option>
-            <option value="Safari">Safari</option>
-          </select>
-        </div>
-        <div class="export-bm-setting-row">
-          <div class="export-bm-setting-label">
-            Delay between steps
-            <small>Time to wait after each action</small>
-          </div>
-          <input type="number" id="exportSeleniumStepDelay" class="export-bm-setting-input" value="500" min="0" max="10000" />
-          <span class="export-bm-setting-unit">ms</span>
-        </div>
-        <div class="export-bm-setting-row">
-          <div class="export-bm-setting-label">
-            Element timeout
-            <small>Max wait time for elements</small>
-          </div>
-          <input type="number" id="exportSeleniumElTimeout" class="export-bm-setting-input" value="10000" min="500" max="60000" />
-          <span class="export-bm-setting-unit">ms</span>
-        </div>
-        <button id="exportSeleniumRegenerate" class="export-bm-regen-btn">↺ Regenerate Code</button>
-      </div>
-
-      <!-- Stats pills -->
-      <div class="export-bm-stats-row">
-        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-blue"></span><span id="exportSeleniumStatSteps">0 steps</span></div>
-        <div class="export-bm-stat-pill"><span class="export-bm-dot dot-green"></span><span id="exportSeleniumStatVars">0 variables</span></div>
-        <div class="export-bm-stat-pill" id="exportSeleniumStatWarnPill" style="display:none;"><span class="export-bm-dot dot-orange"></span><span id="exportSeleniumStatWarn">0 verify</span></div>
-        <div class="export-bm-stat-pill" id="exportSeleniumStatSkippedPill" style="display:none;"><span class="export-bm-dot dot-red"></span><span id="exportSeleniumStatSkipped">0 skipped</span></div>
-      </div>
-
-      <div class="export-bm-footer">
-        <div class="export-bm-footer-spacer"></div>
-        <div class="export-bm-footer-btns">
-          <button id="exportSeleniumCancel" class="export-bm-nf-btn">Cancel</button>
-          <button id="exportSeleniumDownload" class="export-bm-nf-btn">⬇ .py</button>
-          <button id="exportSeleniumCopy" class="export-bm-nf-btn export-bm-nf-btn-primary">📋 Copy Code</button>
+          <button id="exportDownload" class="export-bm-nf-btn">⬇ Download</button>
+          <button id="exportCopy" class="export-bm-nf-btn export-bm-nf-btn-primary">📋 Copy Code</button>
         </div>
       </div>
 
