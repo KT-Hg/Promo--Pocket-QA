@@ -59,12 +59,12 @@ Chi tiết, acceptance criteria và verification từng task: [`tasks/todo.md`](
 - [x] Không còn cặp màu < 4.5:1 cho chữ thường; preview không bị cắt ở 1025 và 375; tap Start Recording có toast
 
 ### Phase 3: Nội dung & niềm tin
-- [ ] T7: Sửa copy mâu thuẫn + meta description + thẻ thứ 12
-- [ ] T8: Section Privacy & Permissions + FAQ + footer links
-- [ ] T9: Chụp lại screenshot export (5 định dạng), bỏ ghi chú "earlier build"
+- [x] T7: Sửa copy mâu thuẫn + meta description + thẻ thứ 12
+- [x] T8: Section Privacy & Permissions + FAQ + footer links
+- [x] T9: Chụp lại screenshot export (5 định dạng), bỏ ghi chú "earlier build"
 
 ### Checkpoint 3
-- [ ] Đọc lại toàn trang: không còn mâu thuẫn số liệu; mọi claim privacy có nguồn trong code extension
+- [x] Đọc lại toàn trang: không còn mâu thuẫn số liệu; mọi claim privacy có nguồn trong code extension
 
 ### Phase 4: SEO, hiệu năng, polish
 - [ ] T10: OG / Twitter / canonical / theme-color / JSON-LD + ảnh og 1200×630
@@ -93,11 +93,10 @@ Chi tiết, acceptance criteria và verification từng task: [`tasks/todo.md`](
 | `update-vendor.mjs` chỉ cập nhật version ở `index.html`/`feature.html` | Low | Nếu T13 tạo thêm HTML, mở rộng vòng lặp version trong script |
 
 ## Open Questions
-1. Store listing `hghkokkjbpedgjbpohpkgmejkeobocam` đã public chưa? Đây có phải URL cuối cùng không?
-2. Extension **miễn phí hoàn toàn** (không có bản trả phí)? Quyết định giữ chữ "free" trong CTA.
+1. ~~Store listing đã public chưa?~~ **Đã trả lời:** đúng URL, đã public.
+2. ~~Extension miễn phí hoàn toàn?~~ **Đã trả lời:** miễn phí hoàn toàn.
 3. URL production cho `canonical`/`og:url`: `https://kt-hg.github.io/Promo--Pocket-QA/`?
-4. Privacy: một section trên index là đủ, hay cần trang `privacy.html` riêng (để điền vào ô
-   "Privacy policy" của Chrome Web Store)?
+4. ~~Privacy: section hay trang riêng?~~ **Đã trả lời:** một section trên trang chủ (`index.html#privacy`).
 5. Có số liệu thật nào (lượt cài, rating, quote người dùng) để làm social proof không?
-6. Có link GitHub public nào nên đặt ở footer không (repo extension có public không)?
+6. ~~Link GitHub cho footer?~~ **Đã trả lời:** không có.
 7. Làm T12 (SVG icons) và T13 (trang feature tĩnh) không, hay bỏ?

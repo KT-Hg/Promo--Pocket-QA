@@ -37,6 +37,7 @@
         <a class="nav__link" href="index.html#demo">Preview</a>
         <a class="nav__link" href="index.html#features">Features</a>
         <a class="nav__link" href="index.html#how">How it works</a>
+        <a class="nav__link" href="index.html#privacy">Privacy</a>
       </nav>
       <div class="nav__actions">
         <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
@@ -151,8 +152,13 @@
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Pocket QA</div>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#privacy">Privacy</a>
+      </nav>
       <div>v1.0.24 · Manifest V3 · Chrome 109+</div>
-      <div>Built for the web. The popup above is the real extension UI.</div>
     </div>
   </footer>
 
@@ -161,6 +167,6 @@
        keep running an old cached feature.js after an edit (e.g. it would
        silently miss dark-mode image support), same failure mode as a stale
        demo.js. Regenerate with: node stamp-feature-js.mjs -->
-  <script src="feature.js?v=66bc5a1a"></script>
+  <script src="feature.js?v=528a0dfc"></script>
 </body>
 </html>

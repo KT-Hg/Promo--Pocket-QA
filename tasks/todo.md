@@ -175,13 +175,13 @@ Recording" không có gì xảy ra. Dùng lại `#toast` thật của popup (`.t
 Bookmarklet). Meta description dài 276 ký tự. Lưới feature 11 thẻ / 3 cột → hàng cuối hụt 1 ô.
 
 **Acceptance criteria:**
-- [ ] Hero sub + step "Export" nhất quán với "5 formats" (có Bookmarklet); hero sub ngắn lại (≤ 3 dòng ở 1025px).
-- [ ] Meta description index ≤ 160 ký tự, có từ khóa chính (record & replay, Chrome extension, Selenium/Playwright export).
-- [ ] Thẻ thứ 12 = thẻ CTA cài đặt (style `.feature--cta`) → lưới đầy ở 3 cột và 2 cột.
+- [x] Hero sub + step "Export" nhất quán với "5 formats" (có Bookmarklet); hero sub ngắn lại — 4 dòng ở 1025px (trước: 6). ≤ 3 dòng không đạt được mà không bỏ ý, vì cột chữ ở 1025px chỉ rộng ~389px.
+- [x] Meta description index 148 ký tự (trước: 276), có từ khóa chính (record & replay, Chrome extension, Selenium/Playwright export).
+- [x] Thẻ thứ 12 = thẻ CTA cài đặt (style `.feature--cta`) → lưới đầy ở 3 cột và 2 cột.
 
 **Verification:**
-- [ ] `grep` đếm định dạng export trong `index.html` khớp nhau
-- [ ] Manual 1025 / 820 / 375: lưới không có ô trống
+- [x] `grep` đếm định dạng export trong `index.html` khớp nhau
+- [x] Manual 1025 / 820 / 375: lưới không có ô trống
 
 **Dependencies:** T1, T4
 
@@ -198,13 +198,13 @@ gì về dữ liệu. Thêm section `#privacy` trên index: dữ liệu lưu c�
 quyền + lý do. Thêm FAQ ngắn (`<details>`) và footer có link.
 
 **Acceptance criteria:**
-- [ ] Bảng đủ 10 quyền trong `manifest.json` (gồm `<all_urls>`, optional `desktopCapture`), mỗi lý do kiểm chứng được bằng code extension (ghi nguồn file trong commit message, không trên trang).
-- [ ] Nêu đúng network: chỉ `update-config.json` (kill-switch) + Chrome update check; không có analytics/telemetry — **chỉ viết sau khi grep lại xác nhận**.
-- [ ] Footer (cả 2 trang): Add to Chrome · Features · How it works · Privacy · (GitHub nếu có, Q6) · version · ©. Nav có link "Privacy".
+- [x] Bảng đủ 10 quyền trong `manifest.json` (gồm `<all_urls>`, optional `desktopCapture`), mỗi lý do kiểm chứng được bằng code extension (ghi nguồn file trong commit message, không trên trang).
+- [x] Nêu đúng network: chỉ `update-config.json` (kill-switch) + Chrome update check; không có analytics/telemetry — **chỉ viết sau khi grep lại xác nhận**.
+- [x] Footer (cả 2 trang): Add to Chrome · Features · How it works · Privacy · version. Không có GitHub (Q6: không có repo public); bỏ © vì năm hard-code sẽ cũ. Nav có link "Privacy".
 
 **Verification:**
-- [ ] Đối chiếu từng dòng bảng với `../Pocket QA/manifest.json` + code dùng quyền đó
-- [ ] Manual: `<details>` mở/đóng bằng bàn phím; footer wrap gọn ở 375px
+- [x] Đối chiếu từng dòng bảng với `../Pocket QA/manifest.json` + code dùng quyền đó (grep `chrome.<api>.*` theo từng quyền; debugger: `Runtime.evaluate`, `DOM.setFileInputFiles`, `Page.captureScreenshot`, `Input.dispatchMouseEvent`; sync: hotkeys, screenshot naming, notification switches; network: chỉ `bg/remote-config.js`, mỗi 24h; DB: `dbtools/executor.js` same-origin)
+- [x] Manual: `<details>` mở/đóng bằng bàn phím; footer wrap gọn ở 375px
 
 **Dependencies:** T7 (cùng sửa `index.html`); Open Question 4, 6
 
@@ -221,13 +221,13 @@ formats". Chụp lại `shot-export-js(-dark).png` và `shot-export-py(-dark).pn
 trình harness trong README (mục "Screenshot comparison"), rồi xóa ghi chú.
 
 **Acceptance criteria:**
-- [ ] 4 PNG mới cho thấy modal Export hiện tại (đúng 480px, light + dark), code do generator thật sinh ra.
-- [ ] Ghi chú ở `feature.js:640` bị xóa; README vẫn đúng.
-- [ ] Không thêm file nào vào repo extension (harness ở thư mục tạm).
+- [x] 4 PNG mới (960×1200 = 480×600 @2x, light + dark), chụp bằng Chrome headless từ harness tạm trong scratchpad: module export thật của v1.0.24 + chrome stub + kịch bản "Login flow"; đã bấm "↧ Steps" để hiện Step 1.
+- [x] Ghi chú ở `feature.js:640` bị xóa; README vẫn đúng.
+- [x] Không thêm file nào vào repo extension (harness ở thư mục tạm).
 
 **Verification:**
-- [ ] Mở `feature.html?id=export`, đổi theme popup → ảnh đổi light/dark đúng
-- [ ] `node stamp-feature-js.mjs`
+- [x] Mở `feature.html?id=export`, đổi theme popup → ảnh đổi light/dark đúng (gửi message theme của popup → `src` đổi -dark ↔ light)
+- [x] `node stamp-feature-js.mjs`
 
 **Dependencies:** None (repo extension ở `../Pocket QA`) — **có thể chạy song song** với Phase 2/3
 
@@ -238,8 +238,8 @@ trình harness trong README (mục "Screenshot comparison"), rồi xóa ghi chú
 ---
 
 ### Checkpoint 3 (sau T7–T9)
-- [ ] Đọc lại toàn trang: không còn số liệu mâu thuẫn, không còn "live preview" sai
-- [ ] Mọi claim privacy có nguồn trong code extension
+- [x] Đọc lại toàn trang: không còn số liệu mâu thuẫn, không còn "live preview" sai
+- [x] Mọi claim privacy có nguồn trong code extension
 - [ ] Người dùng duyệt nội dung privacy trước khi publish
 
 ---

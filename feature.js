@@ -579,14 +579,14 @@
             {
               src: 'screenshots/shot-export-js.png',
               srcDark: 'screenshots/shot-export-js-dark.png',
-              alt: 'The Export JS modal showing generated JavaScript bookmarklet code for the Login flow scenario, with Code/Variables/Actions/Settings tabs and a warning that 1 screenshot step was skipped.',
+              alt: 'The Export JS modal for the Login flow scenario at Step 1 of the generated bookmarklet code, with Code/Variables/Actions/Settings tabs and a warning that 1 step needs checking and 1 was skipped.',
               caption: 'JS Bookmarklet — the code with Variables, Actions and Settings tabs, ready to copy or download.'
             },
             {
               src: 'screenshots/shot-export-py.png',
               srcDark: 'screenshots/shot-export-py-dark.png',
-              alt: 'The Export Python modal showing generated Selenium code for the same Login flow scenario, importing selenium webdriver and starting a Chrome driver.',
-              caption: 'Selenium Python — the same scenario as a standalone script, imports and driver setup included.'
+              alt: 'The Export Python modal for the same Login flow scenario at Step 1 of the generated Selenium code.',
+              caption: 'Selenium Python — the same scenario as a standalone script; ↧ Steps jumps past the helpers to Step 1.'
             }
           ],
           points: [
@@ -636,8 +636,7 @@
       ],
       notes: [
         'The bookmarklet stops at a Navigate and goes on from the next step when you click it again on the new page — a bookmarklet can’t survive a page load.',
-        'Variable values are baked in at export time — edit the Variables table and export again, or override them with <code>PQA_&lt;name&gt;</code>.',
-        'The screenshots above come from an earlier build that offered two formats; the window itself works the same way for all five.'
+        'Variable values are baked in at export time — edit the Variables table and export again, or override them with <code>PQA_&lt;name&gt;</code>.'
       ]
     },
 
@@ -945,7 +944,7 @@
       notes: [
         'Once a newer version has been on the store past its grace period, a banner counts down the last 5 days; after that, starting new runs and captures waits for the update — stop, export and backup always keep working.',
         'The popup remembers its last tab, its tab order and which cards you collapsed.',
-        'Everything is stored locally in your browser; only the hotkey bindings sync through your Chrome profile.'
+        'Everything is stored locally in your browser; only settings — hotkeys, screenshot naming, notification switches — sync through your Chrome profile.'
       ]
     }
   };

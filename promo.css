@@ -264,6 +264,10 @@ a { color: var(--p-link); text-decoration: none; }
   display: inline-block; margin-top: 14px; color: var(--p-link); font-size: 14px; font-weight: 700;
   transition: transform .18s ease, color .18s ease;
 }
+/* 12th card: the install CTA, which also fills the 3-column grid's last row. */
+.feature--cta { background: var(--p-grad); border-color: transparent; color: #fff; }
+.feature--cta .feature__icon { background: rgba(255, 255, 255, .18); }
+.feature--cta .feature__text, .feature--cta .feature__more { color: #fff; }
 
 /* ── Steps ───────────────────────────────────────────────────────────────── */
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; counter-reset: step; }
@@ -299,6 +303,16 @@ a { color: var(--p-link); text-decoration: none; }
 .footer { padding: 40px 0; border-top: 1px solid var(--p-border); color: var(--p-muted); font-size: 14px; }
 .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .footer__brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--p-text); }
+.footer__links { display: flex; gap: 18px; flex-wrap: wrap; }
+.footer__links a { color: var(--p-muted); font-weight: 600; }
+.footer__links a:hover { color: var(--p-text); }
+
+/* ── Privacy + FAQ (index.html#privacy) ──────────────────────────────────── */
+.privacy__title { font-size: 20px; font-weight: 800; margin: 48px 0 16px; }
+.faq { display: grid; gap: 10px; }
+.faq details { background: var(--p-card); border: 1px solid var(--p-border); border-radius: var(--p-radius); padding: 14px 18px; }
+.faq summary { cursor: pointer; font-weight: 700; }
+.faq p { color: var(--p-muted); margin: 10px 0 0; }
 
 /* ── Reveal-on-scroll ────────────────────────────────────────────────────── */
 /* Gated on `.js` (set by the inline <head> script): without JS nothing would
