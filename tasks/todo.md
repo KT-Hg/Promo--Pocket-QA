@@ -83,7 +83,7 @@ lên `<html>`, áp `demoPageTheme` đã lưu hoặc theme hệ thống.
 - [x] Mọi CTA cài đặt mở store; See the popup đúng trên desktop + mobile
 - [x] Tắt JS vẫn đọc được index; không nháy theme
 - [x] Console sạch; không cuộn ngang ở 375px
-- [ ] Người dùng xem lại trước khi qua Phase 2
+- [x] Người dùng xem lại trước khi qua Phase 2
 
 ---
 
@@ -96,13 +96,13 @@ gradient / CTA card 3.68, chữ muted `#64748b` trên `#f7f8fb` 4.48 — đều 
 riêng, làm gradient đậm hơn, chỉnh muted.
 
 **Acceptance criteria:**
-- [ ] Token `--p-link` (light `#2563eb` hoặc đậm hơn; dark giữ màu ≥ 4.5 trên `--p-card`) dùng cho eyebrow, "Learn more", badge, `.fnav__link[aria-current]`, link chữ.
-- [ ] Gradient nút + CTA card: chữ trắng ≥ 4.5:1 ở **cả hai đầu** gradient (vd. `#2563eb → #7c3aed`).
-- [ ] `--p-muted` light ≥ 4.5:1 trên `--p-bg`, `--p-bg-alt`, `--p-card`.
+- [x] Token `--p-link` (light `#1d4ed8` — `#2563eb` chỉ đạt 4.26 trên nền badge; dark giữ màu ≥ 4.5 trên `--p-card`) dùng cho eyebrow, "Learn more", badge, `.fnav__link[aria-current]`, link chữ.
+- [x] Gradient nút + CTA card: chữ trắng ≥ 4.5:1 ở **cả hai đầu** gradient (vd. `#2563eb → #7c3aed`).
+- [x] `--p-muted` light ≥ 4.5:1 trên `--p-bg`, `--p-bg-alt`, `--p-card`.
 
 **Verification:**
-- [ ] Chạy lại script WCAG (scratchpad) cho mọi cặp trên, light + dark, tất cả ≥ 4.5
-- [ ] Manual: so sánh trước/sau — thương hiệu xanh-tím vẫn giữ
+- [x] Chạy lại script WCAG cho mọi cặp trên, light + dark: link ≥ 5.53, muted `#596779` ≥ 5.43 trên nền chữ, chữ trắng trên gradient 5.17 / 5.70, dark link `#60a5fa` ≥ 6.64
+- [x] Manual: so sánh trước/sau — thương hiệu xanh-tím vẫn giữ
 
 **Dependencies:** T1 (nút mới cũng dùng gradient)
 
@@ -119,14 +119,14 @@ bên trong); khối sticky cao 733px với `top:128px` → nút "Explore every t
 768px. Index mobile: popup scale 0.68 → chữ 7–8px.
 
 **Acceptance criteria:**
-- [ ] `feature.js`: scale iframe theo chiều rộng khung (cùng cách `fitPopup()` của `landing.js`, cập nhật khi resize); `.detail-preview__frame-wrap` không còn cuộn ngang.
-- [ ] `.detail-preview` chỉ sticky khi viewport đủ cao để chứa cả khối (media query `min-height`), còn lại `position: static`.
-- [ ] ≤560px (cả 2 trang): link "Open full-size preview ↗" tới `popup-demo.html?tab=…` (tab mới) để pinch-zoom native.
+- [x] `feature.js`: scale iframe theo chiều rộng khung (cùng cách `fitPopup()` của `landing.js`, cập nhật khi resize); `.detail-preview__frame-wrap` không còn cuộn ngang.
+- [x] `.detail-preview` chỉ sticky khi viewport đủ cao để chứa cả khối (media query `min-height`), còn lại `position: static`.
+- [x] ≤560px (cả 2 trang): link "Open full-size preview ↗" tới `popup-demo.html?tab=…` (tab mới) để pinch-zoom native.
 
 **Verification:**
-- [ ] 1025×768 và 375×812: `wrap.scrollWidth <= wrap.clientWidth`; thấy đủ 5 tab của popup
-- [ ] 1025×768: cuộn qua Overview thấy được nút "Explore every tab"
-- [ ] `node stamp-feature-js.mjs`
+- [x] 1025×768 (scale 0.906) và 375×812 (scale 0.6375): mép phải/dưới iframe sau scale nằm trong khung, không còn thanh cuộn ngang; thấy đủ 5 tab. (`scrollWidth` vẫn đọc 500 vì tính hộp chưa scale, nhưng khung là `overflow: hidden` nên không cuộn được.)
+- [x] 1025×768: cuộn qua Overview thấy được nút "Explore every tab"
+- [x] `node stamp-feature-js.mjs`
 
 **Dependencies:** T3 (cùng sửa `feature.js`)
 
@@ -143,14 +143,14 @@ Recording" không có gì xảy ra. Dùng lại `#toast` thật của popup (`.t
 `role="status"`) trong guard click hiện có của `demo.js`.
 
 **Acceptance criteria:**
-- [ ] Bấm control bị khóa → toast "Preview only — install Pocket QA to use this" trong ~2.5s; bấm liên tục không xếp chồng toast.
-- [ ] Tab + theme toggle vẫn chạy; không thêm listener mới ngoài guard (giữ "extension fence").
-- [ ] Đổi dòng gợi ý dưới hero: bỏ chữ "live preview", nói rõ chỉ tab + theme tương tác được, và 🌙 ở đây là nút trong popup.
+- [x] Bấm control bị khóa → toast "Preview only — install Pocket QA to use this" trong ~2.5s; bấm liên tục không xếp chồng toast.
+- [x] Tab + theme toggle vẫn chạy; không thêm listener mới ngoài guard (giữ "extension fence").
+- [x] Đổi dòng gợi ý dưới hero: bỏ chữ "live preview", nói rõ chỉ tab + theme tương tác được, và 🌙 ở đây là nút trong popup.
 
 **Verification:**
-- [ ] Manual: bấm Start Recording / Play / Delete → toast; tab switching vẫn được
-- [ ] Console trong iframe: `__promoDemoGuard === 'extension-fence v2'` (hoặc bump version nếu đổi guard)
-- [ ] `node sync-from-source.mjs` (stamp hash `demo.js`)
+- [x] Manual: tap thật vào Start Recording (375px) + `.click()` vào "+ Add Row" → toast; bấm 3 lần vẫn chỉ 1 toast; tab + theme vẫn chạy
+- [x] Console trong iframe: `__promoDemoGuard === 'extension-fence v2'` (fence không đổi nên giữ v2)
+- [x] `node sync-from-source.mjs` (stamp hash `demo.js`)
 
 **Dependencies:** None — **có thể chạy song song** với T4/T5
 
@@ -161,8 +161,8 @@ Recording" không có gì xảy ra. Dùng lại `#toast` thật của popup (`.t
 ---
 
 ### Checkpoint 2 (sau T4–T6)
-- [ ] Không còn cặp màu < 4.5:1 cho chữ thường
-- [ ] Preview không bị cắt ở 1025 và 375; tap control bị khóa có phản hồi
+- [x] Không còn cặp màu < 4.5:1 cho chữ thường
+- [x] Preview không bị cắt ở 1025 và 375; tap control bị khóa có phản hồi
 - [ ] Người dùng xem lại
 
 ---

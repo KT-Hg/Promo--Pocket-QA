@@ -1129,10 +1129,27 @@
 
   /* ── Live popup preview ──────────────────────────────────────────────── */
   var frame = document.getElementById('previewFrame');
+  var fullLink = document.getElementById('previewFullLink');
   function syncPreviewFrame() {
-    if (frame) frame.src = 'popup-demo.html?tab=' + data.tab + '&theme=' + currentTheme();
+    var src = 'popup-demo.html?tab=' + data.tab + '&theme=' + currentTheme();
+    if (frame) frame.src = src;
+    if (fullLink) fullLink.href = src;
   }
   syncPreviewFrame();
+
+  /* Scale the popup down to fit its column — same idea as landing.js →
+   * fitPopup(): the popup is a fixed 480x600 UI, so it's zoomed out whole
+   * instead of squeezed. promo.css turns --pv-scale into the transform plus a
+   * negative margin that hands the freed height back. */
+  var frameWrap = frame && frame.parentElement;
+  function fitPreview() {
+    if (!frameWrap) return;
+    var cs = getComputedStyle(frameWrap);
+    var avail = frameWrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    frameWrap.style.setProperty('--pv-scale', String(Math.min(1, avail / 480)));
+  }
+  fitPreview();
+  window.addEventListener('resize', fitPreview);
 
   /* ── Light/dark screenshots ───────────────────────────────────────────────
    * These are fixed captures of the *same* real UI the "Live popup preview"

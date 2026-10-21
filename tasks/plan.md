@@ -51,12 +51,12 @@ Chi tiết, acceptance criteria và verification từng task: [`tasks/todo.md`](
 - [x] Mọi CTA cài đặt mở store; See the popup đúng trên desktop + mobile; tắt JS vẫn đọc được trang
 
 ### Phase 2: Accessibility & mobile
-- [ ] T4: Tương phản màu đạt WCAG AA
-- [ ] T5: Popup preview vừa mọi màn hình (trang feature) + link xem full-size trên mobile
-- [ ] T6: Phản hồi khi bấm control bị khóa trong popup demo
+- [x] T4: Tương phản màu đạt WCAG AA
+- [x] T5: Popup preview vừa mọi màn hình (trang feature) + link xem full-size trên mobile
+- [x] T6: Phản hồi khi bấm control bị khóa trong popup demo
 
 ### Checkpoint 2
-- [ ] Không còn cặp màu < 4.5:1 cho chữ thường; preview không bị cắt ở 1025 và 375; tap Start Recording có toast
+- [x] Không còn cặp màu < 4.5:1 cho chữ thường; preview không bị cắt ở 1025 và 375; tap Start Recording có toast
 
 ### Phase 3: Nội dung & niềm tin
 - [ ] T7: Sửa copy mâu thuẫn + meta description + thẻ thứ 12
