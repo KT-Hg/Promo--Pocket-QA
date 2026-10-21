@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "promo-static",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", ".", "-l", "8383"],
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8383"],
       "port": 8383
     }
   ]

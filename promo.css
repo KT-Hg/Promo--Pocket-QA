@@ -39,8 +39,11 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 /* Safety net: never let a wide child (e.g. the 480px popup) create a horizontal
- * scroll that clips the whole page on small screens. */
-html, body { overflow-x: hidden; max-width: 100%; }
+ * scroll that clips the whole page on small screens. `clip`, not `hidden`:
+ * `hidden` on both html and body turns <body> into a scroll container that
+ * never scrolls, and every position:sticky bar inside it (.nav, .fnav) stops
+ * sticking. `hidden` stays first as the fallback for browsers without `clip`. */
+html, body { overflow-x: hidden; overflow-x: clip; max-width: 100%; }
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -296,22 +299,59 @@ a { color: var(--p-primary); text-decoration: none; }
   html { scroll-behavior: auto; }
 }
 
-/* ── Feature detail page (feature.html) ─────────────────────────────────── */
-.crumb { display: flex; align-items: center; gap: 6px; color: var(--p-muted); font-size: 14px; margin-bottom: 28px; }
+/* ── Feature guide page (feature.html) ──────────────────────────────────── */
+.crumb { display: flex; align-items: center; gap: 6px; color: var(--p-muted); font-size: 14px; margin-bottom: 28px; flex-wrap: wrap; }
 .crumb a { color: var(--p-muted); font-weight: 600; }
 .crumb a:hover { color: var(--p-primary); }
 
-.detail-hero { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; max-width: 760px; }
+.fhero {
+  padding: 40px 0 44px;
+  background: radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--p-primary) 10%, transparent), transparent 60%), var(--p-bg);
+}
+.fhero__facts { margin-top: 22px; }
+
+.detail-hero { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; max-width: 800px; }
 @media (max-width: 560px) { .detail-hero { grid-template-columns: 1fr; } }
 .detail-hero__icon {
   width: 64px; height: 64px; border-radius: 16px; display: grid; place-items: center;
   font-size: 32px; background: color-mix(in srgb, var(--p-primary) 12%, transparent);
 }
 .detail-hero__eyebrow { color: var(--p-primary); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
-.detail-hero__title { font-size: clamp(26px, 3.6vw, 40px); font-weight: 800; letter-spacing: -0.02em; margin: 8px 0 12px; }
-.detail-hero__lead { color: var(--p-muted); font-size: 17px; margin: 0; }
+.detail-hero__title { font-size: clamp(28px, 4vw, 44px); font-weight: 850; letter-spacing: -0.02em; line-height: 1.1; margin: 8px 0 14px; }
+.detail-hero__lead { color: var(--p-muted); font-size: 18px; margin: 0; }
 
-.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-top: 48px; }
+/* "On this page" — sticks right under the main nav (64px tall). Scrolls
+ * sideways on narrow screens instead of wrapping onto a second line. */
+.fnav {
+  position: sticky; top: 64px; z-index: 40;
+  background: color-mix(in srgb, var(--p-bg) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-top: 1px solid var(--p-border); border-bottom: 1px solid var(--p-border);
+}
+.fnav__inner { display: flex; gap: 4px; padding-top: 8px; padding-bottom: 8px; overflow-x: auto; scrollbar-width: none; }
+.fnav__inner::-webkit-scrollbar { display: none; }
+.fnav__link {
+  flex: 0 0 auto; padding: 6px 12px; border-radius: 999px; white-space: nowrap;
+  color: var(--p-muted); font-size: 14px; font-weight: 600;
+}
+.fnav__link:hover { color: var(--p-text); }
+.fnav__link[aria-current] { color: var(--p-primary); background: color-mix(in srgb, var(--p-primary) 12%, transparent); }
+.fnav__link:focus-visible { outline: 2px solid var(--p-primary); outline-offset: 1px; }
+
+/* Each section clears both sticky bars when jumped to from the bar above. */
+.fsec { padding: 64px 0; scroll-margin-top: 112px; }
+.fsec__title { font-size: clamp(22px, 2.8vw, 30px); font-weight: 800; letter-spacing: -0.02em; margin: 6px 0 12px; }
+.fsec__lead { color: var(--p-muted); font-size: 16px; max-width: 760px; margin: 0 0 24px; }
+
+main :not(pre) > code {
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .88em;
+  background: color-mix(in srgb, var(--p-primary) 9%, transparent);
+  padding: 1px 5px; border-radius: 5px; overflow-wrap: anywhere;
+}
+main .kbd { white-space: nowrap; }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 .detail-grid > * { min-width: 0; } /* let a track shrink below a child's content size (e.g. the 480px popup iframe) instead of forcing the whole grid wider */
 @media (max-width: 860px) { .detail-grid { grid-template-columns: 1fr; gap: 32px; } }
 
@@ -325,8 +365,11 @@ a { color: var(--p-primary); text-decoration: none; }
   content: "✓"; color: var(--p-accent); font-weight: 800;
   position: absolute; left: 18px; top: 16px;
 }
+.fsec__points { grid-template-columns: repeat(2, 1fr); margin-top: 24px; }
+@media (max-width: 640px) { .fsec__points { grid-template-columns: 1fr; } }
+.fnotes li::before { content: "i"; color: var(--p-primary); font-family: Georgia, serif; font-style: italic; }
 
-.detail-preview { position: sticky; top: 88px; }
+.detail-preview { position: sticky; top: 128px; }
 .detail-preview__label { font-weight: 700; font-size: 14px; margin: 0 0 10px; color: var(--p-muted); }
 .detail-preview__frame-wrap {
   overflow-x: auto; border-radius: var(--p-radius); border: 1px solid var(--p-border);
@@ -335,15 +378,39 @@ a { color: var(--p-primary); text-decoration: none; }
 .detail-preview__frame { display: block; width: 480px; height: 600px; border: 0; border-radius: 10px; }
 .detail-preview__cta { margin-top: 14px; display: flex; }
 
-.detail-extra { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--p-border); }
-.detail-extra__title { font-size: clamp(20px, 2.6vw, 26px); font-weight: 800; margin: 0 0 10px; }
-.detail-extra__lead { color: var(--p-muted); font-size: 15px; margin: 0 0 20px; max-width: 640px; }
+.fsteps { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-top: 24px; }
+.fsteps .step__text { font-size: 14.5px; }
+
+/* Tables scroll inside their own box on narrow screens, never the page. */
+.ftable {
+  overflow-x: auto; margin: 0 0 8px;
+  background: var(--p-card); border: 1px solid var(--p-border); border-radius: var(--p-radius);
+}
+.ftable:focus-visible { outline: 2px solid var(--p-primary); outline-offset: 2px; }
+.ftable table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14.5px; }
+.ftable th, .ftable td { padding: 12px 16px; text-align: left; vertical-align: top; }
+.ftable th {
+  font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--p-muted);
+  background: color-mix(in srgb, var(--p-primary) 5%, var(--p-card)); border-bottom: 1px solid var(--p-border);
+}
+.ftable td { border-top: 1px solid var(--p-border); }
+.ftable tr:first-child td { border-top: 0; }
+.ftable td:first-child { font-weight: 650; min-width: 150px; }
+.ftable code { white-space: nowrap; overflow-wrap: normal; }
+
+/* Code samples stay dark in both themes, like an editor or a terminal. */
+.fcode {
+  margin: 24px 0 0; padding: 18px 20px; overflow-x: auto;
+  background: #0f172a; color: #e2e8f0; border: 1px solid var(--p-border); border-radius: var(--p-radius);
+  font: 13px/1.6 ui-monospace, Menlo, Consolas, monospace;
+}
+
 /* The screenshots are fixed UI captures with a light and a dark twin (see
  * feature.js) — the frame around them uses the same card token as the rest
  * of the page so it switches with the theme instead of staying one fixed
  * shade. margin-bottom on the wrapper (not just between shots) keeps the
  * points list below from crowding the last row of images. */
-#detailExtraShots { margin-bottom: 32px; }
+.detail-extra__shots { margin-bottom: 8px; }
 .detail-extra__shot {
   margin: 0 0 24px; padding: 10px; background: var(--p-card); border-radius: calc(var(--p-radius) + 6px);
   border: 1px solid var(--p-border); box-shadow: var(--p-shadow);
@@ -354,13 +421,10 @@ a { color: var(--p-primary); text-decoration: none; }
 /* Shots captured at the popup's real 480×600 size are tall and narrow —
  * side by side, centred as a group, reads as a step-by-step story instead
  * of one giant stack or a lopsided left-aligned pair. */
-.detail-extra__shots--row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+.detail-extra__shots--row { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 24px; }
 .detail-extra__shots--row .detail-extra__shot { flex: 1 1 380px; max-width: 480px; margin: 0; }
 @media (max-width: 560px) { .detail-extra__shots--row .detail-extra__shot { flex-basis: 100%; max-width: 400px; margin: 0 auto; } }
-.detail-extra__points { grid-template-columns: repeat(2, 1fr); }
-@media (max-width: 640px) { .detail-extra__points { grid-template-columns: 1fr; } }
 
-.detail-cta { margin-top: 56px; text-align: center; }
-
-.detail-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 64px; padding-top: 28px; border-top: 1px solid var(--p-border); flex-wrap: wrap; }
+#moreFeatures { margin-top: 28px; }
+.detail-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--p-border); flex-wrap: wrap; }
 .detail-nav__link { font-weight: 600; }

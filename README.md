@@ -56,16 +56,16 @@ index.html        ← open this
 
 > Tip: some browsers restrict `file://` iframes. If the embedded popup doesn't
 > load from disk, serve the folder over HTTP instead:
-> `npx serve .`  (or `python -m http.server`) then visit `/`.
+> `python -m http.server` then visit `/`. Not `npx serve`: its clean-URL redirect (`feature.html?id=x` → `/feature`) drops the query string, so every feature page and popup deep link falls back to its default.
 
 ## Files
 | File | Purpose | Lines |
 |------|---------|-------|
 | `index.html`     | Landing page: nav, hero, browser mockup, features, steps, CTA, footer (BEM markup) | ~210 |
-| `feature.html`   | Feature detail page template (BEM), shared by all `.feature` cards — `feature.html?id=<key>` | ~100 |
-| `promo.css`      | Landing-page styles only (BEM, fully self-contained, brand colours match the extension) | ~330 |
+| `feature.html`   | Feature guide template (BEM), shared by all `.feature` cards — `feature.html?id=<key>`: hero + facts, sticky "On this page" bar, overview beside the live popup, steps, detail sections, notes, other features | ~150 |
+| `promo.css`      | Landing-page styles only (BEM, fully self-contained, brand colours match the extension) | ~430 |
 | `landing.js`     | Promo chrome: theme sync ↔ iframe, scroll reveals, toolbar-icon focus | ~80 |
-| `feature.js`     | Fills in `feature.html` from the `id` query param (content, prev/next, deep-linked popup preview) | ~200 |
+| `feature.js`     | The eleven features' content (written against the extension README) + the renderer that fills `feature.html` from the `id` query param (sections, tables, scroll spy, deep-linked popup preview, light/dark screenshots) | ~1200 |
 | `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup.css` + `demo.js` | ~1530 |
 | `demo.css`       | A few tiny tweaks for the in-iframe demo context | ~25 |
 | `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~330 |
@@ -170,8 +170,12 @@ See [`screenshots/`](screenshots/):
 | `shot-sqlcases-analysis.png` / `-dark.png` | `sqlcases.html`'s full 3-column workspace, used on `feature.html?id=sql-test-designer` — query rail, a real generated case list (71 cases), and one case's fixture data open in the inspector |
 | `shot-export-js.png` / `-dark.png`      | The real Export JS modal for a sample "Login flow" scenario — actual generated bookmarklet code, stats and the skipped-step warning, used on `feature.html?id=export` |
 | `shot-export-py.png` / `-dark.png`      | The real Export Python modal for that same scenario — actual generated Selenium code, used on `feature.html?id=export` |
+| `shot-dbtools-rollback.png` / `-dark.png` | The Adminer panel (`dbtools/panel.js`) beside the Undo SQL preview it opens for "↺ Roll back all" — a sample 7-change session, one change refused (no `WHERE`), Step by step / Merged switch, used on `feature.html?id=db-test-session` |
+| `shot-dbtools-manager.png` / `-dark.png`  | `dbtools.html`, the Test sessions & rollback page, on that same session — the rail of sessions, a DELETE and an UPDATE diff open, one change already undone, used on `feature.html?id=db-test-session` |
 
 These are real UI, not mockups — `editor.html` and `sqlcases.html` don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a minimal harness page imported only the real `popup/export-bookmarklet.js` + `popup/export-selenium.js` + `popup/utils.js` against the real `popup.html` markup and `css/popup.css`, stubbed just `chrome.runtime.sendMessage` (`GET_SCENARIOS`/`GET_VARIABLES`) with one sample scenario, and let the real generator functions (`generateBookmarklet` / the Selenium equivalent) produce the code shown — so the code in the screenshots is genuinely generated, not typed by hand.
+
+The DB Test Session shots are built the same way, from a throwaway harness that copies the extension's `dbtools/` modules, `dbtools.html` and `css/dbtools.css` into a temp folder (nothing is added to either repo). A small `chrome.storage` stub seeds one sample session in exactly the shape `dbtools/session.js` stores, plus `popupTheme` for light/dark, and nothing more is faked. `shot-dbtools-manager` is the real `dbtools.html` + `manager.js` rendering that session. `shot-dbtools-rollback` mounts the real panel via `mountPanel()`, writes the log lines `content-main.js` would write (`logRecorded`), and opens the real `preview()`. That preview gets the statements from a real `runRollback(…, { dryRun: true })` (and its `compact` twin for *Merged*), so the SQL is generated, not typed. The panel and the preview are both `position:fixed` overlays over Adminer. With no Adminer page behind them, they're re-anchored side by side on a plain stage, the same trick as the export modals below. Captured with headless Chrome (`--allow-file-access-from-files` so the ES modules load over `file://`) instead of html2canvas, so neither gotcha below applies.
 
 The export modals use `position:fixed`, which sizes off the *browser viewport*, not the harness page's own width — capturing them at a normal desktop viewport rendered a modal far wider than the real ~480px popup ever shows. Fixed by moving the modal into a 480×600 `position:fixed` div standing in for the real popup window (matching `popup.css`'s own `body { width: 480px; max-height: 600px; }`) and re-anchoring the modal to `position:absolute` inside it, then capturing that div — so the shots are pixel-accurate to the real popup size, not a stretched approximation.
 

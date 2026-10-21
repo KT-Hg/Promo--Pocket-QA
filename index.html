@@ -11,7 +11,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pocket QA — Record web workflows, no code</title>
-  <meta name="description" content="Record &amp; replay web workflows with variables, CSV data runs, screenshots, conditions, a SQL test case designer, database rollback for Adminer and one-tap export to Selenium or a JS bookmarklet. Preview the popup." />
+  <meta name="description" content="Record &amp; replay web workflows with variables, CSV data runs, screenshots, conditions, a SQL test case designer, database rollback for Adminer and assertions with bug reports, and export to Selenium, Playwright, Robot Framework, Java or a JS bookmarklet. Preview the popup." />
   <link rel="icon" type="image/png" href="vendor/icon128.png" />
   <link rel="stylesheet" href="promo.css" />
 </head>
@@ -45,7 +45,8 @@
           <h1 class="hero__title">Record any web workflow.<br /><span class="grad">Replay it forever.</span></h1>
           <p class="hero__sub">
             Capture clicks, inputs and navigation with one tap. Add variables, CSV data runs,
-            conditions and screenshots — then export to Selenium Python or a JS bookmarklet, and roll
+            assertions and screenshots — get a pass/fail verdict and a bug report for every run, export to
+            Selenium, Playwright, Robot Framework or Java, and roll
             test data back when you're done.
           </p>
           <div class="hero__cta">
@@ -53,9 +54,9 @@
             <a class="btn btn--ghost btn--lg" href="#features">See features</a>
           </div>
           <div class="hero__meta">
-            <span><b>16</b> action types &amp; logic</span>
+            <span><b>17</b> action types &amp; logic</span>
             <span><b>CSV</b> data-driven runs</span>
-            <span><b>1-tap</b> code export</span>
+            <span><b>5</b> code export formats</span>
           </div>
         </div>
 
@@ -130,55 +131,67 @@
           <a class="feature reveal" href="feature.html?id=recording">
             <div class="feature__icon">⏺</div>
             <h3 class="feature__title">One-click recording</h3>
-            <p class="feature__text">Clicks and typing are captured as editable, reorderable steps — 16 action types in all, from hovers to file uploads.</p>
+            <p class="feature__text">Clicks and typing become editable, reorderable steps — 17 action types in all, from hovers to file uploads.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=playback">
             <div class="feature__icon">▶</div>
             <h3 class="feature__title">Playback that keeps going</h3>
-            <p class="feature__text">Loop, sequence and replay across iframes and mid-run page reloads — with file uploads and trusted clicks built in.</p>
+            <p class="feature__text">Loop, sequence or schedule runs that carry on through iframes, page reloads, native dropdowns and file pickers.</p>
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=run-results">
+            <div class="feature__icon">🐞</div>
+            <h3 class="feature__title">Assertions, verdicts &amp; bug reports</h3>
+            <p class="feature__text">Assert what the page should show, get a Passed / Failed / Broken verdict for every run, and a bug report ready to paste.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=variables">
             <div class="feature__icon">🔣</div>
             <h3 class="feature__title">Variables &amp; logic</h3>
-            <p class="feature__text">Static, random, pick-from-list and fallback variables. Add conditions, switches and read-DOM steps.</p>
+            <p class="feature__text">Static, random, pick-from-list and fallback variables, Read DOM, conditions and switch branches — reused anywhere as <code>${var}</code>.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=csv">
             <div class="feature__icon">📊</div>
             <h3 class="feature__title">CSV data-driven runs</h3>
-            <p class="feature__text">Upload a CSV — headers become <code>${variables}</code>. Run a scenario once per row and export results.</p>
+            <p class="feature__text">Upload a CSV — headers become <code>${variables}</code>. One scenario runs per row; results export to Excel, HTML or ZIP.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=screenshots">
             <div class="feature__icon">📷</div>
-            <h3 class="feature__title">Powerful screenshots</h3>
-            <p class="feature__text">Visible, full-page, scrolling, segment, element and whole-window captures — with crop, watermark and image-diff tools.</p>
+            <h3 class="feature__title">Screenshots &amp; image tools</h3>
+            <p class="feature__text">Visible, full-page, scrolling, segment, element and whole-window capture — with an editor, watermark and image diff.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=export">
             <div class="feature__icon">🐍</div>
-            <h3 class="feature__title">One-tap code export</h3>
-            <p class="feature__text">Turn any scenario into a standalone Selenium Python script or a runnable JS bookmarklet.</p>
+            <h3 class="feature__title">Code export in five formats</h3>
+            <p class="feature__text">Turn any scenario into a JS bookmarklet, Selenium Python or pytest, Playwright Test, Robot Framework or Selenium Java test.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=highlights">
             <div class="feature__icon">🖍️</div>
-            <h3 class="feature__title">Highlights &amp; scheduling</h3>
-            <p class="feature__text">Highlight text per URL pattern, queue scenario sequences, and schedule daily playback.</p>
+            <h3 class="feature__title">Highlights by URL pattern</h3>
+            <p class="feature__text">Highlight text on any page in five colours, with notes — restored on every visit and grouped by URL pattern.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=sql-test-designer">
             <div class="feature__icon">🧪</div>
             <h3 class="feature__title">SQL Test Case Designer</h3>
-            <p class="feature__text">Paste a SQL query and get an EP/BVA and decision-table test case list, plus NULL and JOIN scenarios — exported as CSV or JSON.</p>
+            <p class="feature__text">Paste a SQL query and get EP/BVA, decision-table, NULL and JOIN test cases — with fixture data, exported as CSV or JSON.</p>
             <span class="feature__more">Learn more →</span>
           </a>
           <a class="feature reveal" href="feature.html?id=db-test-session">
             <div class="feature__icon">↺</div>
             <h3 class="feature__title">DB Test Session &amp; Rollback</h3>
             <p class="feature__text">Every change you make to test data in Adminer is recorded — roll it all back in one click, with the SQL shown first.</p>
+            <span class="feature__more">Learn more →</span>
+          </a>
+          <a class="feature reveal" href="feature.html?id=settings">
+            <div class="feature__icon">⚙️</div>
+            <h3 class="feature__title">Hotkeys, backup &amp; settings</h3>
+            <p class="feature__text">Configurable hotkeys, import/export and full backup, per-category notifications, and a popup that remembers how you work.</p>
             <span class="feature__more">Learn more →</span>
           </a>
         </div>
@@ -196,7 +209,7 @@
           <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Record</h3><p class="step__text">Hit Start Recording and do the task once in your browser.</p></div>
           <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Refine</h3><p class="step__text">Edit steps, add variables, conditions and waits as needed.</p></div>
           <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Run</h3><p class="step__text">Replay once, loop it, sequence scenarios, or drive it from CSV.</p></div>
-          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Export</h3><p class="step__text">Ship it as Selenium Python or a JS bookmarklet — or schedule it.</p></div>
+          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Export</h3><p class="step__text">Ship it as Selenium, Playwright, Robot or Java code — or schedule it.</p></div>
         </div>
       </div>
     </section>

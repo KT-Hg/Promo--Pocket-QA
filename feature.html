@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!--
-  feature.html — Feature detail page template, shared by every card in
-  index.html's #features grid (linked as feature.html?id=<key>). Content is
-  filled in by feature.js based on the `id` query param, so nav/footer/CSS
-  live once instead of being duplicated across seven near-identical pages.
+  feature.html — Feature guide template, shared by every card in index.html's
+  #features grid (linked as feature.html?id=<key>). Everything inside <main> is
+  built by feature.js from its FEATURES table, so nav/footer/CSS live once
+  instead of being duplicated across eleven near-identical pages.
 -->
 <html lang="en" data-theme="light">
 <head>
@@ -35,9 +35,9 @@
     </div>
   </header>
 
-  <!-- ===== FEATURE DETAIL ===== -->
   <main id="top">
-    <section class="section" style="padding-bottom: 0;">
+    <!-- ===== HERO ===== -->
+    <section class="fhero">
       <div class="container">
         <nav class="crumb" aria-label="Breadcrumb">
           <a href="index.html">Home</a>
@@ -46,46 +46,73 @@
           <span aria-hidden="true">/</span>
           <span id="crumbCurrent">…</span>
         </nav>
-
-        <div class="detail-hero reveal">
+        <div class="detail-hero">
           <div class="detail-hero__icon" id="heroIcon" aria-hidden="true">⏺</div>
           <div>
             <span class="detail-hero__eyebrow" id="heroEyebrow">Feature</span>
             <h1 class="detail-hero__title" id="heroTitle">…</h1>
             <p class="detail-hero__lead" id="heroLead">…</p>
+            <div class="hero__meta fhero__facts" id="heroFacts"></div>
           </div>
         </div>
+      </div>
+    </section>
 
+    <!-- ===== ON THIS PAGE (links built by feature.js, one per section) ===== -->
+    <nav class="fnav" aria-label="On this page">
+      <div class="container fnav__inner" id="pageNav"></div>
+    </nav>
+
+    <!-- ===== OVERVIEW + LIVE POPUP ===== -->
+    <section class="section fsec" id="overview">
+      <div class="container">
         <div class="detail-grid">
           <div class="reveal">
+            <span class="section__eyebrow">Overview</span>
+            <h2 class="fsec__title">At a glance</h2>
             <ul class="detail-points" id="detailPoints"></ul>
-            <div class="detail-preview__cta">
-              <a class="btn btn--primary" href="index.html#demo">▶ See the full popup preview</a>
-            </div>
           </div>
-
           <div class="detail-preview reveal">
             <p class="detail-preview__label">Live popup preview — <span id="previewTabLabel"></span></p>
             <div class="detail-preview__frame-wrap">
               <iframe class="detail-preview__frame" id="previewFrame" src=""
                       title="Pocket QA — popup preview" loading="lazy"></iframe>
             </div>
+            <div class="detail-preview__cta">
+              <a class="btn btn--ghost" href="index.html#demo">▶ Explore every tab</a>
+            </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- Optional deeper look at a screen this feature opens (Image Editor,
-             SQL analysis screen, …) — filled in and unhidden by feature.js only
-             when the current feature has one. -->
-        <section class="detail-extra reveal" id="detailExtra" hidden>
-          <h2 class="detail-extra__title" id="detailExtraTitle">…</h2>
-          <p class="detail-extra__lead" id="detailExtraLead"></p>
-          <!-- One or more <figure class="detail-extra__shot"> get built and
-               appended here by feature.js — see the note there about why
-               they can't use loading="lazy". -->
-          <div class="detail-extra__shots" id="detailExtraShots" hidden></div>
-          <ul class="detail-points detail-extra__points" id="detailExtraPoints"></ul>
-        </section>
+    <!-- ===== HOW TO USE IT ===== -->
+    <section class="section section--alt fsec" id="how-to">
+      <div class="container">
+        <span class="section__eyebrow">Step by step</span>
+        <h2 class="fsec__title">How to use it</h2>
+        <div class="steps fsteps" id="detailSteps"></div>
+      </div>
+    </section>
 
+    <!-- ===== DETAIL SECTIONS — one <section> per FEATURES[id].sections entry ===== -->
+    <div id="detailSections"></div>
+
+    <!-- ===== GOOD TO KNOW ===== -->
+    <section class="section fsec" id="notes">
+      <div class="container">
+        <span class="section__eyebrow">Limits &amp; tips</span>
+        <h2 class="fsec__title">Good to know</h2>
+        <ul class="detail-points fnotes" id="detailNotes"></ul>
+      </div>
+    </section>
+
+    <!-- ===== MORE FEATURES ===== -->
+    <section class="section section--alt fsec" id="more">
+      <div class="container">
+        <span class="section__eyebrow">Everything in one popup</span>
+        <h2 class="fsec__title">Explore other features</h2>
+        <div class="features" id="moreFeatures"></div>
         <div class="detail-nav">
           <a class="detail-nav__link" id="prevFeatureLink" href="index.html#features">← Previous feature</a>
           <a class="detail-nav__link" id="nextFeatureLink" href="index.html#features">Next feature →</a>
@@ -119,6 +146,6 @@
        keep running an old cached feature.js after an edit (e.g. it would
        silently miss dark-mode image support), same failure mode as a stale
        demo.js. Regenerate with: node stamp-feature-js.mjs -->
-  <script src="feature.js?v=8cf2ea26"></script>
+  <script src="feature.js?v=11ff65d3"></script>
 </body>
 </html>
