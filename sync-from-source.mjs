@@ -4,7 +4,8 @@
  * ----------------------------------------------------------------------------
  * This repo is SELF-CONTAINED. The pixel-perfect popup preview reuses a
  * vendored snapshot of the extension's real UI:
- *   • vendor/popup.css  → linked directly by the demo (vendor/popup.css).
+ *   • vendor/popup/*.css → linked directly by the demo, one <link> each, in the
+ *                          same order popup.html links css/popup/*.css.
  *   • vendor/popup.html → the raw markup snapshot. popup-demo.html is generated
  *                         from it (copy + re-apply the demo transforms).
  *   • demo.js           → mocks behaviour by element id/class (STATIC preview).
@@ -39,7 +40,10 @@ const extVersion = existsSync(versionFile) ? readFileSync(versionFile, 'utf8').t
 const stamp = (rel) => {
   const f = join(here, rel);
   if (!existsSync(f)) return rel;
-  return rel + '?v=' + createHash('md5').update(readFileSync(f)).digest('hex').slice(0, 8);
+  // Hash the LF form — what git stores and Pages serves — so a CRLF checkout
+  // (core.autocrlf) stamps the same URL instead of churning every stamp.
+  const text = readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
+  return rel + '?v=' + createHash('md5').update(text).digest('hex').slice(0, 8);
 };
 const SRC = join(here, 'vendor', 'popup.html');
 const OUT = join(here, 'popup-demo.html');
@@ -58,7 +62,13 @@ const fail = [];
 const usesCRLF = html.includes('\r\n');
 const eol = (s) => (usesCRLF ? s.replace(/\n/g, '\r\n') : s);
 
-/* ── Transform 1: <head> — repoint CSS, add demo.css, set theme + viewport ── */
+/* ── Transform 1: <head> — repoint CSS, add demo.css, set theme + viewport ──
+ * The extension links its stylesheet in pieces (css/popup/01-base.css …), so
+ * the link list is read from the head itself and each one is repointed at its
+ * vendored copy (css/X → vendor/X), in the same order — the cascade is then
+ * identical to the real popup's. Anything else in the head still has to match
+ * verbatim, so a structural change fails loudly instead of slipping through. */
+const css = [...html.split('</head>')[0].matchAll(/<link rel="stylesheet" href="css\/([^"]+)" \/>/g)].map((m) => m[1]);
 const HEAD_FROM =
 `<!DOCTYPE html>
 <!-- popup.html — Tab-based Popup UI layout and styles (Redesign v2) -->
@@ -67,7 +77,7 @@ const HEAD_FROM =
   <meta charset="UTF-8" />
   <title>Pocket QA</title>
 
-  <link rel="stylesheet" href="css/popup.css" />
+${css.map((f) => `  <link rel="stylesheet" href="css/${f}" />`).join('\n')}
 </head>`;
 
 const HEAD_TO =
@@ -86,13 +96,16 @@ const HEAD_TO =
   <meta name="ext-version" content="${extVersion}" />
   <title>Pocket QA — Popup Preview</title>
 
-  <!-- Reuse the vendored extension stylesheet → guarantees pixel-perfect UI -->
-  <link rel="stylesheet" href="${stamp('vendor/popup.css')}" />
+  <!-- Reuse the vendored extension stylesheets → guarantees pixel-perfect UI -->
+${css.map((f) => `  <link rel="stylesheet" href="${stamp('vendor/' + f)}" />`).join('\n')}
   <link rel="stylesheet" href="${stamp('demo.css')}" />
 </head>`;
 
+if (!css.length) fail.push('<link rel="stylesheet" href="css/…"> tags in the head');
+css.filter((f) => !existsSync(join(here, 'vendor', f)))
+  .forEach((f) => fail.push('vendor/' + f + ' (linked by vendor/popup.html; run update-vendor.mjs)'));
 if (html.includes(eol(HEAD_FROM))) html = html.replace(eol(HEAD_FROM), eol(HEAD_TO));
-else fail.push('head block (lines 1-9 of vendor/popup.html changed format)');
+else fail.push('head block (top of vendor/popup.html, through </head>, changed format)');
 
 /* ── Transform 2: swap the module loader for demo.js ─────────────────────── */
 const SCRIPT_FROM = `  <script type="module" src="popup/init.js"></script>`;

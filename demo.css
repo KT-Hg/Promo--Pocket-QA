@@ -1,6 +1,6 @@
 /**
  * demo.css — tiny overrides for the standalone popup demo.
- * Everything visual comes from vendor/popup.css (the real extension styles).
+ * Everything visual comes from vendor/popup/*.css (the real extension styles).
  * This file only smooths a few things for the in-iframe promo context.
  */
 
@@ -18,7 +18,7 @@ html, body {
 html::-webkit-scrollbar,
 body::-webkit-scrollbar { width: 0; height: 0; display: none; }  /* Chrome/Safari */
 /* Note: with the scrollbars hidden, the ~15px they used to steal is returned,
- * so the original 600px height (from vendor/popup.css) is enough for the
+ * so the original 600px height (from vendor/popup/01-base.css) is enough for the
  * Capture/Settings tabs to fit without any vertical scroll. */
 
 /* Disable the real file-picker affordance feel — demo has no backend. */
