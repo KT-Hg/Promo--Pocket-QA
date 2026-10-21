@@ -13,6 +13,19 @@
   <title>Pocket QA — Record web workflows, no code</title>
   <meta name="description" content="Record &amp; replay web workflows with variables, CSV data runs, screenshots, conditions, a SQL test case designer, database rollback for Adminer and assertions with bug reports, and export to Selenium, Playwright, Robot Framework, Java or a JS bookmarklet. Preview the popup." />
   <link rel="icon" type="image/png" href="vendor/icon128.png" />
+  <!-- Runs before first paint (keep in sync with feature.html): flags JS as on,
+       so .reveal may hide content until it scrolls in, and applies the theme —
+       the visitor's saved choice, else their OS setting — so a dark-mode
+       visitor never sees a flash of the light page first. -->
+  <script>
+    (function (root) {
+      root.classList.add('js');
+      var theme = null;
+      try { theme = localStorage.getItem('demoPageTheme'); } catch (e) {}
+      if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+      if (theme) root.setAttribute('data-theme', theme);
+    })(document.documentElement);
+  </script>
   <link rel="stylesheet" href="promo.css" />
 </head>
 <body>
@@ -31,7 +44,7 @@
       </nav>
       <div class="nav__actions">
         <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
-        <a class="btn btn--primary" href="#demo">Try it free</a>
+        <a class="btn btn--primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
       </div>
     </div>
   </header>
@@ -39,8 +52,8 @@
   <!-- ===== HERO ===== -->
   <main id="top">
     <section class="hero">
-      <div class="container hero__grid" id="demo">
-        <div class="hero__copy reveal">
+      <div class="container hero__grid">
+        <div class="hero__copy">
           <span class="hero__badge">⚡ No code · Record &amp; replay</span>
           <h1 class="hero__title">Record any web workflow.<br /><span class="grad">Replay it forever.</span></h1>
           <p class="hero__sub">
@@ -50,8 +63,9 @@
             test data back when you're done.
           </p>
           <div class="hero__cta">
-            <a class="btn btn--primary btn--lg" href="#demo">▶ See the popup</a>
-            <a class="btn btn--ghost btn--lg" href="#features">See features</a>
+            <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
+            <a class="btn btn--ghost btn--lg" href="#demo">▶ See the popup</a>
+            <a class="hero__more" href="#features">See all features →</a>
           </div>
           <div class="hero__meta">
             <span><b>17</b> action types &amp; logic</span>
@@ -60,13 +74,13 @@
           </div>
         </div>
 
-        <!-- Browser mockup with the REAL popup inside -->
-        <div class="hero__mockup reveal">
+        <!-- Browser mockup with the REAL popup inside. #demo lives here, not on
+             the hero grid, so "See the popup" scrolls to the popup itself —
+             on a phone it sits a whole screen below the hero copy. -->
+        <div class="hero__mockup" id="demo">
           <!-- Scales the whole chrome (bar + faux page + popup) down together
                when the viewport is too short to show it in full — see
-               fitHeroHeight() in landing.js. Kept separate from .hero__mockup
-               itself because that element already owns the reveal-on-scroll
-               transform above, and one element can only have one `transform`. -->
+               fitHeroHeight() in landing.js. -->
           <div class="mockup-scale">
           <div class="browser">
             <div class="browser__bar">
@@ -220,7 +234,10 @@
         <div class="cta__card">
           <h2 class="cta__title">Stop repeating yourself</h2>
           <p class="cta__sub">Record it once. Let Pocket QA handle the rest.</p>
-          <a class="btn btn--primary btn--lg" href="#demo">See the popup</a>
+          <div class="cta__actions">
+            <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
+            <a class="btn btn--ghost btn--lg" href="#demo">See the popup</a>
+          </div>
         </div>
       </div>
     </section>

@@ -10,11 +10,8 @@
   /* ── Theme (landing page only; INDEPENDENT of the popup) ──────────────────
    * The popup demo owns its own theme (see demo.js). The page theme toggle here
    * never messages the iframe, and we never react to the popup's theme — so the
-   * two toggles are fully separate. Each persists under its own storage key. */
-  var saved = null;
-  try { saved = localStorage.getItem('demoPageTheme'); } catch (e) {}
-  if (saved) root.setAttribute('data-theme', saved);
-
+   * two toggles are fully separate. Each persists under its own storage key.
+   * The saved theme is applied before first paint by the inline <head> script. */
   function syncToggleIcon() {
     var btn = document.getElementById('themeToggle');
     if (btn) btn.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';

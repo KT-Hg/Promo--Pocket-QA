@@ -951,11 +951,9 @@
   };
   var ORDER = ['recording', 'playback', 'run-results', 'variables', 'csv', 'screenshots', 'export', 'highlights', 'sql-test-designer', 'db-test-session', 'settings'];
 
-  /* ── Theme (same storage key as landing.js, so the two pages agree) ──────── */
+  /* ── Theme (same storage key as landing.js, so the two pages agree) ────────
+   * The saved theme is applied before first paint by the inline <head> script. */
   var root = document.documentElement;
-  var saved = null;
-  try { saved = localStorage.getItem('demoPageTheme'); } catch (e) {}
-  if (saved) root.setAttribute('data-theme', saved);
 
   function currentTheme() { return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
   function syncToggleIcon() {

@@ -12,6 +12,16 @@
   <title>Feature — Pocket QA</title>
   <meta name="description" content="A closer look at a Pocket QA feature." />
   <link rel="icon" type="image/png" href="vendor/icon128.png" />
+  <!-- Same pre-paint script as index.html — see the comment there. -->
+  <script>
+    (function (root) {
+      root.classList.add('js');
+      var theme = null;
+      try { theme = localStorage.getItem('demoPageTheme'); } catch (e) {}
+      if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+      if (theme) root.setAttribute('data-theme', theme);
+    })(document.documentElement);
+  </script>
   <link rel="stylesheet" href="promo.css" />
 </head>
 <body>
@@ -30,7 +40,7 @@
       </nav>
       <div class="nav__actions">
         <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
-        <a class="btn btn--primary" href="index.html#demo">Try it free</a>
+        <a class="btn btn--primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
       </div>
     </div>
   </header>
@@ -39,6 +49,7 @@
     <!-- ===== HERO ===== -->
     <section class="fhero">
       <div class="container">
+        <noscript><p>This feature guide needs JavaScript to load. <a href="index.html#features">Back to all features</a></p></noscript>
         <nav class="crumb" aria-label="Breadcrumb">
           <a href="index.html">Home</a>
           <span aria-hidden="true">/</span>
@@ -127,7 +138,10 @@
       <div class="cta__card">
         <h2 class="cta__title">Stop repeating yourself</h2>
         <p class="cta__sub">Record it once. Let Pocket QA handle the rest.</p>
-        <a class="btn btn--primary btn--lg" href="index.html#demo">See the popup</a>
+        <div class="cta__actions">
+          <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
+          <a class="btn btn--ghost btn--lg" href="index.html#demo">See the popup</a>
+        </div>
       </div>
     </div>
   </section>
@@ -146,6 +160,6 @@
        keep running an old cached feature.js after an edit (e.g. it would
        silently miss dark-mode image support), same failure mode as a stale
        demo.js. Regenerate with: node stamp-feature-js.mjs -->
-  <script src="feature.js?v=11ff65d3"></script>
+  <script src="feature.js?v=5b8b957f"></script>
 </body>
 </html>
