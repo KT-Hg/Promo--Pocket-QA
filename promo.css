@@ -16,19 +16,25 @@
   --p-bg: #f7f8fb;
   --p-bg-alt: #ffffff;
   --p-text: #0f172a;
-  --p-muted: #64748b;
+  --p-muted: #596779;
   --p-border: #e5e7eb;
   --p-card: #ffffff;
   --p-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
   --p-shadow-lg: 0 30px 80px rgba(15, 23, 42, 0.18);
   --p-radius: 16px;
   --p-maxw: 1140px;
+  /* Text-safe shades: --p-primary/--p-secondary stay for fills, borders and
+   * tints; anything that carries text uses these, which hold WCAG AA (≥4.5:1)
+   * on every surface — bg, card, the 12% primary tints and the hero glow. */
+  --p-link: #1d4ed8;
+  --p-grad: linear-gradient(135deg, #2563eb, #7c3aed);
 }
 [data-theme="dark"] {
   --p-bg: #050b16;
   --p-bg-alt: #0b1424;
   --p-text: #eef2f8;
   --p-muted: #93a4bd;
+  --p-link: #60a5fa;
   --p-border: #1e2c40;
   --p-card: #0d1829;
   --p-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
@@ -52,7 +58,7 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--p-primary); text-decoration: none; }
+a { color: var(--p-link); text-decoration: none; }
 .container { width: 100%; max-width: var(--p-maxw); margin: 0 auto; padding: 0 24px; }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
@@ -63,9 +69,9 @@ a { color: var(--p-primary); text-decoration: none; }
   text-decoration: none; white-space: nowrap;
 }
 .btn:hover { transform: translateY(-2px); }
-.btn--primary { background: linear-gradient(135deg, var(--p-primary), var(--p-secondary)); color: #fff; box-shadow: 0 8px 24px rgba(59, 130, 246, .35); }
+.btn--primary { background: var(--p-grad); color: #fff; box-shadow: 0 8px 24px rgba(59, 130, 246, .35); }
 .btn--ghost { background: transparent; color: var(--p-text); border-color: var(--p-border); }
-.btn--ghost:hover { border-color: var(--p-primary); color: var(--p-primary); }
+.btn--ghost:hover { border-color: var(--p-primary); color: var(--p-link); }
 .btn--lg { padding: 15px 30px; font-size: 16px; }
 
 /* ── Top navigation ──────────────────────────────────────────────────────── */
@@ -77,7 +83,7 @@ a { color: var(--p-primary); text-decoration: none; }
   border-bottom: 1px solid var(--p-border);
 }
 .nav__inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-.nav__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; color: var(--p-text); }
+.nav__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; color: var(--p-text); white-space: nowrap; }
 .nav__logo {
   width: 34px; height: 34px; flex: 0 0 34px;
   object-fit: contain; display: block;
@@ -92,6 +98,8 @@ a { color: var(--p-primary); text-decoration: none; }
 }
 .nav__theme:hover { border-color: var(--p-primary); }
 @media (max-width: 760px) { .nav__links { display: none; } }
+/* Logo + theme toggle + "Add to Chrome" on one line down to a 360px phone. */
+@media (max-width: 560px) { .nav .btn { padding: 10px 14px; font-size: 14px; } }
 
 /* ── Hero ────────────────────────────────────────────────────────────────── */
 .hero { padding: 72px 0 40px; overflow: hidden; }
@@ -101,13 +109,14 @@ a { color: var(--p-primary); text-decoration: none; }
 .hero__badge {
   display: inline-flex; align-items: center; gap: 8px;
   background: color-mix(in srgb, var(--p-primary) 12%, transparent);
-  color: var(--p-primary); font-weight: 600; font-size: 13px;
+  color: var(--p-link); font-weight: 600; font-size: 13px;
   padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
 }
 .hero__title { font-size: clamp(34px, 5vw, 52px); line-height: 1.08; font-weight: 850; letter-spacing: -0.02em; margin: 0 0 18px; }
 .hero__title .grad { background: linear-gradient(120deg, var(--p-primary), var(--p-secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .hero__sub { font-size: 18px; color: var(--p-muted); margin: 0 0 28px; max-width: 520px; }
-.hero__cta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+.hero__cta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+.hero__more { font-weight: 600; font-size: 15px; }
 .hero__meta { display: flex; gap: 22px; flex-wrap: wrap; color: var(--p-muted); font-size: 14px; }
 .hero__meta b { color: var(--p-text); }
 
@@ -121,10 +130,10 @@ a { color: var(--p-primary); text-decoration: none; }
 }
 
 /* ── Browser mockup + popup ──────────────────────────────────────────────── */
-.hero__mockup { position: relative; }
+/* scroll-margin clears the 64px sticky nav when #demo is jumped to. */
+.hero__mockup { position: relative; scroll-margin-top: 80px; }
 /* Wraps `.browser` so the height-fit script (landing.js → fitHeroHeight) can
- * scale + reserve space independently of `.hero__mockup`'s own reveal-on-
- * scroll transform — same "scale + explicit shorter height, no clipping"
+ * scale + reserve space — same "scale + explicit shorter height, no clipping"
  * trick as `.popup-anchor` further down, just one level up so the browser bar
  * and faux page shrink along with the popup instead of only the popup. */
 .mockup-scale {
@@ -228,7 +237,7 @@ a { color: var(--p-primary); text-decoration: none; }
 .section { padding: 72px 0; }
 .section--alt { background: var(--p-bg-alt); border-top: 1px solid var(--p-border); border-bottom: 1px solid var(--p-border); }
 .section__head { text-align: center; max-width: 680px; margin: 0 auto 48px; }
-.section__eyebrow { color: var(--p-primary); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+.section__eyebrow { color: var(--p-link); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
 .section__title { font-size: clamp(26px, 3.4vw, 38px); font-weight: 800; letter-spacing: -0.02em; margin: 10px 0 12px; }
 .section__sub { color: var(--p-muted); font-size: 17px; margin: 0; }
 
@@ -242,7 +251,7 @@ a { color: var(--p-primary); text-decoration: none; }
   padding: 26px 22px; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
 .feature:hover { transform: translateY(-4px); box-shadow: var(--p-shadow); border-color: color-mix(in srgb, var(--p-primary) 40%, var(--p-border)); }
-.feature:hover .feature__more { color: var(--p-primary-dark); transform: translateX(2px); }
+.feature:hover .feature__more { transform: translateX(2px); }
 .feature:focus-visible { outline: 2px solid var(--p-primary); outline-offset: 3px; }
 .feature__icon {
   width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
@@ -252,9 +261,13 @@ a { color: var(--p-primary); text-decoration: none; }
 .feature__title { font-size: 18px; font-weight: 700; margin: 0 0 8px; }
 .feature__text { color: var(--p-muted); font-size: 15px; margin: 0; }
 .feature__more {
-  display: inline-block; margin-top: 14px; color: var(--p-primary); font-size: 14px; font-weight: 700;
+  display: inline-block; margin-top: 14px; color: var(--p-link); font-size: 14px; font-weight: 700;
   transition: transform .18s ease, color .18s ease;
 }
+/* 12th card: the install CTA, which also fills the 3-column grid's last row. */
+.feature--cta { background: var(--p-grad); border-color: transparent; color: #fff; }
+.feature--cta .feature__icon { background: rgba(255, 255, 255, .18); }
+.feature--cta .feature__text, .feature--cta .feature__more { color: #fff; }
 
 /* ── Steps ───────────────────────────────────────────────────────────────── */
 .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; counter-reset: step; }
@@ -264,24 +277,25 @@ a { color: var(--p-primary); text-decoration: none; }
 .step__num {
   counter-increment: step; width: 36px; height: 36px; border-radius: 10px; margin-bottom: 14px;
   display: grid; place-items: center; font-weight: 800; color: #fff;
-  background: linear-gradient(135deg, var(--p-primary), var(--p-secondary));
+  background: var(--p-grad);
 }
 .step__num::before { content: counter(step); }
 .step__title { font-weight: 700; margin: 0 0 6px; }
 .step__text { color: var(--p-muted); font-size: 14px; margin: 0; }
 
 /* ── Demo callout strip ──────────────────────────────────────────────────── */
-.tryline { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; color: var(--p-muted); font-size: 15px; margin-top: 28px; }
+.tryline { text-align: center; color: var(--p-muted); font-size: 15px; margin-top: 28px; }
 .kbd { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; background: var(--p-card); border: 1px solid var(--p-border); border-bottom-width: 2px; border-radius: 6px; padding: 2px 8px; color: var(--p-text); }
 
 /* ── CTA ─────────────────────────────────────────────────────────────────── */
 .cta { text-align: center; }
 .cta__card {
-  background: linear-gradient(135deg, var(--p-primary), var(--p-secondary));
+  background: var(--p-grad);
   border-radius: 24px; padding: 56px 32px; color: #fff; box-shadow: var(--p-shadow-lg);
 }
 .cta__title { font-size: clamp(26px, 3.6vw, 40px); font-weight: 850; margin: 0 0 12px; }
 .cta__sub { font-size: 18px; opacity: .92; margin: 0 0 28px; }
+.cta__actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .cta .btn--primary { background: #fff; color: var(--p-primary-dark); box-shadow: 0 10px 30px rgba(0,0,0,.2); }
 .cta .btn--ghost { color: #fff; border-color: rgba(255,255,255,.5); }
 
@@ -289,12 +303,24 @@ a { color: var(--p-primary); text-decoration: none; }
 .footer { padding: 40px 0; border-top: 1px solid var(--p-border); color: var(--p-muted); font-size: 14px; }
 .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .footer__brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--p-text); }
+.footer__links { display: flex; gap: 18px; flex-wrap: wrap; }
+.footer__links a { color: var(--p-muted); font-weight: 600; }
+.footer__links a:hover { color: var(--p-text); }
+
+/* ── Privacy + FAQ (index.html#privacy) ──────────────────────────────────── */
+.privacy__title { font-size: 20px; font-weight: 800; margin: 48px 0 16px; }
+.faq { display: grid; gap: 10px; }
+.faq details { background: var(--p-card); border: 1px solid var(--p-border); border-radius: var(--p-radius); padding: 14px 18px; }
+.faq summary { cursor: pointer; font-weight: 700; }
+.faq p { color: var(--p-muted); margin: 10px 0 0; }
 
 /* ── Reveal-on-scroll ────────────────────────────────────────────────────── */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
-.reveal.is-visible { opacity: 1; transform: none; }
+/* Gated on `.js` (set by the inline <head> script): without JS nothing would
+ * ever add .is-visible, and the whole page would stay invisible. */
+.js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.js .reveal.is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
   .btn:hover, .feature:hover { transform: none; }
   html { scroll-behavior: auto; }
 }
@@ -302,7 +328,7 @@ a { color: var(--p-primary); text-decoration: none; }
 /* ── Feature guide page (feature.html) ──────────────────────────────────── */
 .crumb { display: flex; align-items: center; gap: 6px; color: var(--p-muted); font-size: 14px; margin-bottom: 28px; flex-wrap: wrap; }
 .crumb a { color: var(--p-muted); font-weight: 600; }
-.crumb a:hover { color: var(--p-primary); }
+.crumb a:hover { color: var(--p-link); }
 
 .fhero {
   padding: 40px 0 44px;
@@ -316,7 +342,7 @@ a { color: var(--p-primary); text-decoration: none; }
   width: 64px; height: 64px; border-radius: 16px; display: grid; place-items: center;
   font-size: 32px; background: color-mix(in srgb, var(--p-primary) 12%, transparent);
 }
-.detail-hero__eyebrow { color: var(--p-primary); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+.detail-hero__eyebrow { color: var(--p-link); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
 .detail-hero__title { font-size: clamp(28px, 4vw, 44px); font-weight: 850; letter-spacing: -0.02em; line-height: 1.1; margin: 8px 0 14px; }
 .detail-hero__lead { color: var(--p-muted); font-size: 18px; margin: 0; }
 
@@ -336,7 +362,7 @@ a { color: var(--p-primary); text-decoration: none; }
   color: var(--p-muted); font-size: 14px; font-weight: 600;
 }
 .fnav__link:hover { color: var(--p-text); }
-.fnav__link[aria-current] { color: var(--p-primary); background: color-mix(in srgb, var(--p-primary) 12%, transparent); }
+.fnav__link[aria-current] { color: var(--p-link); background: color-mix(in srgb, var(--p-primary) 12%, transparent); }
 .fnav__link:focus-visible { outline: 2px solid var(--p-primary); outline-offset: 1px; }
 
 /* Each section clears both sticky bars when jumped to from the bar above. */
@@ -367,16 +393,29 @@ main .kbd { white-space: nowrap; }
 }
 .fsec__points { grid-template-columns: repeat(2, 1fr); margin-top: 24px; }
 @media (max-width: 640px) { .fsec__points { grid-template-columns: 1fr; } }
-.fnotes li::before { content: "i"; color: var(--p-primary); font-family: Georgia, serif; font-style: italic; }
+.fnotes li::before { content: "i"; color: var(--p-link); font-family: Georgia, serif; font-style: italic; }
 
-.detail-preview { position: sticky; top: 128px; }
+/* Sticky only where the whole block (label + 600px popup + button ≈ 730px)
+ * fits under the two sticky bars — on a shorter screen it would pin the
+ * button below the fold for as long as the overview scrolls past. */
+@media (min-height: 880px) { .detail-preview { position: sticky; top: 128px; } }
 .detail-preview__label { font-weight: 700; font-size: 14px; margin: 0 0 10px; color: var(--p-muted); }
 .detail-preview__frame-wrap {
-  overflow-x: auto; border-radius: var(--p-radius); border: 1px solid var(--p-border);
+  overflow: hidden; border-radius: var(--p-radius); border: 1px solid var(--p-border);
   background: var(--p-bg-alt); box-shadow: var(--p-shadow); padding: 10px;
 }
-.detail-preview__frame { display: block; width: 480px; height: 600px; border: 0; border-radius: 10px; }
-.detail-preview__cta { margin-top: 14px; display: flex; }
+/* --pv-scale comes from feature.js → fitPreview(); 1 until it runs. */
+.detail-preview__frame {
+  display: block; width: 480px; height: 600px; border: 0; border-radius: 10px;
+  transform: scale(var(--pv-scale, 1)); transform-origin: top left;
+  margin-bottom: calc(600px * (var(--pv-scale, 1) - 1));
+}
+.detail-preview__cta { margin-top: 14px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+/* On a phone the popup is scaled to ~65% — this opens it 1:1 in its own tab,
+ * where native pinch-zoom works. */
+.preview-full { display: none; font-weight: 600; font-size: 14px; }
+@media (max-width: 560px) { .preview-full { display: inline-block; } .hero__mockup .preview-full { margin-top: 12px; } }
 
 .fsteps { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin-top: 24px; }
 .fsteps .step__text { font-size: 14.5px; }

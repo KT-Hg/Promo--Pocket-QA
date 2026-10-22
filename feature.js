@@ -502,8 +502,8 @@
           nav: 'Image Editor',
           lead: 'Every capture — or any image from the clipboard or a file — can open in a full crop-and-annotate editor. It opens in its own window, not a cramped popup panel.',
           images: [{
-            src: 'screenshots/shot-image-editor.png',
-            srcDark: 'screenshots/shot-image-editor-dark.png',
+            src: 'screenshots/shot-image-editor.webp',
+            srcDark: 'screenshots/shot-image-editor-dark.webp',
             alt: 'The Image Editor open on a sample dashboard screenshot, with a rectangle and arrow annotation drawn on it and the Stamp panel open on the right showing timestamp watermark options.',
             caption: 'Crop, annotate and stamp any capture — here with a rectangle + arrow highlight and the Stamp panel open.'
           }],
@@ -577,16 +577,16 @@
           imagesLayout: 'row',
           images: [
             {
-              src: 'screenshots/shot-export-js.png',
-              srcDark: 'screenshots/shot-export-js-dark.png',
-              alt: 'The Export JS modal showing generated JavaScript bookmarklet code for the Login flow scenario, with Code/Variables/Actions/Settings tabs and a warning that 1 screenshot step was skipped.',
+              src: 'screenshots/shot-export-js.webp',
+              srcDark: 'screenshots/shot-export-js-dark.webp',
+              alt: 'The Export JS modal for the Login flow scenario at Step 1 of the generated bookmarklet code, with Code/Variables/Actions/Settings tabs and a warning that 1 step needs checking and 1 was skipped.',
               caption: 'JS Bookmarklet — the code with Variables, Actions and Settings tabs, ready to copy or download.'
             },
             {
-              src: 'screenshots/shot-export-py.png',
-              srcDark: 'screenshots/shot-export-py-dark.png',
-              alt: 'The Export Python modal showing generated Selenium code for the same Login flow scenario, importing selenium webdriver and starting a Chrome driver.',
-              caption: 'Selenium Python — the same scenario as a standalone script, imports and driver setup included.'
+              src: 'screenshots/shot-export-py.webp',
+              srcDark: 'screenshots/shot-export-py-dark.webp',
+              alt: 'The Export Python modal for the same Login flow scenario at Step 1 of the generated Selenium code.',
+              caption: 'Selenium Python — the same scenario as a standalone script; ↧ Steps jumps past the helpers to Step 1.'
             }
           ],
           points: [
@@ -636,8 +636,7 @@
       ],
       notes: [
         'The bookmarklet stops at a Navigate and goes on from the next step when you click it again on the new page — a bookmarklet can’t survive a page load.',
-        'Variable values are baked in at export time — edit the Variables table and export again, or override them with <code>PQA_&lt;name&gt;</code>.',
-        'The screenshots above come from an earlier build that offered two formats; the window itself works the same way for all five.'
+        'Variable values are baked in at export time — edit the Variables table and export again, or override them with <code>PQA_&lt;name&gt;</code>.'
       ]
     },
 
@@ -733,8 +732,8 @@
           nav: 'Workspace',
           lead: 'A dedicated three-column workspace, not a popup panel — everything a run needs stays visible at once.',
           images: [{
-            src: 'screenshots/shot-sqlcases-analysis.png',
-            srcDark: 'screenshots/shot-sqlcases-analysis-dark.png',
+            src: 'screenshots/shot-sqlcases-analysis.webp',
+            srcDark: 'screenshots/shot-sqlcases-analysis-dark.webp',
             alt: 'The SQL Test Case Designer: the query rail on the left with the pasted SQL, a generated case list in the middle with stats and technique filters, and a case inspector on the right with the rationale, fixture rows and the query to run.',
             caption: 'Left to right: the pasted query, the generated case list, and the inspector for one selected case — 71 cases from one query.'
           }],
@@ -812,14 +811,14 @@
           lead: 'One sample session — a coupon checked out, then refunded — seen from the Adminer panel and from the manager page. Real UI, and the SQL is the real generator’s output.',
           images: [
             {
-              src: 'screenshots/shot-dbtools-rollback.png',
-              srcDark: 'screenshots/shot-dbtools-rollback-dark.png',
+              src: 'screenshots/shot-dbtools-rollback.webp',
+              srcDark: 'screenshots/shot-dbtools-rollback-dark.webp',
               alt: 'The Undo SQL preview opened from the Adminer panel: a Step by step / Merged switch, one summary line per change with a skipped UPDATE products flagged, and the seven UPDATE, INSERT and DELETE statements to run; beside it the panel, recording, with its Roll back all and Undo last buttons and a log of recorded changes.',
               caption: '↺ Roll back all opens the SQL first — one line per change, the skipped one says why, and nothing runs until you confirm.'
             },
             {
-              src: 'screenshots/shot-dbtools-manager.png',
-              srcDark: 'screenshots/shot-dbtools-manager-dark.png',
+              src: 'screenshots/shot-dbtools-manager.webp',
+              srcDark: 'screenshots/shot-dbtools-manager-dark.webp',
               alt: 'The Test sessions & rollback page: sessions listed on the left, and the selected session’s seven changes on the right, with the before/after of a DELETE on cart_items and an UPDATE on orders open, and one change already undone.',
               caption: 'The manager page — every session on the left, each change’s before/after on the right, undone one at a time or all at once.'
             }
@@ -945,17 +944,15 @@
       notes: [
         'Once a newer version has been on the store past its grace period, a banner counts down the last 5 days; after that, starting new runs and captures waits for the update — stop, export and backup always keep working.',
         'The popup remembers its last tab, its tab order and which cards you collapsed.',
-        'Everything is stored locally in your browser; only the hotkey bindings sync through your Chrome profile.'
+        'Everything is stored locally in your browser; only settings — hotkeys, screenshot naming, notification switches — sync through your Chrome profile.'
       ]
     }
   };
   var ORDER = ['recording', 'playback', 'run-results', 'variables', 'csv', 'screenshots', 'export', 'highlights', 'sql-test-designer', 'db-test-session', 'settings'];
 
-  /* ── Theme (same storage key as landing.js, so the two pages agree) ──────── */
+  /* ── Theme (same storage key as landing.js, so the two pages agree) ────────
+   * The saved theme is applied before first paint by the inline <head> script. */
   var root = document.documentElement;
-  var saved = null;
-  try { saved = localStorage.getItem('demoPageTheme'); } catch (e) {}
-  if (saved) root.setAttribute('data-theme', saved);
 
   function currentTheme() { return root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'; }
   function syncToggleIcon() {
@@ -1004,6 +1001,12 @@
   document.title = plain(data.title) + ' — Pocket QA';
   var metaDesc = document.querySelector('meta[name="description"]');
   if (metaDesc) metaDesc.setAttribute('content', plain(data.lead));
+  // For crawlers that run JS; the rest see feature.html's generic defaults.
+  var pageUrl = 'https://kt-hg.github.io/Promo--Pocket-QA/feature.html?id=' + id;
+  document.querySelector('link[rel="canonical"]').href = pageUrl;
+  document.querySelector('meta[property="og:url"]').content = pageUrl;
+  document.querySelector('meta[property="og:title"]').content = document.title;
+  document.querySelector('meta[property="og:description"]').content = plain(data.lead);
 
   document.getElementById('crumbCurrent').textContent = plain(data.title);
   document.getElementById('heroIcon').textContent = data.icon;
@@ -1131,10 +1134,27 @@
 
   /* ── Live popup preview ──────────────────────────────────────────────── */
   var frame = document.getElementById('previewFrame');
+  var fullLink = document.getElementById('previewFullLink');
   function syncPreviewFrame() {
-    if (frame) frame.src = 'popup-demo.html?tab=' + data.tab + '&theme=' + currentTheme();
+    var src = 'popup-demo.html?tab=' + data.tab + '&theme=' + currentTheme();
+    if (frame) frame.src = src;
+    if (fullLink) fullLink.href = src;
   }
   syncPreviewFrame();
+
+  /* Scale the popup down to fit its column — same idea as landing.js →
+   * fitPopup(): the popup is a fixed 480x600 UI, so it's zoomed out whole
+   * instead of squeezed. promo.css turns --pv-scale into the transform plus a
+   * negative margin that hands the freed height back. */
+  var frameWrap = frame && frame.parentElement;
+  function fitPreview() {
+    if (!frameWrap) return;
+    var cs = getComputedStyle(frameWrap);
+    var avail = frameWrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    frameWrap.style.setProperty('--pv-scale', String(Math.min(1, avail / 480)));
+  }
+  fitPreview();
+  window.addEventListener('resize', fitPreview);
 
   /* ── Light/dark screenshots ───────────────────────────────────────────────
    * These are fixed captures of the *same* real UI the "Live popup preview"

@@ -11,8 +11,51 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pocket QA — Record web workflows, no code</title>
-  <meta name="description" content="Record &amp; replay web workflows with variables, CSV data runs, screenshots, conditions, a SQL test case designer, database rollback for Adminer and assertions with bug reports, and export to Selenium, Playwright, Robot Framework, Java or a JS bookmarklet. Preview the popup." />
+  <meta name="description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java." />
+  <link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/" />
   <link rel="icon" type="image/png" href="vendor/icon128.png" />
+  <link rel="apple-touch-icon" href="vendor/icon128.png" />
+  <meta name="theme-color" content="#f7f8fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#050b16" media="(prefers-color-scheme: dark)" />
+  <!-- Link previews (Zalo, Slack, Facebook, X…). og-image.png is the hero at
+       1200×630 — re-capture it when the hero changes (see README). -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pocket QA" />
+  <meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/" />
+  <meta property="og:title" content="Pocket QA — Record web workflows, no code" />
+  <meta property="og:description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java." />
+  <meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Pocket QA landing page: Record any web workflow, replay it forever — beside the real extension popup." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Pocket QA",
+      "description": "Free Chrome extension to record & replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java.",
+      "url": "https://kt-hg.github.io/Promo--Pocket-QA/",
+      "downloadUrl": "https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam",
+      "image": "https://kt-hg.github.io/Promo--Pocket-QA/og-image.png",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Chrome",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  </script>
+  <!-- Runs before first paint (keep in sync with feature.html): flags JS as on,
+       so .reveal may hide content until it scrolls in, and applies the theme —
+       the visitor's saved choice, else their OS setting — so a dark-mode
+       visitor never sees a flash of the light page first. -->
+  <script>
+    (function (root) {
+      root.classList.add('js');
+      var theme = null;
+      try { theme = localStorage.getItem('demoPageTheme'); } catch (e) {}
+      if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+      if (theme) root.setAttribute('data-theme', theme);
+    })(document.documentElement);
+  </script>
   <link rel="stylesheet" href="promo.css" />
 </head>
 <body>
@@ -28,10 +71,11 @@
         <a class="nav__link" href="#demo">Preview</a>
         <a class="nav__link" href="#features">Features</a>
         <a class="nav__link" href="#how">How it works</a>
+        <a class="nav__link" href="#privacy">Privacy</a>
       </nav>
       <div class="nav__actions">
         <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
-        <a class="btn btn--primary" href="#demo">Try it free</a>
+        <a class="btn btn--primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
       </div>
     </div>
   </header>
@@ -39,19 +83,19 @@
   <!-- ===== HERO ===== -->
   <main id="top">
     <section class="hero">
-      <div class="container hero__grid" id="demo">
-        <div class="hero__copy reveal">
+      <div class="container hero__grid">
+        <div class="hero__copy">
           <span class="hero__badge">⚡ No code · Record &amp; replay</span>
           <h1 class="hero__title">Record any web workflow.<br /><span class="grad">Replay it forever.</span></h1>
           <p class="hero__sub">
-            Capture clicks, inputs and navigation with one tap. Add variables, CSV data runs,
-            assertions and screenshots — get a pass/fail verdict and a bug report for every run, export to
-            Selenium, Playwright, Robot Framework or Java, and roll
-            test data back when you're done.
+            Capture clicks and typing once. Add variables, CSV data and assertions, get a
+            pass/fail verdict and a bug report for every run — then export it as test code
+            in five formats.
           </p>
           <div class="hero__cta">
-            <a class="btn btn--primary btn--lg" href="#demo">▶ See the popup</a>
-            <a class="btn btn--ghost btn--lg" href="#features">See features</a>
+            <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
+            <a class="btn btn--ghost btn--lg" href="#demo">▶ See the popup</a>
+            <a class="hero__more" href="#features">See all features →</a>
           </div>
           <div class="hero__meta">
             <span><b>17</b> action types &amp; logic</span>
@@ -60,13 +104,13 @@
           </div>
         </div>
 
-        <!-- Browser mockup with the REAL popup inside -->
-        <div class="hero__mockup reveal">
+        <!-- Browser mockup with the REAL popup inside. #demo lives here, not on
+             the hero grid, so "See the popup" scrolls to the popup itself —
+             on a phone it sits a whole screen below the hero copy. -->
+        <div class="hero__mockup" id="demo">
           <!-- Scales the whole chrome (bar + faux page + popup) down together
                when the viewport is too short to show it in full — see
-               fitHeroHeight() in landing.js. Kept separate from .hero__mockup
-               itself because that element already owns the reveal-on-scroll
-               transform above, and one element can only have one `transform`. -->
+               fitHeroHeight() in landing.js. -->
           <div class="mockup-scale">
           <div class="browser">
             <div class="browser__bar">
@@ -107,14 +151,15 @@
             </div>
           </div>
           </div>
+          <a class="preview-full" href="popup-demo.html" target="_blank" rel="noopener">Open full-size preview ↗</a>
         </div>
       </div>
 
       <div class="container">
         <p class="tryline reveal">
-          👆 This is the real popup UI — a live preview. Switch between
-          <span class="kbd">tabs</span> and toggle the theme <span class="kbd">🌙</span>
-          to explore every panel.
+          👆 This is the real popup UI. Switch <span class="kbd">tabs</span> and flip the
+          popup's own <span class="kbd">🌙</span> theme to explore every panel — the other
+          controls are display-only until you install it.
         </p>
       </div>
     </section>
@@ -194,6 +239,12 @@
             <p class="feature__text">Configurable hotkeys, import/export and full backup, per-category notifications, and a popup that remembers how you work.</p>
             <span class="feature__more">Learn more →</span>
           </a>
+          <a class="feature feature--cta reveal" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
+            <div class="feature__icon">＋</div>
+            <h3 class="feature__title">Get Pocket QA — free</h3>
+            <p class="feature__text">All of the above in one Chrome extension. No account, and your scenarios stay in your browser.</p>
+            <span class="feature__more">Add to Chrome →</span>
+          </a>
         </div>
       </div>
     </section>
@@ -209,7 +260,66 @@
           <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Record</h3><p class="step__text">Hit Start Recording and do the task once in your browser.</p></div>
           <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Refine</h3><p class="step__text">Edit steps, add variables, conditions and waits as needed.</p></div>
           <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Run</h3><p class="step__text">Replay once, loop it, sequence scenarios, or drive it from CSV.</p></div>
-          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Export</h3><p class="step__text">Ship it as Selenium, Playwright, Robot or Java code — or schedule it.</p></div>
+          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Export</h3><p class="step__text">Ship it as Selenium, Playwright, Robot, Java or a JS bookmarklet — or schedule it.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PRIVACY =====
+         Every claim here was checked against the extension source (v1.0.24):
+         storage areas, the one outbound request (bg/remote-config.js), and each
+         manifest permission's API calls. Re-check after a permission change. -->
+    <section class="section section--alt" id="privacy">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="section__eyebrow">Privacy</span>
+          <h2 class="section__title">Your tests stay in your browser</h2>
+          <p class="section__sub">No account and no analytics. Here is what Pocket QA keeps, the one request it makes, and why it asks for each permission.</p>
+        </div>
+        <ul class="detail-points fsec__points reveal">
+          <li><b>Stored on this computer.</b> Scenarios, variables, CSV data, screenshots and run results live in Chrome's local extension storage. Nothing is uploaded.</li>
+          <li><b>Settings can sync.</b> Hotkeys, screenshot naming and notification switches use Chrome's sync storage, so they follow you to your other devices if Chrome Sync is on.</li>
+          <li><b>One request out, once a day.</b> Alongside Chrome's own update check, Pocket QA reads a small version file from <code>kt-hg.github.io</code> so a broken release can be stopped. The request carries none of your data.</li>
+          <li><b>DB rollback stays on your Adminer.</b> Undo SQL goes only to the Adminer page you are working in, over your existing session.</li>
+        </ul>
+
+        <h3 class="privacy__title">Permissions</h3>
+        <div class="ftable reveal" tabindex="0" role="region" aria-label="Permissions">
+          <table>
+            <thead><tr><th scope="col">Permission</th><th scope="col">Why Pocket QA asks for it</th></tr></thead>
+            <tbody>
+              <tr><td>Read and change data on all websites</td><td>Record and replay on whatever site you test, and screenshot it.</td></tr>
+              <tr><td><code>tabs</code></td><td>Find the tab you are recording or playing on, navigate it during a run, and set its zoom for captures.</td></tr>
+              <tr><td><code>scripting</code></td><td>Put the recorder, the player and highlights into the page.</td></tr>
+              <tr><td><code>storage</code></td><td>Keep your scenarios, variables and settings (see above).</td></tr>
+              <tr><td><code>debugger</code></td><td>Trusted clicks on native dropdowns, file uploads, Run JS steps, and full-page and element screenshots.</td></tr>
+              <tr><td><code>downloads</code></td><td>Save screenshots, exported code, run results and SQL test cases.</td></tr>
+              <tr><td><code>alarms</code></td><td>Scheduled runs, keeping long runs alive, and the daily update check.</td></tr>
+              <tr><td><code>windows</code></td><td>Window screenshots, and bringing the right window forward during a run.</td></tr>
+              <tr><td><code>notifications</code></td><td>Run results, failures and update notices — each category can be switched off.</td></tr>
+              <tr><td><code>desktopCapture</code> (optional)</td><td>Asked for only when you capture a whole window; nothing else needs it.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="privacy__title">FAQ</h3>
+        <div class="faq reveal">
+          <details>
+            <summary>Is Pocket QA free?</summary>
+            <p>Yes, completely — no paid tier and no account.</p>
+          </details>
+          <details>
+            <summary>Do I need to write code?</summary>
+            <p>No. Record a flow once and replay it from the popup. Code export is there for when you want the same test in Selenium, Playwright, Robot Framework or Java.</p>
+          </details>
+          <details>
+            <summary>Which browsers does it run on?</summary>
+            <p>Chrome 109 or newer.</p>
+          </details>
+          <details>
+            <summary>Why does Chrome say Pocket QA "started debugging this browser"?</summary>
+            <p>Chrome shows that bar whenever an extension uses its debugger API, which Pocket QA does for the steps listed under <code>debugger</code> above. It detaches when the run ends, and the bar goes away.</p>
+          </details>
         </div>
       </div>
     </section>
@@ -220,7 +330,10 @@
         <div class="cta__card">
           <h2 class="cta__title">Stop repeating yourself</h2>
           <p class="cta__sub">Record it once. Let Pocket QA handle the rest.</p>
-          <a class="btn btn--primary btn--lg" href="#demo">See the popup</a>
+          <div class="cta__actions">
+            <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
+            <a class="btn btn--ghost btn--lg" href="#demo">See the popup</a>
+          </div>
         </div>
       </div>
     </section>
@@ -230,8 +343,13 @@
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Pocket QA</div>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
       <div>v1.0.24 · Manifest V3 · Chrome 109+</div>
-      <div>Built for the web. The popup above is the real extension UI.</div>
     </div>
   </footer>
 

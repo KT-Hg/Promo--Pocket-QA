@@ -500,8 +500,22 @@
    *     scrolling, focus and text selection inside the preview).
    * ────────────────────────────────────────────────────────────────────────── */
   var ALLOW = '.tab-btn, .capture-tab-btn, #toggleTheme';
+  // The display-only controls demo.css gives a not-allowed cursor.
+  var BLOCKED = 'button, [role="button"], input, select, textarea, label, .switch, [data-color]';
   var CANCEL_EVENTS = ['mousedown', 'click', 'dblclick', 'change', 'input', 'submit'];
   var SILENT_EVENTS = ['mouseover', 'mousemove', 'mouseup', 'keydown', 'keyup'];
+
+  // A touch screen has no cursor, so a tap on a blocked control used to do
+  // nothing at all — say why, in the popup's own toast.
+  var toastTimer = null;
+  function explainBlocked() {
+    var toast = $('toast');
+    if (!toast) return;
+    toast.textContent = 'Preview only — install Pocket QA to use this';
+    toast.className = 'toast toast-info show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2500);
+  }
 
   function staticGuard(e) {
     var live = e.target && e.target.closest ? e.target.closest(ALLOW) : null;
@@ -509,6 +523,8 @@
       if (live.id === 'toggleTheme') toggleTheme();
       else if (live.classList.contains('tab-btn')) switchMainTab(live);
       else switchCaptureTab(live);
+    } else if (e.type === 'click' && e.target && e.target.closest && e.target.closest(BLOCKED)) {
+      explainBlocked();
     }
     // Live controls keep their default action (so mousedown still focuses them
     // and Enter/Space still produces the click we handle above).

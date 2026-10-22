@@ -11,7 +11,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Feature — Pocket QA</title>
   <meta name="description" content="A closer look at a Pocket QA feature." />
+  <!-- canonical, og:url/title/description are filled per feature by feature.js. -->
+  <link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/feature.html" />
   <link rel="icon" type="image/png" href="vendor/icon128.png" />
+  <link rel="apple-touch-icon" href="vendor/icon128.png" />
+  <meta name="theme-color" content="#f7f8fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#050b16" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Pocket QA" />
+  <meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/feature.html" />
+  <meta property="og:title" content="Feature — Pocket QA" />
+  <meta property="og:description" content="A closer look at a Pocket QA feature." />
+  <meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- Same pre-paint script as index.html — see the comment there. -->
+  <script>
+    (function (root) {
+      root.classList.add('js');
+      var theme = null;
+      try { theme = localStorage.getItem('demoPageTheme'); } catch (e) {}
+      if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+      if (theme) root.setAttribute('data-theme', theme);
+    })(document.documentElement);
+  </script>
   <link rel="stylesheet" href="promo.css" />
 </head>
 <body>
@@ -27,10 +51,11 @@
         <a class="nav__link" href="index.html#demo">Preview</a>
         <a class="nav__link" href="index.html#features">Features</a>
         <a class="nav__link" href="index.html#how">How it works</a>
+        <a class="nav__link" href="index.html#privacy">Privacy</a>
       </nav>
       <div class="nav__actions">
         <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
-        <a class="btn btn--primary" href="index.html#demo">Try it free</a>
+        <a class="btn btn--primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
       </div>
     </div>
   </header>
@@ -39,6 +64,7 @@
     <!-- ===== HERO ===== -->
     <section class="fhero">
       <div class="container">
+        <noscript><p>This feature guide needs JavaScript to load. <a href="index.html#features">Back to all features</a></p></noscript>
         <nav class="crumb" aria-label="Breadcrumb">
           <a href="index.html">Home</a>
           <span aria-hidden="true">/</span>
@@ -80,6 +106,7 @@
             </div>
             <div class="detail-preview__cta">
               <a class="btn btn--ghost" href="index.html#demo">▶ Explore every tab</a>
+              <a class="preview-full" id="previewFullLink" href="popup-demo.html" target="_blank" rel="noopener">Open full-size preview ↗</a>
             </div>
           </div>
         </div>
@@ -127,7 +154,10 @@
       <div class="cta__card">
         <h2 class="cta__title">Stop repeating yourself</h2>
         <p class="cta__sub">Record it once. Let Pocket QA handle the rest.</p>
-        <a class="btn btn--primary btn--lg" href="index.html#demo">See the popup</a>
+        <div class="cta__actions">
+          <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
+          <a class="btn btn--ghost btn--lg" href="index.html#demo">See the popup</a>
+        </div>
       </div>
     </div>
   </section>
@@ -136,8 +166,13 @@
   <footer class="footer">
     <div class="container footer__inner">
       <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Pocket QA</div>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#how">How it works</a>
+        <a href="index.html#privacy">Privacy</a>
+      </nav>
       <div>v1.0.24 · Manifest V3 · Chrome 109+</div>
-      <div>Built for the web. The popup above is the real extension UI.</div>
     </div>
   </footer>
 
@@ -146,6 +181,6 @@
        keep running an old cached feature.js after an edit (e.g. it would
        silently miss dark-mode image support), same failure mode as a stale
        demo.js. Regenerate with: node stamp-feature-js.mjs -->
-  <script src="feature.js?v=11ff65d3"></script>
+  <script src="feature.js?v=2506203e"></script>
 </body>
 </html>

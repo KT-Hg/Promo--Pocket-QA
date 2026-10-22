@@ -79,6 +79,7 @@ index.html        ← open this
 | `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~95 |
 | `stamp-feature-js.mjs` | Cache-busts `feature.html`'s `<script src="feature.js?v=…">` with a content hash — run after every `feature.js` edit | ~35 |
 | `vendor/`        | Vendored extension snapshot (`popup.html`, `popup/*.css`, `icon128.png`, `version.txt`) | — |
+| `og-image.png`   | Link-preview image (`og:image`): the light hero at 1200×630 — see "Link preview image" below | — |
 
 ## Architecture — why an `<iframe>`
 The real popup stylesheets style global elements (`body`, `button`, `input`, `.card`…).
@@ -180,16 +181,16 @@ See [`screenshots/`](screenshots/):
 | `shot-tab-highlight.png`  | Highlight tab in **dark** mode — colour-coded highlights, stats, switch |
 | `shot-image-editor.png` / `-dark.png`   | `editor.html`'s Crop & Edit UI, used on `feature.html?id=screenshots` — real editor, sample dashboard image, an arrow + rectangle annotation and the Stamp panel open |
 | `shot-sqlcases-analysis.png` / `-dark.png` | `sqlcases.html`'s full 3-column workspace, used on `feature.html?id=sql-test-designer` — query rail, a real generated case list (71 cases), and one case's fixture data open in the inspector |
-| `shot-export-js.png` / `-dark.png`      | The real Export JS modal for a sample "Login flow" scenario — actual generated bookmarklet code, stats and the skipped-step warning, used on `feature.html?id=export` |
-| `shot-export-py.png` / `-dark.png`      | The real Export Python modal for that same scenario — actual generated Selenium code, used on `feature.html?id=export` |
+| `shot-export-js.png` / `-dark.png`      | The real Export JS modal for a sample "Login flow" scenario — actual generated bookmarklet code at Step 1, stats and the to-check / skipped warning, used on `feature.html?id=export` (captured from v1.0.24) |
+| `shot-export-py.png` / `-dark.png`      | The real Export Python modal for that same scenario — actual generated Selenium code at Step 1, used on `feature.html?id=export` (captured from v1.0.24) |
 | `shot-dbtools-rollback.png` / `-dark.png` | The Adminer panel (`dbtools/panel.js`) beside the Undo SQL preview it opens for "↺ Roll back all" — a sample 7-change session, one change refused (no `WHERE`), Step by step / Merged switch, used on `feature.html?id=db-test-session` |
 | `shot-dbtools-manager.png` / `-dark.png`  | `dbtools.html`, the Test sessions & rollback page, on that same session — the rail of sessions, a DELETE and an UPDATE diff open, one change already undone, used on `feature.html?id=db-test-session` |
 
-These are real UI, not mockups — `editor.html` and `sqlcases.html` don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a minimal harness page imported only the real `popup/export-bookmarklet.js` + `popup/export-selenium.js` + `popup/utils.js` against the real `popup.html` markup and `css/popup.css`, stubbed just `chrome.runtime.sendMessage` (`GET_SCENARIOS`/`GET_VARIABLES`) with one sample scenario, and let the real generator functions (`generateBookmarklet` / the Selenium equivalent) produce the code shown — so the code in the screenshots is genuinely generated, not typed by hand.
+These are real UI, not mockups — `editor.html` and `sqlcases.html` don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a throwaway copy of the extension's `popup/`, `shared/`, `css/` and `popup.html` swaps `popup/init.js` for a harness that calls only `initExportBookmarklet()` / `initExportSelenium()`, with a `chrome-stub.js` answering `GET_SCENARIOS` / `GET_VARIABLES` with one sample "Login flow" scenario (navigate, two inputs, a click, a `textContains` assert, a screenshot) and two variables. It picks the scenario, clicks the real format button, then the modal's own **↧ Steps** — so the code in the screenshots is genuinely generated, not typed by hand.
 
 The DB Test Session shots are built the same way, from a throwaway harness that copies the extension's `dbtools/` modules, `dbtools.html` and `css/dbtools.css` into a temp folder (nothing is added to either repo). A small `chrome.storage` stub seeds one sample session in exactly the shape `dbtools/session.js` stores, plus `popupTheme` for light/dark, and nothing more is faked. `shot-dbtools-manager` is the real `dbtools.html` + `manager.js` rendering that session. `shot-dbtools-rollback` mounts the real panel via `mountPanel()`, writes the log lines `content-main.js` would write (`logRecorded`), and opens the real `preview()`. That preview gets the statements from a real `runRollback(…, { dryRun: true })` (and its `compact` twin for *Merged*), so the SQL is generated, not typed. The panel and the preview are both `position:fixed` overlays over Adminer. With no Adminer page behind them, they're re-anchored side by side on a plain stage, the same trick as the export modals below. Captured with headless Chrome (`--allow-file-access-from-files` so the ES modules load over `file://`) instead of html2canvas, so neither gotcha below applies.
 
-The export modals use `position:fixed`, which sizes off the *browser viewport*, not the harness page's own width — capturing them at a normal desktop viewport rendered a modal far wider than the real ~480px popup ever shows. Fixed by moving the modal into a 480×600 `position:fixed` div standing in for the real popup window (matching `popup.css`'s own `body { width: 480px; max-height: 600px; }`) and re-anchoring the modal to `position:absolute` inside it, then capturing that div — so the shots are pixel-accurate to the real popup size, not a stretched approximation.
+The export modals use `position:fixed`, which sizes off the *browser viewport* — at a normal desktop viewport the modal comes out far wider than the real ~480px popup ever shows. So they're captured with headless Chrome at the popup's own window size: `chrome --headless=new --allow-file-access-from-files --window-size=480,600 --force-device-scale-factor=2 --virtual-time-budget=5000 --screenshot=… "file:///…/harness.html?fmt=js&theme=dark"` (`fmt=py` for Python). No re-anchoring, and neither html2canvas gotcha below applies.
 
 Each shot has a `-dark` twin, captured the same way with `data-theme="dark"` set first (`popup.css`/`editor.css`'s `[data-theme="dark"]` / `body:not(.light)`) — `feature.js` swaps between the pair to follow the **"Live popup preview" iframe's own theme**, not the page's (see "Architecture — why an `<iframe>`" above for how the two stay in sync via `postMessage`, one-way, popup → page).
 
@@ -198,5 +199,20 @@ Two `html2canvas` gotchas worth knowing if these ever need re-capturing:
 - **`<button>`/`<select>` render with the browser's default chrome** (square corners, black 1px border) **instead of the real CSS** — same native-widget cause. Fix: inject `button, select, input, textarea { appearance: none !important; }` before capturing.
 
 If the real UI changes, redo the capture (funnelling both fixes above through it again) rather than hand-editing these PNGs.
+
+**The page serves WebP, not these PNGs.** Every shot `feature.js` references is a lossless WebP twin — pixel-identical, about a third of the size (1.59 MB → 0.53 MB for all twelve). The PNGs stay as the capture originals. After a re-capture, regenerate the WebP for every shot `feature.js` points at (needs Pillow):
+
+```
+python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, lossless=True, quality=100, method=6) for w in set(re.findall(r'screenshots/[\w-]+\.webp', open('feature.js', encoding='utf8').read()))]"
+```
+
+## Link preview image
+`og-image.png` is the hero exactly as a visitor sees it, captured in the light theme at the 1200×630 size link previews use. Re-capture it whenever the hero changes:
+
+```
+chrome --headless=new --allow-file-access-from-files --blink-settings=preferredColorScheme=1 --window-size=1200,630 --hide-scrollbars --virtual-time-budget=5000 --screenshot=og-image.png "file:///<this folder>/index.html"
+```
+
+The canonical / `og:url` / `og:image` URLs in both pages point at the GitHub Pages deploy, `https://kt-hg.github.io/Promo--Pocket-QA/`; `feature.js` swaps in each feature's own URL, title and description.
 
 The original vs demo pair is the parity proof: same CSS, same markup → same pixels.
