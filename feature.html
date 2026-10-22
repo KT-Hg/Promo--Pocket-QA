@@ -11,7 +11,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Feature — Pocket QA</title>
   <meta name="description" content="A closer look at a Pocket QA feature." />
+  <!-- canonical, og:url/title/description are filled per feature by feature.js. -->
+  <link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/feature.html" />
   <link rel="icon" type="image/png" href="vendor/icon128.png" />
+  <link rel="apple-touch-icon" href="vendor/icon128.png" />
+  <meta name="theme-color" content="#f7f8fb" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#050b16" media="(prefers-color-scheme: dark)" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Pocket QA" />
+  <meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/feature.html" />
+  <meta property="og:title" content="Feature — Pocket QA" />
+  <meta property="og:description" content="A closer look at a Pocket QA feature." />
+  <meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <!-- Same pre-paint script as index.html — see the comment there. -->
   <script>
     (function (root) {
@@ -167,6 +181,6 @@
        keep running an old cached feature.js after an edit (e.g. it would
        silently miss dark-mode image support), same failure mode as a stale
        demo.js. Regenerate with: node stamp-feature-js.mjs -->
-  <script src="feature.js?v=528a0dfc"></script>
+  <script src="feature.js?v=2506203e"></script>
 </body>
 </html>

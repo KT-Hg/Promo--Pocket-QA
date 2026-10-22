@@ -67,10 +67,10 @@ Chi tiết, acceptance criteria và verification từng task: [`tasks/todo.md`](
 - [x] Đọc lại toàn trang: không còn mâu thuẫn số liệu; mọi claim privacy có nguồn trong code extension
 
 ### Phase 4: SEO, hiệu năng, polish
-- [ ] T10: OG / Twitter / canonical / theme-color / JSON-LD + ảnh og 1200×630
-- [ ] T11: Screenshot PNG → WebP
-- [ ] T12 (tùy chọn): Icon emoji → SVG inline
-- [ ] T13 (tùy chọn): Trang feature tĩnh cho SEO / social preview
+- [x] T10: OG / Twitter / canonical / theme-color / JSON-LD + ảnh og 1200×630
+- [x] T11: Screenshot PNG → WebP
+- [ ] ~~T12 (tùy chọn): Icon emoji → SVG inline~~ — bỏ
+- [ ] ~~T13 (tùy chọn): Trang feature tĩnh cho SEO / social preview~~ — bỏ
 
 ### Checkpoint: Complete
 - [ ] Mọi acceptance criteria đạt; review lại bằng checklist review ban đầu; người dùng duyệt
@@ -95,8 +95,8 @@ Chi tiết, acceptance criteria và verification từng task: [`tasks/todo.md`](
 ## Open Questions
 1. ~~Store listing đã public chưa?~~ **Đã trả lời:** đúng URL, đã public.
 2. ~~Extension miễn phí hoàn toàn?~~ **Đã trả lời:** miễn phí hoàn toàn.
-3. URL production cho `canonical`/`og:url`: `https://kt-hg.github.io/Promo--Pocket-QA/`?
+3. ~~URL production?~~ **Đã trả lời:** `https://kt-hg.github.io/Promo--Pocket-QA/`.
 4. ~~Privacy: section hay trang riêng?~~ **Đã trả lời:** một section trên trang chủ (`index.html#privacy`).
 5. Có số liệu thật nào (lượt cài, rating, quote người dùng) để làm social proof không?
 6. ~~Link GitHub cho footer?~~ **Đã trả lời:** không có.
-7. Làm T12 (SVG icons) và T13 (trang feature tĩnh) không, hay bỏ?
+7. ~~Làm T12 / T13?~~ **Đã trả lời:** bỏ cả hai.

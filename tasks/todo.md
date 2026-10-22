@@ -163,7 +163,7 @@ Recording" không có gì xảy ra. Dùng lại `#toast` thật của popup (`.t
 ### Checkpoint 2 (sau T4–T6)
 - [x] Không còn cặp màu < 4.5:1 cho chữ thường
 - [x] Preview không bị cắt ở 1025 và 375; tap control bị khóa có phản hồi
-- [ ] Người dùng xem lại
+- [x] Người dùng xem lại
 
 ---
 
@@ -249,15 +249,15 @@ trình harness trong README (mục "Screenshot comparison"), rồi xóa ghi chú
 ## Task 10: OG / Twitter / canonical / theme-color / JSON-LD + ảnh og
 
 **Description:** Chia sẻ link lên Zalo/Slack/Facebook hiện không có ảnh/tiêu đề đẹp. Thêm meta đầy đủ và
-ảnh `og-image.png` 1200×630 (cắt/resize từ `shot-landing-hero.png` 1280×940 bằng Pillow, đã có sẵn).
+ảnh `og-image.png` 1200×630 — chụp lại hero hiện tại (light) bằng Chrome headless thay vì cắt `shot-landing-hero.png` (ảnh tháng 6, còn copy cũ).
 
 **Acceptance criteria:**
-- [ ] `index.html`: `og:title/description/image/url/type`, `twitter:card=summary_large_image`, `link rel=canonical`, `meta theme-color` (light + dark), `apple-touch-icon`, JSON-LD `SoftwareApplication` (`operatingSystem: Chrome`, `offers.price: 0` chỉ nếu Q2 xác nhận free).
-- [ ] `feature.html`: og/twitter chung (ảnh og chung); `feature.js` cập nhật `og:title/description` theo feature (cho crawler có chạy JS).
-- [ ] URL tuyệt đối dùng URL production (Q3).
+- [x] `index.html`: `og:title/description/image/url/type`, `twitter:card=summary_large_image`, `link rel=canonical`, `meta theme-color` (light + dark), `apple-touch-icon`, JSON-LD `SoftwareApplication` (`operatingSystem: Chrome`, `offers.price: 0` chỉ nếu Q2 xác nhận free).
+- [x] `feature.html`: og/twitter chung (ảnh og chung); `feature.js` cập nhật `og:title/description` theo feature (cho crawler có chạy JS).
+- [x] URL tuyệt đối dùng URL production (Q3).
 
 **Verification:**
-- [ ] JSON-LD parse được (`JSON.parse` trong console)
+- [x] JSON-LD parse được (`JSON.parse` trong console)
 - [ ] Sau deploy: kiểm tra bằng một công cụ xem trước link (vd. opengraph.xyz) — **bước của người dùng**
 
 **Dependencies:** T7 (meta description); Open Question 2, 3
@@ -274,13 +274,13 @@ trình harness trong README (mục "Screenshot comparison"), rồi xóa ghi chú
 và Safari 14+ đều hỗ trợ), giữ PNG gốc cho README và các lần chụp lại.
 
 **Acceptance criteria:**
-- [ ] Mỗi `src`/`srcDark` trong `feature.js` trỏ `.webp`; tổng dung lượng ảnh giảm ≥ 50%.
-- [ ] Nhìn bằng mắt không khác bản PNG (chữ code trong ảnh export vẫn sắc nét — lossless nếu cần).
-- [ ] README ghi chú: chụp lại → xuất PNG → chạy lại bước chuyển WebP (một dòng lệnh).
+- [x] Mỗi `src`/`srcDark` trong `feature.js` trỏ `.webp` (12 ảnh, không phải 10); tổng dung lượng 1586 KB → 525 KB (−67%).
+- [x] Lossless: so từng pixel với PNG gốc (`ImageChops.difference`) — giống hệt cả 12 ảnh. Lossy q90 chỉ giảm 46% nên không dùng.
+- [x] README ghi chú: chụp lại → xuất PNG → chạy lại bước chuyển WebP (một dòng lệnh).
 
 **Verification:**
-- [ ] So sánh tổng byte trước/sau; mở 5 trang feature có ảnh, cả 2 theme
-- [ ] `node stamp-feature-js.mjs`
+- [x] So sánh tổng byte trước/sau; mở 5 trang feature có ảnh, cả 2 theme
+- [x] `node stamp-feature-js.mjs`
 
 **Dependencies:** T9 (cùng thư mục `screenshots/`)
 
@@ -290,7 +290,7 @@ và Safari 14+ đều hỗ trợ), giữ PNG gốc cho README và các lần ch�
 
 ---
 
-## Task 12 (tùy chọn — Q7): Icon emoji → SVG inline
+## Task 12 (tùy chọn — Q7): Icon emoji → SVG inline — **BỎ (người dùng quyết định)**
 
 **Description:** Emoji hiển thị khác nhau giữa các OS; "↺" là ký tự trơn, lệch phong cách. Thay 11 icon
 feature bằng SVG inline (vd. bộ Lucide, license ISC) ở `index.html` và trường `icon` trong `feature.js`.
@@ -312,7 +312,7 @@ Không dùng sprite ngoài + `<use href>` vì trang hay được mở qua `file:
 
 ---
 
-## Task 13 (tùy chọn — Q7): Trang feature tĩnh cho SEO / social preview
+## Task 13 (tùy chọn — Q7): Trang feature tĩnh cho SEO / social preview — **BỎ (người dùng quyết định)**
 
 **Description:** HTML tĩnh của `feature.html` chỉ có title "Feature — Pocket QA" và "…"; mọi nội dung nằm
 trong `feature.js`. Crawler của mạng xã hội không chạy JS → preview chung chung. Viết script Node sinh
@@ -337,6 +337,6 @@ trong `feature.js`. Crawler của mạng xã hội không chạy JS → preview 
 
 ### Checkpoint: Complete
 - [ ] Mọi acceptance criteria đạt
-- [ ] Chạy lại checklist review ban đầu (CTA, mobile, contrast, SEO, console) — không còn mục 🔴/🟠
-- [ ] README cập nhật (bảng Files, mục mới về privacy/og/WebP)
+- [x] Chạy lại checklist review ban đầu (CTA, mobile, contrast, SEO, console) — mọi mục 🔴/🟠 đã xử lý, trừ social proof (chưa có số liệu thật — Q5)
+- [x] README cập nhật (bảng Files: og-image; mục "Link preview image"; WebP + lệnh tạo lại; cách chụp ảnh export)
 - [ ] Người dùng duyệt trước khi commit/push

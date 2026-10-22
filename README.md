@@ -79,6 +79,7 @@ index.html        ← open this
 | `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~95 |
 | `stamp-feature-js.mjs` | Cache-busts `feature.html`'s `<script src="feature.js?v=…">` with a content hash — run after every `feature.js` edit | ~35 |
 | `vendor/`        | Vendored extension snapshot (`popup.html`, `popup/*.css`, `icon128.png`, `version.txt`) | — |
+| `og-image.png`   | Link-preview image (`og:image`): the light hero at 1200×630 — see "Link preview image" below | — |
 
 ## Architecture — why an `<iframe>`
 The real popup stylesheets style global elements (`body`, `button`, `input`, `.card`…).
@@ -198,5 +199,20 @@ Two `html2canvas` gotchas worth knowing if these ever need re-capturing:
 - **`<button>`/`<select>` render with the browser's default chrome** (square corners, black 1px border) **instead of the real CSS** — same native-widget cause. Fix: inject `button, select, input, textarea { appearance: none !important; }` before capturing.
 
 If the real UI changes, redo the capture (funnelling both fixes above through it again) rather than hand-editing these PNGs.
+
+**The page serves WebP, not these PNGs.** Every shot `feature.js` references is a lossless WebP twin — pixel-identical, about a third of the size (1.59 MB → 0.53 MB for all twelve). The PNGs stay as the capture originals. After a re-capture, regenerate the WebP for every shot `feature.js` points at (needs Pillow):
+
+```
+python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, lossless=True, quality=100, method=6) for w in set(re.findall(r'screenshots/[\w-]+\.webp', open('feature.js', encoding='utf8').read()))]"
+```
+
+## Link preview image
+`og-image.png` is the hero exactly as a visitor sees it, captured in the light theme at the 1200×630 size link previews use. Re-capture it whenever the hero changes:
+
+```
+chrome --headless=new --allow-file-access-from-files --blink-settings=preferredColorScheme=1 --window-size=1200,630 --hide-scrollbars --virtual-time-budget=5000 --screenshot=og-image.png "file:///<this folder>/index.html"
+```
+
+The canonical / `og:url` / `og:image` URLs in both pages point at the GitHub Pages deploy, `https://kt-hg.github.io/Promo--Pocket-QA/`; `feature.js` swaps in each feature's own URL, title and description.
 
 The original vs demo pair is the parity proof: same CSS, same markup → same pixels.
