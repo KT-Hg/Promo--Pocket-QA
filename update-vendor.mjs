@@ -70,27 +70,46 @@ for (const f of files) {
 }
 
 /* ── Version: keep the promo's own copy in step with the extension ──────────
- * The demo's Version card and the landing page footer both quote the shipped
- * version. They used to be hand-edited, and drifted (footer said 1.0.7 while
+ * The demo's Version card, both page footers and the sample report on
+ * feature.html?id=run-results all quote the shipped version (the first two
+ * swap in the live store version at runtime; this is their fallback). They used to be hand-edited, and drifted (footer said 1.0.7 while
  * the extension was on 1.0.13), which is exactly the kind of "the demo doesn't
  * match the real thing" gap this script exists to close. */
 // Read straight from the extension's manifest — only the string is vendored,
 // so sync-from-source.mjs stays able to run from vendor/ alone.
-const version = JSON.parse(readFileSync(join(ext, 'manifest.json'), 'utf8')).version;
+const manifest = JSON.parse(readFileSync(join(ext, 'manifest.json'), 'utf8'));
+const { version, minimum_chrome_version: minChrome } = manifest;
 writeFileSync(join(here, 'vendor', 'version.txt'), version + '\n', 'utf8');
 console.log('✓ vendored vendor/version.txt (' + version + ')');
 
-for (const name of ['index.html', 'feature.html']) {
+// Footer version is the fallback only: store-version.js swaps in the live store
+// version. "Chrome 109+" (footers) / "Chrome 109 or newer" (FAQ) follow the
+// manifest, since the store doesn't publish it.
+const tag = `<span id="extVersion">${version}</span>`;
+const chromeRe = /Chrome \d+(?=\+| or newer)/g;
+const edits = [
+  ['index.html',   /<span id="extVersion">\d+\.\d+\.\d+<\/span>/, tag],
+  ['feature.html', /<span id="extVersion">\d+\.\d+\.\d+<\/span>/, tag],
+  ['feature.js',   /Pocket QA \d+\.\d+\.\d+/, `Pocket QA ${version}`], // sample report, ?id=run-results
+  ...(minChrome ? [
+    ['index.html',   chromeRe, `Chrome ${minChrome}`],
+    ['feature.html', chromeRe, `Chrome ${minChrome}`],
+  ] : []),
+];
+for (const [name, re, to] of edits) {
   const p = join(here, name);
   const src = readFileSync(p, 'utf8');
-  const out = src.replace(/<div>v\d+\.\d+\.\d+ · Manifest V3/, `<div>v${version} · Manifest V3`);
+  const out = src.replace(re, to);
   if (out !== src) {
     writeFileSync(p, out, 'utf8');
-    console.log('✓ ' + name + ' footer → v' + version);
-  } else if (!src.includes(`<div>v${version} · Manifest V3`)) {
-    console.warn('⚠ ' + name + ' footer version not found — update it by hand.');
+    console.log('✓ ' + name + ' → ' + to);
+  } else if (!src.includes(to)) {
+    console.warn('⚠ ' + name + ': "' + to + '" not found — update it by hand.');
   }
 }
+
+/* feature.js may have changed above; re-stamp its cache-busting ?v=. */
+process.stdout.write(execFileSync(process.execPath, [join(here, 'stamp-feature-js.mjs')], { encoding: 'utf8' }));
 
 /* Regenerate popup-demo.html from the freshly vendored popup.html. */
 const out = execFileSync(process.execPath, [join(here, 'sync-from-source.mjs')], { encoding: 'utf8' });

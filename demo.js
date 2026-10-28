@@ -403,9 +403,9 @@
    *     The real popup fills this from chrome.runtime.getManifest() plus the
    *     stored update-check status (popup/settings.js -> loadUpdateInfo). Left
    *     alone it renders three "—" placeholders, which no installed copy of the
-   *     extension ever shows. The version comes from the <meta> that
-   *     sync-from-source.mjs stamps out of vendor/version.txt, so it tracks the
-   *     vendored snapshot instead of drifting behind it.
+   *     extension ever shows. The version is the live Chrome Web Store one,
+   *     falling back to the <meta> that sync-from-source.mjs stamps out of
+   *     vendor/version.txt when the store can't be reached.
    * ────────────────────────────────────────────────────────────────────────── */
   (function seedVersionCard() {
     var meta = document.querySelector('meta[name="ext-version"]');
@@ -418,6 +418,18 @@
     // runs daily, so an hour ago is what a healthy install actually shows.
     var checked = new Date(Date.now() - 60 * 60 * 1000);
     setText('updateInfoChecked', checked.toLocaleString());
+    // Then the live Chrome Web Store version, same shields.io badge as the promo
+    // footer (store-version.js); the vendored one above stays as the fallback.
+    if (!window.fetch) return;
+    fetch('https://img.shields.io/chrome-web-store/v/hghkokkjbpedgjbpohpkgmejkeobocam.json')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var m = /^v?(\d+(?:\.\d+){0,3})$/.exec(d.value);
+        if (!m) return;
+        setText('updateInfoCurrent', m[1]);
+        setText('updateInfoLatest', m[1]);
+      })
+      .catch(function () {});
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────

@@ -24,7 +24,7 @@ What gets vendored (by `update-vendor.mjs`):
 | `vendor/popup/*.css`   | `css/popup/*.css` — every stylesheet `popup.html` links (`01-base.css` … `12-switch-blocks.css`), verbatim | `popup-demo.html` links each one, in the same order as `popup.html` (the real stylesheets → pixel-perfect) |
 | `vendor/popup.html`    | `popup.html`        | source markup the demo is generated from |
 | `vendor/icon128.png`   | `icons/icon128.png` | `index.html` favicon / logo |
-| `vendor/version.txt`   | `manifest.json` → `version` | stamped into the demo as `<meta name="ext-version">`; `demo.js` fills the Settings › Version card from it. `update-vendor.mjs` also rewrites the version in the `index.html` footer, so neither can drift behind the extension again. |
+| `vendor/version.txt`   | `manifest.json` → `version` | stamped into the demo as `<meta name="ext-version">`; `demo.js` fills the Settings › Version card from it. `update-vendor.mjs` also rewrites the version in both page footers and the sample report on `feature.html?id=run-results`, and `minimum_chrome_version` into "Chrome 109+" / the FAQ. The Version card and footers then swap in the live Chrome Web Store version at runtime (via shields.io), so this is only their fallback. |
 
 - **The stylesheet list is read from `popup.html`'s `<head>`**, not hard-coded:
   `update-vendor.mjs` copies whatever it links under `css/` (and clears
@@ -71,6 +71,7 @@ index.html        ← open this
 | `feature.html`   | Feature guide template (BEM), shared by all `.feature` cards — `feature.html?id=<key>`: hero + facts, sticky "On this page" bar, overview beside the live popup, steps, detail sections, notes, other features | ~150 |
 | `promo.css`      | Landing-page styles only (BEM, fully self-contained, brand colours match the extension) | ~430 |
 | `landing.js`     | Promo chrome: theme sync ↔ iframe, scroll reveals, toolbar-icon focus | ~80 |
+| `store-version.js` | Footer version on both pages, read live from the Chrome Web Store via shields.io's JSON badge (the store itself has no CORS); the vendored version stays in the HTML as the fallback | ~20 |
 | `feature.js`     | The eleven features' content (written against the extension README) + the renderer that fills `feature.html` from the `id` query param (sections, tables, scroll spy, deep-linked popup preview, light/dark screenshots) | ~1200 |
 | `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup/*.css` + `demo.js` | ~2010 |
 | `demo.css`       | A few tiny tweaks for the in-iframe demo context | ~25 |
