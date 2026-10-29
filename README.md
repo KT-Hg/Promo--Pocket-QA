@@ -5,6 +5,12 @@ A marketing landing page that shows the **real extension popup UI**
 switching and the theme toggle are interactive; every other control is seeded
 with demo data and shown for display only.
 
+The page and its eleven feature guides are **bilingual (EN/VI)** and follow the
+look and layout rules of the author's portfolio (`kt-hg.github.io`): one section
+per screen, nothing moves when the language or theme switches, and the language
+and theme a visitor picks there carry over here (same `localStorage` keys, same
+origin) — see "Layout rules" below.
+
 This is a **standalone repository**. It does not depend on the extension repo at
 runtime — the few extension files the preview needs are **vendored** under
 [`vendor/`](vendor/) so the page can be cloned, opened, or deployed anywhere.
@@ -67,18 +73,21 @@ index.html        ← open this
 ## Files
 | File | Purpose | Lines |
 |------|---------|-------|
-| `index.html`     | Landing page: nav, hero, browser mockup, features, steps, CTA, footer (BEM markup) | ~210 |
-| `feature.html`   | Feature guide template (BEM), shared by all `.feature` cards — `feature.html?id=<key>`: hero + facts, sticky "On this page" bar, overview beside the live popup, steps, detail sections, notes, other features | ~150 |
-| `promo.css`      | Landing-page styles only (BEM, fully self-contained, brand colours match the extension) | ~430 |
-| `landing.js`     | Promo chrome: theme sync ↔ iframe, scroll reveals, toolbar-icon focus | ~80 |
+| `index.html`     | Landing page, EN/VI: hero beside the browser mockup, then six numbered one-screen sections (Features, Tools, How it works, Privacy, Permissions, FAQ) — one menu link each | ~500 |
+| `feature.html`   | Feature guide template, shared by all feature cards — `feature.html?id=<key>`: a hero like the index's (copy + the popup open on this feature's tab), then numbered one-screen sections with an "On this page" bar that slides out under the header after the hero | ~230 |
+| `site.css`       | Styles for both pages (portfolio tokens, light/dark) | ~520 |
+| `site.js`        | Both pages' chrome: language/theme switch, `evenOut()` (holds every element at its larger language's size), mockup fitting, menu, "Read more", scroll spy; on feature pages it also shortens lists that would make a section taller than the screen | ~190 |
 | `store-version.js` | Footer version on both pages, read live from the Chrome Web Store via shields.io's JSON badge (the store itself has no CORS); the vendored version stays in the HTML as the fallback | ~20 |
-| `feature.js`     | The eleven features' content (written against the extension README) + the renderer that fills `feature.html` from the `id` query param (sections, tables, scroll spy, deep-linked popup preview, light/dark screenshots) | ~1200 |
+| `features-en.js` | The eleven features' English content (written against the extension README) | ~950 |
+| `features-vi.js` | The same, in Vietnamese, same shape — `checkShape()` in `check-layout.js` lists anything missing | ~860 |
+| `feature.js`     | Renders `feature.html` from the `id` query param: every string as an EN/VI pair, sections, tables, scroll spy, the deep-linked popup, light/dark screenshots | ~200 |
+| `check-layout.js` | Dev check, not linked from either page — see "Layout rules" | ~130 |
 | `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup/*.css` + `demo.js` | ~2010 |
 | `demo.css`       | A few tiny tweaks for the in-iframe demo context | ~25 |
 | `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~590 |
 | `sync-from-source.mjs` | Regenerates `popup-demo.html` from `vendor/popup.html` (deterministic) | ~145 |
 | `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~95 |
-| `stamp-feature-js.mjs` | Cache-busts `feature.html`'s `<script src="feature.js?v=…">` with a content hash — run after every `feature.js` edit | ~35 |
+| `stamp-assets.mjs` | Cache-busts every local `.js` / `.css` the two pages load (`site.js?v=…`) with a content hash — run after editing any of them | ~45 |
 | `vendor/`        | Vendored extension snapshot (`popup.html`, `popup/*.css`, `icon128.png`, `version.txt`) | — |
 | `og-image.png`   | Link-preview image (`og:image`): the light hero at 1200×630 — see "Link preview image" below | — |
 
@@ -87,17 +96,48 @@ The real popup stylesheets style global elements (`body`, `button`, `input`, `.c
 Loading it directly on the landing page would restyle the whole site. Rendering
 the popup inside an `<iframe src="popup-demo.html">` gives perfect CSS isolation:
 the popup CSS applies **only** inside the frame (where `body { width: 480px }` is
-exactly right), while the landing page keeps its own `promo.css`.
+exactly right), while the landing page keeps its own `site.css`.
 
 Theme is deliberately **not** synced on `index.html`: the page's toggle and the
-popup's own toggle inside the frame are fully independent, on purpose (see
-"Theme" in `landing.js`) — so a visitor can put the popup in dark mode without
-the marketing page around it going dark too, and vice versa. `feature.html`
-does read the popup's theme, one-way: `demo.js` `postMessage`s its current
-theme to the parent on load and on every toggle (never the other way, and the
-page's own toggle still doesn't touch the popup's), so the "Inside the …"
-screenshots on feature pages can follow whichever theme the live popup preview
-actually ends up showing, not assume it always mirrors the page.
+popup's own toggle inside the frame are fully independent, on purpose — so a
+visitor can put the popup in dark mode without the marketing page around it
+going dark too, and vice versa. `feature.html` opens its popup in the page's
+theme (`popup-demo.html?tab=…&theme=…`, reopened when the page theme flips), and
+reads the popup's theme back: `demo.js` `postMessage`s its current theme to the
+parent on load and on every toggle, so the "Inside the …" screenshots on feature
+pages follow whichever theme the popup actually ends up showing, its own toggle
+included.
+
+## Layout rules
+Both pages follow the portfolio's rules, in this order of priority: true content;
+**nothing moves** when the language, theme or font switches; **one section = one
+screen** (under the header, and on feature pages under the "On this page" bar
+too); equal, aligned items; text read whole (no one-word last lines, no break at
+a hyphen). How the code keeps them:
+
+- **No movement:** `evenOut()` in `site.js` measures every name, button, card,
+  row and section in both languages and holds each at its larger size. A new
+  bilingual block goes into its `labelled` (width) or `rows` (height) list.
+- **One screen:** the index's content was fitted by hand (phones hide secondary
+  items behind "Read more", the `.more` class). Feature pages fit themselves:
+  a section still taller than the screen keeps the first items of its lists
+  (`data-fit` = how many always stay) and puts the rest behind its "Read more",
+  at any width; screenshots and code shrink first. The same items are hidden in
+  both languages.
+- **Checking:** load `check-layout.js` into a page and run `checkLayout()` — it
+  reports sections taller than the screen, anything that moves on a language
+  switch, sideways scroll, header overflow, hyphen breaks and one-word last
+  lines, for the current viewport (reload after resizing). On a feature page,
+  `checkShape()` lists Vietnamese strings missing from `features-vi.js`:
+
+  ```js
+  await new Promise(r => { const s = document.createElement('script'); s.src = 'check-layout.js?' + Date.now(); s.onload = r; document.head.append(s); });
+  await checkLayout()
+  ```
+
+  Sizes to check (EN and VI): 375×812 · 375×667 · 768×1024 · 920×800 · 1024×768 ·
+  1024×1366 · 1280×720 · 1366×768 · 1440×900 · 1536×864 · 1920×1080, plus the real
+  browser heights 1366×657 · 1536×730 · 1280×632 · 1920×945.
 
 ## What's interactive in the demo
 The preview is intentionally **static** — it showcases the UI without acting as a
@@ -148,7 +188,7 @@ The preview fences itself off, in the iframe only:
 | `demo.css` | Hides `[data-ext-overlay]` outright, so nothing flashes before the observer removes it. |
 | `sync-from-source.mjs` | Stamps `demo.js` / `demo.css` / `vendor/popup/*.css` URLs with a content hash (`demo.js?v=e282bf21`) — of the file's LF form, what git stores and Pages serves, so a CRLF checkout stamps the same URL. A stale cached copy of `demo.js` silently disables the fence above, and that is exactly what it looks like when the picker bar shows up inside the mock popup again. |
 
-`feature.html` guards its own script the same way, just by hand — `stamp-feature-js.mjs` stamps `<script src="feature.js?v=…">` with a content hash. A stale cached `feature.js` doesn't break anything as loudly as the fence above; it just quietly keeps running whatever the page could already do before the last edit — e.g. a build that predates dark-mode screenshot support keeps showing the light PNG after the theme toggle, with no error to point at why. Run `node stamp-feature-js.mjs` after every `feature.js` edit, and hard-reload (Ctrl+Shift+R) if a change to that file doesn't seem to be taking effect in a browser that already had a `feature.html?id=…` page open.
+The two pages guard their own scripts and stylesheets the same way, just by hand — `stamp-assets.mjs` stamps every local `<script src>` / `<link href>` in `index.html` and `feature.html` (`site.js?v=…`) with a content hash, of the LF form too. A stale cached file doesn't break anything as loudly as the fence above; it just quietly keeps running whatever the page could already do before the last edit — or, worse, a new `feature.js` runs on old `features-en.js` data. Run `node stamp-assets.mjs` after editing any of those files (`update-vendor.mjs` runs it too), and hard-reload (Ctrl+Shift+R) if a change doesn't seem to be taking effect in a browser that already had the page open.
 
 **Is the fence actually live in my browser?** Open the console *in the preview
 frame* (DevTools → frame selector, or right-click the popup → *This Frame* →
@@ -193,7 +233,7 @@ The DB Test Session shots are built the same way, from a throwaway harness that 
 
 The export modals use `position:fixed`, which sizes off the *browser viewport* — at a normal desktop viewport the modal comes out far wider than the real ~480px popup ever shows. So they're captured with headless Chrome at the popup's own window size: `chrome --headless=new --allow-file-access-from-files --window-size=480,600 --force-device-scale-factor=2 --virtual-time-budget=5000 --screenshot=… "file:///…/harness.html?fmt=js&theme=dark"` (`fmt=py` for Python). No re-anchoring, and neither html2canvas gotcha below applies.
 
-Each shot has a `-dark` twin, captured the same way with `data-theme="dark"` set first (`popup.css`/`editor.css`'s `[data-theme="dark"]` / `body:not(.light)`) — `feature.js` swaps between the pair to follow the **"Live popup preview" iframe's own theme**, not the page's (see "Architecture — why an `<iframe>`" above for how the two stay in sync via `postMessage`, one-way, popup → page).
+Each shot has a `-dark` twin, captured the same way with `data-theme="dark"` set first (`popup.css`/`editor.css`'s `[data-theme="dark"]` / `body:not(.light)`) — `feature.js` swaps between the pair to follow the **hero popup's own theme**, not the page's (see "Architecture — why an `<iframe>`" above for how the two stay in sync via `postMessage`, one-way, popup → page).
 
 Two `html2canvas` gotchas worth knowing if these ever need re-capturing:
 - **`<textarea>` value renders blank / unwrapped.** html2canvas can't render a form control's *native* text layout — the fix is to swap the real `<textarea>` for a plain `<div>` with the same box (font, padding, border) and `white-space: pre-wrap`, capture that, then swap back.
@@ -201,10 +241,10 @@ Two `html2canvas` gotchas worth knowing if these ever need re-capturing:
 
 If the real UI changes, redo the capture (funnelling both fixes above through it again) rather than hand-editing these PNGs.
 
-**The page serves WebP, not these PNGs.** Every shot `feature.js` references is a lossless WebP twin — pixel-identical, about a third of the size (1.59 MB → 0.53 MB for all twelve). The PNGs stay as the capture originals. After a re-capture, regenerate the WebP for every shot `feature.js` points at (needs Pillow):
+**The page serves WebP, not these PNGs.** Every shot `features-en.js` references is a lossless WebP twin — pixel-identical, about a third of the size (1.59 MB → 0.53 MB for all twelve). The PNGs stay as the capture originals. After a re-capture, regenerate the WebP for every shot `features-en.js` points at (needs Pillow):
 
 ```
-python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, lossless=True, quality=100, method=6) for w in set(re.findall(r'screenshots/[\w-]+\.webp', open('feature.js', encoding='utf8').read()))]"
+python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, lossless=True, quality=100, method=6) for w in set(re.findall(r'screenshots/[\w-]+\.webp', open('features-en.js', encoding='utf8').read()))]"
 ```
 
 ## Link preview image

@@ -83,17 +83,17 @@ writeFileSync(join(here, 'vendor', 'version.txt'), version + '\n', 'utf8');
 console.log('✓ vendored vendor/version.txt (' + version + ')');
 
 // Footer version is the fallback only: store-version.js swaps in the live store
-// version. "Chrome 109+" (footers) / "Chrome 109 or newer" (FAQ) follow the
+// version. "Chrome 109+" (footers) / "Chrome 109 or newer" / "… trở lên" (FAQ, EN/VI) follow the
 // manifest, since the store doesn't publish it.
 const tag = `<span id="extVersion">${version}</span>`;
-const chromeRe = /Chrome \d+(?=\+| or newer)/g;
+const chromeRe = /Chrome&nbsp;\d+(?=\+| or newer| trở lên)/g;
 const edits = [
   ['index.html',   /<span id="extVersion">\d+\.\d+\.\d+<\/span>/, tag],
   ['feature.html', /<span id="extVersion">\d+\.\d+\.\d+<\/span>/, tag],
-  ['feature.js',   /Pocket QA \d+\.\d+\.\d+/, `Pocket QA ${version}`], // sample report, ?id=run-results
+  ['features-en.js', /Pocket QA \d+\.\d+\.\d+/, `Pocket QA ${version}`], // sample report, ?id=run-results
   ...(minChrome ? [
-    ['index.html',   chromeRe, `Chrome ${minChrome}`],
-    ['feature.html', chromeRe, `Chrome ${minChrome}`],
+    ['index.html',   chromeRe, `Chrome&nbsp;${minChrome}`],
+    ['feature.html', chromeRe, `Chrome&nbsp;${minChrome}`],
   ] : []),
 ];
 for (const [name, re, to] of edits) {
@@ -108,8 +108,8 @@ for (const [name, re, to] of edits) {
   }
 }
 
-/* feature.js may have changed above; re-stamp its cache-busting ?v=. */
-process.stdout.write(execFileSync(process.execPath, [join(here, 'stamp-feature-js.mjs')], { encoding: 'utf8' }));
+/* features-en.js may have changed above; re-stamp the pages' cache-busting ?v=. */
+process.stdout.write(execFileSync(process.execPath, [join(here, 'stamp-assets.mjs')], { encoding: 'utf8' }));
 
 /* Regenerate popup-demo.html from the freshly vendored popup.html. */
 const out = execFileSync(process.execPath, [join(here, 'sync-from-source.mjs')], { encoding: 'utf8' });

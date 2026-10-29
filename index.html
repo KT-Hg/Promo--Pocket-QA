@@ -1,359 +1,505 @@
 <!DOCTYPE html>
 <!--
-  index.html — Promotional landing page for "Pocket QA".
-  The popup preview is the REAL extension UI (vendored as vendor/popup/*.css)
-  rendered inside an <iframe> (popup-demo.html) so it stays pixel-perfect. It is
-  a STATIC preview: only tab switching and the theme toggle are interactive (see
-  demo.js); every other control is shown for display only.
+  index.html — The promo landing page, in the portfolio's look (kt-hg.github.io), bilingual EN/VI.
+  Styles and chrome: site.css / site.js (shared with feature.html). The popup is the REAL extension UI
+  (popup-demo.html) in an iframe and is display-only: tabs and its own theme toggle work.
 -->
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-title-vi="Pocket QA — Ghi lại thao tác web, không cần code">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pocket QA — Record web workflows, no code</title>
-  <meta name="description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java." />
-  <link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/" />
-  <link rel="icon" type="image/png" href="vendor/icon128.png" />
-  <link rel="apple-touch-icon" href="vendor/icon128.png" />
-  <meta name="theme-color" content="#f7f8fb" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#050b16" media="(prefers-color-scheme: dark)" />
-  <!-- Link previews (Zalo, Slack, Facebook, X…). og-image.png is the hero at
-       1200×630 — re-capture it when the hero changes (see README). -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Pocket QA" />
-  <meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/" />
-  <meta property="og:title" content="Pocket QA — Record web workflows, no code" />
-  <meta property="og:description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java." />
-  <meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="The Pocket QA landing page: Record any web workflow, replay it forever — beside the real extension popup." />
-  <meta name="twitter:card" content="summary_large_image" />
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Pocket QA",
-      "description": "Free Chrome extension to record & replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java.",
-      "url": "https://kt-hg.github.io/Promo--Pocket-QA/",
-      "downloadUrl": "https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam",
-      "image": "https://kt-hg.github.io/Promo--Pocket-QA/og-image.png",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Chrome",
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
-    }
-  </script>
-  <!-- Runs before first paint (keep in sync with feature.html): flags JS as on,
-       so .reveal may hide content until it scrolls in, and applies the theme —
-       the visitor's saved choice, else their OS setting — so a dark-mode
-       visitor never sees a flash of the light page first. -->
-  <script>
-    (function (root) {
-      root.classList.add('js');
-      var theme = null;
-      try { theme = localStorage.getItem('demoPageTheme'); } catch (e) {}
-      if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
-      if (theme) root.setAttribute('data-theme', theme);
-    })(document.documentElement);
-  </script>
-  <link rel="stylesheet" href="promo.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pocket QA — Record web workflows, no code</title>
+<meta name="description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java.">
+<link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/">
+<link rel="icon" type="image/png" href="vendor/icon128.png">
+<link rel="apple-touch-icon" href="vendor/icon128.png">
+<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<!-- Link previews (Zalo, Slack, Facebook, X…). og-image.png is the hero at 1200×630 — re-capture it when the
+     hero changes (see README). -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pocket QA">
+<meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/">
+<meta property="og:title" content="Pocket QA — Record web workflows, no code">
+<meta property="og:description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java.">
+<meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Pocket QA landing page: Record any web workflow, replay it forever — beside the real extension popup.">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Pocket QA",
+    "description": "Free Chrome extension to record & replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java.",
+    "url": "https://kt-hg.github.io/Promo--Pocket-QA/",
+    "downloadUrl": "https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam",
+    "image": "https://kt-hg.github.io/Promo--Pocket-QA/og-image.png",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Chrome",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap">
+<script>
+  // Runs before paint: language + theme, so there is no flash. Same storage keys as the portfolio
+  // (same origin on GitHub Pages), so a choice made there carries over to this page; demoPageTheme is
+  // the key the previous version of this page saved its theme under.
+  (() => {
+    const d = document.documentElement;
+    const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+    d.classList.add('js');
+    d.lang = get('lang') || (/^vi\b/i.test(navigator.language || '') ? 'vi' : 'en');
+    d.dataset.theme = get('theme') || get('demoPageTheme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const en = document.title;
+    (window.syncTitle = () => { document.title = (d.lang === 'vi' && d.dataset.titleVi) || d.dataset.titleEn || en; })();
+  })();
+</script>
+<link rel="stylesheet" href="site.css?v=22a86f39">
 </head>
 <body>
+<a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="vi">Bỏ qua tới nội dung</span></a>
 
-  <!-- ===== NAV ===== -->
-  <header class="nav">
-    <div class="container nav__inner">
-      <a class="nav__brand" href="#top">
-        <img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" />
-        Pocket QA
-      </a>
-      <nav class="nav__links" aria-label="Primary">
-        <a class="nav__link" href="#demo">Preview</a>
-        <a class="nav__link" href="#features">Features</a>
-        <a class="nav__link" href="#how">How it works</a>
-        <a class="nav__link" href="#privacy">Privacy</a>
-      </nav>
-      <div class="nav__actions">
-        <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
-        <a class="btn btn--primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
-      </div>
+<header class="site-header">
+  <nav class="container nav" aria-label="Main">
+    <a class="brand" href="#top"><img src="vendor/icon128.png" alt="" width="28" height="28">Pocket QA</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#features"><span lang="en">Features</span><span lang="vi">Tính năng</span></a></li>
+      <li><a href="#tools"><span lang="en">Tools</span><span lang="vi">Công cụ</span></a></li>
+      <li><a href="#how"><span lang="en">How it works</span><span lang="vi">Cách dùng</span></a></li>
+      <li><a href="#privacy"><span lang="en">Privacy</span><span lang="vi">Riêng tư</span></a></li>
+      <li><a href="#permissions"><span lang="en">Permissions</span><span lang="vi">Quyền</span></a></li>
+      <li><a href="#faq"><span lang="en">FAQ</span><span lang="vi">Hỏi đáp</span></a></li>
+      <li class="nav-cta"><a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener"><span lang="en">Add to Chrome</span><span lang="vi">Thêm vào Chrome</span></a></li>
+    </ul>
+    <div class="nav-tools">
+      <button class="icon-btn js-only" id="lang-btn" type="button" aria-label="Switch language / Đổi ngôn ngữ">
+        <span lang="en">VI</span><span lang="vi">EN</span>
+      </button>
+      <button class="icon-btn js-only" id="theme-btn" type="button" aria-label="Toggle dark mode / Đổi giao diện sáng tối">
+        <svg class="i i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+        <svg class="i i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <button class="icon-btn menu-btn js-only" id="menu-btn" type="button" aria-label="Menu" aria-controls="nav-links" aria-expanded="false">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
-  </header>
+  </nav>
+</header>
 
-  <!-- ===== HERO ===== -->
-  <main id="top">
-    <section class="hero">
-      <div class="container hero__grid">
-        <div class="hero__copy">
-          <span class="hero__badge">⚡ No code · Record &amp; replay</span>
-          <h1 class="hero__title">Record any web workflow.<br /><span class="grad">Replay it forever.</span></h1>
-          <p class="hero__sub">
-            Capture clicks and typing once. Add variables, CSV data and assertions, get a
-            pass/fail verdict and a bug report for every run — then export it as test code
-            in five formats.
-          </p>
-          <div class="hero__cta">
-            <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
-            <a class="btn btn--ghost btn--lg" href="#demo">▶ See the popup</a>
-            <a class="hero__more" href="#features">See all features →</a>
-          </div>
-          <div class="hero__meta">
-            <span><b>17</b> action types &amp; logic</span>
-            <span><b>CSV</b> data-driven runs</span>
-            <span><b>5</b> code export formats</span>
-          </div>
+<main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="top">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <span class="status"><span lang="en">No code · Record &amp; replay</span><span lang="vi">Không cần code · Ghi &amp; phát lại</span></span>
+        <h1>
+          <span lang="en"><span class="l">Record any web workflow.</span> <span class="l hl">Replay it&nbsp;forever.</span></span>
+          <span lang="vi"><span class="l">Ghi lại mọi quy trình web.</span> <span class="l hl">Phát lại vô hạn.</span></span>
+        </h1>
+        <p class="lead">
+          <span lang="en">Capture clicks and typing once, add assertions, and get a pass/fail verdict with a bug report for every run.</span>
+          <span lang="vi">Thao tác một lần, thêm assertion, rồi nhận kết quả pass/fail kèm bug report cho mỗi lần chạy.</span>
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span lang="en">Add to Chrome — free</span><span lang="vi">Thêm vào Chrome — miễn phí</span>
+          </a>
+          <a class="btn btn-ghost" href="#demo">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            <span lang="en">See the popup</span><span lang="vi">Xem popup</span>
+          </a>
         </div>
+        <ul class="stats">
+          <li><strong>17</strong><span lang="en">action types</span><span lang="vi">loại hành động</span></li>
+          <li><strong>8</strong><span lang="en">selectors per element</span><span lang="vi">selector mỗi phần tử</span></li>
+          <li><strong>CSV</strong><span lang="en"><span class="nw">data-driven</span> runs</span><span lang="vi">chạy theo dữ liệu</span></li>
+          <li><strong>5</strong><span lang="en">code export formats</span><span lang="vi">định dạng xuất code</span></li>
+        </ul>
+      </div>
 
-        <!-- Browser mockup with the REAL popup inside. #demo lives here, not on
-             the hero grid, so "See the popup" scrolls to the popup itself —
-             on a phone it sits a whole screen below the hero copy. -->
-        <div class="hero__mockup" id="demo">
-          <!-- Scales the whole chrome (bar + faux page + popup) down together
-               when the viewport is too short to show it in full — see
-               fitHeroHeight() in landing.js. -->
-          <div class="mockup-scale">
+      <!-- #demo: "See the popup" lands here; on a phone it is a whole screen below the copy -->
+      <div class="hero-demo" id="demo">
+        <div class="mockup">
           <div class="browser">
-            <div class="browser__bar">
-              <div class="browser__dots" aria-hidden="true">
-                <span class="browser__dot browser__dot--r"></span>
-                <span class="browser__dot browser__dot--y"></span>
-                <span class="browser__dot browser__dot--g"></span>
-              </div>
-              <div class="browser__url">
+            <div class="browser-bar">
+              <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="url">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm3 8H9V6a3 3 0 1 1 6 0z"/></svg>
                 app.example.com/login
               </div>
-              <div class="browser__toolbar">
-                <span class="browser__ext-pin" aria-hidden="true">🧩</span>
-                <button class="browser__ext-btn" id="extBtn" type="button" title="Pocket QA" aria-label="Open extension popup">
-                  <img src="vendor/icon128.png" alt="" />
+              <div class="toolbar">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h3.5v1.2a1.5 1.5 0 0 0 3 0V4H18a1 1 0 0 1 1 1v3.5h-1.2a1.5 1.5 0 0 0 0 3H19V15a1 1 0 0 1-1 1h-3.5v-1.2a1.5 1.5 0 0 0-3 0V16H8a1 1 0 0 1-1-1v-3.5H5.8a1.5 1.5 0 0 1 0-3H7V5a1 1 0 0 1 1-1z"/></svg>
+                <button class="ext-btn" id="extBtn" type="button" title="Pocket QA" aria-label="Open extension popup / Mở popup tiện ích">
+                  <img src="vendor/icon128.png" alt="">
                 </button>
               </div>
             </div>
-
-            <div class="browser__viewport">
-              <!-- faux website behind the popup -->
-              <div class="browser__page-skeleton" aria-hidden="true">
-                <div class="skeleton skeleton--title"></div>
-                <div class="skeleton skeleton--80"></div>
-                <div class="skeleton skeleton--60"></div>
-                <div class="skeleton skeleton--block"></div>
-                <div class="skeleton skeleton--40"></div>
-                <div class="skeleton skeleton--60"></div>
-              </div>
-
-              <!-- the popup, anchored under the toolbar icon -->
+            <div class="browser-view">
+              <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
               <div class="popup-anchor">
-                <iframe class="popup-frame" id="popupFrame" src="popup-demo.html"
-                        title="Pocket QA — static popup preview"
-                        loading="eager"></iframe>
+                <iframe class="popup-frame" id="popupFrame" src="popup-demo.html" title="Pocket QA — static popup preview" loading="eager"></iframe>
               </div>
             </div>
           </div>
-          </div>
-          <a class="preview-full" href="popup-demo.html" target="_blank" rel="noopener">Open full-size preview ↗</a>
         </div>
-      </div>
-
-      <div class="container">
-        <p class="tryline reveal">
-          👆 This is the real popup UI. Switch <span class="kbd">tabs</span> and flip the
-          popup's own <span class="kbd">🌙</span> theme to explore every panel — the other
-          controls are display-only until you install it.
+        <p class="demo-note">
+          <span lang="en">The real popup UI: switch its tabs and its own <span class="kbd">🌙</span> theme. The other controls are display-only here.</span>
+          <span lang="vi">Giao diện popup thật (bằng tiếng Anh): đổi được tab và nút <span class="kbd">🌙</span> của popup. Các nút khác ở đây chỉ để xem.</span>
+          <a class="preview-full" href="popup-demo.html" target="_blank" rel="noopener"><span lang="en">Open full size ↗</span><span lang="vi">Xem cỡ thật ↗</span></a>
         </p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ===== FEATURES ===== -->
-    <section class="section section--alt" id="features">
-      <div class="container">
-        <div class="section__head reveal">
-          <span class="section__eyebrow">Everything in one popup</span>
-          <h2 class="section__title">Built for real automation</h2>
-          <p class="section__sub">From a quick smoke test to data-driven batch runs across hundreds of rows — and a clean database afterwards.</p>
-        </div>
-        <div class="features">
-          <a class="feature reveal" href="feature.html?id=recording">
-            <div class="feature__icon">⏺</div>
-            <h3 class="feature__title">One-click recording</h3>
-            <p class="feature__text">Clicks and typing become editable, reorderable steps — 17 action types in all, from hovers to file uploads.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=playback">
-            <div class="feature__icon">▶</div>
-            <h3 class="feature__title">Playback that keeps going</h3>
-            <p class="feature__text">Loop, sequence or schedule runs that carry on through iframes, page reloads, native dropdowns and file pickers.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=run-results">
-            <div class="feature__icon">🐞</div>
-            <h3 class="feature__title">Assertions, verdicts &amp; bug reports</h3>
-            <p class="feature__text">Assert what the page should show, get a Passed / Failed / Broken verdict for every run, and a bug report ready to paste.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=variables">
-            <div class="feature__icon">🔣</div>
-            <h3 class="feature__title">Variables &amp; logic</h3>
-            <p class="feature__text">Static, random, pick-from-list and fallback variables, Read DOM, conditions and switch branches — reused anywhere as <code>${var}</code>.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=csv">
-            <div class="feature__icon">📊</div>
-            <h3 class="feature__title">CSV data-driven runs</h3>
-            <p class="feature__text">Upload a CSV — headers become <code>${variables}</code>. One scenario runs per row; results export to Excel, HTML or ZIP.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=screenshots">
-            <div class="feature__icon">📷</div>
-            <h3 class="feature__title">Screenshots &amp; image tools</h3>
-            <p class="feature__text">Visible, full-page, scrolling, segment, element and whole-window capture — with an editor, watermark and image diff.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=export">
-            <div class="feature__icon">🐍</div>
-            <h3 class="feature__title">Code export in five formats</h3>
-            <p class="feature__text">Turn any scenario into a JS bookmarklet, Selenium Python or pytest, Playwright Test, Robot Framework or Selenium Java test.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=highlights">
-            <div class="feature__icon">🖍️</div>
-            <h3 class="feature__title">Highlights by URL pattern</h3>
-            <p class="feature__text">Highlight text on any page in five colours, with notes — restored on every visit and grouped by URL pattern.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=sql-test-designer">
-            <div class="feature__icon">🧪</div>
-            <h3 class="feature__title">SQL Test Case Designer</h3>
-            <p class="feature__text">Paste a SQL query and get EP/BVA, decision-table, NULL and JOIN test cases — with fixture data, exported as CSV or JSON.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=db-test-session">
-            <div class="feature__icon">↺</div>
-            <h3 class="feature__title">DB Test Session &amp; Rollback</h3>
-            <p class="feature__text">Every change you make to test data in Adminer is recorded — roll it all back in one click, with the SQL shown first.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature reveal" href="feature.html?id=settings">
-            <div class="feature__icon">⚙️</div>
-            <h3 class="feature__title">Hotkeys, backup &amp; settings</h3>
-            <p class="feature__text">Configurable hotkeys, import/export and full backup, per-category notifications, and a popup that remembers how you work.</p>
-            <span class="feature__more">Learn more →</span>
-          </a>
-          <a class="feature feature--cta reveal" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
-            <div class="feature__icon">＋</div>
-            <h3 class="feature__title">Get Pocket QA — free</h3>
-            <p class="feature__text">All of the above in one Chrome extension. No account, and your scenarios stay in your browser.</p>
-            <span class="feature__more">Add to Chrome →</span>
-          </a>
-        </div>
+  <!-- ================= FEATURES ================= -->
+  <section class="alt" id="features">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow">01 · <span lang="en">Features</span><span lang="vi">Tính năng</span></span>
+        <h2 class="section-title"><span lang="en">Record, run, report</span><span lang="vi">Ghi, chạy, báo cáo</span></h2>
+        <p class="section-sub more">
+          <span lang="en">From a quick smoke test to <span class="nw">data-driven</span> batch runs across hundreds of rows.</span>
+          <span lang="vi">Từ một lần smoke test nhanh đến chạy hàng loạt theo dữ liệu trên hàng trăm dòng.</span>
+        </p>
       </div>
-    </section>
-
-    <!-- ===== HOW IT WORKS ===== -->
-    <section class="section" id="how">
-      <div class="container">
-        <div class="section__head reveal">
-          <span class="section__eyebrow">How it works</span>
-          <h2 class="section__title">From click to replay in seconds</h2>
-        </div>
-        <div class="steps">
-          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Record</h3><p class="step__text">Hit Start Recording and do the task once in your browser.</p></div>
-          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Refine</h3><p class="step__text">Edit steps, add variables, conditions and waits as needed.</p></div>
-          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Run</h3><p class="step__text">Replay once, loop it, sequence scenarios, or drive it from CSV.</p></div>
-          <div class="step reveal"><div class="step__num"></div><h3 class="step__title">Export</h3><p class="step__text">Ship it as Selenium, Playwright, Robot, Java or a JS bookmarklet — or schedule it.</p></div>
-        </div>
+      <div class="cards">
+        <a class="card feature reveal" href="feature.html?id=recording">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5" fill="currentColor" stroke="none"/></svg></span>
+          <h3><span lang="en">Record in one click</span><span lang="vi">Ghi lại bằng một click</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Clicks and typing become editable, reorderable steps — 17 action types, from hovers to file uploads.</span>
+            <span lang="vi">Click và nhập liệu thành các bước sửa và sắp xếp lại được — 17 loại hành động, từ hover đến tải file.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=playback">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2.5 3 3-3 3"/><path d="M4 11.5v-2a4 4 0 0 1 4-4h12"/><path d="m7 21.5-3-3 3-3"/><path d="M20 12.5v2a4 4 0 0 1-4 4H4"/></svg></span>
+          <h3><span lang="en">Playback that keeps going</span><span lang="vi">Phát lại không đứt quãng</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Loop, sequence or schedule runs that carry on through iframes, page reloads, native dropdowns and file pickers.</span>
+            <span lang="vi">Chạy lặp, nối tiếp hoặc theo lịch, vẫn chạy tiếp qua iframe, tải lại trang, dropdown gốc và hộp chọn file.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=run-results">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="7" width="8" height="13" rx="4"/><path d="M12 11v9M8 12.5H4.5M19.5 12.5H16M8.3 16.5 5 19M15.7 16.5 19 19M8.8 9 6 6.5M15.2 9 18 6.5M10.2 7.4 9.3 5M13.8 7.4l.9-2.4"/></svg></span>
+          <h3><span lang="en">Assertions, verdicts &amp; bug reports</span><span lang="vi">Assertion, kết quả &amp; bug report</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Assert what the page should show, get a Passed / Failed / Broken verdict for every run and a bug report to paste.</span>
+            <span lang="vi">Kiểm tra trang hiển thị đúng chưa, nhận kết quả Passed / Failed / Broken cho mỗi lần chạy và bug report sẵn để dán.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=variables">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4c-1.7 0-3 .8-3 2.5v3c0 1-.8 2-2 2.5 1.2.5 2 1.5 2 2.5v3C5 19.2 6.3 20 8 20M16 4c1.7 0 3 .8 3 2.5v3c0 1 .8 2 2 2.5-1.2.5-2 1.5-2 2.5v3c0 1.7-1.3 2.5-3 2.5M10 9.5l4 5M14 9.5l-4 5"/></svg></span>
+          <h3><span lang="en">Variables &amp; logic</span><span lang="vi">Biến &amp; logic</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Static, random, <span class="nw">pick-from-list</span> and fallback variables, Read DOM, conditions and switch branches.</span>
+            <span lang="vi">Biến tĩnh, ngẫu nhiên, chọn từ danh sách và dự phòng, Read DOM, điều kiện và rẽ nhánh switch.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=csv">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 4.5v15"/></svg></span>
+          <h3><span lang="en">CSV <span class="nw">data-driven</span>&nbsp;runs</span><span lang="vi">Chạy theo dữ liệu CSV</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Upload a CSV and its headers become <code>${variables}</code>. One run per row, results exported to Excel, HTML or ZIP.</span>
+            <span lang="vi">Tải CSV lên, tiêu đề cột thành <code>${variables}</code>. Mỗi dòng một lần chạy, kết quả xuất ra Excel, HTML hoặc ZIP.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=export">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span>
+          <h3><span lang="en">Code export</span><span lang="vi">Xuất code</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Turn a scenario into a JS bookmarklet, Selenium&nbsp;Python or pytest, Playwright&nbsp;Test, Robot&nbsp;Framework or Selenium&nbsp;Java test.</span>
+            <span lang="vi">Chuyển kịch bản thành JS bookmarklet, Selenium&nbsp;Python hoặc pytest, Playwright&nbsp;Test, Robot&nbsp;Framework hoặc Selenium&nbsp;Java.</span>
+          </p>
+        </a>
       </div>
-    </section>
+      <button class="more-btn" type="button" aria-expanded="false"><span class="l-more"><span lang="en">Read more</span><span lang="vi">Xem thêm</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span></button>
+    </div>
+  </section>
 
-    <!-- ===== PRIVACY =====
-         Every claim here was checked against the extension source (v1.0.24):
-         storage areas, the one outbound request (bg/remote-config.js), and each
-         manifest permission's API calls. Re-check after a permission change. -->
-    <section class="section section--alt" id="privacy">
-      <div class="container">
-        <div class="section__head reveal">
-          <span class="section__eyebrow">Privacy</span>
-          <h2 class="section__title">Your tests stay in your browser</h2>
-          <p class="section__sub">No account and no analytics. Here is what Pocket QA keeps, the one request it makes, and why it asks for each permission.</p>
+  <!-- ================= TOOLS ================= -->
+  <section id="tools">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow">02 · <span lang="en">Tools</span><span lang="vi">Công cụ</span></span>
+        <h2 class="section-title"><span lang="en">Test design &amp; everyday tools</span><span lang="vi">Thiết kế test &amp; công cụ hằng ngày</span></h2>
+        <p class="section-sub more">
+          <span lang="en">Design SQL test cases, roll back test data, and keep screenshots and notes in one place.</span>
+          <span lang="vi">Thiết kế test case SQL, hoàn tác dữ liệu test, giữ ảnh chụp và ghi chú ở cùng một nơi.</span>
+        </p>
+      </div>
+      <div class="cards">
+        <a class="card feature reveal" href="feature.html?id=screenshots">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.8-2.5h6.4L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span>
+          <h3><span lang="en">Screenshots &amp; image tools</span><span lang="vi">Ảnh chụp &amp; công cụ ảnh</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Six capture modes, from the visible area to a whole window — plus an image editor, watermark and image diff.</span>
+            <span lang="vi">Sáu chế độ chụp, từ vùng đang thấy đến cả cửa sổ — kèm trình sửa ảnh, watermark và so sánh ảnh.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=highlights">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 4 5 5-8 8h-4v-4z"/><path d="M4 21h16"/></svg></span>
+          <h3><span lang="en">Highlights by URL pattern</span><span lang="vi">Đánh dấu theo mẫu URL</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Highlight text on any page in five colours, with notes — restored on every visit, grouped by URL pattern.</span>
+            <span lang="vi">Tô sáng chữ trên mọi trang với 5 màu, kèm ghi chú — tự hiện lại mỗi lần truy cập, gom theo mẫu URL.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=sql-test-designer">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3h5M10.5 3v6.2L5.2 18.4A1.7 1.7 0 0 0 6.7 21h10.6a1.7 1.7 0 0 0 1.5-2.6L13.5 9.2V3"/><path d="M7.6 15h8.8"/></svg></span>
+          <h3>SQL Test Case Designer</h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Paste a SQL query and get EP/BVA, <span class="nw">decision-table</span>, NULL and JOIN test cases, with fixture data.</span>
+            <span lang="vi">Dán câu SQL để nhận test case EP/BVA, bảng quyết định, NULL và JOIN, kèm dữ liệu mẫu.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=db-test-session">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="11" cy="5.5" rx="7" ry="2.5"/><path d="M4 5.5v12c0 1.4 3.1 2.5 7 2.5M18 5.5V10M4 11.5c0 1.4 3.1 2.5 7 2.5"/><path d="M14.5 17.5H19a2.5 2.5 0 0 0 0-5h-3"/><path d="m16.5 15.5-2 2 2 2"/></svg></span>
+          <h3>DB Test Session &amp; Rollback</h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Every change you make to test data in Adminer is recorded — roll it all back in one click, SQL shown first.</span>
+            <span lang="vi">Mọi thay đổi dữ liệu test trong Adminer đều được ghi lại — hoàn tác hết bằng một click, xem trước câu SQL.</span>
+          </p>
+        </a>
+        <a class="card feature reveal" href="feature.html?id=settings">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg></span>
+          <h3><span lang="en">Hotkeys, backup &amp; settings</span><span lang="vi">Phím tắt, sao lưu &amp; cài đặt</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Configurable hotkeys, import/export and full backup, and <span class="nw">per-category</span> notifications.</span>
+            <span lang="vi">Phím tắt tuỳ chỉnh, nhập/xuất và sao lưu toàn bộ, thông báo bật/tắt theo từng loại.</span>
+          </p>
+        </a>
+        <a class="card feature feature-cta reveal" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>
+          <h3><span lang="en">Get Pocket&nbsp;QA</span><span lang="vi">Cài Pocket&nbsp;QA</span></h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+          <p class="more">
+            <span lang="en">Everything above in one Chrome extension. No account, and your scenarios stay in your browser.</span>
+            <span lang="vi">Tất cả trong một tiện ích Chrome. Không cần tài khoản, kịch bản nằm lại trong trình duyệt của bạn.</span>
+          </p>
+        </a>
+      </div>
+      <button class="more-btn" type="button" aria-expanded="false"><span class="l-more"><span lang="en">Read more</span><span lang="vi">Xem thêm</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span></button>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section class="alt" id="how">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">03 · <span lang="en">How it works</span><span lang="vi">Cách dùng</span></span>
+        <h2 class="section-title"><span lang="en">From click to replay in seconds</span><span lang="vi">Từ click đến phát lại trong vài giây</span></h2>
+      </div>
+      <ol class="steps">
+        <li class="card step reveal">
+          <span class="step-num">1</span>
+          <h3><span lang="en">Record</span><span lang="vi">Ghi lại</span></h3>
+          <p><span lang="en">Hit <b>Start Recording</b> and do the task once in your browser.</span><span lang="vi">Bấm <b>Start Recording</b> và làm thao tác một lần trên trình duyệt.</span></p>
+        </li>
+        <li class="card step reveal">
+          <span class="step-num">2</span>
+          <h3><span lang="en">Refine</span><span lang="vi">Tinh chỉnh</span></h3>
+          <p><span lang="en">Edit steps, add variables, conditions and waits as needed.</span><span lang="vi">Sửa bước, thêm biến, điều kiện và thời gian chờ khi cần.</span></p>
+        </li>
+        <li class="card step reveal">
+          <span class="step-num">3</span>
+          <h3><span lang="en">Run</span><span lang="vi">Chạy</span></h3>
+          <p><span lang="en">Replay once, loop it, chain scenarios, or drive it from a CSV.</span><span lang="vi">Phát lại một lần, chạy lặp, nối các kịch bản hoặc chạy theo file CSV.</span></p>
+        </li>
+        <li class="card step reveal">
+          <span class="step-num">4</span>
+          <h3><span lang="en">Export</span><span lang="vi">Xuất</span></h3>
+          <p><span lang="en">Export it as test code, or schedule it to run on its own.</span><span lang="vi">Xuất thành code test, hoặc hẹn lịch để tự chạy.</span></p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= PRIVACY =================
+       Every claim here was checked against the extension source (v1.0.24):
+       storage areas, the one outbound request (bg/remote-config.js), and each manifest
+       permission's API calls. Claims copied as they are (wording trimmed in places so a row fits on 2 lines);
+       re-check after a permission change. -->
+  <section id="privacy">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow">04 · <span lang="en">Privacy</span><span lang="vi">Riêng tư</span></span>
+        <h2 class="section-title"><span lang="en">Your tests stay in your browser</span><span lang="vi">Dữ liệu test ở lại trong trình duyệt của bạn</span></h2>
+        <p class="section-sub">
+          <span lang="en">No account and no analytics. Here is what Pocket&nbsp;QA keeps and the one request it makes.</span>
+          <span lang="vi">Không tài khoản, không analytics. Đây là những gì Pocket&nbsp;QA lưu và yêu cầu mạng duy nhất nó gửi đi.</span>
+        </p>
+      </div>
+      <div class="grid-2">
+        <article class="card info reveal">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8.5 20h7M12 16.5V20"/></svg></span>
+          <h3><span lang="en">Stored on this computer</span><span lang="vi">Lưu trên máy này</span></h3>
+          <p class="more">
+            <span lang="en">Scenarios, variables, CSV data, screenshots and run results live in Chrome's local extension storage. Nothing is uploaded.</span>
+            <span lang="vi">Kịch bản, biến, dữ liệu CSV, ảnh chụp và kết quả chạy nằm trong bộ nhớ cục bộ của tiện ích trên Chrome. Không có gì được tải lên.</span>
+          </p>
+        </article>
+        <article class="card info reveal">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5A8 8 0 0 0 5.6 7M4 12.5A8 8 0 0 0 18.4 17"/><path d="M5 3.5V7h3.5M19 20.5V17h-3.5"/></svg></span>
+          <h3><span lang="en">Settings can sync</span><span lang="vi">Cài đặt có thể đồng bộ</span></h3>
+          <p class="more">
+            <span lang="en">Hotkeys, screenshot naming and notification switches use Chrome's sync storage, so they follow you to your other devices if Chrome&nbsp;Sync is on.</span>
+            <span lang="vi">Phím tắt, cách đặt tên ảnh chụp và các công tắc thông báo dùng bộ nhớ đồng bộ của Chrome, nên theo bạn sang thiết bị khác nếu bật Chrome&nbsp;Sync.</span>
+          </p>
+        </article>
+        <article class="card info reveal">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>
+          <h3><span lang="en">One request out, once a day</span><span lang="vi">Một yêu cầu mạng mỗi ngày</span></h3>
+          <p class="more">
+            <span lang="en">Besides Chrome's own update check, Pocket&nbsp;QA reads a small version file from <code class="nw">kt-hg.github.io</code> so a broken release can be stopped. It carries none of your data.</span>
+            <span lang="vi">Ngoài lần kiểm tra cập nhật của chính Chrome, Pocket&nbsp;QA đọc một file phiên bản nhỏ từ <code class="nw">kt-hg.github.io</code> để có thể dừng một bản phát hành lỗi. Yêu cầu này không mang dữ liệu nào của bạn.</span>
+          </p>
+        </article>
+        <article class="card info reveal">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5v13c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-13M4.5 12c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5"/></svg></span>
+          <h3><span lang="en">DB rollback stays on your Adminer</span><span lang="vi">Rollback DB chỉ chạy trên Adminer của bạn</span></h3>
+          <p class="more">
+            <span lang="en">Undo SQL goes only to the Adminer page you are working in, over your existing session.</span>
+            <span lang="vi">Câu SQL hoàn tác chỉ được gửi tới trang Adminer bạn đang làm việc, qua phiên đăng nhập hiện có.</span>
+          </p>
+        </article>
+      </div>
+      <button class="more-btn" type="button" aria-expanded="false"><span class="l-more"><span lang="en">Read more</span><span lang="vi">Xem thêm</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span></button>
+    </div>
+  </section>
+
+  <!-- ================= PERMISSIONS (manifest.json, v1.0.24) ================= -->
+  <section class="alt" id="permissions">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow">05 · <span lang="en">Permissions</span><span lang="vi">Quyền</span></span>
+        <h2 class="section-title"><span lang="en">Why it asks for each permission</span><span lang="vi">Vì sao cần từng quyền</span></h2>
+        <p class="section-sub more">
+          <span lang="en">Every permission in the extension's manifest, and what Pocket&nbsp;QA uses it for.</span>
+          <span lang="vi">Mọi quyền khai báo trong manifest của tiện ích và Pocket&nbsp;QA dùng chúng vào việc gì.</span>
+        </p>
+      </div>
+      <dl class="card perms reveal">
+        <div class="perm">
+          <dt><code>&lt;all_urls&gt;</code></dt>
+          <dd><span lang="en">Read and change data on all websites — to record, replay and screenshot any site you test.</span><span lang="vi">Đọc và thay đổi dữ liệu trên mọi trang web — để ghi, phát lại và chụp ảnh trang bạn đang test.</span></dd>
         </div>
-        <ul class="detail-points fsec__points reveal">
-          <li><b>Stored on this computer.</b> Scenarios, variables, CSV data, screenshots and run results live in Chrome's local extension storage. Nothing is uploaded.</li>
-          <li><b>Settings can sync.</b> Hotkeys, screenshot naming and notification switches use Chrome's sync storage, so they follow you to your other devices if Chrome Sync is on.</li>
-          <li><b>One request out, once a day.</b> Alongside Chrome's own update check, Pocket QA reads a small version file from <code>kt-hg.github.io</code> so a broken release can be stopped. The request carries none of your data.</li>
-          <li><b>DB rollback stays on your Adminer.</b> Undo SQL goes only to the Adminer page you are working in, over your existing session.</li>
-        </ul>
-
-        <h3 class="privacy__title">Permissions</h3>
-        <div class="ftable reveal" tabindex="0" role="region" aria-label="Permissions">
-          <table>
-            <thead><tr><th scope="col">Permission</th><th scope="col">Why Pocket QA asks for it</th></tr></thead>
-            <tbody>
-              <tr><td>Read and change data on all websites</td><td>Record and replay on whatever site you test, and screenshot it.</td></tr>
-              <tr><td><code>tabs</code></td><td>Find the tab you are recording or playing on, navigate it during a run, and set its zoom for captures.</td></tr>
-              <tr><td><code>scripting</code></td><td>Put the recorder, the player and highlights into the page.</td></tr>
-              <tr><td><code>storage</code></td><td>Keep your scenarios, variables and settings (see above).</td></tr>
-              <tr><td><code>debugger</code></td><td>Trusted clicks on native dropdowns, file uploads, Run JS steps, and full-page and element screenshots.</td></tr>
-              <tr><td><code>downloads</code></td><td>Save screenshots, exported code, run results and SQL test cases.</td></tr>
-              <tr><td><code>alarms</code></td><td>Scheduled runs, keeping long runs alive, and the daily update check.</td></tr>
-              <tr><td><code>windows</code></td><td>Window screenshots, and bringing the right window forward during a run.</td></tr>
-              <tr><td><code>notifications</code></td><td>Run results, failures and update notices — each category can be switched off.</td></tr>
-              <tr><td><code>desktopCapture</code> (optional)</td><td>Asked for only when you capture a whole window; nothing else needs it.</td></tr>
-            </tbody>
-          </table>
+        <div class="perm">
+          <dt><code>tabs</code></dt>
+          <dd><span lang="en">Find the tab you record or play on, navigate it during a run, and set its zoom for captures.</span><span lang="vi">Tìm tab đang ghi hoặc đang phát lại, chuyển trang trong lúc chạy và đặt mức zoom khi chụp.</span></dd>
         </div>
+        <div class="perm">
+          <dt><code>scripting</code></dt>
+          <dd><span lang="en">Put the recorder, the player and highlights into the page.</span><span lang="vi">Đưa bộ ghi, bộ phát lại và phần đánh dấu vào trang.</span></dd>
+        </div>
+        <div class="perm more">
+          <dt><code>storage</code></dt>
+          <dd><span lang="en">Keep your scenarios, variables and settings (see Privacy).</span><span lang="vi">Lưu kịch bản, biến và cài đặt (xem phần Riêng tư).</span></dd>
+        </div>
+        <div class="perm more">
+          <dt><code>debugger</code></dt>
+          <dd><span lang="en">Trusted clicks on native dropdowns, file uploads, Run JS steps, and <span class="nw">full-page</span> and element screenshots.</span><span lang="vi">Click tin cậy trên dropdown gốc, tải file lên, bước Run JS, chụp cả trang và chụp phần tử.</span></dd>
+        </div>
+        <div class="perm more">
+          <dt><code>downloads</code></dt>
+          <dd><span lang="en">Save screenshots, exported code, run results and SQL test cases.</span><span lang="vi">Lưu ảnh chụp, code đã xuất, kết quả chạy và test case SQL.</span></dd>
+        </div>
+        <div class="perm more">
+          <dt><code>alarms</code></dt>
+          <dd><span lang="en">Scheduled runs, keeping long runs alive, and the daily update check.</span><span lang="vi">Chạy theo lịch, giữ cho lần chạy dài không bị dừng và kiểm tra cập nhật hằng ngày.</span></dd>
+        </div>
+        <div class="perm more">
+          <dt><code>windows</code></dt>
+          <dd><span lang="en">Window screenshots, and bringing the right window forward during a run.</span><span lang="vi">Chụp cửa sổ và đưa đúng cửa sổ lên trước trong lúc chạy.</span></dd>
+        </div>
+        <div class="perm more">
+          <dt><code>notifications</code></dt>
+          <dd><span lang="en">Run results, failures and update notices — each category can be switched off.</span><span lang="vi">Thông báo kết quả, lỗi và cập nhật — tắt được từng loại.</span></dd>
+        </div>
+        <div class="perm more">
+          <dt><code>desktopCapture</code><small><span lang="en">optional</span><span lang="vi">tuỳ chọn</span></small></dt>
+          <dd><span lang="en">Asked for only when you capture a whole window; nothing else needs it.</span><span lang="vi">Chỉ hỏi khi bạn chụp cả cửa sổ; không tính năng nào khác cần đến.</span></dd>
+        </div>
+      </dl>
+      <button class="more-btn" type="button" aria-expanded="false"><span class="l-more"><span lang="en">Read more</span><span lang="vi">Xem thêm</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span></button>
+    </div>
+  </section>
 
-        <h3 class="privacy__title">FAQ</h3>
+  <!-- ================= FAQ + CTA ================= -->
+  <section id="faq">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">06 · <span lang="en">FAQ</span><span lang="vi">Hỏi đáp</span></span>
+        <h2 class="section-title"><span lang="en">Questions, answered</span><span lang="vi">Câu hỏi thường gặp</span></h2>
+      </div>
+      <div class="faq-grid">
         <div class="faq reveal">
           <details>
-            <summary>Is Pocket QA free?</summary>
-            <p>Yes, completely — no paid tier and no account.</p>
+            <summary><span lang="en">Is Pocket&nbsp;QA free?</span><span lang="vi">Pocket&nbsp;QA có miễn phí không?</span></summary>
+            <p><span lang="en">Yes, completely — no paid tier and no account.</span><span lang="vi">Có, hoàn toàn miễn phí — không có gói trả phí, không cần tài khoản.</span></p>
           </details>
           <details>
-            <summary>Do I need to write code?</summary>
-            <p>No. Record a flow once and replay it from the popup. Code export is there for when you want the same test in Selenium, Playwright, Robot Framework or Java.</p>
+            <summary><span lang="en">Do I need to write code?</span><span lang="vi">Có cần biết viết code không?</span></summary>
+            <p><span lang="en">No. Record a flow once and replay it from the popup. Code export is there for when you want the same test in Selenium, Playwright, Robot&nbsp;Framework or Java.</span><span lang="vi">Không. Ghi lại một luồng một lần rồi phát lại từ popup. Tính năng xuất code dành cho khi bạn muốn có cùng bài test đó trong Selenium, Playwright, Robot&nbsp;Framework hoặc Java.</span></p>
           </details>
           <details>
-            <summary>Which browsers does it run on?</summary>
-            <p>Chrome 109 or newer.</p>
+            <summary><span lang="en">Which browsers does it run on?</span><span lang="vi">Chạy trên trình duyệt nào?</span></summary>
+            <p><span lang="en">Chrome&nbsp;109 or newer.</span><span lang="vi">Chrome&nbsp;109 trở lên.</span></p>
           </details>
           <details>
-            <summary>Why does Chrome say Pocket QA "started debugging this browser"?</summary>
-            <p>Chrome shows that bar whenever an extension uses its debugger API, which Pocket QA does for the steps listed under <code>debugger</code> above. It detaches when the run ends, and the bar goes away.</p>
+            <summary><span lang="en">Why does Chrome say Pocket&nbsp;QA "started debugging this browser"?</span><span lang="vi">Vì sao Chrome báo Pocket&nbsp;QA đang gỡ lỗi (debug) trình duyệt?</span></summary>
+            <p><span lang="en">Chrome shows that bar whenever an extension uses its debugger API, which Pocket&nbsp;QA does for the steps listed under <code>debugger</code> above. It detaches when the run ends, and the bar goes away.</span><span lang="vi">Chrome hiện thanh báo đó mỗi khi một tiện ích dùng debugger API; Pocket&nbsp;QA dùng nó cho các bước nêu ở quyền <code>debugger</code> phía trên. Khi lần chạy kết thúc, tiện ích ngắt kết nối và thanh báo biến mất.</span></p>
           </details>
         </div>
-      </div>
-    </section>
-
-    <!-- ===== CTA ===== -->
-    <section class="section cta">
-      <div class="container reveal">
-        <div class="cta__card">
-          <h2 class="cta__title">Stop repeating yourself</h2>
-          <p class="cta__sub">Record it once. Let Pocket QA handle the rest.</p>
-          <div class="cta__actions">
-            <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
-            <a class="btn btn--ghost btn--lg" href="#demo">See the popup</a>
+        <aside class="card cta-card reveal">
+          <h3><span lang="en">Stop repeating&nbsp;yourself</span><span lang="vi">Không còn làm đi làm lại</span></h3>
+          <p><span lang="en">Record it once. Let Pocket&nbsp;QA handle the rest.</span><span lang="vi">Ghi lại một lần, phần còn lại để Pocket&nbsp;QA lo.</span></p>
+          <div class="cta">
+            <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              <span lang="en">Add to Chrome</span><span lang="vi">Thêm vào Chrome</span>
+            </a>
+            <a class="btn btn-ghost" href="#demo">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+              <span lang="en">See the popup</span><span lang="vi">Xem popup</span>
+            </a>
           </div>
-        </div>
+        </aside>
       </div>
-    </section>
-  </main>
-
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <div class="container footer__inner">
-      <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Pocket QA</div>
-      <nav class="footer__links" aria-label="Footer">
-        <a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
-        <a href="#features">Features</a>
-        <a href="#how">How it works</a>
-        <a href="#privacy">Privacy</a>
-      </nav>
-      <div>v<span id="extVersion">1.0.24</span> · Manifest V3 · Chrome 109+</div>
     </div>
-  </footer>
+  </section>
+</main>
 
-  <script src="landing.js"></script>
-  <script src="store-version.js"></script>
+<footer>
+  <div class="container">
+    <a class="brand" href="#top"><img src="vendor/icon128.png" alt="" width="28" height="28">Pocket QA</a>
+    <nav aria-label="Footer">
+      <a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener"><span lang="en">Add to Chrome</span><span lang="vi">Thêm vào Chrome</span></a>
+      <a href="#features"><span lang="en">Features</span><span lang="vi">Tính năng</span></a>
+      <a href="#how"><span lang="en">How it works</span><span lang="vi">Cách dùng</span></a>
+      <a href="#privacy"><span lang="en">Privacy</span><span lang="vi">Riêng tư</span></a>
+    </nav>
+    <span>v<span id="extVersion">1.0.24</span> · Manifest&nbsp;V3 · Chrome&nbsp;109+</span>
+  </div>
+</footer>
+
+<script src="site.js?v=d82b2e05"></script>
+<script src="store-version.js?v=f9330233"></script>
 </body>
 </html>
