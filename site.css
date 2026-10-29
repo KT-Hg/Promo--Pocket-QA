@@ -1,0 +1,519 @@
+/**
+ * site.css — Pocket QA promo (index.html + feature.html).
+ * Tokens, type scale and spacing are the portfolio's (kt-hg.github.io), so a visitor coming
+ * from its "Demo" link stays on the same site visually. Layout follows the portfolio's UI
+ * rules: one section = one screen (index only), nothing moves on a language switch, grids
+ * rather than flex-wrap for anything that must line up.
+ */
+
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --text: #0f172a;
+  --muted: #556070;
+  --border: #e2e8f0;
+  --primary: #1f4e79;
+  --primary-ink: #ffffff;
+  --primary-soft: #e8f0f8;
+  --accent: #c2410c;
+  --accent-fill: #ea7a2e;
+  --accent-soft: #fff1e6;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 8px 24px rgba(15, 23, 42, .06);
+  --shadow-lg: 0 2px 6px rgba(15, 23, 42, .05), 0 24px 64px rgba(15, 23, 42, .14);
+  --radius: 14px;
+  --header-h: 64px;
+  --sy: 0px;
+  --hero-py: clamp(20px, min(3.5vw, 5vh), 40px);   /* shorter on short screens, so the popup can stay bigger */
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1220; --surface: #111a2d; --surface-2: #17223a; --text: #e6ebf3; --muted: #9ba7b9;
+    --border: #24314b; --primary: #8fbbe9; --primary-ink: #0b1220; --primary-soft: rgba(143, 187, 233, .12);
+    --accent: #fb923c; --accent-fill: #fb923c; --accent-soft: rgba(251, 146, 60, .12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    --shadow-lg: 0 2px 6px rgba(0, 0, 0, .3), 0 24px 64px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1220; --surface: #111a2d; --surface-2: #17223a; --text: #e6ebf3; --muted: #9ba7b9;
+  --border: #24314b; --primary: #8fbbe9; --primary-ink: #0b1220; --primary-soft: rgba(143, 187, 233, .12);
+  --accent: #fb923c; --accent-fill: #fb923c; --accent-soft: rgba(251, 146, 60, .12);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, .3), 0 24px 64px rgba(0, 0, 0, .5);
+  color-scheme: dark;
+}
+
+/* Taller desktop screens: text and vertical rhythm grow so content fills the screen instead of leaving it empty */
+@media (min-width: 1024px) {
+  html { font-size: clamp(100%, calc(100% + (100vh - 700px) / 60), 112.5%); }
+  :root { --sy: clamp(0px, calc((100vh - 700px) / 4), 48px); }
+}
+
+/* Bilingual: every text exists as lang="en" + lang="vi"; show only the active one */
+html[lang="en"] body [lang="vi"],
+html[lang="vi"] body [lang="en"] { display: none !important; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 1rem/1.7 "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;   /* no one-word last line; browsers without it wrap as before */
+  transition: background-color .2s, color .2s;
+}
+.nw { white-space: nowrap; }   /* keeps a hyphenated word like "drag-and-drop" from breaking at its hyphen */
+h1, h2, h3 { margin: 0; line-height: 1.2; letter-spacing: -.01em; }
+/* Short texts (≤ 6 lines): even lines. `pretty` still left one-word last lines here in Chrome 152 — in two-line
+   card titles and card texts — so these balance instead. Not for anything that can run past 6 lines on a phone:
+   Chrome stops balancing there and falls back to plain wrapping, losing `pretty` too. */
+h1, h2, h3, summary, .lead, .section-sub, .feature p, .step p, .perm dd, .demo-note, .cta-card p, td, th, .stats li > span { text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--primary); }
+:focus-visible { outline: 2px solid var(--accent-fill); outline-offset: 3px; border-radius: 6px; }
+code {
+  font: 500 .88em/1.5 ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+  padding: 1px 5px; border-radius: 5px; background: var(--surface-2); overflow-wrap: anywhere;
+}
+.kbd {
+  font: 500 .8em/1.4 ui-monospace, Consolas, Menlo, monospace; white-space: nowrap;
+  padding: 1px 7px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; background: var(--surface); color: var(--text);
+}
+
+.container { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: 16px; }
+@media (min-width: 640px) { .container { padding-inline: 24px; } }
+
+.skip { position: absolute; left: -999px; top: 12px; z-index: 100; background: var(--surface); color: var(--text); padding: 8px 14px; border-radius: 8px; }
+.skip:focus { left: 16px; }
+
+.i { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: fixed; inset: 0 0 auto; z-index: 50; height: var(--header-h);
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+/* gap is only the minimum (space-between spreads the rest): 8px, not 16, keeps the six equal links inside 1024×1366 (18px text) */
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 100%; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text); text-decoration: none; white-space: nowrap; }
+.brand img { width: 28px; height: 28px; display: block; }
+.nav-links { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.nav-links a { display: block; padding: 8px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: .92rem; font-weight: 500; text-align: center; white-space: nowrap; }
+.nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface-2); }
+/* "Add to Chrome" is in the ☰ menu only: from 1024px the six section links plus a store button overflow the header
+   (measured: ~140px short at 1024×768), and the hero, Tools, FAQ and footer all carry the same link */
+.nav-links .nav-cta { display: none; }
+@media (min-width: 1024px) {   /* every item as wide as the longest one; side padding shrinks to 6px at 1024px so the row still fits */
+  .nav-links { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+  .nav-links a { padding-inline: clamp(6px, .6vw, 12px); }
+}
+.nav-tools { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  height: 38px; min-width: 38px; padding: 0 10px; display: inline-grid; place-items: center;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text);
+  font-family: inherit; font-size: .8rem; font-weight: 600; cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--primary); }
+.i-sun { display: none; }
+[data-theme="dark"] .i-sun { display: block; }
+[data-theme="dark"] .i-moon { display: none; }
+html:not(.js) .js-only { display: none; }
+.menu-btn { display: none; }
+
+@media (max-width: 900px) {
+  .menu-btn { display: inline-grid; }
+  .nav-links {
+    display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column;
+    padding: 8px 16px 16px; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: var(--shadow);
+  }
+  .nav-open .nav-links { display: flex; }
+  .nav-links a { padding: 12px; text-align: left; }
+  .nav-links .nav-cta { display: block; margin-top: 8px; }
+  .nav-links .nav-cta a { display: flex; color: var(--primary-ink); background: var(--primary); }
+}
+
+/* ---------- Sections ---------- */
+/* One section = one screen: the next section never peeks in below */
+main > section {
+  padding-block: clamp(24px, 3vw, 32px) 24px; scroll-margin-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h)); min-height: calc(100svh - var(--header-h));
+  display: flex; flex-direction: column; justify-content: center; /* spare height splits above/below instead of piling up at the bottom */
+}
+.alt { background: var(--surface); border-block: 1px solid var(--border); }
+.section-head { margin-bottom: calc(clamp(16px, 2vw, 20px) + var(--sy) / 2); }
+.eyebrow { display: flex; align-items: center; gap: 10px; font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.eyebrow::before { content: ""; width: 28px; height: 2px; background: var(--accent-fill); }
+.section-title { margin-top: 6px; font-size: clamp(1.6rem, 2.8vw, 2rem); font-weight: 700; }
+.section-sub { max-width: 68ch; margin-top: 8px; color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: calc(clamp(18px, 2.2vw, 24px) + var(--sy) / 4); box-shadow: var(--shadow); }
+.alt .card { background: var(--bg); }
+.muted { color: var(--muted); }
+.ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; flex: none; background: var(--primary-soft); color: var(--primary); }
+
+.checks { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.checks li { position: relative; padding-left: 28px; }
+.checks li::before {
+  content: ""; position: absolute; left: 2px; top: .5em; width: 12px; height: 6px;
+  border-left: 2px solid var(--accent-fill); border-bottom: 2px solid var(--accent-fill); transform: rotate(-45deg);
+}
+
+/* Small screens: hide .more items until "Read more" is pressed (only when JS can toggle them back) */
+.more-btn {
+  display: none; margin-top: 12px; padding: 7px 14px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface); color: var(--primary); font-family: inherit; font-size: .88rem; font-weight: 600; cursor: pointer;
+}
+.more-btn .l-less, .expanded .more-btn .l-more { display: none; }
+.expanded .more-btn .l-less { display: inline; }
+@media (max-width: 767px) {
+  .js .collapsible:not(.expanded) .more { display: none; }
+  .js body:not(.doc) .more-btn { display: inline-block; }   /* feature pages show theirs only when a list was shortened */
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border: 1px solid transparent; border-radius: 10px;
+  font-weight: 600; text-decoration: none; white-space: nowrap; transition: transform .15s, border-color .15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { background: var(--primary); color: var(--primary-ink); }
+.btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-ghost:hover { border-color: var(--primary); }
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative; overflow: hidden; padding: calc(var(--header-h) + var(--hero-py)) 0 var(--hero-py);
+  min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center;
+}
+.hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: radial-gradient(var(--border) 1.2px, transparent 1.2px); background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 65% at 75% 35%, #000 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 65% at 75% 35%, #000 25%, transparent 75%);
+}
+.hero .container { position: relative; }
+.hero-grid { display: grid; gap: 48px; align-items: center; }
+/* Wide screens: copy | popup side by side. Narrower: each is a screen of its own, one under the other. */
+@media (min-width: 1024px) { .hero-grid { grid-template-columns: minmax(0, 1fr) auto; } }
+@media (max-width: 1023px) {
+  .hero { padding: var(--header-h) 0 0; }
+  .hero-grid { gap: 0; grid-template-columns: minmax(0, 1fr); }   /* minmax(0, …): the 540px mockup must not widen the column past the screen */
+  .hero-copy, .hero-demo {
+    min-height: calc(100vh - var(--header-h)); min-height: calc(100svh - var(--header-h));
+    padding-block: var(--hero-py); display: flex; flex-direction: column; justify-content: center;
+  }
+  .hero-demo { align-items: center; }
+}
+.status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .85rem; font-weight: 600; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-fill); }
+.hero-copy .status { align-self: flex-start; }
+.hero h1 { margin-top: 16px; font-size: clamp(2.1rem, 4.6vw, 3rem); font-weight: 700; line-height: 1.15; letter-spacing: -.025em; }
+.hero h1 .l { display: block; }   /* one block per line, so each balances on its own */
+.hero h1 .hl { color: var(--primary); }
+.hero .lead { max-width: 58ch; margin-top: 16px; font-size: clamp(1.02rem, 1.6vw, 1.15rem); color: var(--muted); }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, max-content)); gap: 16px 20px; margin: 24px 0 0; padding: 0; list-style: none; }
+.stats strong { display: block; font-size: 1.35rem; font-weight: 700; line-height: 1.3; }
+.stats span { font-size: .82rem; color: var(--muted); }
+.stats li > span { display: block; }   /* a block of its own, so the label can balance its lines */
+
+/* ---------- Popup mockup ---------- */
+/* The popup is the real 480×600 extension UI in an iframe, so it is scaled whole, never squeezed:
+   site.js → fitMockup() sets the scale and the box it leaves behind (falls back to full size). */
+.hero-demo { scroll-margin-top: var(--header-h); }
+.mockup { width: 540px; max-width: 100%; }
+.browser {
+  width: 540px; transform: scale(var(--s, 1)); transform-origin: top left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-lg); overflow: hidden;
+}
+.browser-bar { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+.dots { display: flex; gap: 7px; }
+.dots span { width: 12px; height: 12px; border-radius: 50%; }
+.dots span:nth-child(1) { background: #ff5f57; }
+.dots span:nth-child(2) { background: #febc2e; }
+.dots span:nth-child(3) { background: #28c840; }
+.url {
+  flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 7px; padding: 0 12px;
+  border: 1px solid var(--border); border-radius: 7px; background: var(--bg); color: var(--muted);
+  font-size: 12px; white-space: nowrap; overflow: hidden;
+}
+.url svg { flex: none; }
+.toolbar { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+.toolbar > .i { width: 18px; height: 18px; }
+.ext-btn {
+  width: 32px; height: 32px; padding: 3px; display: grid; place-items: center; cursor: pointer;
+  border: 0; border-radius: 8px; background: var(--primary-soft); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+.ext-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* The page area below the bar: a faux website behind the popup */
+.browser-view {
+  position: relative; min-height: 640px; padding: 18px;
+  background: radial-gradient(120% 80% at 80% -10%, var(--primary-soft), transparent 60%), linear-gradient(180deg, var(--bg), var(--surface));
+}
+.skeleton { display: flex; flex-direction: column; gap: 12px; opacity: .6; }
+.skeleton span { height: 14px; border-radius: 6px; background: var(--border); }
+.skeleton span:nth-child(1) { height: 26px; width: 50%; }
+.skeleton span:nth-child(2) { width: 80%; }
+.skeleton span:nth-child(3), .skeleton span:nth-child(6) { width: 60%; }
+.skeleton span:nth-child(4) { height: 120px; margin-top: 6px; }
+.skeleton span:nth-child(5) { width: 40%; }
+/* The popup itself, anchored under the extension button */
+.popup-anchor { position: absolute; top: 8px; right: 14px; z-index: 1; filter: drop-shadow(0 24px 48px rgba(15, 23, 42, .28)); }
+.popup-anchor::before {   /* caret up to the toolbar icon, entirely in the 8px gap above the popup */
+  content: ""; position: absolute; top: -8px; right: 16px;
+  border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 8px solid var(--surface);
+}
+.popup-frame { display: block; width: 480px; height: 600px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+/* Phones: no faux page; the popup alone is scaled to the screen width (--popup-s from fitMockup) */
+@media (max-width: 560px) {
+  .mockup { width: 100%; }
+  .browser { width: 100%; transform: none; }
+  .browser-view { min-height: 0; padding: 0; overflow: hidden; }
+  .skeleton { display: none; }
+  .popup-anchor { position: static; width: 480px; height: var(--popup-h, 600px); transform: scale(var(--popup-s, 1)); transform-origin: top left; filter: none; }
+  .popup-anchor::before { display: none; }
+  .popup-frame { border: 0; border-radius: 0; }
+}
+/* width 0 + min-width 100%: as wide as the mockup above it, never wider */
+.demo-note { width: 0; min-width: 100%; margin-top: 12px; font-size: .86rem; line-height: 1.55; color: var(--muted); text-align: center; }
+.preview-full { display: none; font-weight: 600; white-space: nowrap; }
+@media (max-width: 560px) { .preview-full { display: inline; } }
+
+/* ---------- Feature cards ---------- */
+.cards { display: grid; gap: calc(16px + var(--sy) / 3); }
+@media (min-width: 600px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.feature {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; align-content: center; gap: 12px 14px;
+  color: var(--text); text-decoration: none; transition: border-color .15s, transform .15s;
+}
+.feature:hover { border-color: var(--primary); transform: translateY(-2px); }
+.feature h3 { font-size: 1.05rem; }
+.feature .go { width: 18px; height: 18px; color: var(--muted); transition: transform .15s, color .15s; }
+.feature:hover .go { color: var(--primary); transform: translateX(2px); }
+.feature p { grid-column: 1 / -1; font-size: .92rem; line-height: 1.55; color: var(--muted); }
+.cards .feature-cta { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+.feature-cta .ic { background: color-mix(in srgb, var(--primary-ink) 16%, transparent); color: inherit; }
+.feature-cta p, .feature-cta .go, .feature-cta:hover .go { color: inherit; }
+.feature-cta p { opacity: .88; }
+/* Phones: every card is one compact row (icon, title, arrow) and its text waits behind "Read more" */
+@media (max-width: 767px) {
+  .cards, .grid-2 { gap: 8px; }
+  .feature, .info { padding: 12px 14px; }
+}
+
+/* ---------- How it works ---------- */
+.steps { display: grid; gap: calc(16px + var(--sy) / 3); margin: 0; padding: 0; list-style: none; }
+@media (min-width: 600px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .steps { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.step { display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+.step-num { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.step h3 { margin-top: 4px; font-size: 1.1rem; }
+.step p { color: var(--muted); font-size: .95rem; line-height: 1.6; }
+@media (max-width: 599px) {   /* one column: number beside the text instead of above it */
+  .steps { gap: 8px; }
+  .step { display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: center; gap: 2px 14px; padding: 12px 14px; }
+  .step-num { grid-row: span 2; }
+  .step h3 { margin: 0; }
+}
+
+/* ---------- Privacy ---------- */
+.grid-2 { display: grid; gap: calc(16px + var(--sy) / 3); }
+@media (min-width: 768px) { .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.info { display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: center; gap: 6px 16px; }
+.info .ic { grid-row: span 2; align-self: start; }
+.info h3 { align-self: center; font-size: 1.05rem; }   /* centred on the icon when its text is hidden (phones) */
+.info p { color: var(--muted); font-size: .95rem; line-height: 1.6; }
+
+/* ---------- Permissions: one list in a card, two columns on wide screens, names in a column of their own ---------- */
+.perms { display: grid; gap: 0 calc(32px + var(--sy) / 3); margin: 0; padding-block: calc(4px + var(--sy) / 8); }
+@media (min-width: 900px) { .perms { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.perm { display: grid; grid-template-columns: 8rem minmax(0, 1fr); align-items: center; gap: 4px 16px; padding-block: calc(10px + var(--sy) / 8); border-top: 1px solid var(--border); }
+.perm:first-child { border-top: 0; }
+@media (min-width: 900px) { .perm:nth-child(2) { border-top: 0; } }
+.perm dt code { padding: 0; background: none; color: var(--primary); font-weight: 600; }
+.perm dt small { display: block; font-size: .78rem; color: var(--muted); }
+.perm dd { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.55; }
+@media (max-width: 480px) { .perm { grid-template-columns: 1fr; } }
+
+/* ---------- FAQ + closing CTA ---------- */
+.faq-grid { display: grid; gap: calc(20px + var(--sy) / 3); }
+@media (min-width: 1024px) { .faq-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: center; } }
+.faq { display: grid; gap: calc(8px + var(--sy) / 6); }
+.faq details { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
+.faq summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 18px;
+  font-weight: 600; cursor: pointer; list-style: none;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; flex: none; color: var(--primary); font-size: 1.2rem; font-weight: 600; line-height: 1; }
+.faq details[open] summary::after { content: "\2212"; }
+.faq details > p { padding: 0 18px 14px; color: var(--muted); font-size: .95rem; line-height: 1.6; }
+.cta-card { display: flex; flex-direction: column; justify-content: center; gap: 12px; background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+.alt .cta-card { background: var(--primary); }
+.cta-card h3 { font-size: clamp(1.4rem, 2.4vw, 1.75rem); }
+.cta-card p { opacity: .88; }
+.cta-card .cta { margin-top: 8px; }
+.cta-card .btn-primary { background: var(--primary-ink); color: var(--primary); }
+.cta-card .btn-ghost { background: transparent; color: inherit; border-color: color-mix(in srgb, var(--primary-ink) 45%, transparent); }
+.cta-card .btn-ghost:hover { border-color: var(--primary-ink); }
+@media (max-width: 560px) { .cta-card .btn-ghost { display: none; } }   /* phones: the popup is in the hero already; one button keeps the card short */
+
+/* Short phones (375×667): tighter spacing, only here, so each section still fits one screen */
+@media (max-width: 767px) and (max-height: 700px) {
+  main > section { padding-block: 16px; }
+  .section-head { margin-bottom: 12px; }
+  .feature, .info, .step { padding-block: 10px; }
+  .faq summary { padding: 10px 14px; }
+  .faq details > p { padding: 0 14px 12px; }
+}
+
+/* ---------- Feature guide (feature.html, body.doc): the index's one-screen sections, each a screen under the
+   header and the "On this page" bar. The hero is the index hero: the copy, and the popup mockup on this feature's tab. ---------- */
+.doc { --fnav-h: 52px; }
+.doc main > section:not(.hero) {
+  min-height: calc(100vh - var(--header-h) - var(--fnav-h)); min-height: calc(100svh - var(--header-h) - var(--fnav-h));
+  scroll-margin-top: calc(var(--header-h) + var(--fnav-h));
+}
+.crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 18px; font-size: .88rem; color: var(--muted); }
+.crumb a { color: var(--muted); font-weight: 500; text-decoration: none; }
+.crumb a:hover { color: var(--primary); }
+.fhero-tag { display: flex; align-items: center; gap: 12px; }
+@media (max-width: 767px) { .fhero .crumb { display: none; } }   /* phones: it only repeats the logo, the menu and the title */
+.fhero h1 { margin-top: 14px; font-size: clamp(1.9rem, 3.6vw, 2.6rem); letter-spacing: -.02em; }
+.facts { grid-template-columns: repeat(3, minmax(0, max-content)); }
+
+/* "On this page": the page's chapters, each its number over its name as in the eyebrows — the current one underlined,
+   the ones above it (read) with an orange number. Centred while they fit (equal widths need up to 1415px, so no);
+   where they don't, the bar scrolls sideways from the first one. Out of the page flow: it slides out from under the
+   header once the hero's bottom is above mid-screen (.on, feature.js), so it never sits as a band between the hero and 01. */
+.fnav {
+  position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 40; height: var(--fnav-h);
+  background: var(--bg); background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--border);
+  transform: translateY(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s;
+}
+.fnav.on { transform: none; visibility: visible; transition: transform .25s ease; }
+@media (prefers-reduced-motion: reduce) { .fnav, .fnav.on { transition: none; } }
+.fnav-inner { display: flex; justify-content: center; justify-content: safe center; gap: 4px; height: 100%; overflow-x: auto; scrollbar-width: none; }
+.fnav-inner::-webkit-scrollbar { display: none; }
+.fnav a {
+  position: relative; flex: none; display: grid; align-content: center; justify-items: center; gap: 1px; padding: 0 12px;
+  color: var(--muted); line-height: 1.3; text-decoration: none; white-space: nowrap; transition: color .15s;
+}
+.fnav-num { font-size: .68rem; font-weight: 700; letter-spacing: .1em; font-variant-numeric: tabular-nums; opacity: .75; }
+.fnav-label { font-size: .86rem; font-weight: 500; }
+.fnav a:hover, .fnav a[aria-current] { color: var(--text); }
+.fnav a.past .fnav-num, .fnav a[aria-current] .fnav-num { color: var(--accent); opacity: 1; }
+.fnav a[aria-current]::after { content: ""; position: absolute; inset: auto 12px -1px; height: 2px; border-radius: 2px; background: var(--accent-fill); }
+
+/* A list that would make its section taller than the screen keeps its first items; site.js marks the rest .trim,
+   and they wait behind the section's "Read more" (any width, unlike the index's phone-only .more) */
+.js .collapsible:not(.expanded) .trim { display: none; }
+.js .trimmed > .more-btn { display: inline-block; }
+
+/* Overview: one card per point (3 × 2, 2 × 3, one column) */
+.points { margin: 0; padding: 0; list-style: none; }
+.point, .note { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; align-content: center; gap: 14px; font-size: .95rem; line-height: 1.6; }
+.point::before {
+  content: ""; width: 12px; height: 6px; margin-top: .5em;
+  border-left: 2px solid var(--accent-fill); border-bottom: 2px solid var(--accent-fill); transform: rotate(-45deg);
+}
+/* Limits & tips: an "i" card per note, two or three to a row */
+.notes-grid { display: grid; gap: calc(16px + var(--sy) / 3); margin: 0; padding: 0; list-style: none; }
+@media (min-width: 768px) {
+  .notes-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .notes-grid[data-n="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.note { color: var(--muted); }
+.note::before {
+  content: "i"; width: 22px; height: 22px; border-radius: 50%; background: var(--primary-soft); color: var(--primary);
+  font: italic 700 .8rem/22px Georgia, serif; text-align: center;
+}
+@media (max-width: 767px) { .point, .note { padding: 12px 14px; } }
+
+/* Detail sections: the table, screenshots or code beside the points from 1024px; stacked below that */
+.fbody { display: grid; gap: calc(20px + var(--sy) / 3); align-items: start; }
+@media (min-width: 1024px) { .fbody.split { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: center; } }
+.fmedia { display: grid; gap: 16px; min-width: 0; }
+@media (min-width: 768px) { .checks.cols { display: block; columns: 2; column-gap: 32px; } .checks.cols li { break-inside: avoid; margin-bottom: 12px; } }
+
+/* Tables scroll sideways inside their own card on narrow screens, never the page */
+.table-wrap { overflow-x: auto; padding: 0; }
+.table-wrap:focus-visible { outline: 2px solid var(--accent-fill); outline-offset: 2px; }
+.table-wrap table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: .92rem; line-height: 1.5; }
+.table-wrap th, .table-wrap td { padding: 9px 14px; text-align: left; vertical-align: middle; }   /* middle: a row held at its taller language keeps its text centred */
+.table-wrap th { font-size: .74rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--border); }
+.table-wrap td { border-top: 1px solid var(--border); }
+.table-wrap tr:first-child td { border-top: 0; }
+.table-wrap td:first-child { min-width: 130px; font-weight: 600; }
+.table-wrap .num-first td:first-child { min-width: 0; width: 2.5rem; }
+/* Phones: a table of up to three columns is stacked — a block per row, the name first, each other cell under its
+   column's name — instead of scrolling sideways with its last column cut off. Wider tables still scroll. */
+.th-label { display: none; }
+@media (max-width: 599px) {
+  .table-wrap.stack table { min-width: 0; }
+  .table-wrap.stack thead { display: none; }   /* each cell carries its column's name instead */
+  .table-wrap.stack tr { display: grid; align-content: center; gap: 4px; padding: 10px 14px; }
+  .table-wrap.stack tbody tr + tr { border-top: 1px solid var(--border); }
+  .table-wrap.stack td { display: block; min-width: 0; padding: 0; border: 0; }
+  .table-wrap.stack .num-first tr { grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; }
+  .table-wrap.stack .num-first td:first-child { grid-row: span 2; width: auto; }
+  .th-label { display: inline; margin-right: .5em; font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+}
+.table-wrap code { white-space: nowrap; overflow-wrap: normal; }
+/* Code samples and screenshots are never cut, so they shrink (or scroll, for code) to leave room for the
+   section's title above them — 230px covers the title, a two-line lead and the section's padding */
+pre.code {
+  margin: 0; padding: 16px 18px; overflow: auto; max-height: calc(100svh - var(--header-h) - var(--fnav-h) - 230px);
+  background: #0f172a; color: #e2e8f0; border: 1px solid var(--border); border-radius: var(--radius);
+  font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+}
+pre.code code { padding: 0; background: none; font: inherit; }
+.shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }   /* side by side where they fit */
+.shot { display: grid; justify-items: center; align-content: center; margin: 0; padding: 10px; }
+.shot img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100svh - var(--header-h) - var(--fnav-h) - 260px); border-radius: 10px; }
+.shot figcaption { margin-top: 10px; font-size: .84rem; color: var(--muted); text-align: center; }
+
+/* More features: ten compact cards (icon | title, two to a row) beside the closing CTA, like the index's FAQ */
+.more-grid { display: grid; gap: calc(20px + var(--sy) / 3); }
+@media (min-width: 1024px) { .more-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: center; } }
+.cards.mini { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 420px) { .cards.mini { grid-template-columns: minmax(0, 1fr); } }
+.mini .feature { grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 10px 14px; }
+.mini .feature h3 { font-size: .95rem; }
+.mini .ic { width: 34px; height: 34px; }
+
+/* ---------- Footer ---------- */
+footer { padding: 28px 0; border-top: 1px solid var(--border); font-size: .9rem; color: var(--muted); }
+footer .container { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; }
+footer .brand { font-size: 1rem; }
+footer nav { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+footer a { color: var(--muted); text-decoration: none; font-weight: 500; }
+footer a:hover { color: var(--text); }
+
+/* ---------- Fade-in on scroll ---------- */
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.js .reveal.in { opacity: 1; transform: none; }
+
+/* ---------- Language / theme switch (View Transitions, started by animate() in site.js) ---------- */
+::view-transition { pointer-events: none; }   /* a click during the animation still reaches the page */
+html[data-vt="lang"]::view-transition-old(root), html[data-vt="lang"]::view-transition-new(root) { animation-duration: .5s; }
+html[data-vt="theme"]::view-transition-old(root),
+html[data-vt="theme"]::view-transition-new(root) { animation: none; mix-blend-mode: normal; }   /* the circle is animated by the script */
+html[data-vt="theme"] #theme-btn { view-transition-name: theme-btn; }   /* lets the script find the button in the snapshot */
+html[data-vt] body { transition: none; }   /* the snapshot already has the new colours */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .btn, .feature { transition: none; }
+}

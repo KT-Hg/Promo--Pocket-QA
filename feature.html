@@ -1,187 +1,231 @@
 <!DOCTYPE html>
 <!--
-  feature.html — Feature guide template, shared by every card in index.html's
-  #features grid (linked as feature.html?id=<key>). Everything inside <main> is
-  built by feature.js from its FEATURES table, so nav/footer/CSS live once
-  instead of being duplicated across eleven near-identical pages.
+  feature.html — The feature guide in the portfolio's look, bilingual EN/VI. Shared by every card on
+  index.html (feature.html?id=<key>); everything inside <main> is filled by feature.js from
+  features-en.js / features-vi.js.
 -->
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Feature — Pocket QA</title>
-  <meta name="description" content="A closer look at a Pocket QA feature." />
-  <!-- canonical, og:url/title/description are filled per feature by feature.js. -->
-  <link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/feature.html" />
-  <link rel="icon" type="image/png" href="vendor/icon128.png" />
-  <link rel="apple-touch-icon" href="vendor/icon128.png" />
-  <meta name="theme-color" content="#f7f8fb" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#050b16" media="(prefers-color-scheme: dark)" />
-  <meta property="og:type" content="article" />
-  <meta property="og:site_name" content="Pocket QA" />
-  <meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/feature.html" />
-  <meta property="og:title" content="Feature — Pocket QA" />
-  <meta property="og:description" content="A closer look at a Pocket QA feature." />
-  <meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <!-- Same pre-paint script as index.html — see the comment there. -->
-  <script>
-    (function (root) {
-      root.classList.add('js');
-      var theme = null;
-      try { theme = localStorage.getItem('demoPageTheme'); } catch (e) {}
-      if (!theme && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
-      if (theme) root.setAttribute('data-theme', theme);
-    })(document.documentElement);
-  </script>
-  <link rel="stylesheet" href="promo.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature — Pocket QA</title>
+<meta name="description" content="A closer look at a Pocket QA feature.">
+<!-- canonical, og:url/title/description are filled per feature by feature.js -->
+<link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/feature.html">
+<link rel="icon" type="image/png" href="vendor/icon128.png">
+<link rel="apple-touch-icon" href="vendor/icon128.png">
+<meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pocket QA">
+<meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/feature.html">
+<meta property="og:title" content="Feature — Pocket QA">
+<meta property="og:description" content="A closer look at a Pocket QA feature.">
+<meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap">
+<script>
+  // Same pre-paint script as index.html — see the comment there
+  (() => {
+    const d = document.documentElement;
+    const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+    d.classList.add('js');
+    d.lang = get('lang') || (/^vi\b/i.test(navigator.language || '') ? 'vi' : 'en');
+    d.dataset.theme = get('theme') || get('demoPageTheme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const en = document.title;
+    (window.syncTitle = () => { document.title = (d.lang === 'vi' && d.dataset.titleVi) || d.dataset.titleEn || en; })();
+  })();
+</script>
+<link rel="stylesheet" href="site.css?v=22a86f39">
 </head>
-<body>
+<body class="doc">
+<a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="vi">Bỏ qua tới nội dung</span></a>
 
-  <!-- ===== NAV ===== -->
-  <header class="nav">
-    <div class="container nav__inner">
-      <a class="nav__brand" href="index.html">
-        <img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" />
-        Pocket QA
-      </a>
-      <nav class="nav__links" aria-label="Primary">
-        <a class="nav__link" href="index.html#demo">Preview</a>
-        <a class="nav__link" href="index.html#features">Features</a>
-        <a class="nav__link" href="index.html#how">How it works</a>
-        <a class="nav__link" href="index.html#privacy">Privacy</a>
-      </nav>
-      <div class="nav__actions">
-        <button class="nav__theme" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light or dark theme">🌙</button>
-        <a class="btn btn--primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
-      </div>
+<header class="site-header">
+  <nav class="container nav" aria-label="Main">
+    <a class="brand" href="index.html"><img src="vendor/icon128.png" alt="" width="28" height="28">Pocket QA</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html#features"><span lang="en">Features</span><span lang="vi">Tính năng</span></a></li>
+      <li><a href="index.html#tools"><span lang="en">Tools</span><span lang="vi">Công cụ</span></a></li>
+      <li><a href="index.html#how"><span lang="en">How it works</span><span lang="vi">Cách dùng</span></a></li>
+      <li><a href="index.html#privacy"><span lang="en">Privacy</span><span lang="vi">Riêng tư</span></a></li>
+      <li><a href="index.html#permissions"><span lang="en">Permissions</span><span lang="vi">Quyền</span></a></li>
+      <li><a href="index.html#faq"><span lang="en">FAQ</span><span lang="vi">Hỏi đáp</span></a></li>
+      <li class="nav-cta"><a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener"><span lang="en">Add to Chrome</span><span lang="vi">Thêm vào Chrome</span></a></li>
+    </ul>
+    <div class="nav-tools">
+      <button class="icon-btn js-only" id="lang-btn" type="button" aria-label="Switch language / Đổi ngôn ngữ">
+        <span lang="en">VI</span><span lang="vi">EN</span>
+      </button>
+      <button class="icon-btn js-only" id="theme-btn" type="button" aria-label="Toggle dark mode / Đổi giao diện sáng tối">
+        <svg class="i i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+        <svg class="i i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <button class="icon-btn menu-btn js-only" id="menu-btn" type="button" aria-label="Menu" aria-controls="nav-links" aria-expanded="false">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
-  </header>
+  </nav>
+</header>
 
-  <main id="top">
-    <!-- ===== HERO ===== -->
-    <section class="fhero">
-      <div class="container">
-        <noscript><p>This feature guide needs JavaScript to load. <a href="index.html#features">Back to all features</a></p></noscript>
+<main id="main">
+  <!-- ================= HERO — the index hero's layout: the copy, and the real popup open on this feature's tab
+       (side by side from 1024px, one screen each below that). site.js fits the mockup as on the index. ================= -->
+  <section class="hero fhero" id="top">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <noscript><p>This feature guide needs JavaScript. <a href="index.html#features">Back to all features</a></p></noscript>
         <nav class="crumb" aria-label="Breadcrumb">
-          <a href="index.html">Home</a>
+          <a href="index.html">Pocket QA</a>
           <span aria-hidden="true">/</span>
-          <a href="index.html#features">Features</a>
+          <a href="index.html#features"><span lang="en">Features</span><span lang="vi">Tính năng</span></a>
           <span aria-hidden="true">/</span>
           <span id="crumbCurrent">…</span>
         </nav>
-        <div class="detail-hero">
-          <div class="detail-hero__icon" id="heroIcon" aria-hidden="true">⏺</div>
-          <div>
-            <span class="detail-hero__eyebrow" id="heroEyebrow">Feature</span>
-            <h1 class="detail-hero__title" id="heroTitle">…</h1>
-            <p class="detail-hero__lead" id="heroLead">…</p>
-            <div class="hero__meta fhero__facts" id="heroFacts"></div>
-          </div>
+        <div class="fhero-tag"><span class="ic" id="heroIcon"></span><span class="eyebrow" id="heroEyebrow"></span></div>
+        <h1 id="heroTitle">…</h1>
+        <p class="lead" id="heroLead"></p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span lang="en">Add to Chrome — free</span><span lang="vi">Thêm vào Chrome — miễn phí</span>
+          </a>
+          <a class="btn btn-ghost" href="#demo">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            <span lang="en">See the popup</span><span lang="vi">Xem popup</span>
+          </a>
         </div>
+        <ul class="stats facts" id="heroFacts"></ul>
       </div>
-    </section>
 
-    <!-- ===== ON THIS PAGE (links built by feature.js, one per section) ===== -->
-    <nav class="fnav" aria-label="On this page">
-      <div class="container fnav__inner" id="pageNav"></div>
-    </nav>
-
-    <!-- ===== OVERVIEW + LIVE POPUP ===== -->
-    <section class="section fsec" id="overview">
-      <div class="container">
-        <div class="detail-grid">
-          <div class="reveal">
-            <span class="section__eyebrow">Overview</span>
-            <h2 class="fsec__title">At a glance</h2>
-            <ul class="detail-points" id="detailPoints"></ul>
-          </div>
-          <div class="detail-preview reveal">
-            <p class="detail-preview__label">Live popup preview — <span id="previewTabLabel"></span></p>
-            <div class="detail-preview__frame-wrap">
-              <iframe class="detail-preview__frame" id="previewFrame" src=""
-                      title="Pocket QA — popup preview" loading="lazy"></iframe>
+      <div class="hero-demo" id="demo">
+        <div class="mockup">
+          <div class="browser">
+            <div class="browser-bar">
+              <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+              <div class="url">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm3 8H9V6a3 3 0 1 1 6 0z"/></svg>
+                app.example.com/login
+              </div>
+              <div class="toolbar">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h3.5v1.2a1.5 1.5 0 0 0 3 0V4H18a1 1 0 0 1 1 1v3.5h-1.2a1.5 1.5 0 0 0 0 3H19V15a1 1 0 0 1-1 1h-3.5v-1.2a1.5 1.5 0 0 0-3 0V16H8a1 1 0 0 1-1-1v-3.5H5.8a1.5 1.5 0 0 1 0-3H7V5a1 1 0 0 1 1-1z"/></svg>
+                <button class="ext-btn" id="extBtn" type="button" title="Pocket QA" aria-label="Open extension popup / Mở popup tiện ích">
+                  <img src="vendor/icon128.png" alt="">
+                </button>
+              </div>
             </div>
-            <div class="detail-preview__cta">
-              <a class="btn btn--ghost" href="index.html#demo">▶ Explore every tab</a>
-              <a class="preview-full" id="previewFullLink" href="popup-demo.html" target="_blank" rel="noopener">Open full-size preview ↗</a>
+            <div class="browser-view">
+              <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="popup-anchor">
+                <!-- src (this feature's tab, the page's theme) is set by feature.js. Not loading="lazy": a lazy frame
+                     didn't reload when the theme switch changed its src, so the screenshots never learned the new theme -->
+                <iframe class="popup-frame" id="popupFrame" title="Pocket QA — popup preview"></iframe>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ===== HOW TO USE IT ===== -->
-    <section class="section section--alt fsec" id="how-to">
-      <div class="container">
-        <span class="section__eyebrow">Step by step</span>
-        <h2 class="fsec__title">How to use it</h2>
-        <div class="steps fsteps" id="detailSteps"></div>
-      </div>
-    </section>
-
-    <!-- ===== DETAIL SECTIONS — one <section> per FEATURES[id].sections entry ===== -->
-    <div id="detailSections"></div>
-
-    <!-- ===== GOOD TO KNOW ===== -->
-    <section class="section fsec" id="notes">
-      <div class="container">
-        <span class="section__eyebrow">Limits &amp; tips</span>
-        <h2 class="fsec__title">Good to know</h2>
-        <ul class="detail-points fnotes" id="detailNotes"></ul>
-      </div>
-    </section>
-
-    <!-- ===== MORE FEATURES ===== -->
-    <section class="section section--alt fsec" id="more">
-      <div class="container">
-        <span class="section__eyebrow">Everything in one popup</span>
-        <h2 class="fsec__title">Explore other features</h2>
-        <div class="features" id="moreFeatures"></div>
-        <div class="detail-nav">
-          <a class="detail-nav__link" id="prevFeatureLink" href="index.html#features">← Previous feature</a>
-          <a class="detail-nav__link" id="nextFeatureLink" href="index.html#features">Next feature →</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ===== CTA ===== -->
-  <section class="section cta">
-    <div class="container">
-      <div class="cta__card">
-        <h2 class="cta__title">Stop repeating yourself</h2>
-        <p class="cta__sub">Record it once. Let Pocket QA handle the rest.</p>
-        <div class="cta__actions">
-          <a class="btn btn--primary btn--lg" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome — free</a>
-          <a class="btn btn--ghost btn--lg" href="index.html#demo">See the popup</a>
-        </div>
+        <p class="demo-note">
+          <span id="demoNote"></span>
+          <a class="preview-full" id="previewFullLink" href="popup-demo.html" target="_blank" rel="noopener"><span lang="en">Open full size ↗</span><span lang="vi">Xem cỡ thật ↗</span></a>
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <div class="container footer__inner">
-      <div class="footer__brand"><img class="nav__logo" src="vendor/icon128.png" alt="" aria-hidden="true" /> Pocket QA</div>
-      <nav class="footer__links" aria-label="Footer">
-        <a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">Add to Chrome</a>
-        <a href="index.html#features">Features</a>
-        <a href="index.html#how">How it works</a>
-        <a href="index.html#privacy">Privacy</a>
-      </nav>
-      <div>v<span id="extVersion">1.0.24</span> · Manifest V3 · Chrome 109+</div>
-    </div>
-  </footer>
+  <!-- ================= ON THIS PAGE — one link per numbered section, same label as its eyebrow (feature.js) ================= -->
+  <nav class="fnav" aria-label="On this page / Trên trang này">
+    <div class="container fnav-inner" id="pageNav"></div>
+  </nav>
 
-  <!-- ?v=<content hash> — same cache-busting demo.js already uses (see
-       sync-from-source.mjs). Without it, a returning visitor's browser can
-       keep running an old cached feature.js after an edit (e.g. it would
-       silently miss dark-mode image support), same failure mode as a stale
-       demo.js. Regenerate with: node stamp-feature-js.mjs -->
-  <script src="feature.js?v=2506203e"></script>
-  <script src="store-version.js"></script>
+  <!-- Every section below is one screen under the header and this bar. feature.js numbers the eyebrows, marks the
+       lists that may shorten ([data-fit]) and adds a "Read more" button; site.js keeps a list's first items when the
+       section would be taller than the screen and puts the rest behind that button. -->
+
+  <!-- ================= OVERVIEW: six points, six cards ================= -->
+  <section id="overview">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow"></span>
+        <h2 class="section-title"><span lang="en">At a glance</span><span lang="vi">Tóm tắt</span></h2>
+      </div>
+      <ul class="cards points" id="detailPoints"></ul>
+    </div>
+  </section>
+
+  <!-- ================= HOW TO USE IT ================= -->
+  <section id="how-to">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow"></span>
+        <h2 class="section-title"><span lang="en">Step by step</span><span lang="vi">Từng bước</span></h2>
+      </div>
+      <ol class="steps" id="detailSteps"></ol>
+    </div>
+  </section>
+
+  <!-- ================= DETAIL SECTIONS — replaced by one <section> per FEATURES_EN[id].sections entry ================= -->
+  <div id="detailSections"></div>
+
+  <!-- ================= GOOD TO KNOW ================= -->
+  <section id="notes">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow"></span>
+        <h2 class="section-title"><span lang="en">Limits &amp; tips</span><span lang="vi">Giới hạn &amp; mẹo</span></h2>
+      </div>
+      <ul class="notes-grid" id="detailNotes"></ul>
+    </div>
+  </section>
+
+  <!-- ================= MORE FEATURES + CTA, side by side like the index's FAQ ================= -->
+  <section id="more">
+    <div class="container collapsible">
+      <div class="section-head reveal">
+        <span class="eyebrow"></span>
+        <h2 class="section-title"><span lang="en">Explore other features</span><span lang="vi">Các tính năng khác</span></h2>
+      </div>
+      <div class="more-grid">
+        <div class="cards mini" id="moreFeatures"></div>
+        <aside class="card cta-card reveal">
+          <h3><span lang="en">Stop repeating&nbsp;yourself</span><span lang="vi">Không còn làm đi làm lại</span></h3>
+          <p><span lang="en">Record it once. Let Pocket&nbsp;QA handle the rest.</span><span lang="vi">Ghi lại một lần, phần còn lại để Pocket&nbsp;QA lo.</span></p>
+          <div class="cta">
+            <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              <span lang="en">Add to Chrome — free</span><span lang="vi">Thêm vào Chrome — miễn phí</span>
+            </a>
+            <a class="btn btn-ghost" href="index.html#demo">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+              <span lang="en">Explore every tab</span><span lang="vi">Xem mọi tab</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <a class="brand" href="index.html"><img src="vendor/icon128.png" alt="" width="28" height="28">Pocket QA</a>
+    <nav aria-label="Footer">
+      <a href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener"><span lang="en">Add to Chrome</span><span lang="vi">Thêm vào Chrome</span></a>
+      <a href="index.html#features"><span lang="en">Features</span><span lang="vi">Tính năng</span></a>
+      <a href="index.html#how"><span lang="en">How it works</span><span lang="vi">Cách dùng</span></a>
+      <a href="index.html#privacy"><span lang="en">Privacy</span><span lang="vi">Riêng tư</span></a>
+    </nav>
+    <span>v<span id="extVersion">1.0.24</span> · Manifest&nbsp;V3 · Chrome&nbsp;109+</span>
+  </div>
+</footer>
+
+<script src="features-en.js?v=18ee3099"></script>
+<script src="features-vi.js?v=a5bc992b"></script>
+<script src="feature.js?v=ede944ed"></script>
+<script src="site.js?v=d82b2e05"></script>
+<script src="store-version.js?v=f9330233"></script>
 </body>
 </html>
