@@ -42,13 +42,19 @@
   // Phones: the popup alone fills the screen width. Wider: browser + popup shrink to fit one screen
   // (never below 60%), leaving room for the caption in whichever language is longer.
   const hero = $('.hero'), demo = $('#demo'), mockup = $('.mockup'), note = $('.demo-note'), anchor = $('.popup-anchor');
-  const phone = matchMedia('(max-width: 560px)');
+  // The CSS breakpoints themselves, not innerWidth: that is rounded, and a 1023.8px window (125% / 130% scaling) is wide to it
+  const phone = matchMedia('(max-width: 560px)'), wideMq = matchMedia('(min-width: 1024px)');
   const px = (el, p) => parseFloat(getComputedStyle(el)[p]) || 0;
+  // One screen is the small viewport (browser bars shown), as the CSS's svh: a phone's innerHeight grows when its bars
+  // hide on scroll, and a section fitted to that is a bar's height too tall once they show again
+  const svh = document.body.appendChild(document.createElement('div'));
+  svh.style.cssText = 'position: fixed; top: 0; height: 100vh; height: 100svh; visibility: hidden; pointer-events: none';
+  const screenH = () => svh.offsetHeight;
   const fitMockup = () => {
     if (!mockup) return;
     mockup.removeAttribute('style'); anchor.removeAttribute('style');
-    const browser = mockup.firstElementChild, wide = innerWidth >= 1024, box = wide ? hero : demo;
-    const room = () => innerHeight - (wide ? 0 : $('.site-header').offsetHeight) - px(box, 'paddingTop') - px(box, 'paddingBottom')
+    const browser = mockup.firstElementChild, wide = wideMq.matches, box = wide ? hero : demo;
+    const room = () => screenH() - (wide ? 0 : $('.site-header').offsetHeight) - px(box, 'paddingTop') - px(box, 'paddingBottom')
       - larger([note], e => e.offsetHeight)[0] - px(note, 'marginTop');
     if (phone.matches) {
       const bar = browser.offsetHeight - anchor.parentElement.offsetHeight;
@@ -74,7 +80,7 @@
   const sections = [...$$('main > section')];
   const labelled = [...$$('.brand, #lang-btn, .nav-links a, .btn, .stats li, .more-btn, .fnav a, .crumb a')];
   const rows = [...$$('.card:not(.table-wrap), .table-wrap tr, .perm, .faq summary, .faq details > p, .section-head, .hero-copy, ' +
-    '.demo-note, footer, .checks > li, .stats li')];
+    '.demo-note, footer, .checks > li, .stats li, .btn')];   // .btn: two lines in one language on a 344px phone
   const hold = (e, h) => e.style[e.tagName === 'TR' ? 'height' : 'minHeight'] = h ? h + 'px' : '';
   // A row holding rows (the hero copy and its stats, the permissions card and its lines) is measured again once
   // they are held: a stat taller in Vietnamese and a title longer in English would otherwise add up past it
@@ -94,22 +100,25 @@
   const bottom = e => e.getBoundingClientRect().bottom;
   const trim = () => {
     let cut = false;
-    const room = innerHeight - $('.site-header').offsetHeight - (fnav ? fnav.offsetHeight : 0);
+    const room = screenH() - $('.site-header').offsetHeight - (fnav ? fnav.offsetHeight : 0);
     fitting.forEach(([sec, box, groups]) => {
       if (box.classList.contains('expanded')) return;
       const max = room - px(sec, 'paddingTop') - px(sec, 'paddingBottom') - px(sec, 'borderTopWidth') - px(sec, 'borderBottomWidth') + .5;
-      const col = sec.querySelector('.fmedia'), mine = media.filter(m => sec.contains(m)), lead = sec.querySelector('.section-sub');
+      const col = sec.querySelector('.fmedia'), mine = media.filter(m => sec.contains(m));
+      const spare = [sec.querySelector('.section-sub'), ...(col ? [...sec.querySelectorAll('.fbody > .checks > li')].reverse() : [])].filter(Boolean);
       for (let over; (over = box.getBoundingClientRect().height - max) > 0;) {
         // Whatever reaches lowest (the taller column, or the last block) gives way: the screenshots or code shrink
         // by what is over, or a list gives up its last items — a whole grid row at a time, so no card is ever
-        // left alone in its row. Last of all, the lead sentence under the title waits behind "Read more" too.
+        // left alone in its row. Last of all, the lead sentence under the title waits behind "Read more" too, then
+        // the points beside a screenshot, table or code (a short phone: 375×667)
         const lists = groups.filter(g => shown(g).length - step(g) >= +g.dataset.fit);
         const tall = mine.filter(m => m.getBoundingClientRect().height > floor(m) + 1);
         const lowest = [...(tall.length ? [col] : []), ...lists].sort((a, b) => bottom(b) - bottom(a))[0] ||
-          (lead && !lead.classList.contains('trim') && lead);
+          spare.find(e => !e.classList.contains('trim'));
         if (!lowest) break;
-        if (lowest === lead) { lead.classList.add('trim'); box.classList.add('trimmed'); }
-        else if (lowest === col) tall.forEach(m => m.style.maxHeight = Math.max(floor(m), m.getBoundingClientRect().height - over) + 'px');
+        if (spare.includes(lowest)) { lowest.classList.add('trim'); box.classList.add('trimmed'); }
+        // Whole pixels: a section over by 0.00001px shrank its screenshot by less than layout can show, forever (1366×605)
+        else if (lowest === col) tall.forEach(m => m.style.maxHeight = Math.max(floor(m), m.getBoundingClientRect().height - Math.ceil(over)) + 'px');
         else {
           shown(lowest).slice(-step(lowest)).forEach(c => c.classList.add('trim'));
           box.classList.add('trimmed');   // shows the button, which takes room too
@@ -151,7 +160,11 @@
   const queueEven = () => { if (!evenQueued) { evenQueued = true; requestAnimationFrame(() => { evenQueued = false; evenOut(); }); } };
   evenOut();
   document.fonts.ready.then(evenOut);
-  addEventListener('resize', queueEven);
+  // A phone's bars showing or hiding on scroll resize the window, not the small viewport (screenH): nothing to fit again
+  let fittedTo = innerWidth + '×' + screenH();
+  addEventListener('resize', () => { const to = innerWidth + '×' + screenH(); if (to !== fittedTo) { fittedTo = to; queueEven(); } });
+  // A screenshot has no size until it loads (and again when the theme swaps it), so its section is fitted again then
+  media.forEach(m => m.tagName === 'IMG' && m.addEventListener('load', queueEven));
   $('#lang-btn').addEventListener('click', () => animate('lang', () => { noAnchor(); d.lang = d.lang === 'vi' ? 'en' : 'vi'; save('lang', d.lang); syncTitle(); }));
   $('#theme-btn').addEventListener('click', () => animate('theme', () => {
     d.dataset.theme = d.dataset.theme === 'dark' ? 'light' : 'dark'; save('theme', d.dataset.theme);

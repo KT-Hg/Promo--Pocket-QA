@@ -16,11 +16,13 @@
   // tags only, never inside one
   const hyphenated = /(?<![\p{L}\p{N}–-])[\p{L}\p{N}]+(?:[–-][\p{L}\p{N}]+)+(?![\p{L}\p{N}–-])/gu;
   // …and the last two words stay together, so no last line holds a single word (`pretty` and `balance` alone
-  // still left some in narrow table cells and stat labels)
+  // still left some in narrow table cells and stat labels). Unless the text already ends on an &nbsp;: gluing one
+  // more word on made chunks too wide for a phone ("CSV data-driven runs" in a 121px card title)
   const typeset = html => {
     const parts = html.split(/(<[^>]+>)/);
     for (let i = parts.length - 1; i >= 0; i -= 2) {   // text parts sit at even indexes
       const at = parts[i].lastIndexOf(' ');
+      if (parts[i].lastIndexOf('&nbsp;') > at) break;
       if (at !== -1) { parts[i] = parts[i].slice(0, at) + '&nbsp;' + parts[i].slice(at + 1); break; }
     }
     return parts.map((s, i) => i % 2 ? s : s.replace(hyphenated, '<span class="nw">$&</span>')).join('');
@@ -67,12 +69,12 @@
 
   // Overview: one card per point, steps, notes
   const vp = V.points || [];
-  const points = fit($('#detailPoints'), 2);
+  const points = fit($('#detailPoints'), 1);
   E.points.forEach((p, i) => points.appendChild(el('li', 'card point reveal', pair(p, vp[i]))));
   const vs = V.steps || [], steps = fit($('#detailSteps'), 2);
   E.steps.forEach((s, i) => steps.appendChild(el('li', 'card step reveal',
     `<span class="step-num">${i + 1}</span><h3>${pair(s[0], (vs[i] || [])[0])}</h3><p>${pair(s[1], (vs[i] || [])[1])}</p>`)));
-  const notes = fit($('#detailNotes'), 2), vn = V.notes || [];
+  const notes = fit($('#detailNotes'), 1), vn = V.notes || [];
   notes.dataset.n = E.notes.length;
   E.notes.forEach((h, i) => notes.appendChild(el('li', 'card note reveal', pair(h, vn[i]))));
 
@@ -140,7 +142,7 @@
   document.querySelectorAll('main > section:not(.fhero)').forEach((s, i) => s.classList.toggle('alt', i % 2 === 1));
 
   // Other features (the previous and next ones are among them)
-  const more = fit($('#moreFeatures'), 2);
+  const more = fit($('#moreFeatures'), 1);
   ORDER.filter(k => k !== id).forEach(k => {
     const a = more.appendChild(el('a', 'card feature reveal', `<span class="ic">${icon(EN[k].icon)}</span><h3>${pair(EN[k].title, (VI[k] || {}).title)}</h3>`));
     a.href = 'feature.html?id=' + k;
