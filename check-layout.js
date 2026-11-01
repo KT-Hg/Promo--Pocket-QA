@@ -49,7 +49,7 @@ window.checkLayout = async () => {
   document.querySelectorAll('main > section').forEach(s => {
     if (s.querySelector('.collapsible.expanded')) return;
     const hero = s.classList.contains('hero');
-    const units = hero && innerWidth < 1024 ? [...s.querySelectorAll('.hero-copy, .hero-demo')] : [s];
+    const units = hero && !matchMedia('(min-width: 1024px)').matches ? [...s.querySelectorAll('.hero-copy, .hero-demo')] : [s];
     units.forEach(u => {
       const h = u.getBoundingClientRect().height, max = u === s && hero ? innerHeight : innerHeight - header - (hero ? 0 : bar);
       if (h > max + 1) overflow.push(name(u) + ' ' + Math.round(h) + ' > ' + Math.round(max));

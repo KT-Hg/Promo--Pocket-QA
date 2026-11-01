@@ -535,7 +535,7 @@ var FEATURES_EN = {
     title: 'Code export in five formats',
     summary: 'Turn any scenario into a JS bookmarklet, Selenium Python or pytest, Playwright Test, Robot Framework or Selenium Java test.',
     lead: 'Turn any recorded scenario into real, runnable test code — five formats, generated fresh from the scenario’s current steps, with nothing dropped silently.',
-    facts: [['5', 'output formats'], ['8', 'fallback locators per step'], ['4', 'environment overrides']],
+    facts: [['5', 'output formats'], ['8', 'fallback locators per step'], ['4', 'overrides via env vars']],
     tab: 'tabData',
     tabLabel: 'Data tab',
     points: [
