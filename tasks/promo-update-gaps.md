@@ -269,6 +269,120 @@ Ghi chú bên lề: help card `exportCode` của extension ghi Robot / Java "no 
 
 91 dòng; 54 cần làm.
 
+## Gap matrix — 3 trang tool (Task 4)
+
+Viết tắt thêm: `st:N` = `Pocket QA/sqltest.html:N` · `sq:key` = khoá trong `sqlcases/i18n/en.js` · `dt:N` =
+`Pocket QA/dbtest.html:N` · `help:430` = help card `dbtools`, `help:395` = `apicases` · **thấy** = đã bấm thử trên
+`sqltest.html` thật (preview `ext-static`, cổng 8384) ngày 2026-11-02: query mẫu "Report query", Analyze (67 case),
+4 tab rail, Diagram, Compare mode (16 Impacted · 39 Unrelated · 20 No longer applies), 4 tab insight.
+
+Phát hành: SQL và DB sau `060fcf0` chỉ đổi vỏ (`tool-base`, cột trái thu gọn, đổi tên file) → mọi dòng tính năng
+là `released` trừ dòng ghi **1.0.28**. API Tests toàn bộ là **1.0.28**.
+
+### sql-test-designer — *SQL Test Case Designer*
+
+| # | Khả năng | Nguồn | Promo | Ưu tiên · đề xuất |
+|---|---|---|---|---|
+| 1 | SELECT / INSERT / UPDATE / DELETE, quote kiểu MySQL / SQL Server / ANSI, tham số `?` `:name` `@name` `$1` | R:524 | ok fe:689, fe:698 | — |
+| 2 | 4 kỹ thuật (EP+BVA, Decision Table, NULL/3VL, JOIN/GROUP/ORDER-LIMIT) | R:546, st help | ok fe:704–713 | — |
+| 3 | **Decision table 3 bậc**: đủ 2ⁿ tới N điều kiện (tuỳ chọn *Full decision table up to*, mặc định 4) → **Pairwise** tới 8 → MC/DC | st:93–101 (`sq:ui.mcdcHint`), `decision-table.js:166–173` | **sai** fe:691, fe:710 (bỏ qua Pairwise) | **P1** · sửa 2 câu, nói có tuỳ chọn |
+| 4 | **CTE được phân tích riêng** (case có tiền tố `CTE · tên ·`); chỉ subquery lồng mới chỉ được báo | `sq:find.cteOne`, `generate.js:237–248` | **sai** fe:763 ("CTEs and subqueries are flagged") | **P1** · sửa note |
+| 5 | Tên 3 nhóm của Compare: **Impacted / Unrelated / No longer applies** | st:177–185 | **sai** fe:729 ("Changed, Unrelated or Stale") | **P1** · dùng đúng tên UI |
+| 6 | Pane Techniques: bật/tắt từng kỹ thuật, số case mỗi kỹ thuật (`4/4 on · 67 cases`), tuỳ chọn tách cả điều kiện trong `ON` | st:88–106, **thấy** | none | P2 · ý trong *Techniques* |
+| 7 | 6 query mẫu (Examples…): report, bẫy NULL, WHERE nhiều điều kiện, CASE, UPDATE, INSERT | st:72, `sqlcases/ui/examples.js` | none | P2 · bước *Paste a query* |
+| 8 | **Diagram** (tab Schema → Diagram): dialog *Table relationships*, đếm bảng · link, hộp bảng có PK/FK, đường nối kiểu crow's foot, kéo hộp, kéo nền để pan, cuộn để zoom, − / + / Fit, hover để làm nổi những gì bảng chạm tới; báo rõ khi không có link | st:121–127, st:430–437, `sq:dg.diagram*`, `diagram.js`, **thấy** | thin fe:728 (1 dòng; bị giấu ở 375) | **P2 (ví dụ của người dùng)** · section mới *Schema & diagram* + ảnh |
+| 9 | Pane Schema: cột, kiểu, PK, FK → bảng đích, NOT NULL, id "added" khi bảng không có khoá, cột không rõ thuộc bảng nào | `sq:dg.pk`…`sq:dg.note.*`, **thấy** | thin fe:743 | P2 · cùng section |
+| 10 | Compare: diff theo 12 mặt (bảng, join, ON, WHERE, HAVING, GROUP BY, aggregate, ORDER BY, LIMIT/OFFSET, SELECT list, CASE, cột được ghi) + "logic AND/OR/NOT đổi dạng" + "đổi loại câu lệnh"; danh sách case *No longer applicable* | `sq:diff.*`, st:69–85, st:203–215, **thấy** | thin fe:729, bị giấu ở 1280 | P2 · section mới *Compare before/after* + ảnh |
+| 11 | Findings: 15 loại — comma join, JOIN không ON, NATURAL, WHERE trên bảng outer-join, `= NULL`, `NOT IN` subquery, LIMIT không ORDER BY, khoá phân trang, DML không WHERE, aggregate bị join nhân bản, không suy được kiểu, chia cho 0 / NULL literal, CTE, subquery; báo tham số đã/chưa gán | `sq:find.*` | thin fe:693 (3 ví dụ) | P2 · section mới *Findings & coverage* |
+| 12 | Coverage: theo mệnh đề — đủ bảng *8 of 8 combinations*, condition / decision coverage %, danh sách điều kiện | st:200, **thấy** | thin (chỉ trong JSON fe:755) | P2 · cùng section + ảnh |
+| 13 | *What was parsed*: loại câu lệnh, bảng, điều kiện đánh số kèm kiểu suy ra, join, result shape | st:206, **thấy** | none | P2 · cùng section |
+| 14 | Panel đóng sẵn, dòng tóm tắt có số; Findings tự mở khi query có lỗi | R:533–544 | none | P3 |
+| 15 | Stat row 5 số | st:146–151 | ok fe:730, **hidden** | P2 · *Case list & inspector* |
+| 16 | Tìm, lọc (ưu tiên, mệnh đề, bảng/cột, có dữ liệu mẫu), Full / Dense, cột kỹ thuật có mã (EP, BVA, Decision Table, MC/DC, Pairwise, Branch Coverage, NULL/3VL, Structure) | st:229–276, `sq:tech.code.*` | ok fe:731, **hidden** | P2 · cùng section |
+| 17 | Case trùng dữ liệu được gộp ("Also matches: …") | `sq:case.mergedNote` | none | P3 |
+| 18 | Inspector: vì sao case quan trọng, dòng cần chuẩn bị (ô đang test tô sáng), yêu cầu không biểu diễn được bằng dòng, query + kết quả mong đợi | `sq:dg.rationale`…`sq:dg.requirements` | ok fe:732, fe:740–742 | — |
+| 19 | Sample values: tham số + giá trị mẫu cột, phạm vi ảnh hưởng (`66 cells`, "not used by any case"), ↺ từng giá trị, Reset all, báo giá trị sai kiểu, nhớ qua phiên | st:109–115, R:581–608, **thấy** | ok fe:744–745, thin phần phạm vi / reset | P3 · 1 ý |
+| 20 | Export: CSV, JSON, **Copy JSON to clipboard**, Data CSV, Verify SQL | st:155–164 | ok fe:749–757 (thiếu Copy JSON) | P3 |
+| 21 | Help *How the cases are derived* | st:306–430 | none | P3 · notes |
+| 22 | Mặc định tiếng Việt, EN qua 🌐, sinh case theo ngôn ngữ đang dùng | R:529 | ok fe:766 | — |
+| 23 | Cột trái thu gọn (☰ / ⟨ / *Query ›*), giao diện chung `tool-base` | st:32, st:61, st:302, `9d25060` | none · **1.0.28** | Task 17 |
+
+**Section đề xuất** (4 → 7, trong trần 8 của plan)
+- *Techniques* — giữ bảng, sửa hàng Decision table (#3); thêm #6.
+- **mới** *Schema & diagram* / *Lược đồ & sơ đồ quan hệ* — ảnh: dialog Diagram (shot đầu của Task 5). Ý: #8, #9, "sai thì thấy ngay trước khi gõ dữ liệu".
+- **mới** *Compare before/after* / *So sánh trước/sau* — ảnh: thanh triage + tab *Changes detected*. Ý: #5, #10.
+- *Case list & inspector* / *Danh sách case & inspector* — tách từ *Inside the analysis screen*, giữ ảnh workspace. Ý: #15, #16, #18, #17.
+- **mới** *Findings, coverage & what was parsed* / *Cảnh báo, độ phủ & kết quả phân tích* — ảnh: tab Coverage. Ý: #11, #12, #13, #14.
+- *Test data & sample values* — giữ, thêm #19.
+- *Export* — thêm Copy JSON.
+- Notes: sửa #4; thêm #7, #21.
+
+### db-test-session — *DB Test Session & Rollback*
+
+| # | Khả năng | Nguồn | Promo | Ưu tiên · đề xuất |
+|---|---|---|---|---|
+| 1 | Panel góc dưới phải, ▶ Start session, công tắc ở thẻ Data | help:430, R:765 | ok fe:778, fe:786 | — |
+| 2 | Các kiểu ghi được ghi lại (form, Save and continue, xoá, sửa ô grid, tick rồi Delete / Edit / Clone, xoá cả kết quả, UPDATE / DELETE / INSERT ở trang SQL) | help:430, R:815 | ok fe:820–834, **hidden** 4 | P2 · gọn bảng |
+| 3 | ↺ Roll back all, ↺ Undo last (Alt+Shift+Z), preview mỗi dòng một thay đổi (gom theo bảng khi > 12) rồi SQL | R:780–788 | ok fe:780, fe:793–801 | — |
+| 4 | Step by step / Merged | R:800 | ok fe:812 | — |
+| 5 | Drift: bảng cột / đã ghi / hiện tại, *Skip these rows* / *Overwrite anyway*; chỉ so cột mình đã ghi | R:880–886 | ok fe:781, fe:842 | — |
+| 6 | ↷ Re-apply; bỏ qua câu lệnh gõ tay ở trang SQL, có lý do | help:430, R:789–795 | thin fe:782 | P3 |
+| 7 | **■ End / ↻ Resume / ▶ New session**; bấm tên session → mọi session của database đó, có ô lọc khi > 6, Enter để resume; mỗi database chỉ một session ghi | help:430, R:796–799 | none | P2 · section mới *Sessions over time* |
+| 8 | Panel: badge ⚠ n khi đóng, mỗi dòng log có giờ, bấm dòng *Recorded* mở diff ở trang quản lý, dòng trạng thái tự mờ sau ~8 s, ⇤ chuyển góc | R:769–776 | thin fe:811, fe:813 | P3 · cùng section |
+| 9 | **Copy undo SQL** để tự chạy | help:430 | none | P2 · *Safe by design* |
+| 10 | Trang quản lý: ↺ / ↷ từng thay đổi, tick nhiều, nút nói đúng việc sẽ làm (*Roll back all 12*, *Roll back 3 selected*, *Run 3 again*), Export `.sql` / `.json`, Rename, Delete, **Clean up…** session đã kết thúc | dt:38–62, R:800–808 | ok fe:814–816, thiếu Rename / Delete / Clean up | P3 |
+| 11 | **Settings**: bật tích hợp, cho extension tự chạy undo SQL, bật/tắt drift check, Merged làm mặc định, đọc dòng trước câu lệnh gõ tay, trần số dòng (200), trần quét khoá INSERT (10 000), ép engine (mysql / pgsql / mssql / sqlite / oracle), dung lượng đang dùng | dt:84–103 (trừ phần bị ẩn, xem #16) | none | P2 · section mới *Settings & limits* + ảnh |
+| 12 | Từ chối: bảng không khoá, ghi 2 bảng, không WHERE, cột BLOB / file, vượt trần, CSV import trong grid, INSERT không phân biệt được (> trần quét); DDL không được ghi | R:861–872, help:430 | ok fe:843 (thiếu BLOB, CSV import, DDL, trần quét) | P2 · bổ sung 1 ý |
+| 13 | `ON UPDATE CURRENT_TIMESTAMP`, `ON DELETE CASCADE`, "found by difference" | R:874–878 | ok fe:852–853 | — |
+| 14 | Chạy rollback từ tab Adminer; *Open Adminer* | R:808–811 | ok fe:845 | — |
+| 15 | Chỉ lưu local, khoá theo origin + driver + server + database | R:890 | ok fe:846, fe:854 | — |
+| 16 | Snapshot, backup table, bảo vệ database khi Playback — **có code nhưng đang ẩn** (`TABLE_COPIES = false`) | `dbtools/features.js:14`, `manager/actions.js:366–367` | không nhắc (đúng) | — · tiếp tục không nhắc |
+| 17 | Cột trái thu gọn, `tool-base`, `dbtools.html → dbtest.html` | `9d25060`, `d26264d` | none · **1.0.28** | Task 17 |
+
+**Section đề xuất**
+- *Inside a test session* — giữ 2 ảnh, rút còn 4 ý (chuyển phần re-apply / export sang section khác).
+- **mới** *Sessions over time* / *Phiên qua nhiều lần chạy* — ảnh: panel với danh sách session mở từ tên. Ý: #7, #6, #8.
+- *What it records* — gọn bảng; thêm DDL / BLOB / CSV import (#12).
+- *Safe by design* — thêm #9.
+- **mới** *Settings & limits* / *Cài đặt & giới hạn* — ảnh: dialog Settings (không có phần đang ẩn). Ý: #11, các engine hỗ trợ.
+
+### api-tests — trang mới, toàn bộ **1.0.28** (Task 15)
+
+Giao diện `apitest.html` chỉ có tiếng Anh (0 `data-i18n`) → trang VI ghi rõ nhãn UI giữ tiếng Anh, như popup.
+
+| # | Khả năng | Nguồn | Section đề xuất |
+|---|---|---|---|
+| 1 | Trang riêng mở từ Data → API Tests → *Manage API tests*; folder + request, giữ qua các lần mở | ph:834–842, R:658 | lead + At a glance |
+| 2 | Gửi: đủ method (cả OPTIONS), body JSON / Form / Plain text / None, response nhị phân, Copy cURL; Paste cURL từ DevTools (bỏ header Cookie) | help:395, R:663–668, `02497bb` `d8e799e` | *Send & read the response* |
+| 3 | Không vướng CORS (gửi từ trang extension), cookie của trình duyệt đi kèm (tắt trong tab Settings), timeout | help:395 | cùng section |
+| 4 | Checks: status (`201`, `2xx`, `200,201`, `not5xx`), JSON path (equals / contains / exists / not exists / > / <), header, body, time; bấm key trong JSON để thêm check; mặc định phải 2xx; giá trị mong đợi dùng được `${var}` | R:684–694 | *Checks & the verdict* + ảnh |
+| 5 | Verdict Passed / Failed / Broken, cùng luật với popup | R:696–700 | cùng section |
+| 6 | Biến: từ Data tab rồi từ environment (environment thắng); quản lý environment ở top bar | R:702–704 | *Environments, saved values & auth* + ảnh |
+| 7 | Save values: JSON path / header / status / body hoặc một phần (Extract như Read DOM) → environment đang dùng | R:705–707 | cùng section |
+| 8 | Auth: None / Bearer / Basic / API key (header hoặc query) đặt trên folder rồi kế thừa, hoặc trên request; header cùng tên thắng | R:708–709 | cùng section |
+| 9 | Bảng Headers có gợi ý tên / giá trị; gợi ý `${` | `487061e` `b0726a4` `dba535d` | cùng section (P3) |
+| 10 | Run folder / Run all / *Run N shown* / Run selected / ▶ một hàng; lần lượt từng request; hỏi trước khi chạy POST/PUT/PATCH/DELETE và nêu host; ⏹ Stop | R:712–716 | *Running many* + ảnh |
+| 11 | Mỗi request giữ kết quả cuối (verdict, status, time, URL đã che secret, 2 KB body đã che), lọc list theo kết quả; *Export ▾ → Results* ra CSV | R:716–719 | cùng section |
+| 12 | Export Postman Collection v2.1: `${x}` → `{{x}}`, check → `pm.test`, saved value → `pm.environment.set`, có check 2xx mặc định và timeout; dòng `// pocket-qa:` để import ngược lại nguyên vẹn; secret để trống trừ khi tick *Include secret values* | R:722–728 | *Postman & CI* |
+| 13 | Import collection v2.0 / v2.1 hoặc environment (≤ 5 MB): xem trước host và những gì bị bỏ; folder lồng → `Parent / Child`; auth của folder; biến collection → environment; không bao giờ chạy script Postman; GraphQL → JSON body; từ chối v1 | R:729–734 | cùng section |
+| 14 | Chạy trong CI bằng Newman (`npx newman run … --env-var baseUrl=…`) | R:676–680 | cùng section (code mẫu) |
+| 15 | Giới hạn của trình duyệt: không đặt được Cookie / Origin / Host / Referer / User-Agent; non-GET mang `Origin: chrome-extension://…`; `Set-Cookie` là thật; không tắt SSL, không client cert, không proxy, luôn theo redirect; time chỉ có tổng, size là byte đã giải nén; Backup chứa token | help:395, R:735–745 | notes *Limits of a browser* |
+| 16 | Ảnh hưởng tới trang chủ: Privacy "One request out" sai khi phát hành | `index.html:368` | Task 16 |
+
+### Tổng kết Task 4
+
+| | Dòng | P1 | P2 | P3 | Đủ / không nhắc | 1.0.28 |
+|---|---:|---:|---:|---:|---:|---:|
+| sql-test-designer | 23 | 3 | 10 | 5 | 4 | 1 |
+| db-test-session | 17 | 0 | 5 | 3 | 8 | 1 |
+| api-tests | 16 | — | — | — | — | 16 |
+
+- **3 lỗi P1 trên trang SQL đều có từ trước 1.0.25** — promo viết theo README extension, mà README cũng chưa nói Pairwise
+  và vẫn ghi "CTEs … flagged" (R:647). README extension lỗi thời ở 2 chỗ này (việc của repo extension).
+- Section mới: SQL 3 · DB 2 · API 5 (trang mới) — ảnh mới: SQL 3 · DB 2 · API 4.
+- Cộng Task 3: **15 section mới + trang API, ~19 ảnh mới cho đợt A, ~6 ảnh cho đợt B** (4 của API + 2 ảnh toàn
+  trang SQL / DB chụp lại ở Task 17).
+
 Section mới đề xuất: recording 2 · playback 2 · run-results 1 · variables 1 · screenshots 2 · highlights 2 = **10 section,
 mỗi section một ảnh thật**. Ảnh thêm vào section có sẵn: playback (Now Playing), run-results (Bug report), csv, variables
 (block Switch, dùng chung với recording), settings (Backup) = 4 ảnh mới. Tổng **~14 ảnh mới** cho trang popup ở đợt A.

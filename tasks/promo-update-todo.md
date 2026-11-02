@@ -109,13 +109,18 @@ kéo/pan/zoom/Fit, hover để xem bảng liên quan, trường hợp không có
 Changed/Unrelated/Stale), "What was parsed", hints, tùy chọn giới hạn decision table + join conditions, query mẫu.
 
 **Acceptance criteria:**
-- [ ] 3 bảng; mỗi panel/tab/dialog của 3 trang tool có ít nhất một dòng.
-- [ ] Mỗi dòng đánh dấu `released` / `1.0.28`.
-- [ ] Danh sách section đề xuất cho mỗi trang (như Task 3).
+- [x] 3 bảng (SQL 23 · DB 17 · API 16 dòng); mỗi panel/tab/dialog của 3 trang tool có ít nhất một dòng.
+- [x] Mỗi dòng đánh dấu `released` / `1.0.28` (SQL/DB sau 1.0.27 chỉ đổi vỏ; API toàn bộ 1.0.28).
+- [x] Danh sách section đề xuất cho mỗi trang (SQL 4 → 7, DB +2, API 5).
 
 **Verification:**
-- [ ] Mở `sqltest.html` thật, bấm qua từng tab rail + insight tab, đối chiếu với bảng
-- [ ] Mọi `data-i18n` khác nhau trong `sqltest.html` thuộc về ít nhất một dòng
+- [x] Mở `sqltest.html` thật (preview `ext-static` mới thêm vào `.claude/launch.json`), bấm qua 4 tab rail, Diagram,
+  Compare mode và 4 tab insight — tìm ra lỗi tên 3 nhóm Compare (#5) mà README không cho thấy
+- [x] Mọi `data-i18n` khác nhau trong `sqltest.html` (liệt kê bằng script, 81 khoá) thuộc về ít nhất một dòng, trừ
+  khoá vỏ trang (tiêu đề, phụ đề, nút theme, 3 bước của màn hình trống)
+
+**Phát hiện thêm:** 3 lỗi P1 của trang SQL (Pairwise, CTE, tên nhóm Compare) có từ trước 1.0.25 — 2 trong số đó do README
+extension lỗi thời (R:551, R:647).
 
 **Dependencies:** Task 2
 

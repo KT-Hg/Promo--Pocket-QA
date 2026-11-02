@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8383"],
       "port": 8383
+    },
+    {
+      "name": "ext-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8384", "--directory", "../Pocket QA"],
+      "port": 8384
     }
   ]
 }
