@@ -78,7 +78,7 @@
   // one; and each section the height of its taller language. A table is held row by row (a <tr> takes
   // height, not min-height), so it can still give up rows below.
   const sections = [...$$('main > section')];
-  const labelled = [...$$('.brand, #lang-btn, .nav-links a, .btn, .stats li, .more-btn, .fnav a, .crumb a')];
+  const labelled = [...$$('.brand, #lang-btn, .nav-links a, .btn, .stats li, .more-btn, .crumb a')];
   const rows = [...$$('.card:not(.table-wrap), .table-wrap tr, .perm, .faq summary, .faq details > p, .section-head, .hero-copy, ' +
     '.demo-note, footer, .checks > li, .stats li, .btn')];   // .btn: two lines in one language on a 344px phone
   const hold = (e, h) => e.style[e.tagName === 'TR' ? 'height' : 'minHeight'] = h ? h + 'px' : '';
@@ -90,7 +90,6 @@
   // Feature pages: a section still taller than the screen keeps the first items of its lists ([data-fit] = how
   // many always stay) and puts the rest behind its "Show the rest". Trimmed in one language, then in the other, so
   // the same items show in both.
-  const fnav = $('.fnav');
   const fitting = sections.map(s => [s, s.querySelector('.collapsible'), [...s.querySelectorAll('[data-fit]')]]).filter(([, box, gs]) => box && gs.length);
   const shown = g => [...g.children].filter(c => !c.classList.contains('trim'));
   const step = g => { const cs = getComputedStyle(g); return cs.display === 'grid' ? cs.gridTemplateColumns.split(' ').length : 1; };
@@ -100,7 +99,7 @@
   const bottom = e => e.getBoundingClientRect().bottom;
   const trim = () => {
     let cut = false;
-    const room = screenH() - $('.site-header').offsetHeight - (fnav ? fnav.offsetHeight : 0);
+    const room = screenH() - $('.site-header').offsetHeight;   // a section's padding keeps its foot clear for the pill
     fitting.forEach(([sec, box, groups]) => {
       if (box.classList.contains('expanded')) return;
       const max = room - px(sec, 'paddingTop') - px(sec, 'paddingBottom') - px(sec, 'borderTopWidth') - px(sec, 'borderBottomWidth') + .5;

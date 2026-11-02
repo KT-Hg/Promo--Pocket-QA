@@ -40,7 +40,7 @@
     (window.syncTitle = () => { document.title = (d.lang === 'vi' && d.dataset.titleVi) || d.dataset.titleEn || en; })();
   })();
 </script>
-<link rel="stylesheet" href="site.css?v=430cbc71">
+<link rel="stylesheet" href="site.css?v=0fca5701">
 </head>
 <body class="doc">
 <a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="vi">Bỏ qua tới nội dung</span></a>
@@ -135,12 +135,18 @@
     </div>
   </section>
 
-  <!-- ================= ON THIS PAGE — one link per section, same label as its title (feature.js) ================= -->
-  <nav class="fnav" aria-label="On this page / Trên trang này">
-    <div class="container fnav-inner" id="pageNav"></div>
-  </nav>
+  <!-- ================= ON THIS PAGE — a floating pill at the bottom naming the section in view, with how far down the
+       page you are; it opens the list of sections, one link per section, same label as its title (feature.js) ================= -->
+  <div class="fpill" id="pageNav">
+    <div class="fpill-menu" id="pageNavMenu" hidden></div>
+    <button type="button" class="fpill-btn" aria-expanded="false" aria-controls="pageNavMenu">
+      <span class="fpill-ring" aria-hidden="true"></span>
+      <span class="fpill-label"></span>
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+    </button>
+  </div>
 
-  <!-- Every section below is one screen under the header and this bar. feature.js marks the
+  <!-- Every section below is one screen under the header, its foot kept clear for the pill. feature.js marks the
        lists that may shorten ([data-fit]) and adds a "Show the rest" button; site.js keeps a list's first items when the
        section would be taller than the screen and puts the rest behind that button. -->
 
@@ -219,8 +225,8 @@
 
 <script src="features-en.js?v=290e9944"></script>
 <script src="features-vi.js?v=1e753e1f"></script>
-<script src="feature.js?v=452eebf4"></script>
-<script src="site.js?v=98b2e655"></script>
+<script src="feature.js?v=9a5dfb2e"></script>
+<script src="site.js?v=c0071d20"></script>
 <script src="store-version.js?v=f9330233"></script>
 </body>
 </html>

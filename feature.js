@@ -145,40 +145,57 @@
     a.href = 'feature.html?id=' + k;
   });
 
-  // Every section: a link in the "On this page" bar, and a "Show the rest" button that site.js shows only when it
+  // Every section: a link in the pill's menu, and a "Show the rest" button that site.js shows only when it
   // shortened a list
-  const pageNav = $('#pageNav'), links = {};
-  navItems.forEach(([target, en, vi], i) => {
-    const sec = document.getElementById(target), label = pair(en, vi), num = String(i + 1).padStart(2, '0');
-    // A chapter in the bar: its number over its name
-    const a = el('a', null, `<span class="fnav-num">${num}</span><span class="fnav-label">${label}</span>`);
+  const pill = $('#pageNav'), pillBtn = pill.querySelector('.fpill-btn'), menu = $('#pageNavMenu'), links = {};
+  menu.setAttribute('role', 'navigation');
+  biAttr(menu, 'aria-label', 'On this page', 'Trên trang này');
+  navItems.forEach(([target, en, vi]) => {
+    const sec = document.getElementById(target);
+    const a = el('a', null, pair(en, vi));
     a.href = '#' + target;
-    links[target] = pageNav.appendChild(a);
+    links[target] = menu.appendChild(a);
     const btn = sec.querySelector('.collapsible').appendChild(el('button', 'more-btn',
       '<span class="l-more"><span lang="en">Show the rest</span><span lang="vi">Xem phần còn lại</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span>'));
     btn.type = 'button';
     btn.setAttribute('aria-expanded', 'false');
   });
-  const setCurrent = target => {
-    // The current chapter is marked, and the ones above it as read
-    const at = navItems.findIndex(([k]) => k === target);
-    navItems.forEach(([k], i) => {
-      links[k].classList.toggle('past', i < at);
-      i === at ? links[k].setAttribute('aria-current', 'true') : links[k].removeAttribute('aria-current');
-    });
-    // Keep the current link in view where the bar scrolls sideways — the bar only, never the page
-    const a = links[target], x = a.offsetLeft - pageNav.offsetLeft;
-    if (x < pageNav.scrollLeft || x + a.offsetWidth > pageNav.scrollLeft + pageNav.clientWidth) pageNav.scrollLeft = x - 16;
+  // The pill names the section in view, in both languages (CSS stacks them, so a switch doesn't resize it), and its
+  // ring fills as the page scrolls. Screen readers hear "On this page: <section>"
+  let current = navItems[0][0];
+  const name = k => navItems.find(([t]) => t === k);
+  const labelPill = () => {
+    const [, en, vi = en] = name(current);
+    pillBtn.setAttribute('aria-label', d.lang === 'vi' ? 'Trên trang này: ' + plain(vi) : 'On this page: ' + plain(en));
   };
+  const setCurrent = target => {
+    current = target;
+    navItems.forEach(([k]) => k === target ? links[k].setAttribute('aria-current', 'true') : links[k].removeAttribute('aria-current'));
+    const [, en, vi = en] = name(target);
+    pill.querySelector('.fpill-label').innerHTML = `<span lang="en">${en}</span><span lang="vi">${vi}</span>`;
+    labelPill();
+  };
+  setCurrent(current);
+  const progress = () => {
+    const max = d.scrollHeight - innerHeight;
+    pill.style.setProperty('--p', max > 0 ? Math.round(scrollY / max * 100) : 0);
+  };
+  addEventListener('scroll', progress, {passive: true});
+  progress();
+  // The menu opens above the pill; a link, Esc or a click elsewhere closes it
+  const setMenu = open => { menu.hidden = !open; pillBtn.setAttribute('aria-expanded', open); };
+  pillBtn.addEventListener('click', () => setMenu(menu.hidden));
+  menu.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('click', e => { if (!pill.contains(e.target)) setMenu(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); pillBtn.focus(); } });
   if ('IntersectionObserver' in window) {
-    // A band just under the header and this bar: whichever section crosses it is "current"
-    const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setCurrent(e.target.id); }), {rootMargin: '-120px 0px -60% 0px'});
+    // A band near the top of the screen: whichever section crosses it is "current"
+    const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setCurrent(e.target.id); }), {rootMargin: '-80px 0px -60% 0px'});
     navItems.forEach(([target]) => spy.observe(document.getElementById(target)));
-    // The bar shows once the hero's bottom is above the middle of the screen (01 has the lower half), so it is there
-    // whenever 01 is in view and still never sits as a band between the hero and 01
-    const bar = $('.fnav');
-    new IntersectionObserver(([e]) => bar.classList.toggle('on', !e.isIntersecting), {rootMargin: '-50% 0px 0px 0px'}).observe($('#top'));
-  } else $('.fnav').classList.add('on');
+    // The pill shows once the hero's bottom is above the middle of the screen, and hides again back up in the hero
+    new IntersectionObserver(([e]) => { pill.classList.toggle('on', !e.isIntersecting); if (e.isIntersecting) setMenu(false); },
+      {rootMargin: '-50% 0px 0px 0px'}).observe($('#top'));
+  } else pill.classList.add('on');
 
   // The popup in the hero, opened on this feature's tab in the page's theme (reloaded when the page theme flips)
   const frame = $('#popupFrame'), full = $('#previewFullLink');
@@ -195,5 +212,5 @@
   });
 
   syncAttrs();
-  new MutationObserver(syncAttrs).observe(d, {attributes: true, attributeFilter: ['lang']});
+  new MutationObserver(() => { syncAttrs(); labelPill(); }).observe(d, {attributes: true, attributeFilter: ['lang']});
 })();

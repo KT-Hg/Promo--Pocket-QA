@@ -79,15 +79,14 @@ window.checkLayout = async () => {
   const flip = () => { d.style.overflowAnchor = 'none'; d.lang = d.lang === 'vi' ? 'en' : 'vi'; };
 
   // One section = one screen. Below 1024px the hero is two screens: its copy, then the popup. Feature pages: a
-  // screen under the header and the "On this page" bar; a section opened with "Read more" may be taller.
+  // screen under the header; a section opened with "Read more" / "Show the rest" may be taller.
   const overflow = [];
-  const fnav = document.querySelector('.fnav'), bar = fnav ? fnav.offsetHeight : 0;
   document.querySelectorAll('main > section').forEach(s => {
     if (s.querySelector('.collapsible.expanded')) return;
     const hero = s.classList.contains('hero');
     const units = hero && !matchMedia('(min-width: 1024px)').matches ? [...s.querySelectorAll('.hero-copy, .hero-demo')] : [s];
     units.forEach(u => {
-      const h = u.getBoundingClientRect().height, max = u === s && hero ? innerHeight : innerHeight - header - (hero ? 0 : bar);
+      const h = u.getBoundingClientRect().height, max = u === s && hero ? innerHeight : innerHeight - header;
       if (h > max + 1) overflow.push(name(u) + ' ' + Math.round(h) + ' > ' + Math.round(max));
     });
   });
@@ -95,7 +94,7 @@ window.checkLayout = async () => {
   // Nothing may move or resize on a language switch. Frames (sections, cards, rows) must not move at all; what
   // sits inside a frame (buttons, links, stats) may re-centre vertically in it, but keeps its x, width and height.
   const frames = '.site-header, main > section, .card, .perm, .faq details, .section-head, .hero-copy, .mockup, .demo-note, footer';
-  const tracked = [...document.querySelectorAll(frames + ', .brand, #lang-btn, #theme-btn, .nav-links a, .btn, .stats li, .more-btn, .fnav a')].filter(visible);
+  const tracked = [...document.querySelectorAll(frames + ', .brand, #lang-btn, #theme-btn, .nav-links a, .btn, .stats li, .more-btn, .fpill-btn')].filter(visible);
   const rect = e => { const r = e.getBoundingClientRect(); return [r.left + scrollX, r.top + scrollY, r.width, r.height]; };
   const before = tracked.map(rect);
   flip();

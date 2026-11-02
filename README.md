@@ -74,7 +74,7 @@ index.html        ← open this
 | File | Purpose | Lines |
 |------|---------|-------|
 | `index.html`     | Landing page, EN/VI: hero beside the browser mockup, then six numbered one-screen sections (Features, Tools, How it works, Privacy, Permissions, FAQ) — one menu link each | ~500 |
-| `feature.html`   | Feature guide template, shared by all feature cards — `feature.html?id=<key>`: a hero like the index's (copy + the popup open on this feature's tab), then numbered one-screen sections with an "On this page" bar that slides out under the header after the hero | ~230 |
+| `feature.html`   | Feature guide template, shared by all feature cards — `feature.html?id=<key>`: a hero like the index's (copy + the popup open on this feature's tab), then one-screen sections; past the hero an "On this page" pill floats at the bottom centre — the section in view, a ring for how far down, and the list of sections on a click | ~230 |
 | `site.css`       | Styles for both pages (portfolio tokens, light/dark) | ~520 |
 | `site.js`        | Both pages' chrome: language/theme switch, `evenOut()` (holds every element at its larger language's size), mockup fitting, menu, "Read more", scroll spy; on feature pages it also shortens lists that would make a section taller than the screen | ~190 |
 | `store-version.js` | Footer version on both pages, read live from the Chrome Web Store via shields.io's JSON badge (the store itself has no CORS); the vendored version stays in the HTML as the fallback | ~20 |
@@ -112,8 +112,8 @@ included.
 ## Layout rules
 Both pages follow the portfolio's rules, in this order of priority: true content;
 **nothing moves** when the language, theme or font switches; **one section = one
-screen** (under the header, and on feature pages under the "On this page" bar
-too); equal, aligned items; text read whole (no one-word last lines, no break at
+screen** (under the header; on feature pages a section's foot is kept clear for
+the "On this page" pill); equal, aligned items; text read whole (no one-word last lines, no break at
 a hyphen). How the code keeps them:
 
 - **No movement:** `evenOut()` in `site.js` measures every name, button, card,
