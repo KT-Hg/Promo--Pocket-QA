@@ -75,20 +75,23 @@ và là thước đo cho mọi task nội dung sau.
 
 **Description:** Với recording, playback, run-results, variables, csv, screenshots, export, highlights, settings:
 liệt kê mọi khả năng người dùng thấy được, từ (theo thứ tự ưu tiên) `popup.html`, help card
-`popup/help/card-help-data.js` (21 card: addManual, recording, save, sequence, variables, csv, schedule, exportCode,
-capture, screenshot, highlight, hotkeys, notifications, importExport, backup, folders, manage…), README extension
+`popup/help/card-help-data.js` (20 card, 17 thuộc popup: addManual, recording, save, sequence, variables, csv, schedule,
+exportCode, capture, screenshot, highlight, hotkeys, notifications, importExport, backup, folders, manage), README extension
 (§Popup Tabs, §Action Types, §Switch blocks, §Run Result, §Variable System, §Screenshot Capture, §CSV, §Hotkeys),
 `docs/store-description-en.txt`, và `git log 9e77d06..060fcf0`. Mỗi dòng: khả năng · nguồn `file:line` · độ phủ
 trên promo (`none` / `thin` = một câu / `hidden` = bị giấu ở 1366×657 / `ok`) · đề xuất (section mới nào, ảnh nào).
 
 **Acceptance criteria:**
-- [ ] Mỗi trang có bảng riêng; mỗi dòng có nguồn `file:line` và một mức độ phủ.
-- [ ] Mọi thay đổi 1.0.25–1.0.27 (bảng "Đã phát hành" trong plan) xuất hiện ít nhất một dòng.
-- [ ] Mỗi trang có danh sách section đề xuất (tên EN/VI, ảnh cần chụp, 3–5 ý chính).
+- [x] Mỗi trang có bảng riêng; mỗi dòng có nguồn `file:line` và một mức độ phủ (91 dòng, 8 P1 · 28 P2 · 18 P3).
+- [x] Mọi thay đổi 1.0.25–1.0.27 (bảng "Đã phát hành" trong plan) xuất hiện ít nhất một dòng.
+- [x] Mỗi trang có danh sách section đề xuất (tên EN/VI, ảnh cần chụp, ý chính) — 10 section mới, ~14 ảnh.
 
 **Verification:**
-- [ ] Đối chiếu ngẫu nhiên 5 dòng `ok` với nội dung `features-en.js` thật
-- [ ] Mọi card trong `card-help-data.js` được nhắc ở ít nhất một trang
+- [x] Đối chiếu 5 dòng `ok` (fe:25, 134, 200, 383, 670) và 5 trích dẫn `help:N` với file thật — khớp
+- [x] 17 card của popup đều được dẫn; `sqlcases`, `apicases`, `dbtools` để Task 4
+
+**Phát hiện thêm:** help card `exportCode` của extension ghi Robot / Java "no data file yet", trái với README extension
+và code — lỗi ở repo extension, promo đúng.
 
 **Dependencies:** Task 2
 

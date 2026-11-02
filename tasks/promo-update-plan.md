@@ -80,7 +80,7 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 
 ### Phase 1: Review — đầu ra `tasks/promo-update-gaps.md`
 - [x] Task 2: `hiddenByFit()` + báo cáo item bị giấu trên 11 trang
-- [ ] Task 3: Gap matrix — 9 trang của popup
+- [x] Task 3: Gap matrix — 9 trang của popup
 - [ ] Task 4: Gap matrix — 3 trang tool (SQL, DB, API Tests)
 
 ### Checkpoint 1: Người dùng duyệt gap matrix, chốt phạm vi section/ảnh
