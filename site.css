@@ -439,8 +439,11 @@ main > section {
   background: conic-gradient(var(--accent-fill) calc(var(--p) * 1%), var(--border) 0);
   -webkit-mask: radial-gradient(circle, transparent 6.5px, #000 7px); mask: radial-gradient(circle, transparent 6.5px, #000 7px);
 }
-/* Both languages stacked in one cell, the inactive one invisible: the pill keeps one width across a language switch */
-.fpill-label { display: grid; }
+/* Every section's name in both languages, stacked in one cell, only the current one (.cur) in the active language
+   visible: the pill is as wide as the longest name and keeps that width — between sections and across a language switch */
+.fpill-label, .fpill-label > span { display: grid; }
+.fpill-label > span { grid-area: 1 / 1; visibility: hidden; }
+.fpill-label > span.cur { visibility: visible; }
 html[lang] body .fpill-label [lang] { display: block !important; grid-area: 1 / 1; }
 html[lang="en"] .fpill-label [lang="vi"], html[lang="vi"] .fpill-label [lang="en"] { visibility: hidden; }
 .fpill-menu {

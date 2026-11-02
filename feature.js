@@ -160,19 +160,24 @@
     btn.type = 'button';
     btn.setAttribute('aria-expanded', 'false');
   });
-  // The pill names the section in view, in both languages (CSS stacks them, so a switch doesn't resize it), and its
-  // ring fills as the page scrolls. Screen readers hear "On this page: <section>"
+  // The pill names the section in view, and its ring fills as the page scrolls. Every section's name, in both
+  // languages, sits stacked in the label (CSS), only the current one visible: the pill is as wide as the longest and
+  // never changes width — scrolling to another section or switching language. Screen readers hear "On this page: <section>"
   let current = navItems[0][0];
   const name = k => navItems.find(([t]) => t === k);
+  const names = {};
+  const label = pill.querySelector('.fpill-label');
+  navItems.forEach(([k, en, vi = en]) => { names[k] = label.appendChild(el('span', null, `<span lang="en">${en}</span><span lang="vi">${vi}</span>`)); });
   const labelPill = () => {
     const [, en, vi = en] = name(current);
     pillBtn.setAttribute('aria-label', d.lang === 'vi' ? 'Trên trang này: ' + plain(vi) : 'On this page: ' + plain(en));
   };
   const setCurrent = target => {
     current = target;
-    navItems.forEach(([k]) => k === target ? links[k].setAttribute('aria-current', 'true') : links[k].removeAttribute('aria-current'));
-    const [, en, vi = en] = name(target);
-    pill.querySelector('.fpill-label').innerHTML = `<span lang="en">${en}</span><span lang="vi">${vi}</span>`;
+    navItems.forEach(([k]) => {
+      k === target ? links[k].setAttribute('aria-current', 'true') : links[k].removeAttribute('aria-current');
+      names[k].classList.toggle('cur', k === target);
+    });
     labelPill();
   };
   setCurrent(current);
