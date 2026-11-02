@@ -269,7 +269,7 @@ var FEATURES_EN = {
           '- **Page:** https://shop.example.com/cart',
           '- **When:** 2026-10-21 14:32:05',
           '- **Result:** Failed — 1 check failed',
-          '- **Environment:** Chrome · Windows · Pocket QA 1.0.24',
+          '- **Environment:** Chrome · Windows · Pocket QA 1.0.27',
           '',
           '### Steps to reproduce',
           '',

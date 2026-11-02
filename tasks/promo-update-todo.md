@@ -177,13 +177,21 @@ tra preview: 5 file `css/popup` đổi (đặc biệt `03-variables.css` −117 
 = 1.0.27. Seed thêm trong `demo.js` nếu UI mới cần dữ liệu để không lộ là preview tĩnh.
 
 **Acceptance criteria:**
-- [ ] `vendor/version.txt` = 1.0.27; preview không có thẻ API Tests.
-- [ ] 5 tab popup hiển thị đủ dữ liệu demo ở light + dark, không control nào trống.
-- [ ] `sync-from-source.mjs` exit 0.
+- [x] `vendor/version.txt` = 1.0.27; preview không có thẻ API Tests.
+- [x] 5 tab popup hiển thị đủ dữ liệu demo ở light + dark, không control nào trống.
+- [x] `sync-from-source.mjs` exit 0.
 
 **Verification:**
-- [ ] `node update-vendor.mjs <tmp>` rồi `node sync-from-source.mjs`
-- [ ] So ảnh 5 tab trước/sau; console iframe không lỗi
+- [x] `node update-vendor.mjs <tmp>` (tmp = `git archive 060fcf0`) — tự chạy `stamp-assets` + `sync-from-source`
+- [x] So 5 tab trước/sau bằng số đo thay cho ảnh: vị trí, kích thước, màu chữ/nền/viền của mọi phần tử hiện ra (thẻ đã mở
+  hết) trên bản `master` và bản mới — 0 khác biệt ở 5 tab × 2 theme (611 phần tử / theme). Thẻ Version = 1.0.27; console
+  của demo không lỗi
+
+**Kết quả:** ở 1.0.27 `popup.html` không đổi so với bản vendor cũ; 4 file CSS đổi (màu hàng Upload File, lỗi validation
+dưới hàng, độ rộng cột số `--idx-w` có fallback 18px = giá trị preview thật tính cho 9 bước của demo) — demo không dựng
+Upload File hay block Switch nên không thấy khác. `demo.js` không cần seed thêm. Comment "checked against v1.0.24" ở
+Privacy / Permissions của `index.html` đổi thành 1.0.27 sau khi xác nhận manifest chỉ đổi version và không có lệnh mạng
+mới.
 
 **Dependencies:** Task 1
 

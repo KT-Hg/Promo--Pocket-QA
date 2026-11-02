@@ -89,7 +89,7 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 - [x] Task 5: `capture-shots.mjs` + shot đầu tiên (dialog Diagram)
 
 ### Phase 3: Đợt A — v1.0.27
-- [ ] Task 6: Vendor v1.0.27, preview popup đúng bản Store
+- [x] Task 6: Vendor v1.0.27, preview popup đúng bản Store
 - [ ] Task 7: SQL Test Case Designer chi tiết (Schema & diagram, Compare, Case list, Findings)
 - [ ] Task 8: Variables — đổi tên biến, chặn tên sai, gợi ý `${`
 - [ ] Task 9: Recording & Playback — Switch, Upload File, validation

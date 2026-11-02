@@ -237,6 +237,12 @@
 }
 .action-dropdown .type { color: #f472b6; }
 
+.action-uploadFile {
+  border-left: 4px solid #f43f5e;
+  background: linear-gradient(90deg, rgba(244, 63, 94, 0.08) 0%, transparent 100%);
+}
+.action-uploadFile .type { color: #fb7185; }
+
 /* Disabled action styling */
 .action-disabled {
   opacity: 0.5;
@@ -315,6 +321,8 @@
   background: var(--card);
 }
 .sel-group:focus-within { border-color: color-mix(in srgb, var(--primary) 55%, var(--border)); }
+/* The field has no border of its own here: its error marks the box. */
+.sel-group:has(> input.required-error) { border-color: var(--danger); }
 .sel-group input { flex: 1 1 auto; min-width: 0; margin: 0; border: 0; border-radius: 0 6px 6px 0; background: transparent; }
 .sel-group-type {
   position: relative;
