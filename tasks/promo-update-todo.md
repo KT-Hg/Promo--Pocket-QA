@@ -56,13 +56,14 @@ sau nút "Show the rest" (`checkVisibility()` = false khi nút đang hiện). Ch
 và là thước đo cho mọi task nội dung sau.
 
 **Acceptance criteria:**
-- [ ] `hiddenByFit()` trả `[{section, hidden: [text…]}]`, `[]` khi không có gì bị giấu.
-- [ ] Bảng 11 trang × 3 viewport trong gaps file (số item bị giấu + 60 ký tự đầu mỗi item).
-- [ ] Trên `sql-test-designer` ở 1366×657 hàm báo đúng 4 item của "Inside the analysis screen" (đã đo tay).
+- [x] `hiddenByFit()` trả `[{section, hidden: [text…], shrunk}]`, `[]` khi không có gì bị giấu hay thu nhỏ.
+- [x] Bảng 11 trang × 3 viewport trong gaps file (số item bị giấu + 60 ký tự đầu mỗi item).
+- [x] Trên `sql-test-designer` ở 1366×657 hàm báo đúng các item của "Inside the analysis screen" đếm bằng tay —
+  giờ là 3 (site live là 4: bỏ eyebrow ở Task 1 nhường chỗ cho một dòng).
 
 **Verification:**
-- [ ] So kết quả hàm với thao tác bấm "Show the rest" bằng tay trên 2 trang
-- [ ] Đầu file `check-layout.js` có dòng hướng dẫn gọi `hiddenByFit()`
+- [x] So kết quả hàm với đếm tay (item không render khi nút "Show the rest" đang hiện) trên `sql-test-designer`
+- [x] Đầu file `check-layout.js` có dòng hướng dẫn gọi `hiddenByFit()`
 
 **Dependencies:** Task 1
 

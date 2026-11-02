@@ -79,7 +79,7 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 - [x] Task 1: Chốt WIP `taste-restyle`, mở nhánh làm việc
 
 ### Phase 1: Review — đầu ra `tasks/promo-update-gaps.md`
-- [ ] Task 2: `hiddenByFit()` + báo cáo item bị giấu trên 11 trang
+- [x] Task 2: `hiddenByFit()` + báo cáo item bị giấu trên 11 trang
 - [ ] Task 3: Gap matrix — 9 trang của popup
 - [ ] Task 4: Gap matrix — 3 trang tool (SQL, DB, API Tests)
 

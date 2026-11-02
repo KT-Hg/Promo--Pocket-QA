@@ -5,7 +5,19 @@
  * Reports for the current viewport (reload after resizing): sections taller than one screen,
  * anything that moves or resizes when the language switches, horizontal scroll, and — in both languages —
  * lines that end in a hyphen and one-word last lines. Empty arrays = pass.
+ * Feature pages also: checkShape() (EN/VI complete) and hiddenByFit() (what the fit to one screen hides).
  */
+// Feature pages: per section, the items site.js put behind "Show the rest" and how many screenshots or code
+// samples it shrank to fit one screen — as fitted for the current viewport. hiddenByFit() → [] when nothing is.
+window.hiddenByFit = () => {
+  // A table row is named by its first cell (the others start with their column's name on phones)
+  const en = e => { if (e.cells) e = e.cells[0]; return (e.querySelector('[lang="en"]') || e).textContent.trim().replace(/\s+/g, ' '); };
+  return [...document.querySelectorAll('main > section')].map(s => ({
+    section: en(s.querySelector('h1, h2')),
+    hidden: [...s.querySelectorAll('.trim')].map(e => en(e).slice(0, 60)),
+    shrunk: [...s.querySelectorAll('.fmedia img, .fmedia pre')].filter(m => m.style.maxHeight).length
+  })).filter(r => r.hidden.length || r.shrunk);
+};
 // Feature pages: every translatable English string has a Vietnamese one at the same path (and nothing extra).
 // In a feature page: checkShape() → [] when complete.
 window.checkShape = (EN = window.FEATURES_EN, VI = window.FEATURES_VI) => {
