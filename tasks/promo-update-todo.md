@@ -234,13 +234,13 @@ cột CSV còn tên cũ; modal từ chối tên trùng hoặc chứa `}`/`${`. �
 trang `csv` về cảnh báo cột tên cũ.
 
 **Acceptance criteria:**
-- [ ] Mọi dòng `variables` thuộc 1.0.25–1.0.27 trong gap matrix được xử lý.
-- [ ] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632 trên `variables` và `csv`.
-- [ ] Ít nhất một ảnh thật mới cho trang `variables`.
+- [x] Mọi dòng `variables` thuộc 1.0.25–1.0.27 trong gap matrix được xử lý.
+- [x] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632 trên `variables` và `csv`.
+- [x] Ít nhất một ảnh thật mới cho trang `variables`.
 
 **Verification:**
-- [ ] So với hành vi thật (e2e `var-rename` của extension mô tả đúng điều ghi trên trang)
-- [ ] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
+- [x] So với hành vi thật (e2e `var-rename` của extension mô tả đúng điều ghi trên trang)
+- [x] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
 
 **Dependencies:** Task 5, Task 6
 
@@ -255,13 +255,13 @@ action, Switch mới đặt trước các case, chặn case cắt ngang khối),
 trong list), validation dưới hàng. Thêm ảnh form Add Manual Action và Switch case builder nếu gap matrix đề xuất.
 
 **Acceptance criteria:**
-- [ ] Mọi dòng `recording`/`playback` thuộc 1.0.25–1.0.27 được xử lý.
-- [ ] Không còn câu nào mô tả hành vi cũ (vd. số thứ tự cố định `displayNo`).
-- [ ] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
+- [x] Mọi dòng `recording`/`playback` thuộc 1.0.25–1.0.27 được xử lý.
+- [x] Không còn câu nào mô tả hành vi cũ (vd. số thứ tự cố định `displayNo`).
+- [x] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
 
 **Verification:**
-- [ ] `grep` nội dung cũ theo gap matrix trả về rỗng
-- [ ] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
+- [x] `grep` nội dung cũ theo gap matrix trả về rỗng
+- [x] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
 
 **Dependencies:** Task 5, Task 6
 
@@ -270,8 +270,8 @@ trong list), validation dưới hàng. Thêm ảnh form Add Manual Action và Sw
 **Estimated scope:** M
 
 ## Checkpoint: Sau Task 6–9
-- [ ] 4 trang đã sửa đạt mọi check ở 3 viewport, EN + VI, light + dark
-- [ ] Người dùng xem trang SQL + Variables, xác nhận "đủ chi tiết" trước khi làm tiếp các trang còn lại
+- [x] 4 trang đã sửa đạt mọi check ở 3 viewport, EN + VI, light + dark
+- [x] Người dùng xem trang SQL + Variables, xác nhận "đủ chi tiết" trước khi làm tiếp các trang còn lại
 
 ## Task 10: Run results · CSV · Export theo gap matrix
 
@@ -279,12 +279,12 @@ trong list), validation dưới hàng. Thêm ảnh form Add Manual Action và Sw
 cho trang chưa có ảnh (run-results, csv).
 
 **Acceptance criteria:**
-- [ ] Mọi dòng đề xuất (đã duyệt ở Checkpoint 1) của 3 trang được xử lý.
-- [ ] Mỗi trang có ít nhất một ảnh thật trong section.
-- [ ] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
+- [x] Mọi dòng đề xuất (đã duyệt ở Checkpoint 1) của 3 trang được xử lý.
+- [x] Mỗi trang có ít nhất một ảnh thật trong section.
+- [x] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
 
 **Verification:**
-- [ ] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
+- [x] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
 
 **Dependencies:** Checkpoint sau Task 6–9
 
@@ -297,12 +297,12 @@ cho trang chưa có ảnh (run-results, csv).
 **Description:** Như Task 10 cho 3 trang còn lại của popup (highlights hiện chỉ có 1 section, 0 ảnh).
 
 **Acceptance criteria:**
-- [ ] Mọi dòng đề xuất đã duyệt của 3 trang được xử lý.
-- [ ] Mỗi trang có ít nhất một ảnh thật trong section.
-- [ ] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
+- [x] Mọi dòng đề xuất đã duyệt của 3 trang được xử lý.
+- [x] Mỗi trang có ít nhất một ảnh thật trong section.
+- [x] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
 
 **Verification:**
-- [ ] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
+- [x] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
 
 **Dependencies:** Checkpoint sau Task 6–9
 
@@ -316,11 +316,11 @@ cho trang chưa có ảnh (run-results, csv).
 `dbtools/session.js` trong `capture-shots.mjs`; ảnh cắt sát thành phần (panel Adminer, preview SQL, diff một dòng).
 
 **Acceptance criteria:**
-- [ ] Mọi dòng đề xuất đã duyệt được xử lý; không nhắc tính năng đang ẩn (snapshot, backup table) như đã có.
-- [ ] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
+- [x] Mọi dòng đề xuất đã duyệt được xử lý; không nhắc tính năng đang ẩn (snapshot, backup table) như đã có.
+- [x] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
 
 **Verification:**
-- [ ] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
+- [x] `checkLayout()`, `checkShape()`, `hiddenByFit()`; `node stamp-assets.mjs`
 
 **Dependencies:** Checkpoint sau Task 6–9
 
@@ -334,12 +334,12 @@ cho trang chưa có ảnh (run-results, csv).
 `docs/store-description-en.txt`/`-vi.txt` và nội dung trang feature mới; sửa câu lệch, thêm FAQ nếu gap matrix đề xuất.
 
 **Acceptance criteria:**
-- [ ] Mô tả mỗi thẻ feature khớp lead của trang tương ứng.
-- [ ] Không câu nào trên trang chủ mâu thuẫn store description.
-- [ ] `checkLayout()` rỗng ở 3 viewport, EN + VI.
+- [x] Mô tả mỗi thẻ feature khớp lead của trang tương ứng.
+- [x] Không câu nào trên trang chủ mâu thuẫn store description.
+- [x] `checkLayout()` rỗng ở 3 viewport, EN + VI.
 
 **Verification:**
-- [ ] Đọc song song hai văn bản; `checkLayout()`; `node stamp-assets.mjs`
+- [x] Đọc song song hai văn bản; `checkLayout()`; `node stamp-assets.mjs`
 
 **Dependencies:** Task 7–12
 
@@ -347,9 +347,14 @@ cho trang chưa có ảnh (run-results, csv).
 
 **Estimated scope:** S
 
+**Kết quả Task 8–13 (2026-11-02):** 11 ảnh popup mới chụp từ popup thật (`pop-*`) + `db-settings`; mọi trang:
+`auditFeatures()` rỗng ở 1366×657 và 1280×632, ở 375×812 chỉ còn item bị giấu (đúng thiết kế). Không làm: ảnh CSV đang chạy
+(P2 #7 csv), ảnh highlight trên trang và panel Adminer (cần Adminer thật) — các section đó chỉ có chữ. Task 13: thẻ trang chủ
+không mâu thuẫn với nội dung mới, chỉ đổi comment 1.0.24 → 1.0.27 (Task 6).
+
 ## Checkpoint A: Đợt A xong
-- [ ] 11 trang + trang chủ đạt mọi check, EN + VI, light + dark
-- [ ] README promo cập nhật (bảng files, bảng screenshots, cách chụp)
+- [x] 11 trang + trang chủ đạt mọi check, EN + VI, light + dark
+- [x] README promo cập nhật (bảng files, bảng screenshots, cách chụp)
 - [ ] **Người dùng duyệt** → merge `promo-update` → deploy (bước của người dùng)
 
 ---

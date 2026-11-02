@@ -165,6 +165,21 @@ const SHOTS = [
     `
   },
   {
+    // DB Test Session's manager page: its Settings dialog (the parts held back by TABLE_COPIES stay hidden, as shipped)
+    name: 'db-settings',
+    page: 'dbtest.html',
+    size: [1100, 900],
+    setup: `
+      await until(() => $('#btnSettings'), 'the page to start');
+      await english('#btnLang');
+      await themed('#toggleTheme', THEME);
+      $('#btnSettings').click();
+      await until(() => $('#settingsDlg').open, 'the Settings dialog');
+      await wait(300);
+      return '#settingsDlg';
+    `
+  },
+  {
     // Record & Play's action list: a Condition, a Switch block of two cases, an Upload File step, a disabled step
     name: 'pop-actions',
     page: 'popup.html',

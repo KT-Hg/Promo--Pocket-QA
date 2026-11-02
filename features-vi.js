@@ -443,7 +443,7 @@ var FEATURES_VI = {
         nav: 'Cấu trúc ZIP',
         lead: 'Phần <b>Advanced</b> của tuỳ chọn xuất ZIP đặt tên thư mục của từng dòng theo chính dữ liệu của dòng đó — sẵn sàng lưu trữ, không phải đổi tên sau.',
         points: [
-          'Mẫu <b>Folder name</b>: <code>abc ${name}</code> → <code>abc john/</code>, <code>abc kate/</code> — bất kỳ cột CSV nào, hoặc một biến do lần chạy ghi ra.',
+          '<b>Folder name</b>: <code>abc ${name}</code> → <code>abc john/</code>, <code>abc kate/</code> — cột CSV hoặc biến lần chạy ghi.',
           '<b>Add row number</b>: <code>abc john_01</code>, <code>abc kate_02</code>.',
           'Hai dòng trùng một tên sẽ được thêm <code>_2</code>, <code>_3</code>; ký tự Windows không chấp nhận được đổi thành <code>_</code>.',
           'Trong mỗi thư mục, ảnh được đặt tên theo Filename của bước Screenshot → Variable — <code>a/b</code> tạo một thư mục con.',
@@ -874,54 +874,79 @@ var FEATURES_VI = {
       {
         title: 'Bên trong một phiên test',
         nav: 'Ảnh chụp',
-        lead: 'Một phiên mẫu — áp mã giảm giá khi thanh toán, rồi hoàn tiền — nhìn từ bảng Adminer và từ trang quản lý. Giao diện thật, và câu SQL là đầu ra của bộ sinh thật.',
+        lead: 'Một phiên mẫu — áp mã giảm giá khi thanh toán, rồi hoàn tiền — từ bảng Adminer và trang quản lý.',
         images: [
           {
             alt: 'Bản xem trước Undo SQL mở từ bảng Adminer: công tắc Step by step / Merged, mỗi thay đổi một dòng tóm tắt với một UPDATE products bị bỏ qua được đánh dấu, và bảy câu lệnh UPDATE, INSERT, DELETE sẽ chạy; bên cạnh là bảng đang ghi, có nút Roll back all và Undo last cùng nhật ký các thay đổi đã ghi.',
-            caption: '↺ Roll back all mở câu SQL trước — mỗi thay đổi một dòng, dòng bị bỏ qua có ghi lý do, và không gì chạy cho tới khi bạn xác nhận.'
+            caption: '↺ Roll back all hiện câu SQL trước; không gì chạy tới khi bạn xác nhận.'
           },
           {
             alt: 'Trang Test sessions & rollback: danh sách phiên bên trái, bảy thay đổi của phiên đang chọn bên phải, với trước/sau của một DELETE trên cart_items và một UPDATE trên orders đang mở, và một thay đổi đã được hoàn tác.',
-            caption: 'Trang quản lý — mọi phiên bên trái, trước/sau của từng thay đổi bên phải, hoàn tác từng cái hoặc tất cả cùng lúc.'
+            caption: 'Trang quản lý: mọi phiên, trước và sau của từng thay đổi.'
           }
         ],
         points: [
-          'Bảng luôn gọn: đang ghi hay không, bao nhiêu thay đổi, và vài nút cần dùng giữa lúc test.',
-          'Step by step phát lại từng thay đổi như khi ghi; Merged gộp nhiều lần sửa một dòng (A→B→C) thành một câu lệnh đưa thẳng về A.',
-          'Mỗi dòng đã ghi trong nhật ký của bảng liên kết tới thay đổi đó trên trang quản lý, với phần so sánh đã mở sẵn.',
-          'Hoàn tác hoặc áp lại một thay đổi ngay trên dòng của nó, hoặc đánh dấu vài thay đổi và chỉ rollback những cái đó.',
-          'Một lần rollback không dùng hết phiên: chạy lại bài test thì phiên lại đề xuất cùng thao tác hoàn tác lần thứ hai.',
-          'Xuất phiên ra <code>.sql</code> hoặc <code>.json</code>; trang quản lý chuyển được giữa tiếng Anh và tiếng Việt.'
+          'Bảng luôn gọn: đang ghi hay không, bao nhiêu thay đổi, vài nút cần dùng giữa lúc test.',
+          '<b>Merged</b> gộp A→B→C trên một dòng thành một câu lệnh đưa thẳng về A.',
+          'Hoàn tác hoặc áp lại một thay đổi ngay trên dòng của nó, hoặc đánh dấu vài cái và chỉ rollback chúng.',
+          'Xuất phiên ra <code>.sql</code> hoặc <code>.json</code>.'
+        ]
+      },
+      {
+        title: 'Phiên qua nhiều lần chạy',
+        nav: 'Phiên',
+        lead: 'Một phiên sống lâu hơn lần test: kết thúc nó, rollback hôm nay, ghi tiếp ngày mai.',
+        points: [
+          '<b>■ End</b> giữ phiên trên bảng, vẫn cách Roll back all một lần bấm; <b>↻ Resume</b> ghi tiếp vào nó.',
+          'Bấm tên phiên để xem mọi phiên của database này, lọc khi gõ — Enter để tiếp tục phiên đầu.',
+          'Mỗi database chỉ một phiên ghi: bắt đầu hay tiếp tục phiên khác sẽ kết thúc nó, và báo trước.',
+          'Rollback không dùng hết phiên: chạy lại bài test thì cùng thao tác hoàn tác lại được đề xuất.',
+          '<b>↷ Re-apply</b> đưa giá trị của bài test trở lại — trừ SQL gõ tay, được liệt kê là bỏ qua kèm lý do.',
+          'Khi đóng, bảng vẫn hiện <b>⚠ n</b> nếu có cảnh báo; <b>⇤</b> chuyển nó sang góc kia.'
         ]
       },
       {
         title: 'Những gì được ghi lại',
         nav: 'Những gì được ghi',
-        lead: 'Giá trị cũ được đọc trước khi ghi — qua chính form sửa của từng dòng, vì Adminer rút gọn chữ dài trong lưới, và khôi phục một giá trị bị rút gọn như thể nó đầy đủ sẽ làm hỏng dòng đó.',
+        lead: 'Giá trị cũ được đọc trước khi ghi, qua chính form sửa của từng dòng — không lấy từ lưới đã bị Adminer rút gọn.',
         table: {
           head: ['Nơi bạn thay đổi', 'Những gì được lưu', 'Hoàn tác bằng'],
           rows: [
-            ['Form sửa dòng', 'Các giá trị trong form lúc tải — trước khi bạn chạm vào.', '<code>UPDATE</code> trở lại, chỉ các cột đã đổi'],
-            ['“Save and continue editing”', 'Dòng trước và sau mỗi lần lưu, đọc lại để <code>now()</code> là giá trị thật.', '<code>UPDATE</code> trở lại, mỗi lần lưu một thay đổi'],
+            ['Form sửa dòng, “Save and continue”', 'Dòng trước mỗi lần lưu.', '<code>UPDATE</code> trở lại, chỉ cột đã đổi'],
             ['Delete trên form sửa', 'Toàn bộ dòng.', '<code>INSERT</code> lại'],
-            ['Một ô được sửa trong lưới', 'Mỗi dòng được sửa, đọc trước khi lưu và đọc lại sau đó.', '<code>UPDATE</code> trở lại'],
-            ['Dòng đã đánh dấu hoặc cả kết quả → Delete', 'Mọi dòng sắp bị xoá — với cả kết quả là mọi dòng khớp, không chỉ trang đang xem.', '<code>INSERT</code> lại'],
-            ['Dòng đã đánh dấu → Edit (sửa hàng loạt)', 'Từng dòng trước khi sửa.', '<code>UPDATE</code> trở lại'],
-            ['<code>UPDATE</code> / <code>DELETE</code> ở trang SQL', 'Các dòng bị ảnh hưởng, đọc trước khi câu lệnh chạy.', '<code>UPDATE</code> / <code>INSERT</code> cho từng dòng'],
-            ['<code>INSERT</code> — form, Clone hoặc trang SQL', 'Khoá của dòng mới.', '<code>DELETE</code> đúng những dòng đó']
+            ['Một ô được sửa trong lưới', 'Dòng đó, trước và sau.', '<code>UPDATE</code> trở lại'],
+            ['Dòng đã đánh dấu hoặc cả kết quả → Delete', 'Mọi dòng khớp, không chỉ trang đang xem.', '<code>INSERT</code> lại'],
+            ['Dòng đã đánh dấu → Edit', 'Từng dòng trước khi sửa.', '<code>UPDATE</code> trở lại'],
+            ['<code>UPDATE</code> / <code>DELETE</code> ở trang SQL', 'Các dòng, đọc trước khi câu lệnh chạy.', '<code>UPDATE</code> / <code>INSERT</code> từng dòng'],
+            ['<code>INSERT</code> — form, Clone, trang SQL', 'Khoá của dòng mới.', '<code>DELETE</code> đúng những dòng đó']
           ]
         }
       },
       {
         title: 'An toàn từ thiết kế',
         nav: 'An toàn',
-        lead: 'Đây không phải transaction — Adminer mở kết nối mới cho mỗi request — mà là một changeset do tiện ích giữ, phát ngược lại thành câu SQL thông thường để bạn đọc trước khi chạy.',
+        lead: 'Không phải transaction — Adminer mở kết nối mới mỗi request — mà là changeset phát ngược thành SQL bạn đọc trước.',
         points: [
-          '<b>Kiểm tra lệch dữ liệu</b>: trước khi hoàn tác một thay đổi, tiện ích đọc lại dòng đó. Chỉ so sánh các cột mà thay đổi đó đã ghi, nên đồng nghiệp sửa cột khác không bị tính là xung đột.',
-          '<b>Từ chối</b>: bảng không có khoá chính hoặc khoá duy nhất, câu lệnh không có <code>WHERE</code> hoặc ghi vào hai bảng, nhiều dòng hơn giới hạn (mặc định 200) — mỗi trường hợp hiện ngay trên thay đổi, không bao giờ bị lặng lẽ bỏ qua.',
-          'Câu lệnh chạy từ mới nhất tới cũ nhất, mỗi lần gửi một thay đổi, và dừng ở lỗi đầu tiên — thay đổi được đánh dấu đã hoàn tác là thay đổi thật sự đã hoàn tác.',
-          'Rollback chạy từ chính tab Adminer, nơi có cookie phiên của Adminer; nếu chưa mở tab nào, <b>Open Adminer</b> sẽ mở một tab và chạy tiếp.',
-          'Một changeset thuộc về một cơ sở dữ liệu (origin, driver, server, database) và không bao giờ được đề xuất trên cơ sở dữ liệu khác.'
+          '<b>Kiểm tra lệch dữ liệu</b>: mỗi dòng được đọc lại trước khi hoàn tác; chỉ so các cột bạn đã ghi.',
+          '<b>Từ chối</b>, và ghi rõ trên thay đổi: không có khoá, hai bảng, không <code>WHERE</code>, cột BLOB, nhập CSV trong lưới, quá giới hạn dòng.',
+          'Mới nhất trước, mỗi lần gửi một thay đổi, dừng ở lỗi đầu tiên.',
+          'Chạy từ tab Adminer, nơi có cookie phiên — hoặc <b>Copy undo SQL</b> rồi tự chạy.',
+          'Một changeset thuộc về một database và không bao giờ được đề xuất trên database khác.'
+        ]
+      },
+      {
+        title: 'Cài đặt và giới hạn',
+        nav: 'Cài đặt',
+        lead: 'Settings của trang quản lý — cho nhóm có database hay quy tắc khác.',
+        images: [{
+          alt: 'Hộp thoại Settings của trang Test sessions: bật tích hợp Adminer, cho tiện ích tự chạy undo SQL, đọc lại dòng trước khi hoàn tác, mặc định gộp câu lệnh theo dòng, chụp dòng trước câu lệnh gõ tay, giới hạn 200 dòng, giới hạn quét khoá INSERT 10000, và menu Force engine.',
+          caption: 'Settings trên trang Test sessions.'
+        }],
+        points: [
+          'Để tiện ích tự chạy undo SQL, hoặc chỉ hiện ra cho bạn tự chạy.',
+          'Tắt kiểm tra lệch dữ liệu, hoặc đặt Merged làm mặc định.',
+          'Giới hạn dòng mỗi câu lệnh (200) và bảng lớn nhất được quét tìm khoá của INSERT (10 000).',
+          'Engine tự nhận — MySQL, PostgreSQL, SQL Server, SQLite, Oracle — hoặc chỉ định.'
         ]
       }
     ],

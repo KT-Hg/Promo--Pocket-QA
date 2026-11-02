@@ -479,7 +479,7 @@ var FEATURES_EN = {
         nav: 'ZIP layout',
         lead: 'The ZIP export’s <b>Advanced</b> section names each row’s folder from its own data — ready to file, no renaming afterwards.',
         points: [
-          '<b>Folder name</b> template: <code>abc ${name}</code> → <code>abc john/</code>, <code>abc kate/</code> — any CSV column, or a variable the run wrote.',
+          '<b>Folder name</b>: <code>abc ${name}</code> → <code>abc john/</code>, <code>abc kate/</code> — any column or run variable.',
           '<b>Add row number</b>: <code>abc john_01</code>, <code>abc kate_02</code>.',
           'Two rows that land on one name get <code>_2</code>, <code>_3</code>; characters Windows refuses become <code>_</code>.',
           'Inside a folder each image is named by its Screenshot → Variable step’s Filename — <code>a/b</code> makes a subfolder.',
@@ -953,58 +953,85 @@ var FEATURES_EN = {
       {
         title: 'Inside a test session',
         nav: 'Screenshots',
-        lead: 'One sample session — a coupon checked out, then refunded — seen from the Adminer panel and from the manager page. Real UI, and the SQL is the real generator’s output.',
+        lead: 'One sample session — a coupon checked out, then refunded — from the Adminer panel and the manager page.',
         images: [
           {
             src: 'screenshots/shot-dbtools-rollback.webp',
             srcDark: 'screenshots/shot-dbtools-rollback-dark.webp',
             alt: 'The Undo SQL preview opened from the Adminer panel: a Step by step / Merged switch, one summary line per change with a skipped UPDATE products flagged, and the seven UPDATE, INSERT and DELETE statements to run; beside it the panel, recording, with its Roll back all and Undo last buttons and a log of recorded changes.',
-            caption: '↺ Roll back all opens the SQL first — one line per change, the skipped one says why, and nothing runs until you confirm.'
+            caption: '↺ Roll back all shows the SQL first; nothing runs until you confirm.'
           },
           {
             src: 'screenshots/shot-dbtools-manager.webp',
             srcDark: 'screenshots/shot-dbtools-manager-dark.webp',
             alt: 'The Test sessions & rollback page: sessions listed on the left, and the selected session’s seven changes on the right, with the before/after of a DELETE on cart_items and an UPDATE on orders open, and one change already undone.',
-            caption: 'The manager page — every session on the left, each change’s before/after on the right, undone one at a time or all at once.'
+            caption: 'The manager page: every session, each change’s before and after.'
           }
         ],
         points: [
-          'The panel stays small: whether it’s recording, how many changes, and the few buttons you need mid-test.',
-          'Step by step replays each change as recorded; Merged folds several edits of one row (A→B→C) into a single statement straight back to A.',
-          'Every recorded line in the panel’s log links to that change on the manager page, diff already open.',
-          'Undo or re-apply a single change from its own row, or tick several and roll back just those.',
-          'A session isn’t spent by one rollback: run the test again and it offers the same undo a second time.',
-          'Export a session as <code>.sql</code> or <code>.json</code>; the manager page switches between English and Vietnamese.'
+          'The panel stays small: recording or not, how many changes, the few buttons you need mid-test.',
+          '<b>Merged</b> folds A→B→C on one row into one statement straight back to A.',
+          'Undo or re-apply one change from its row, or tick several and roll back just those.',
+          'Export a session as <code>.sql</code> or <code>.json</code>.'
+        ]
+      },
+      {
+        title: 'Sessions over time',
+        nav: 'Sessions',
+        lead: 'A session outlives the test run: end it, roll it back today, resume it tomorrow.',
+        points: [
+          '<b>■ End</b> keeps the session on the panel, still one click from Roll back all; <b>↻ Resume</b> records into it again.',
+          'Click the session’s name for every session on this database, filtered as you type — Enter resumes the first.',
+          'One session records per database: starting or resuming another ends it, and says so first.',
+          'Not spent by a rollback: run the test again and the same undo is offered a second time.',
+          '<b>↷ Re-apply</b> puts the test’s values back — except hand-typed SQL, listed as skipped with the reason.',
+          'Shut, the panel still shows <b>⚠ n</b> for a warning; <b>⇤</b> moves it to the other corner.'
         ]
       },
       {
         title: 'What it records',
         nav: 'What it records',
-        lead: 'Old values are read before the write — through each row’s own edit form, because Adminer shortens long text in its grid and a shortened value restored as if it were whole would corrupt the row.',
+        lead: 'Old values are read before the write, through each row’s own edit form — never from Adminer’s shortened grid.',
         table: {
           head: ['Where you changed it', 'What is captured', 'Undone with'],
           rows: [
-            ['Row edit form', 'The values in the form when it loaded — before you touched them.', '<code>UPDATE</code> back, only the columns that changed'],
-            ['“Save and continue editing”', 'The row before and after each save, read back so <code>now()</code> is the real value.', '<code>UPDATE</code> back, one change per save'],
+            ['Row edit form, “Save and continue”', 'The row before each save.', '<code>UPDATE</code> back, changed columns only'],
             ['Delete on the edit form', 'The whole row.', '<code>INSERT</code> it back'],
-            ['A cell edited in the grid', 'Each edited row, read before the save and again after.', '<code>UPDATE</code> back'],
-            ['Ticked rows or whole result → Delete', 'Every row about to go — for a whole result, all matching rows, not just the page.', '<code>INSERT</code> them back'],
-            ['Ticked rows → Edit (mass edit)', 'Each row before.', '<code>UPDATE</code> back'],
-            ['<code>UPDATE</code> / <code>DELETE</code> on the SQL page', 'The affected rows, read before the statement runs.', '<code>UPDATE</code> / <code>INSERT</code> per row'],
-            ['<code>INSERT</code> — form, Clone or SQL page', 'The new row’s key.', '<code>DELETE</code> of exactly those rows']
+            ['A cell edited in the grid', 'The row, before and after.', '<code>UPDATE</code> back'],
+            ['Ticked rows or whole result → Delete', 'Every matching row, not just the page.', '<code>INSERT</code> them back'],
+            ['Ticked rows → Edit', 'Each row before.', '<code>UPDATE</code> back'],
+            ['<code>UPDATE</code> / <code>DELETE</code> on the SQL page', 'The rows, read before it runs.', '<code>UPDATE</code> / <code>INSERT</code> per row'],
+            ['<code>INSERT</code> — form, Clone, SQL page', 'The new row’s key.', '<code>DELETE</code> of those rows']
           ]
         }
       },
       {
         title: 'Safe by design',
         nav: 'Safety',
-        lead: 'It isn’t a transaction — Adminer opens a new connection per request — so it’s a changeset kept by the extension, replayed backwards as ordinary SQL you read before it runs.',
+        lead: 'Not a transaction — Adminer opens a new connection per request — but a changeset replayed backwards as SQL you read first.',
         points: [
-          '<b>Drift check</b>: before undoing a change it re-reads the row. Only the columns that change wrote are compared, so a colleague editing another column isn’t a conflict.',
-          '<b>Refusals</b>: a table with no primary or unique key, a statement with no <code>WHERE</code> or writing two tables, more rows than the cap (200 by default) — each shown on the change, never swallowed.',
-          'Statements run newest first, one change per submission, and stop at the first failure — what is marked undone is what actually was.',
-          'Rollback runs from the Adminer tab itself, where Adminer’s session cookie is; with none open, <b>Open Adminer</b> opens one and carries on.',
-          'A changeset belongs to one database (origin, driver, server, database) and is never offered on another.'
+          '<b>Drift check</b>: each row is re-read before it is undone; only the columns you wrote are compared.',
+          '<b>Refused</b>, and said so on the change: no key, two tables, no <code>WHERE</code>, BLOB columns, a grid CSV import, more rows than the cap.',
+          'Newest first, one change per submission, stopping at the first failure.',
+          'Runs from the Adminer tab, where its session cookie is — or <b>Copy undo SQL</b> and run it yourself.',
+          'A changeset belongs to one database and is never offered on another.'
+        ]
+      },
+      {
+        title: 'Settings and limits',
+        nav: 'Settings',
+        lead: 'The manager page’s Settings — for teams whose database or rules differ.',
+        images: [{
+          src: 'screenshots/shot-db-settings.webp',
+          srcDark: 'screenshots/shot-db-settings-dark.webp',
+          alt: 'The Settings dialog of the Test sessions page: enable the Adminer integration, let the extension run undo SQL itself, read the row back before undoing it, merge statements per row by default, snapshot rows before hand-written statements, a row cap of 200, an INSERT key-scan cap of 10000, and a Force engine menu.',
+          caption: 'Settings on the Test sessions page.'
+        }],
+        points: [
+          'Let the extension run the undo SQL itself, or only show it for you to run.',
+          'Turn the drift check off, or make Merged the default.',
+          'Row cap per statement (200) and the largest table scanned for an INSERT’s keys (10 000).',
+          'Engine detected — MySQL, PostgreSQL, SQL Server, SQLite, Oracle — or forced.'
         ]
       }
     ],

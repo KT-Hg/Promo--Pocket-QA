@@ -91,12 +91,12 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 ### Phase 3: Đợt A — v1.0.27
 - [x] Task 6: Vendor v1.0.27, preview popup đúng bản Store
 - [x] Task 7: SQL Test Case Designer chi tiết (Schema & diagram, Compare, Case list, Findings)
-- [ ] Task 8: Variables — đổi tên biến, chặn tên sai, gợi ý `${`
-- [ ] Task 9: Recording & Playback — Switch, Upload File, validation
-- [ ] Task 10: Run results · CSV · Export theo gap matrix
-- [ ] Task 11: Screenshots · Highlights · Settings theo gap matrix
-- [ ] Task 12: DB Test Session theo gap matrix
-- [ ] Task 13: Trang chủ — copy theo store description, thẻ feature khớp trang
+- [x] Task 8: Variables — đổi tên biến, chặn tên sai, gợi ý `${`
+- [x] Task 9: Recording & Playback — Switch, Upload File, validation
+- [x] Task 10: Run results · CSV · Export theo gap matrix
+- [x] Task 11: Screenshots · Highlights · Settings theo gap matrix
+- [x] Task 12: DB Test Session theo gap matrix
+- [x] Task 13: Trang chủ — copy theo store description, thẻ feature khớp trang
 
 ### Checkpoint A: 11 trang đạt check-layout/checkShape/hiddenByFit, EN+VI, light+dark → người dùng duyệt → deploy
 
