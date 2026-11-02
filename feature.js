@@ -31,10 +31,9 @@
   const pair = (en, vi) => vi == null || vi === en ? typeset(en) : `<span lang="en">${typeset(en)}</span><span lang="vi">${typeset(vi)}</span>`;
   const plain = html => html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
   const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
-  const icon = inner => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
   const list = (cls, en, vi = []) => { const ul = el('ul', cls); en.forEach((h, i) => ul.appendChild(el('li', null, pair(h, vi[i])))); return ul; };
   // A list that may shorten when its section would be taller than the screen: site.js keeps its first `keep`
-  // items and puts the rest behind the section's "Read more"
+  // items and puts the rest behind the section's "Show the rest"
   const fit = (node, keep) => { node.dataset.fit = keep; return node; };
   // An attribute holds one language: keep both and set the active one, again after every switch
   const attrs = [];
@@ -56,8 +55,6 @@
 
   // Hero
   $('#crumbCurrent').innerHTML = pair(E.title, V.title);
-  $('#heroIcon').innerHTML = icon(E.icon);
-  $('#heroEyebrow').innerHTML = pair(E.eyebrow, V.eyebrow);
   $('#heroTitle').innerHTML = pair(E.title, V.title);
   $('#heroLead').innerHTML = pair(E.lead, V.lead);
   const vf = V.facts || [];
@@ -121,7 +118,7 @@
     sec.id = 'section-' + (i + 1);
     const box = sec.appendChild(el('div', 'container collapsible'));
     const head = box.appendChild(el('div', 'section-head reveal'));
-    head.append(el('span', 'eyebrow'), el('h2', 'section-title', pair(s.title, v.title)));
+    head.appendChild(el('h2', 'section-title', pair(s.title, v.title)));
     if (s.lead) head.appendChild(el('p', 'section-sub', pair(s.lead, v.lead)));
     const media = [];
     if (s.images) media.push(shots(s, v));
@@ -144,45 +141,61 @@
   // Other features (the previous and next ones are among them)
   const more = fit($('#moreFeatures'), 1);
   ORDER.filter(k => k !== id).forEach(k => {
-    const a = more.appendChild(el('a', 'card feature reveal', `<span class="ic">${icon(EN[k].icon)}</span><h3>${pair(EN[k].title, (VI[k] || {}).title)}</h3>`));
+    const a = more.appendChild(el('a', 'card feature reveal', `<h3>${pair(EN[k].title, (VI[k] || {}).title)}</h3>`));
     a.href = 'feature.html?id=' + k;
   });
 
-  // Every section: a numbered eyebrow, a link in the "On this page" bar with the same label, and a "Read more"
-  // button that site.js shows only when it shortened a list
-  const pageNav = $('#pageNav'), links = {};
-  navItems.forEach(([target, en, vi], i) => {
-    const sec = document.getElementById(target), label = pair(en, vi), num = String(i + 1).padStart(2, '0');
-    sec.querySelector('.eyebrow').innerHTML = num + ' · ' + label;
-    // A chapter in the bar: its number over its name, as in the eyebrow
-    const a = el('a', null, `<span class="fnav-num">${num}</span><span class="fnav-label">${label}</span>`);
+  // Every section: a link in the pill's menu, and a "Show the rest" button that site.js shows only when it
+  // shortened a list
+  const pill = $('#pageNav'), pillBtn = pill.querySelector('.fpill-btn'), menu = $('#pageNavMenu'), links = {};
+  menu.setAttribute('role', 'navigation');
+  biAttr(menu, 'aria-label', 'On this page', 'Trên trang này');
+  navItems.forEach(([target, en, vi]) => {
+    const sec = document.getElementById(target);
+    const a = el('a', null, pair(en, vi));
     a.href = '#' + target;
-    links[target] = pageNav.appendChild(a);
+    links[target] = menu.appendChild(a);
     const btn = sec.querySelector('.collapsible').appendChild(el('button', 'more-btn',
-      '<span class="l-more"><span lang="en">Read more</span><span lang="vi">Xem thêm</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span>'));
+      '<span class="l-more"><span lang="en">Show the rest</span><span lang="vi">Xem phần còn lại</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span>'));
     btn.type = 'button';
     btn.setAttribute('aria-expanded', 'false');
   });
-  const setCurrent = target => {
-    // The current chapter is marked, and the ones above it as read
-    const at = navItems.findIndex(([k]) => k === target);
-    navItems.forEach(([k], i) => {
-      links[k].classList.toggle('past', i < at);
-      i === at ? links[k].setAttribute('aria-current', 'true') : links[k].removeAttribute('aria-current');
-    });
-    // Keep the current link in view where the bar scrolls sideways — the bar only, never the page
-    const a = links[target], x = a.offsetLeft - pageNav.offsetLeft;
-    if (x < pageNav.scrollLeft || x + a.offsetWidth > pageNav.scrollLeft + pageNav.clientWidth) pageNav.scrollLeft = x - 16;
+  // The pill names the section in view, in both languages (CSS stacks them, so a switch doesn't resize it), and its
+  // ring fills as the page scrolls. Screen readers hear "On this page: <section>"
+  let current = navItems[0][0];
+  const name = k => navItems.find(([t]) => t === k);
+  const labelPill = () => {
+    const [, en, vi = en] = name(current);
+    pillBtn.setAttribute('aria-label', d.lang === 'vi' ? 'Trên trang này: ' + plain(vi) : 'On this page: ' + plain(en));
   };
+  const setCurrent = target => {
+    current = target;
+    navItems.forEach(([k]) => k === target ? links[k].setAttribute('aria-current', 'true') : links[k].removeAttribute('aria-current'));
+    const [, en, vi = en] = name(target);
+    pill.querySelector('.fpill-label').innerHTML = `<span lang="en">${en}</span><span lang="vi">${vi}</span>`;
+    labelPill();
+  };
+  setCurrent(current);
+  const progress = () => {
+    const max = d.scrollHeight - innerHeight;
+    pill.style.setProperty('--p', max > 0 ? Math.round(scrollY / max * 100) : 0);
+  };
+  addEventListener('scroll', progress, {passive: true});
+  progress();
+  // The menu opens above the pill; a link, Esc or a click elsewhere closes it
+  const setMenu = open => { menu.hidden = !open; pillBtn.setAttribute('aria-expanded', open); };
+  pillBtn.addEventListener('click', () => setMenu(menu.hidden));
+  menu.addEventListener('click', e => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('click', e => { if (!pill.contains(e.target)) setMenu(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { setMenu(false); pillBtn.focus(); } });
   if ('IntersectionObserver' in window) {
-    // A band just under the header and this bar: whichever section crosses it is "current"
-    const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setCurrent(e.target.id); }), {rootMargin: '-120px 0px -60% 0px'});
+    // A band near the top of the screen: whichever section crosses it is "current"
+    const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setCurrent(e.target.id); }), {rootMargin: '-80px 0px -60% 0px'});
     navItems.forEach(([target]) => spy.observe(document.getElementById(target)));
-    // The bar shows once the hero's bottom is above the middle of the screen (01 has the lower half), so it is there
-    // whenever 01 is in view and still never sits as a band between the hero and 01
-    const bar = $('.fnav');
-    new IntersectionObserver(([e]) => bar.classList.toggle('on', !e.isIntersecting), {rootMargin: '-50% 0px 0px 0px'}).observe($('#top'));
-  } else $('.fnav').classList.add('on');
+    // The pill shows once the hero's bottom is above the middle of the screen, and hides again back up in the hero
+    new IntersectionObserver(([e]) => { pill.classList.toggle('on', !e.isIntersecting); if (e.isIntersecting) setMenu(false); },
+      {rootMargin: '-50% 0px 0px 0px'}).observe($('#top'));
+  } else pill.classList.add('on');
 
   // The popup in the hero, opened on this feature's tab in the page's theme (reloaded when the page theme flips)
   const frame = $('#popupFrame'), full = $('#previewFullLink');
@@ -199,5 +212,5 @@
   });
 
   syncAttrs();
-  new MutationObserver(syncAttrs).observe(d, {attributes: true, attributeFilter: ['lang']});
+  new MutationObserver(() => { syncAttrs(); labelPill(); }).observe(d, {attributes: true, attributeFilter: ['lang']});
 })();

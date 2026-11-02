@@ -70,9 +70,8 @@ for (const f of files) {
 }
 
 /* ── Version: keep the promo's own copy in step with the extension ──────────
- * The demo's Version card, both page footers and the sample report on
- * feature.html?id=run-results all quote the shipped version (the first two
- * swap in the live store version at runtime; this is their fallback). They used to be hand-edited, and drifted (footer said 1.0.7 while
+ * The demo's Version card and both page footers quote the shipped version
+ * (they swap in the live store version at runtime; this is their fallback). They used to be hand-edited, and drifted (footer said 1.0.7 while
  * the extension was on 1.0.13), which is exactly the kind of "the demo doesn't
  * match the real thing" gap this script exists to close. */
 // Read straight from the extension's manifest — only the string is vendored,
@@ -90,7 +89,6 @@ const chromeRe = /Chrome&nbsp;\d+(?=\+| or newer| trở lên)/g;
 const edits = [
   ['index.html',   /<span id="extVersion">\d+\.\d+\.\d+<\/span>/, tag],
   ['feature.html', /<span id="extVersion">\d+\.\d+\.\d+<\/span>/, tag],
-  ['features-en.js', /Pocket QA \d+\.\d+\.\d+/, `Pocket QA ${version}`], // sample report, ?id=run-results
   ...(minChrome ? [
     ['index.html',   chromeRe, `Chrome&nbsp;${minChrome}`],
     ['feature.html', chromeRe, `Chrome&nbsp;${minChrome}`],
@@ -108,7 +106,7 @@ for (const [name, re, to] of edits) {
   }
 }
 
-/* features-en.js may have changed above; re-stamp the pages' cache-busting ?v=. */
+/* The pages may have changed above; re-stamp their cache-busting ?v=. */
 process.stdout.write(execFileSync(process.execPath, [join(here, 'stamp-assets.mjs')], { encoding: 'utf8' }));
 
 /* Regenerate popup-demo.html from the freshly vendored popup.html. */

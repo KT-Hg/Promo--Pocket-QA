@@ -48,7 +48,7 @@
   // One screen is the small viewport (browser bars shown), as the CSS's svh: a phone's innerHeight grows when its bars
   // hide on scroll, and a section fitted to that is a bar's height too tall once they show again
   const svh = document.body.appendChild(document.createElement('div'));
-  svh.style.cssText = 'position: fixed; top: 0; height: 100vh; height: 100svh; visibility: hidden; pointer-events: none';
+  svh.style.cssText = 'position: fixed; top: 0; height: 100svh; visibility: hidden; pointer-events: none';
   const screenH = () => svh.offsetHeight;
   const fitMockup = () => {
     if (!mockup) return;
@@ -78,7 +78,7 @@
   // one; and each section the height of its taller language. A table is held row by row (a <tr> takes
   // height, not min-height), so it can still give up rows below.
   const sections = [...$$('main > section')];
-  const labelled = [...$$('.brand, #lang-btn, .nav-links a, .btn, .stats li, .more-btn, .fnav a, .crumb a')];
+  const labelled = [...$$('.brand, #lang-btn, .nav-links a, .btn, .stats li, .more-btn, .crumb a')];
   const rows = [...$$('.card:not(.table-wrap), .table-wrap tr, .perm, .faq summary, .faq details > p, .section-head, .hero-copy, ' +
     '.demo-note, footer, .checks > li, .stats li, .btn')];   // .btn: two lines in one language on a 344px phone
   const hold = (e, h) => e.style[e.tagName === 'TR' ? 'height' : 'minHeight'] = h ? h + 'px' : '';
@@ -88,9 +88,8 @@
   const flip = () => d.lang = d.lang === 'vi' ? 'en' : 'vi';
 
   // Feature pages: a section still taller than the screen keeps the first items of its lists ([data-fit] = how
-  // many always stay) and puts the rest behind its "Read more". Trimmed in one language, then in the other, so
+  // many always stay) and puts the rest behind its "Show the rest". Trimmed in one language, then in the other, so
   // the same items show in both.
-  const fnav = $('.fnav');
   const fitting = sections.map(s => [s, s.querySelector('.collapsible'), [...s.querySelectorAll('[data-fit]')]]).filter(([, box, gs]) => box && gs.length);
   const shown = g => [...g.children].filter(c => !c.classList.contains('trim'));
   const step = g => { const cs = getComputedStyle(g); return cs.display === 'grid' ? cs.gridTemplateColumns.split(' ').length : 1; };
@@ -100,7 +99,7 @@
   const bottom = e => e.getBoundingClientRect().bottom;
   const trim = () => {
     let cut = false;
-    const room = screenH() - $('.site-header').offsetHeight - (fnav ? fnav.offsetHeight : 0);
+    const room = screenH() - $('.site-header').offsetHeight;   // a section's padding keeps its foot clear for the pill
     fitting.forEach(([sec, box, groups]) => {
       if (box.classList.contains('expanded')) return;
       const max = room - px(sec, 'paddingTop') - px(sec, 'paddingBottom') - px(sec, 'borderTopWidth') - px(sec, 'borderBottomWidth') + .5;
@@ -109,7 +108,7 @@
       for (let over; (over = box.getBoundingClientRect().height - max) > 0;) {
         // Whatever reaches lowest (the taller column, or the last block) gives way: the screenshots or code shrink
         // by what is over, or a list gives up its last items — a whole grid row at a time, so no card is ever
-        // left alone in its row. Last of all, the lead sentence under the title waits behind "Read more" too, then
+        // left alone in its row. Last of all, the lead sentence under the title waits behind "Show the rest" too, then
         // the points beside a screenshot, table or code (a short phone: 375×667)
         const lists = groups.filter(g => shown(g).length - step(g) >= +g.dataset.fit);
         const tall = mine.filter(m => m.getBoundingClientRect().height > floor(m) + 1);
@@ -140,7 +139,7 @@
     fitMockup();
     // Widths first: a button held at its wider language can wrap its row, and that row's height counts below
     larger(labelled, e => e.getBoundingClientRect().width).forEach((w, i) => labelled[i].style.minWidth = w ? w + 'px' : '');
-    // A "Read more" shows only once its section is trimmed, so its width is held after that
+    // A "Show the rest" shows only once its section is trimmed, so its width is held after that
     const holdButtons = () => {
       const btns = labelled.filter(e => e.matches('.trimmed > .more-btn') && !e.style.minWidth);
       if (btns.length) larger(btns, e => e.getBoundingClientRect().width).forEach((w, i) => btns[i].style.minWidth = w + 'px');
@@ -178,7 +177,7 @@
   $$('.nav-links a').forEach(a => a.addEventListener('click', () => setMenu(false)));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 
-  // "Read more" toggles on small screens; an FAQ answer opening or closing changes its section's height too
+  // "Read more" (index) / "Show the rest" (feature pages) toggles on small screens; an FAQ answer opening or closing changes its section's height too
   $$('.more-btn').forEach(b => b.addEventListener('click', () => {
     b.setAttribute('aria-expanded', b.closest('.collapsible').classList.toggle('expanded'));
     evenOut();
@@ -193,7 +192,7 @@
     $('#extBtn').addEventListener('click', () => { demo.scrollIntoView({behavior: 'smooth', block: 'center'}); pulse(); });
   }
 
-  // Fade-in on scroll + highlight the current section in the menu (one link per numbered section; the hero has none)
+  // Fade-in on scroll + highlight the current section in the menu (one link per section; the hero has none)
   if (!('IntersectionObserver' in window)) { $$('.reveal').forEach(el => el.classList.add('in')); return; }
   const reveal = new IntersectionObserver(entries => entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); reveal.unobserve(e.target); }

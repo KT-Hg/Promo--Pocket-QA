@@ -395,16 +395,17 @@ main > section {
 }
 
 /* ---------- Feature guide (feature.html, body.doc): the index's one-screen sections, each a screen under the
-   header and the "On this page" bar. The hero is the index hero: the copy, and the popup mockup on this feature's tab. ---------- */
-.doc { --fnav-h: 52px; }
+   header, its foot kept clear for the "On this page" pill. The hero is the index hero: the copy, and the popup mockup
+   on this feature's tab. ---------- */
+.doc { --fpill-zone: 40px; }   /* + the 24px padding = 64px at a section's foot: the pill (44px), its 12px off the edge, 8px of air */
 .doc main > section:not(.hero) {
-  min-height: calc(100vh - var(--header-h) - var(--fnav-h)); min-height: calc(100svh - var(--header-h) - var(--fnav-h));
-  scroll-margin-top: calc(var(--header-h) + var(--fnav-h));
+  min-height: calc(100vh - var(--header-h)); min-height: calc(100svh - var(--header-h));
+  padding-bottom: calc(24px + var(--fpill-zone));
+  scroll-margin-top: var(--header-h);
 }
 .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 18px; font-size: .88rem; color: var(--muted); }
 .crumb a { color: var(--muted); font-weight: 500; text-decoration: none; }
 .crumb a:hover { color: var(--primary); }
-.fhero-tag { display: flex; align-items: center; gap: 12px; }
 @media (max-width: 767px) { .fhero .crumb { display: none; } }   /* phones: it only repeats the logo, the menu and the title */
 .fhero h1 { margin-top: 14px; font-size: clamp(1.9rem, 3.6vw, 2.6rem); letter-spacing: -.02em; }
 .facts { grid-template-columns: repeat(3, minmax(0, max-content)); }
@@ -416,30 +417,42 @@ main > section {
   .facts strong { flex: none; line-height: 1.2; }
 }
 
-/* "On this page": the page's chapters, each its number over its name as in the eyebrows — the current one underlined,
-   the ones above it (read) with an orange number. Centred while they fit (equal widths need up to 1415px, so no);
-   where they don't, the bar scrolls sideways from the first one. Out of the page flow: it slides out from under the
-   header once the hero's bottom is above mid-screen (.on, feature.js), so it never sits as a band between the hero and 01. */
-.fnav {
-  position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 40; height: var(--fnav-h);
-  background: var(--bg); background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px);
-  border-bottom: 1px solid var(--border);
-  transform: translateY(-100%); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s;
+/* "On this page": a pill floating at the bottom centre, naming the section in view, its ring filling as the page
+   scrolls (--p, feature.js); it opens the list of sections above it. It slides up once the hero's bottom is above
+   mid-screen (.on) and away again back in the hero. Each section's foot is kept clear for it (--fpill-zone). */
+.fpill {
+  position: fixed; left: 50%; bottom: 12px; z-index: 40; --p: 0;
+  transform: translate(-50%, calc(100% + 16px)); visibility: hidden; transition: transform .25s ease, visibility 0s linear .25s;
 }
-.fnav.on { transform: none; visibility: visible; transition: transform .25s ease; }
-@media (prefers-reduced-motion: reduce) { .fnav, .fnav.on { transition: none; } }
-.fnav-inner { display: flex; justify-content: center; justify-content: safe center; gap: 4px; height: 100%; overflow-x: auto; scrollbar-width: none; }
-.fnav-inner::-webkit-scrollbar { display: none; }
-.fnav a {
-  position: relative; flex: none; display: grid; align-content: center; justify-items: center; gap: 1px; padding: 0 12px;
-  color: var(--muted); line-height: 1.3; text-decoration: none; white-space: nowrap; transition: color .15s;
+.fpill.on { transform: translate(-50%, 0); visibility: visible; transition: transform .25s ease; }
+@media (prefers-reduced-motion: reduce) { .fpill, .fpill.on { transition: none; } }
+.fpill-btn {
+  display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 16px 0 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text); box-shadow: var(--shadow-lg);
+  font: inherit; font-size: .92rem; font-weight: 600; white-space: nowrap;
 }
-.fnav-num { font-size: .68rem; font-weight: 700; letter-spacing: .1em; font-variant-numeric: tabular-nums; opacity: .75; }
-.fnav-label { font-size: .86rem; font-weight: 500; }
-.fnav a:hover, .fnav a[aria-current] { color: var(--text); }
-.fnav a.past .fnav-num, .fnav a[aria-current] .fnav-num { color: var(--accent); opacity: 1; }
-.fnav a[aria-current]::after { content: ""; position: absolute; inset: auto 12px -1px; height: 2px; border-radius: 2px; background: var(--accent-fill); }
+.fpill-btn:hover { border-color: color-mix(in srgb, var(--primary) 40%, var(--border)); }
+.fpill-btn .i { width: 16px; height: 16px; color: var(--muted); transition: transform .2s; }
+.fpill-btn[aria-expanded="true"] .i { transform: rotate(180deg); }
+.fpill-ring {
+  flex: none; width: 22px; height: 22px; border-radius: 50%;
+  background: conic-gradient(var(--accent-fill) calc(var(--p) * 1%), var(--border) 0);
+  -webkit-mask: radial-gradient(circle, transparent 6.5px, #000 7px); mask: radial-gradient(circle, transparent 6.5px, #000 7px);
+}
+/* Both languages stacked in one cell, the inactive one invisible: the pill keeps one width across a language switch */
+.fpill-label { display: grid; }
+html[lang] body .fpill-label [lang] { display: block !important; grid-area: 1 / 1; }
+html[lang="en"] .fpill-label [lang="vi"], html[lang="vi"] .fpill-label [lang="en"] { visibility: hidden; }
+.fpill-menu {
+  position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%); width: max-content; min-width: 240px;
+  max-width: calc(100vw - 32px); max-height: calc(100svh - var(--header-h) - 96px); overflow-y: auto; padding: 6px;
+  border-radius: 14px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-lg);
+}
+.fpill-menu a {
+  display: block; padding: 8px 14px; border-radius: 9px; color: var(--muted); text-decoration: none; font-size: .94rem; font-weight: 500;
+}
+.fpill-menu a:hover { background: var(--surface-2); color: var(--text); }
+.fpill-menu a[aria-current] { background: var(--primary-soft); color: var(--text); font-weight: 600; }
 
 /* A list that would make its section taller than the screen keeps its first items; site.js marks the rest .trim,
    and they wait behind the section's "Read more" (any width, unlike the index's phone-only .more) */
@@ -499,14 +512,14 @@ main > section {
 /* Code samples and screenshots are never cut, so they shrink (or scroll, for code) to leave room for the
    section's title above them — 230px covers the title, a two-line lead and the section's padding */
 pre.code {
-  margin: 0; padding: 16px 18px; overflow: auto; max-height: calc(100svh - var(--header-h) - var(--fnav-h) - 230px);
+  margin: 0; padding: 16px 18px; overflow: auto; max-height: calc(100svh - var(--header-h) - var(--fpill-zone) - 230px);
   background: #0f172a; color: #e2e8f0; border: 1px solid var(--border); border-radius: var(--radius);
   font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
 }
 pre.code code { padding: 0; background: none; font: inherit; }
 .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }   /* side by side where they fit */
 .shot { display: grid; justify-items: center; align-content: center; margin: 0; padding: 10px; }
-.shot img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100svh - var(--header-h) - var(--fnav-h) - 260px); border-radius: 10px; }
+.shot img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100svh - var(--header-h) - var(--fpill-zone) - 260px); border-radius: 10px; }
 .shot figcaption { margin-top: 10px; font-size: .84rem; color: var(--muted); text-align: center; }
 
 /* More features: ten compact cards (icon | title, two to a row) beside the closing CTA, like the index's FAQ */

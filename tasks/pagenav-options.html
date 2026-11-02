@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page navigation options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<!--
+  Demo, not part of the site: six ways to replace the numbered "On this page" bar on feature.html.
+  Each frame is a scaled-down feature page that really scrolls; whatever marks "where you are" follows it.
+  Colours and type are the site's (site.css tokens).
+-->
+<style>
+  :root {
+    --bg: #f8fafc; --surface: #ffffff; --surface-2: #f1f5f9; --text: #0f172a; --muted: #556070; --border: #e2e8f0;
+    --primary: #1f4e79; --primary-ink: #ffffff; --primary-soft: #e8f0f8; --accent: #c2410c; --accent-fill: #ea7a2e;
+    --shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 8px 24px rgba(15, 23, 42, .06);
+    --shadow-lg: 0 2px 6px rgba(15, 23, 42, .05), 0 24px 64px rgba(15, 23, 42, .14);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b1220; --surface: #111a2d; --surface-2: #17223a; --text: #e6ebf3; --muted: #9ba7b9; --border: #24314b;
+    --primary: #8fbbe9; --primary-ink: #0b1220; --primary-soft: rgba(143, 187, 233, .12); --accent: #fb923c; --accent-fill: #fb923c;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    --shadow-lg: 0 2px 6px rgba(0, 0, 0, .3), 0 24px 64px rgba(0, 0, 0, .5);
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 "Be Vietnam Pro", system-ui, sans-serif; }
+  button { font: inherit; color: inherit; }
+  a { color: inherit; }
+
+  /* ── The demo page ───────────────────────────────────────────── */
+  .top { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border); }
+  .top-in { max-width: 1240px; margin: 0 auto; padding: 14px 16px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .top h1 { font-size: 1.15rem; margin: 0; flex: 1 1 320px; letter-spacing: -.01em; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; padding: 3px; background: var(--surface); }
+  .seg button { border: 0; background: none; padding: 6px 14px; border-radius: 999px; cursor: pointer; color: var(--muted); font-size: .9rem; }
+  .seg button[aria-pressed="true"] { background: var(--primary); color: var(--primary-ink); }
+  main { max-width: 1240px; margin: 0 auto; padding: 24px 16px 80px; }
+  .intro { color: var(--muted); max-width: 70ch; margin: 0 0 32px; }
+  .opt { margin: 0 0 56px; }
+  .opt-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 32px; margin-bottom: 14px; }
+  .opt-head h2 { margin: 0; font-size: 1.35rem; letter-spacing: -.01em; grid-column: 1 / -1; display: flex; gap: 12px; align-items: baseline; }
+  .opt-head h2 b { color: var(--accent); }
+  .opt-head p { margin: 0; color: var(--muted); grid-column: 1 / -1; max-width: 80ch; }
+  .opt-head ul { margin: 0; padding-left: 1.1em; font-size: .92rem; }
+  .opt-head ul li::marker { color: var(--muted); }
+  .opt-head .pro b { color: #16a34a; } .opt-head .con b { color: var(--accent); }
+  @media (max-width: 720px) { .opt-head { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ── A frame: a feature page in miniature ────────────────────── */
+  .frame { --fh: 560px; position: relative; height: var(--fh); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+    background: var(--bg); box-shadow: var(--shadow-lg); margin: 0 auto; }
+  body.mobile .frame { --fh: 640px; width: 375px; max-width: 100%; }
+  .fr-head { position: relative; z-index: 3; height: 52px; display: flex; align-items: center; gap: 16px; padding: 0 20px;
+    background: var(--surface); border-bottom: 1px solid var(--border); }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap; }
+  .brand i { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, var(--primary) 30%, transparent 32%), conic-gradient(var(--primary), var(--accent-fill), var(--primary)); }
+  .fr-links { margin-left: auto; display: flex; gap: 18px; color: var(--muted); font-size: .88rem; }
+  body.mobile .fr-links { display: none; }
+  .fr-scroll { position: relative; height: calc(var(--fh) - 52px); overflow-y: auto; scroll-behavior: smooth; }
+  .fr-page { max-width: 980px; margin: 0 auto; padding: 0 24px; }
+  body.mobile .fr-page { padding: 0 16px; }
+  .fr-hero { padding: 40px 0 36px; }
+  .crumbs { color: var(--muted); font-size: .82rem; }
+  .fr-hero h1 { font-size: 2rem; line-height: 1.15; margin: 8px 0 10px; letter-spacing: -.02em; }
+  body.mobile .fr-hero h1 { font-size: 1.6rem; }
+  .fr-hero .lead { color: var(--muted); max-width: 56ch; margin: 0; }
+  .fr-sec { min-height: calc(var(--fh) - 110px); padding: 36px 0; border-top: 1px solid var(--border); }
+  .fr-sec h2 { margin: 0 0 6px; font-size: 1.45rem; letter-spacing: -.01em; }
+  .fr-sec .lead { color: var(--muted); margin: 0 0 18px; max-width: 60ch; }
+  .sk { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; }
+  body.mobile .sk { grid-template-columns: 1fr; }
+  .sk-img { height: 170px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); }
+  .sk-lines { display: grid; gap: 12px; align-content: start; }
+  .sk-lines i { height: 12px; border-radius: 6px; background: var(--surface-2); }
+  .sk-lines i:nth-child(2n) { width: 82%; } .sk-lines i:nth-child(3n) { width: 64%; }
+  .is-current { color: var(--text) !important; }
+
+  /* A — sidebar contents */
+  .v-toc .fr-page { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 40px; max-width: 1060px; }
+  .toc { position: sticky; top: 0; align-self: start; padding: 40px 0; }
+  .toc-t { font-size: .8rem; font-weight: 600; color: var(--muted); margin: 0 0 10px; }
+  .toc a { display: block; padding: 5px 0 5px 14px; border-left: 2px solid var(--border); color: var(--muted); text-decoration: none; font-size: .9rem; }
+  .toc a.on { border-left-color: var(--accent-fill); color: var(--text); font-weight: 600; }
+  .toc-inline { display: none; margin-top: 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+  .toc-inline summary { padding: 10px 14px; cursor: pointer; font-weight: 600; }
+  .toc-inline a { display: block; padding: 7px 14px; border-top: 1px solid var(--border); text-decoration: none; color: var(--muted); }
+  body.mobile .v-toc .fr-page { display: block; }
+  body.mobile .v-toc .toc { display: none; }
+  body.mobile .v-toc .toc-inline { display: block; }
+
+  /* B — dot rail */
+  .dots { position: absolute; z-index: 4; right: 14px; top: 52px; bottom: 0; display: flex; flex-direction: column; justify-content: center; gap: 10px;
+    opacity: 0; transition: opacity .25s; }
+  .dots.show { opacity: 1; }
+  .dots a { position: relative; display: block; width: 10px; height: 10px; border-radius: 99px; background: var(--border); transition: height .2s, background .2s; }
+  .dots a.on { height: 26px; background: var(--accent-fill); }
+  .dots a span { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-size: .8rem; padding: 3px 10px;
+    border-radius: 8px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .15s; }
+  .dots a:hover span, .dots a:focus-visible span, .dots a.on.flash span { opacity: 1; }
+  body.mobile .dots { right: 6px; gap: 8px; }
+  body.mobile .dots a { width: 7px; height: 7px; } body.mobile .dots a.on { height: 18px; }
+
+  /* C — floating pill */
+  .pill { position: absolute; z-index: 4; left: 50%; bottom: 18px; transform: translate(-50%, 140%); transition: transform .3s; }
+  .pill.show { transform: translate(-50%, 0); }
+  .pill > button { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-lg);
+    border-radius: 999px; padding: 9px 16px 9px 12px; cursor: pointer; white-space: nowrap; }
+  .ring { --p: 0; width: 22px; height: 22px; border-radius: 50%; background: conic-gradient(var(--accent-fill) calc(var(--p) * 1%), var(--border) 0);
+    -webkit-mask: radial-gradient(circle, transparent 6px, #000 6.5px); mask: radial-gradient(circle, transparent 6px, #000 6.5px); }
+  .pill .chev { color: var(--muted); font-size: .8rem; }
+  .menu { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); min-width: 240px; padding: 6px; border-radius: 14px;
+    background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-lg); display: none; }
+  .open > .menu { display: block; }
+  .menu a { display: block; padding: 7px 12px; border-radius: 9px; text-decoration: none; color: var(--muted); font-size: .92rem; }
+  .menu a:hover { background: var(--surface-2); }
+  .menu a.on { color: var(--text); font-weight: 600; background: var(--primary-soft); }
+
+  /* D — current section in the header */
+  .crumb { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--muted); font-size: .9rem; opacity: 0; transition: opacity .25s; }
+  .crumb.show { opacity: 1; }
+  .crumb > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crumb > button { display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; background: var(--surface-2);
+    cursor: pointer; color: var(--text); font-weight: 600; white-space: nowrap; }
+  .crumb .menu { top: calc(100% + 10px); bottom: auto; left: 0; transform: none; }
+  body.mobile .crumb > span { display: none; }
+
+  /* E — contents in the hero, "Next" at each section's end, back to top */
+  .contents { margin-top: 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 24px; padding: 16px 18px;
+    border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+  body.mobile .contents { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contents a { text-decoration: none; color: var(--muted); font-size: .92rem; padding: 3px 0; }
+  .contents a:hover { color: var(--text); }
+  .next { display: inline-flex; gap: 8px; margin-top: 22px; text-decoration: none; color: var(--primary); font-weight: 600; }
+  .totop { position: absolute; z-index: 4; right: 16px; bottom: 16px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); box-shadow: var(--shadow); cursor: pointer; opacity: 0; transition: opacity .25s; }
+  .totop.show { opacity: 1; }
+
+  /* F — reading progress under the header */
+  .prog { position: absolute; z-index: 4; left: 0; right: 0; top: 52px; height: 14px; }
+  .prog::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--border); }
+  .prog-fill { position: absolute; left: 0; top: 0; height: 3px; width: 0; background: var(--accent-fill); }
+  .prog a { position: absolute; top: -3px; width: 9px; height: 9px; margin-left: -4px; border-radius: 50%; background: var(--surface); border: 2px solid var(--border); }
+  .prog a.done { border-color: var(--accent-fill); background: var(--accent-fill); }
+  .prog a span { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: .78rem; padding: 2px 8px; border-radius: 7px;
+    background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); opacity: 0; pointer-events: none; }
+  .prog a:hover span, .prog a:focus-visible span { opacity: 1; }
+  .prog-label { position: absolute; right: 16px; top: 8px; font-size: .78rem; color: var(--muted); background: var(--bg); padding: 0 6px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <h1>Thay thanh “On this page” — 6 phương án</h1>
+    <div class="seg" role="group" aria-label="Kích thước">
+      <button type="button" data-size="desktop" aria-pressed="true">Desktop</button>
+      <button type="button" data-size="mobile" aria-pressed="false">Mobile</button>
+    </div>
+    <div class="seg" role="group" aria-label="Giao diện">
+      <button type="button" data-theme-set="light" aria-pressed="false">Sáng</button>
+      <button type="button" data-theme-set="dark" aria-pressed="true">Tối</button>
+    </div>
+  </div>
+</header>
+<main>
+  <p class="intro">Mỗi khung là trang <b>SQL Test Case Designer</b> thu nhỏ và cuộn được thật — cuộn bên trong khung để xem cách
+    mỗi phương án cho biết bạn đang ở đâu và nhảy tới mục khác. Không phương án nào dùng số thứ tự 01 / 02. Chuyển
+    Desktop / Mobile ở trên để xem trên điện thoại.</p>
+  <div id="options"></div>
+</main>
+
+<script>
+(() => {
+  const SECTIONS = [
+    ['overview', 'Overview', 'Paste a query, get a ready-made test case list with the data each case needs.'],
+    ['how', 'How to use it', 'Open it from the Data tab, paste a query, review the cases, export them.'],
+    ['tech', 'Techniques', 'EP + BVA, decision table with pairwise and MC/DC, NULL logic, joins and paging.'],
+    ['diagram', 'Diagram', 'No database is read: the schema comes from the query, shown as a list and as a diagram.'],
+    ['compare', 'Compare', 'Paste the old and the new query: every case is sorted by what the change did to it.'],
+    ['cases', 'Case list', 'A three-column workspace in its own tab, not a popup panel.'],
+    ['findings', 'Findings', 'Three panels about the query itself, closed until needed.'],
+    ['data', 'Test data', 'Each case comes with the rows to type in, and the query to run afterwards.'],
+    ['export', 'Export', 'CSV for TestRail or Jira, JSON, a per-table Data CSV, or Verify SQL.'],
+    ['notes', 'Good to know', 'CTEs get cases of their own; expected results follow SQL semantics.']
+  ];
+  const OPTIONS = [
+    { v: 'toc', name: 'Mục lục bên trái', desc: 'Một cột hẹp bên trái liệt kê tên các mục, dính theo khi cuộn; mục đang đọc có vạch cam. Như trang tài liệu (MDN, Stripe Docs).',
+      pros: ['Thấy hết các mục cùng lúc, không phải mở gì', 'Không che nội dung, không thêm thanh ngang'],
+      cons: ['Lấy ~200px chiều ngang — nội dung hẹp lại', 'Mobile: đổi thành ô “Trên trang này ▾” ở đầu trang'] },
+    { v: 'dots', name: 'Chấm dọc bên phải', desc: 'Một cột chấm nhỏ ở mép phải; chấm của mục đang đọc dài ra thành vạch cam, rê chuột lên chấm để thấy tên mục.',
+      pros: ['Gần như vô hình, không chiếm chỗ', 'Hợp với trang “mỗi mục một màn hình”'],
+      cons: ['Phải rê chuột mới biết tên mục', 'Trên điện thoại chấm nhỏ, khó bấm'] },
+    { v: 'pill', name: 'Nút nổi “mục đang đọc”', desc: 'Một nút tròn dài nổi ở giữa đáy màn hình, ghi tên mục đang đọc và vòng tiến độ; bấm vào mở danh sách mục.',
+      pros: ['Một thành phần cho cả desktop lẫn mobile', 'Luôn nói bạn đang ở đâu, không chiếm hàng nào'],
+      cons: ['Nổi đè lên một góc nội dung', 'Phải bấm một lần mới thấy các mục khác'] },
+    { v: 'crumb', name: 'Tên mục trên header', desc: 'Khi đã cuộn qua phần đầu, header hiện “SQL Test Case Designer › Diagram ▾”; bấm vào tên mục để mở danh sách.',
+      pros: ['Không thêm thanh hay nút nào — dùng lại header', 'Cách đọc quen thuộc như breadcrumb'],
+      cons: ['Header đã có menu, thêm một thứ cạnh tranh chỗ', 'Trên mobile chỉ còn chỗ cho tên mục'] },
+    { v: 'static', name: 'Mục lục trong phần đầu + “Tiếp theo”', desc: 'Không có gì dính theo khi cuộn: mục lục nằm một lần trong phần đầu trang, cuối mỗi mục có liên kết “Tiếp: …”, và nút về đầu trang.',
+      pros: ['Gọn nhất, không có thành phần nổi nào', 'Dẫn người đọc đi tuần tự từ mục này sang mục kia'],
+      cons: ['Giữa trang không biết còn bao nhiêu mục', 'Muốn nhảy xa phải về đầu trang'] },
+    { v: 'progress', name: 'Vạch tiến độ dưới header', desc: 'Một vạch mảnh dưới header chạy theo độ cuộn; mỗi mục là một nút nhỏ trên vạch, rê chuột thấy tên và bấm để nhảy.',
+      pros: ['Mảnh nhất trong các kiểu dính — 3px', 'Vừa cho biết tiến độ, vừa nhảy được'],
+      cons: ['Nút nhỏ, phải rê chuột mới biết là mục nào', 'Nhiều mục thì nút sát nhau'] }
+  ];
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const link = (v, id, name, cls = '') => `<a href="#" class="${cls}" data-go="${id}">${esc(name)}</a>`;
+
+  function page(v) {
+    const list = cls => SECTIONS.map(([id, name]) => link(v, id, name, cls)).join('');
+    const hero = `<div class="fr-hero" data-sec="top">
+      <div class="crumbs">Pocket QA / Features / SQL Test Case Designer</div>
+      <h1>SQL Test Case Designer</h1>
+      <p class="lead">Paste a SQL query and get a ready-made test case list — boundaries, a decision table, NULL and JOIN cases — with the data each one needs.</p>
+      ${v === 'toc' ? `<details class="toc-inline"><summary>Trên trang này</summary>${list()}</details>` : ''}
+      ${v === 'static' ? `<nav class="contents" aria-label="Trên trang này">${list()}</nav>` : ''}
+    </div>`;
+    const secs = SECTIONS.map(([id, name, lead], i) => `<section class="fr-sec" data-sec="${id}">
+      <h2>${esc(name)}</h2><p class="lead">${esc(lead)}</p>
+      <div class="sk"><div class="sk-img"></div><div class="sk-lines"><i></i><i></i><i></i><i></i><i></i></div></div>
+      ${v === 'static' && SECTIONS[i + 1] ? `<a href="#" class="next" data-go="${SECTIONS[i + 1][0]}">Tiếp: ${esc(SECTIONS[i + 1][1])} →</a>` : ''}
+    </section>`).join('');
+    const toc = v === 'toc' ? `<nav class="toc" aria-label="Trên trang này"><p class="toc-t">Trên trang này</p>${list()}</nav>` : '';
+    return `
+      <div class="fr-head"><span class="brand"><i></i>Pocket QA</span>
+        ${v === 'crumb' ? `<div class="crumb"><span>SQL Test Case Designer ›</span><button type="button" data-menu aria-expanded="false"><b class="cur">Overview</b> ▾</button><div class="menu">${list()}</div></div>` : ''}
+        <span class="fr-links"><span>Features</span><span>Tools</span><span>Privacy</span><span>FAQ</span></span></div>
+      ${v === 'progress' ? `<div class="prog"><div class="prog-fill"></div>${SECTIONS.map(([id, name]) => `<a href="#" data-go="${id}" aria-label="${esc(name)}"><span>${esc(name)}</span></a>`).join('')}<span class="prog-label"></span></div>` : ''}
+      <div class="fr-scroll"><div class="fr-page">${toc}<div class="fr-content">${hero}${secs}</div></div></div>
+      ${v === 'dots' ? `<nav class="dots" aria-label="Trên trang này">${SECTIONS.map(([id, name]) => `<a href="#" data-go="${id}" aria-label="${esc(name)}"><span>${esc(name)}</span></a>`).join('')}</nav>` : ''}
+      ${v === 'pill' ? `<div class="pill"><button type="button" data-menu aria-expanded="false"><span class="ring"></span><b class="cur">Overview</b><span class="chev">▲</span></button><div class="menu">${list()}</div></div>` : ''}
+      ${v === 'static' ? `<button type="button" class="totop" data-go="top" aria-label="Về đầu trang">↑</button>` : ''}`;
+  }
+
+  const root = document.getElementById('options');
+  OPTIONS.forEach((o, i) => {
+    const el = document.createElement('section');
+    el.className = 'opt';
+    el.innerHTML = `<div class="opt-head"><h2><b>${String.fromCharCode(65 + i)}</b>${esc(o.name)}</h2><p>${esc(o.desc)}</p>
+      <ul class="pro">${o.pros.map(p => `<li><b>+</b> ${esc(p)}</li>`).join('')}</ul>
+      <ul class="con">${o.cons.map(p => `<li><b>−</b> ${esc(p)}</li>`).join('')}</ul></div>
+      <div class="frame v-${o.v}">${page(o.v)}</div>`;
+    root.append(el);
+    wire(el.querySelector('.frame'), o.v);
+  });
+
+  function wire(frame, v) {
+    const scroll = frame.querySelector('.fr-scroll');
+    const secs = [...frame.querySelectorAll('[data-sec]')];
+    const go = id => { const s = frame.querySelector(`[data-sec="${id}"]`); scroll.scrollTo({ top: id === 'top' ? 0 : s.offsetTop, behavior: 'smooth' }); };
+    frame.addEventListener('click', e => {
+      const a = e.target.closest('[data-go]');
+      const m = e.target.closest('[data-menu]');
+      frame.querySelectorAll('.open').forEach(x => { if (!m || !x.contains(m)) { x.classList.remove('open'); x.querySelector('[data-menu]')?.setAttribute('aria-expanded', 'false'); } });
+      if (m) { const box = m.parentElement; m.setAttribute('aria-expanded', box.classList.toggle('open')); e.preventDefault(); return; }
+      if (a) { e.preventDefault(); go(a.dataset.go); a.closest('details')?.removeAttribute('open'); }
+    });
+    const update = () => {
+      // The current section: the last one whose top has passed a line a third of the way down
+      const line = scroll.scrollTop + scroll.clientHeight / 3;
+      const cur = secs.filter(s => s.offsetTop <= line).pop() || secs[0];
+      const id = cur.dataset.sec, inHero = id === 'top';
+      const idx = SECTIONS.findIndex(([k]) => k === id);
+      const name = inHero ? 'Overview' : SECTIONS[idx][1];
+      const p = scroll.scrollTop / Math.max(1, scroll.scrollHeight - scroll.clientHeight);
+      frame.querySelectorAll('[data-go]').forEach(a => a.classList.toggle('on', a.dataset.go === id));
+      frame.querySelectorAll('.cur').forEach(c => c.textContent = name);
+      frame.querySelector('.dots')?.classList.toggle('show', !inHero);
+      frame.querySelector('.pill')?.classList.toggle('show', !inHero);
+      frame.querySelector('.crumb')?.classList.toggle('show', !inHero);
+      frame.querySelector('.totop')?.classList.toggle('show', scroll.scrollTop > scroll.clientHeight);
+      const ring = frame.querySelector('.ring'); if (ring) ring.style.setProperty('--p', Math.round(p * 100));
+      const prog = frame.querySelector('.prog');
+      if (prog) {
+        prog.querySelector('.prog-fill').style.width = p * 100 + '%';
+        prog.querySelector('.prog-label').textContent = inHero ? '' : name;
+        const total = scroll.scrollHeight - scroll.clientHeight;
+        prog.querySelectorAll('a').forEach((a, i) => {
+          const s = frame.querySelector(`[data-sec="${SECTIONS[i][0]}"]`);
+          const at = Math.min(s.offsetTop, total) / Math.max(1, total);
+          a.style.left = `calc(${at * 100}% - ${at * 8}px + 4px)`;
+          a.classList.toggle('done', scroll.scrollTop >= Math.min(s.offsetTop, total) - 2);
+        });
+      }
+    };
+    scroll.addEventListener('scroll', update, { passive: true });
+    new ResizeObserver(update).observe(scroll);
+    update();
+  }
+
+  // Desktop / mobile, light / dark
+  document.querySelectorAll('[data-size]').forEach(b => b.addEventListener('click', () => {
+    document.body.classList.toggle('mobile', b.dataset.size === 'mobile');
+    document.querySelectorAll('[data-size]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  }));
+  document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => {
+    document.documentElement.dataset.theme = b.dataset.themeSet;
+    document.querySelectorAll('[data-theme-set]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.open').forEach(x => x.classList.remove('open')); });
+})();
+</script>
+</body>
+</html>
