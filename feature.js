@@ -31,10 +31,9 @@
   const pair = (en, vi) => vi == null || vi === en ? typeset(en) : `<span lang="en">${typeset(en)}</span><span lang="vi">${typeset(vi)}</span>`;
   const plain = html => html.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
   const el = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
-  const icon = inner => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
   const list = (cls, en, vi = []) => { const ul = el('ul', cls); en.forEach((h, i) => ul.appendChild(el('li', null, pair(h, vi[i])))); return ul; };
   // A list that may shorten when its section would be taller than the screen: site.js keeps its first `keep`
-  // items and puts the rest behind the section's "Read more"
+  // items and puts the rest behind the section's "Show the rest"
   const fit = (node, keep) => { node.dataset.fit = keep; return node; };
   // An attribute holds one language: keep both and set the active one, again after every switch
   const attrs = [];
@@ -56,8 +55,6 @@
 
   // Hero
   $('#crumbCurrent').innerHTML = pair(E.title, V.title);
-  $('#heroIcon').innerHTML = icon(E.icon);
-  $('#heroEyebrow').innerHTML = pair(E.eyebrow, V.eyebrow);
   $('#heroTitle').innerHTML = pair(E.title, V.title);
   $('#heroLead').innerHTML = pair(E.lead, V.lead);
   const vf = V.facts || [];
@@ -121,7 +118,7 @@
     sec.id = 'section-' + (i + 1);
     const box = sec.appendChild(el('div', 'container collapsible'));
     const head = box.appendChild(el('div', 'section-head reveal'));
-    head.append(el('span', 'eyebrow'), el('h2', 'section-title', pair(s.title, v.title)));
+    head.appendChild(el('h2', 'section-title', pair(s.title, v.title)));
     if (s.lead) head.appendChild(el('p', 'section-sub', pair(s.lead, v.lead)));
     const media = [];
     if (s.images) media.push(shots(s, v));
@@ -144,22 +141,21 @@
   // Other features (the previous and next ones are among them)
   const more = fit($('#moreFeatures'), 1);
   ORDER.filter(k => k !== id).forEach(k => {
-    const a = more.appendChild(el('a', 'card feature reveal', `<span class="ic">${icon(EN[k].icon)}</span><h3>${pair(EN[k].title, (VI[k] || {}).title)}</h3>`));
+    const a = more.appendChild(el('a', 'card feature reveal', `<h3>${pair(EN[k].title, (VI[k] || {}).title)}</h3>`));
     a.href = 'feature.html?id=' + k;
   });
 
-  // Every section: a numbered eyebrow, a link in the "On this page" bar with the same label, and a "Read more"
-  // button that site.js shows only when it shortened a list
+  // Every section: a link in the "On this page" bar, and a "Show the rest" button that site.js shows only when it
+  // shortened a list
   const pageNav = $('#pageNav'), links = {};
   navItems.forEach(([target, en, vi], i) => {
     const sec = document.getElementById(target), label = pair(en, vi), num = String(i + 1).padStart(2, '0');
-    sec.querySelector('.eyebrow').innerHTML = num + ' · ' + label;
-    // A chapter in the bar: its number over its name, as in the eyebrow
+    // A chapter in the bar: its number over its name
     const a = el('a', null, `<span class="fnav-num">${num}</span><span class="fnav-label">${label}</span>`);
     a.href = '#' + target;
     links[target] = pageNav.appendChild(a);
     const btn = sec.querySelector('.collapsible').appendChild(el('button', 'more-btn',
-      '<span class="l-more"><span lang="en">Read more</span><span lang="vi">Xem thêm</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span>'));
+      '<span class="l-more"><span lang="en">Show the rest</span><span lang="vi">Xem phần còn lại</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span>'));
     btn.type = 'button';
     btn.setAttribute('aria-expanded', 'false');
   });

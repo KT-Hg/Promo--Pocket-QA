@@ -404,7 +404,6 @@ main > section {
 .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 18px; font-size: .88rem; color: var(--muted); }
 .crumb a { color: var(--muted); font-weight: 500; text-decoration: none; }
 .crumb a:hover { color: var(--primary); }
-.fhero-tag { display: flex; align-items: center; gap: 12px; }
 @media (max-width: 767px) { .fhero .crumb { display: none; } }   /* phones: it only repeats the logo, the menu and the title */
 .fhero h1 { margin-top: 14px; font-size: clamp(1.9rem, 3.6vw, 2.6rem); letter-spacing: -.02em; }
 .facts { grid-template-columns: repeat(3, minmax(0, max-content)); }
@@ -416,7 +415,7 @@ main > section {
   .facts strong { flex: none; line-height: 1.2; }
 }
 
-/* "On this page": the page's chapters, each its number over its name as in the eyebrows — the current one underlined,
+/* "On this page": the page's chapters, each its number over its name — the current one underlined,
    the ones above it (read) with an orange number. Centred while they fit (equal widths need up to 1415px, so no);
    where they don't, the bar scrolls sideways from the first one. Out of the page flow: it slides out from under the
    header once the hero's bottom is above mid-screen (.on, feature.js), so it never sits as a band between the hero and 01. */

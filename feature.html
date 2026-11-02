@@ -40,7 +40,7 @@
     (window.syncTitle = () => { document.title = (d.lang === 'vi' && d.dataset.titleVi) || d.dataset.titleEn || en; })();
   })();
 </script>
-<link rel="stylesheet" href="site.css?v=a77e4b35">
+<link rel="stylesheet" href="site.css?v=430cbc71">
 </head>
 <body class="doc">
 <a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="vi">Bỏ qua tới nội dung</span></a>
@@ -86,7 +86,6 @@
           <span aria-hidden="true">/</span>
           <span id="crumbCurrent">…</span>
         </nav>
-        <div class="fhero-tag"><span class="ic" id="heroIcon"></span><span class="eyebrow" id="heroEyebrow"></span></div>
         <h1 id="heroTitle">…</h1>
         <p class="lead" id="heroLead"></p>
         <div class="cta">
@@ -104,7 +103,7 @@
 
       <div class="hero-demo" id="demo">
         <div class="mockup">
-          <div class="browser">
+          <div class="browser" data-ui>
             <div class="browser-bar">
               <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
               <div class="url">
@@ -136,20 +135,19 @@
     </div>
   </section>
 
-  <!-- ================= ON THIS PAGE — one link per numbered section, same label as its eyebrow (feature.js) ================= -->
+  <!-- ================= ON THIS PAGE — one link per section, same label as its title (feature.js) ================= -->
   <nav class="fnav" aria-label="On this page / Trên trang này">
     <div class="container fnav-inner" id="pageNav"></div>
   </nav>
 
-  <!-- Every section below is one screen under the header and this bar. feature.js numbers the eyebrows, marks the
-       lists that may shorten ([data-fit]) and adds a "Read more" button; site.js keeps a list's first items when the
+  <!-- Every section below is one screen under the header and this bar. feature.js marks the
+       lists that may shorten ([data-fit]) and adds a "Show the rest" button; site.js keeps a list's first items when the
        section would be taller than the screen and puts the rest behind that button. -->
 
   <!-- ================= OVERVIEW: six points, six cards ================= -->
   <section id="overview">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow"></span>
         <h2 class="section-title"><span lang="en">At a glance</span><span lang="vi">Tóm tắt</span></h2>
       </div>
       <ul class="cards points" id="detailPoints"></ul>
@@ -160,7 +158,6 @@
   <section id="how-to">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow"></span>
         <h2 class="section-title"><span lang="en">Step by step</span><span lang="vi">Từng bước</span></h2>
       </div>
       <ol class="steps" id="detailSteps"></ol>
@@ -174,7 +171,6 @@
   <section id="notes">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow"></span>
         <h2 class="section-title"><span lang="en">Limits &amp; tips</span><span lang="vi">Giới hạn &amp; mẹo</span></h2>
       </div>
       <ul class="notes-grid" id="detailNotes"></ul>
@@ -185,7 +181,6 @@
   <section id="more">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow"></span>
         <h2 class="section-title"><span lang="en">Explore other features</span><span lang="vi">Các tính năng khác</span></h2>
       </div>
       <div class="more-grid">
@@ -222,10 +217,10 @@
   </div>
 </footer>
 
-<script src="features-en.js?v=36e012f6"></script>
-<script src="features-vi.js?v=a5bc992b"></script>
-<script src="feature.js?v=4827e047"></script>
-<script src="site.js?v=cc7a7a1f"></script>
+<script src="features-en.js?v=2bb86155"></script>
+<script src="features-vi.js?v=ab82fa26"></script>
+<script src="feature.js?v=452eebf4"></script>
+<script src="site.js?v=98b2e655"></script>
 <script src="store-version.js?v=f9330233"></script>
 </body>
 </html>

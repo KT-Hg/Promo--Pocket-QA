@@ -1,12 +1,11 @@
 /**
  * features-vi.js — Vietnamese text of the feature pages. Same shape as FEATURES_EN in
- * features-en.js, translatable strings only: icon, tab, image src and code samples come from the English
+ * features-en.js, translatable strings only: tab, image src and code samples come from the English
  * object. Anything missing here falls back to English (feature.js). UI labels stay in English, as the popup
  * shows them (Start Recording, Add Manual Action, Passed / Failed…).
  */
 var FEATURES_VI = {
   recording: {
-    eyebrow: 'Record & Play',
     title: 'Ghi lại bằng một click',
     lead: 'Kích hoạt Pocket QA trên một tab, bấm Start Recording rồi làm thao tác một lần. Mỗi cú click và mỗi ô bạn nhập liệu đều thành một bước sửa được — không phải tự viết selector.',
     facts: [['17', 'loại hành động'], ['8', 'selector lưu cho mỗi phần tử'], ['50', 'bước hoàn tác']],
@@ -17,7 +16,7 @@ var FEATURES_VI = {
       'Mọi thứ khác là một trong 17 loại hành động, thêm bằng <b>Add Manual Action</b> — hover, dropdown, kéo thả, chờ, Run JS, điều kiện, assert, switch, Read DOM, chụp màn hình và tải file lên.',
       'Mọi bước đều sửa được: chỉnh selector, đổi giá trị, đặt nhãn, tắt bước, hoặc kéo sang vị trí mới.',
       'Hoàn tác/làm lại tối đa 50 bước trong lúc sửa; lịch sử được xoá khi bạn bắt đầu kịch bản mới hoặc mở một kịch bản khác.',
-      '🎯 <b>Pick element</b> chọn phần tử đích ngay trên trang thay vì phải viết selector.'
+      '<b>Pick element</b> chọn phần tử đích ngay trên trang thay vì phải viết selector.'
     ],
     steps: [
       ['Kích hoạt tab', 'Mở popup trên trang muốn tự động hoá và bấm <b>Activate</b> ở thanh trạng thái.'],
@@ -93,7 +92,7 @@ var FEATURES_VI = {
         nav: 'Chọn & sắp xếp',
         lead: 'Các công cụ quanh bộ ghi giúp kịch bản vẫn dễ đọc sau lần sửa thứ mười.',
         points: [
-          '🎯 <b>Pick element</b>: rê chuột trên trang rồi click — các trường selector tự điền, kể cả trong iframe.',
+          '<b>Pick element</b>: rê chuột trên trang rồi click — các trường selector tự điền, kể cả trong iframe.',
           '<b>Child Condition</b> nhắm vào một khung chứa và tìm đúng phần tử con theo giá trị, chữ, id, class hoặc loại ô nhập — cho danh sách và bảng có các dòng hay đổi chỗ. Dùng được với Click, Input, Hover và Read DOM.',
           'Nhãn đặt tên cho bước bằng lời thường; nhãn hiện trong danh sách, trong code xuất ra và trong bug report.',
           'Bước bị tắt vẫn nằm trong danh sách với số thứ tự của nó, nên tắt một bước không làm đánh số lại các bước khác.',
@@ -110,7 +109,6 @@ var FEATURES_VI = {
   },
 
   playback: {
-    eyebrow: 'Record & Play',
     title: 'Phát lại không đứt quãng',
     lead: 'Phát lại một kịch bản một lần, chạy lặp, nối nhiều kịch bản hoặc hẹn lịch — và để nó chạy tiếp qua iframe, tải lại trang, dropdown gốc và hộp chọn file, những chỗ khiến hầu hết công cụ ghi phải dừng.',
     facts: [['5', 'cách chạy'], ['Hằng ngày', 'hẹn lịch'], ['Retry · Skip · Stop', 'khi một bước lỗi']],
@@ -177,9 +175,8 @@ var FEATURES_VI = {
   },
 
   'run-results': {
-    eyebrow: 'Record & Play',
     title: 'Assertion, kết quả & bug report',
-    lead: 'Mỗi lần chạy kết thúc bằng một kết luận — ✓ Passed, ✗ Failed, ⚠ Test broken hoặc ⏹ Stopped. Khi không đạt, bug report kèm các bước tái hiện và ảnh chụp lúc lỗi chỉ cách một cú click.',
+    lead: 'Mỗi lần chạy kết thúc bằng một kết luận — Passed, Failed, Test broken hoặc Stopped. Khi không đạt, bug report kèm các bước tái hiện và ảnh chụp lúc lỗi chỉ cách một cú click.',
     facts: [['12', 'loại kiểm tra'], ['4', 'kết luận'], ['5 s', 'Assert chờ trang tải']],
     tabLabel: 'tab Record & Play',
     points: [
@@ -188,13 +185,13 @@ var FEATURES_VI = {
       'Assert là kiểm tra mềm: phép nào sai được ghi nhận và lần chạy vẫn tiếp tục — lần chạy CSV hay theo lịch không bao giờ bị kẹt ở hộp hỏi.',
       'Lỗi đầu tiên quyết định kết luận. Một cú click hỏng làm Assert kế tiếp sai là bài test hỏng, không phải ứng dụng lỗi.',
       'Thẻ <b>Last run</b> ở đầu tab Record &amp; Play liệt kê mọi lỗi — bấm vào một lỗi để nhảy tới bước đó.',
-      '📋 <b>Bug report</b> viết sẵn issue cho bạn: các bước tái hiện, URL, môi trường và ảnh chụp để đính kèm.'
+      '<b>Bug report</b> viết sẵn issue cho bạn: các bước tái hiện, URL, môi trường và ảnh chụp để đính kèm.'
     ],
     steps: [
       ['Thêm Assert', 'Add Manual Action → Assert (Expect): chọn phép kiểm tra, phần tử và giá trị mong đợi.'],
       ['Chạy', 'Play, lặp, sequence, CSV hay hẹn lịch — Assert không bao giờ làm lần chạy tạm dừng.'],
       ['Xem kết luận', 'Trong thông báo, trên huy hiệu ở thanh công cụ và trên thẻ Last run.'],
-      ['Báo lỗi', '📋 Bug report → <b>Copy</b> phần Markdown, <b>Download screenshot</b>, rồi dán cả hai vào công cụ quản lý lỗi.']
+      ['Báo lỗi', 'Bug report → <b>Copy</b> phần Markdown, <b>Download screenshot</b>, rồi dán cả hai vào công cụ quản lý lỗi.']
     ],
     sections: [
       {
@@ -204,15 +201,15 @@ var FEATURES_VI = {
         table: {
           head: ['Kết luận', 'Khi nào'],
           rows: [
-            ['✓ Passed', 'Không có lỗi và lần chạy đi tới cuối.'],
-            ['✗ Failed', 'Lỗi đầu tiên là một Assert sai — trang hiển thị sai.'],
-            ['⚠ Test&nbsp;broken', 'Lỗi đầu tiên là thứ khác — không tìm thấy phần tử, lỗi script, khối bước hỏng. Bài test không kiểm tra được.'],
-            ['⏹ Stopped', 'Không có lỗi nhưng lần chạy chưa tới cuối — bạn đã dừng nó, hoặc tab của nó bị đóng. Không bao giờ được tính là Passed.']
+            ['Passed', 'Không có lỗi và lần chạy đi tới cuối.'],
+            ['Failed', 'Lỗi đầu tiên là một Assert sai — trang hiển thị sai.'],
+            ['Test&nbsp;broken', 'Lỗi đầu tiên là thứ khác — không tìm thấy phần tử, lỗi script, khối bước hỏng. Bài test không kiểm tra được.'],
+            ['Stopped', 'Không có lỗi nhưng lần chạy chưa tới cuối — bạn đã dừng nó, hoặc tab của nó bị đóng. Không bao giờ được tính là Passed.']
           ]
         },
         points: [
-          '<b>Thông báo</b>: <code>✗ Failed — "Checkout"</code>, kèm số phép kiểm tra sai và số bước bị hỏng.',
-          '<b>Huy hiệu</b>: ✗ đỏ, ! vàng hoặc ■ xám trên biểu tượng ở thanh công cụ cho tới lần chạy sau, hoặc tới khi bạn mở popup.',
+          '<b>Thông báo</b>: <code>Failed — "Checkout"</code>, kèm số phép kiểm tra sai và số bước bị hỏng.',
+          '<b>Huy hiệu</b>: dấu chéo đỏ, dấu ! vàng hoặc ô vuông xám trên biểu tượng ở thanh công cụ cho tới lần chạy sau, hoặc tới khi bạn mở popup.',
           '<b>Lần chạy CSV</b>: kết luận của từng dòng nằm trong cột Run Result riêng — <code>12 passed · 2 failed · 1 broken</code>.',
           '<b>Sequence</b> có một kết luận chung, xét lỗi của từng kịch bản theo thứ tự.'
         ]
@@ -242,7 +239,7 @@ var FEATURES_VI = {
       {
         title: 'Bug report tự viết',
         nav: 'Bug report',
-        lead: 'Trên thẻ Last run của một lần chạy failed hoặc broken, 📋 Bug report mở ra Markdown sẵn sàng cho Jira, GitHub hay bất kỳ công cụ nào đọc được Markdown.',
+        lead: 'Trên thẻ Last run của một lần chạy failed hoặc broken, Bug report mở ra Markdown sẵn sàng cho Jira, GitHub hay bất kỳ công cụ nào đọc được Markdown.',
         points: [
           'Lỗi đầu tiên, URL của trang, thời điểm xảy ra (và ở vòng lặp nào), kết quả, trình duyệt, hệ điều hành và phiên bản Pocket QA.',
           '<b>Các bước tái hiện</b> viết thành câu — bước bị Condition bỏ qua được lược đi, nhánh Switch đã chạy được giữ lại.',
@@ -260,7 +257,6 @@ var FEATURES_VI = {
   },
 
   variables: {
-    eyebrow: 'Tab Data',
     title: 'Biến & logic',
     lead: 'Biến một bản ghi dùng một lần thành script thật: biến dùng lại ở mọi nơi dưới dạng <code>${var}</code>, giá trị đọc từ trang ngay lúc chạy, cùng điều kiện và switch rẽ nhánh theo chúng.',
     facts: [['4', 'loại biến'], ['12', 'phép kiểm tra điều kiện'], ['3', 'lớp ưu tiên']],
@@ -330,7 +326,6 @@ var FEATURES_VI = {
   },
 
   csv: {
-    eyebrow: 'Tab Data',
     title: 'Chạy theo dữ liệu CSV',
     lead: 'Tải file CSV lên và phát lại cùng một kịch bản cho mỗi dòng — tiêu đề cột tự thành <code>${variables}</code>, nên một bản ghi chạy được cả bộ dữ liệu và mỗi dòng có kết luận riêng.',
     facts: [['1', 'bản ghi, bao nhiêu dòng cũng được'], ['3', 'định dạng xuất'], ['Mỗi dòng', 'một kết luận pass / fail']],
@@ -389,23 +384,22 @@ var FEATURES_VI = {
   },
 
   screenshots: {
-    eyebrow: 'Tab Capture',
     title: 'Ảnh chụp & công cụ ảnh',
-    lead: 'Sáu kiểu chụp bao quát mọi thứ, từ vùng đang hiển thị tới cả một cửa sổ ứng dụng — kiểu nào cũng có một bản ✂ mở ảnh thẳng trong trình sửa ảnh.',
+    lead: 'Sáu kiểu chụp bao quát mọi thứ, từ vùng đang hiển thị tới cả một cửa sổ ứng dụng — kiểu nào cũng có một bản Edit mở ảnh thẳng trong trình sửa ảnh.',
     facts: [['6', 'kiểu chụp'], ['10', 'phím tắt chụp & ghi'], ['3 · 5 · 10 s', 'đếm ngược']],
     tabLabel: 'tab Capture',
     points: [
       'Chụp Visible, Full Page, Scroll (dọc / ngang), Segment (dọc / ngang), Element và Window.',
-      'Mỗi chế độ có một bản <b>✂ Edit</b> mở trình sửa ảnh ngay sau khi chụp.',
+      'Mỗi chế độ có một bản <b>Edit</b> mở trình sửa ảnh ngay sau khi chụp.',
       'Đếm ngược 3, 5 hoặc 10 giây trước khi chụp vùng hiển thị — đủ thời gian mở dropdown hay trạng thái hover cần có trong ảnh.',
       'Watermark với token <code>{url}</code> và <code>{datetime}</code>, in thẳng lên ảnh.',
-      '🔍 <b>Image Diff</b> so sánh hai ảnh chụp theo từng điểm ảnh, độ nhạy tuỳ chỉnh.',
+      '<b>Image Diff</b> so sánh hai ảnh chụp theo từng điểm ảnh, độ nhạy tuỳ chỉnh.',
       'Tự lưu với tiền tố tên file, hoặc hỏi nơi lưu cho từng ảnh.'
     ],
     steps: [
       ['Chọn chế độ', 'Tab Capture — lọc theo All, Visible, Scroll, Segment, Element hoặc Window.'],
       ['Chụp', 'Bấm nút của chế độ đó, hoặc nhấn phím tắt mà không cần mở popup.'],
-      ['Sửa nếu cần', 'Bản ✂ mở trình sửa ảnh: cắt, chú thích, làm mờ, đóng dấu.'],
+      ['Sửa nếu cần', 'Bản Edit mở trình sửa ảnh: cắt, chú thích, làm mờ, đóng dấu.'],
       ['Lưu', 'Tự tải xuống, hoặc lưu vào thư mục bạn chọn.']
     ],
     sections: [
@@ -463,15 +457,14 @@ var FEATURES_VI = {
   },
 
   export: {
-    eyebrow: 'Tab Data',
     title: 'Xuất code 5 định dạng',
     lead: 'Biến mọi kịch bản đã ghi thành code test thật, chạy được — năm định dạng, sinh mới từ các bước hiện tại của kịch bản, không lặng lẽ bỏ sót bước nào.',
     facts: [['5', 'định dạng đầu ra'], ['8', 'locator dự phòng mỗi bước'], ['4', 'biến môi trường ghi đè']],
     tabLabel: 'tab Data',
     points: [
-      '⚡ JS Bookmarklet, 🐍 Selenium Python (script hoặc pytest), 🎭 Playwright Test, 🤖 Robot Framework và ☕ Selenium Java (TestNG).',
+      'JS Bookmarklet, Selenium Python (script hoặc pytest), Playwright Test, Robot Framework và Selenium Java (TestNG).',
       'Lấy lần phát lại làm chuẩn: code làm đúng như một lần chạy — cùng các locator dự phòng, và dùng helper trong trang của chính tiện ích ở mọi chỗ mà lệnh driver thông thường sẽ hành xử khác.',
-      'Mỗi bước được đánh dấu ✓ OK, ⚠ Verify hoặc — Skip trong tab Actions, kèm lý do, và một comment ghi lại điều đó trong code.',
+      'Mỗi bước được đánh dấu OK, Verify hoặc Skip trong tab Actions, kèm lý do, và một comment ghi lại điều đó trong code.',
       'Assert vẫn có chờ và là kiểm tra mềm: mỗi phép sai được báo, và bài test thất bại ở cuối với danh sách tất cả các phép sai.',
       'Trỏ cùng một file sang staging, đổi trình duyệt, chạy headless hoặc ghi đè biến từ môi trường — không cần xuất lại.',
       'Bước lỗi tự nêu tên — <code>Step 3: click — Sign in: no element found by …</code> — và lưu ảnh chụp trang.'
@@ -489,11 +482,11 @@ var FEATURES_VI = {
         table: {
           head: ['Định dạng', 'File', 'Chạy bằng'],
           rows: [
-            ['⚡ JS Bookmarklet', '<code>&lt;name&gt;_bookmarklet.js</code>, hoặc một URL bookmark một dòng', 'Trình duyệt — một bookmark hoặc Console. Không cần cài gì.'],
-            ['🐍 Selenium&nbsp;Python', '<code>&lt;name&gt;_selenium.py</code> (script) hoặc <code>test_&lt;name&gt;.py</code> (pytest)', '<code>python</code> / <code>pytest</code> với Selenium 4'],
-            ['🎭 Playwright&nbsp;Test', '<code>&lt;name&gt;.spec.js</code>', '<code>npx playwright test</code> — mỗi bước là một <code>test.step</code>, có trace khi lỗi'],
-            ['🤖 Robot&nbsp;Framework', '<code>&lt;name&gt;.robot</code>', '<code>robot</code> với SeleniumLibrary — các bước đọc như keyword'],
-            ['☕ Selenium&nbsp;Java', '<code>&lt;Name&gt;Test.java</code>', '<code>mvn test</code> / <code>gradle test</code> với Selenium 4 và TestNG 7']
+            ['JS Bookmarklet', '<code>&lt;name&gt;_bookmarklet.js</code>, hoặc một URL bookmark một dòng', 'Trình duyệt — một bookmark hoặc Console. Không cần cài gì.'],
+            ['Selenium&nbsp;Python', '<code>&lt;name&gt;_selenium.py</code> (script) hoặc <code>test_&lt;name&gt;.py</code> (pytest)', '<code>python</code> / <code>pytest</code> với Selenium 4'],
+            ['Playwright&nbsp;Test', '<code>&lt;name&gt;.spec.js</code>', '<code>npx playwright test</code> — mỗi bước là một <code>test.step</code>, có trace khi lỗi'],
+            ['Robot&nbsp;Framework', '<code>&lt;name&gt;.robot</code>', '<code>robot</code> với SeleniumLibrary — các bước đọc như keyword'],
+            ['Selenium&nbsp;Java', '<code>&lt;Name&gt;Test.java</code>', '<code>mvn test</code> / <code>gradle test</code> với Selenium 4 và TestNG 7']
           ]
         },
         points: [
@@ -518,7 +511,7 @@ var FEATURES_VI = {
         ],
         points: [
           'Dòng cảnh báo là thật: các bước mà một định dạng không diễn đạt được sẽ được đếm và nêu tên — bấm vào sẽ mở chúng trong tab Actions.',
-          'Variables liệt kê mọi biến được gắn sẵn vào code; Actions liệt kê mọi bước với ✓ OK, ⚠ Verify hoặc — Skip.'
+          'Variables liệt kê mọi biến được gắn sẵn vào code; Actions liệt kê mọi bước với OK, Verify hoặc Skip.'
         ]
       },
       {
@@ -528,15 +521,15 @@ var FEATURES_VI = {
         table: {
           head: ['Bước', 'Bookmarklet', 'Selenium', 'Playwright', 'Robot', 'Java'],
           rows: [
-            ['Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM,&nbsp;Condition', '✓', '✓', '✓', '✓', '✓'],
-            ['Navigate', '⚠ mỗi trang một lần click', '✓', '✓', '✓', '✓'],
-            ['Run JS', '⚠ dán nguyên văn', '⚠&nbsp;<code>execute_script</code>', '⚠&nbsp;<code>page.evaluate</code>', '⚠&nbsp;<code>Execute Javascript</code>', '⚠&nbsp;<code>executeScript</code>'],
-            ['Chụp màn hình', '—', '✓', '✓', '✓', '✓'],
-            ['Upload File (ô input hoặc vùng thả)', '—', '✓', '✓', '✓', '✓'],
-            ['Bước được ghi trong iframe', '⚠ chỉ cùng site', '✓', '✓', '✓', '✓'],
-            ['Khối Switch theo biến', '✓ <code>if / else if</code>', '✓ <code>if / elif</code>', '✓', '✓ <code>IF / ELSE IF</code>', '✓'],
+            ['Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM,&nbsp;Condition', 'Có', 'Có', 'Có', 'Có', 'Có'],
+            ['Navigate', 'Kiểm tra: mỗi trang một lần click', 'Có', 'Có', 'Có', 'Có'],
+            ['Run JS', 'Kiểm tra: dán nguyên văn', 'Kiểm tra: <code>execute_script</code>', 'Kiểm tra: <code>page.evaluate</code>', 'Kiểm tra: <code>Execute Javascript</code>', 'Kiểm tra: <code>executeScript</code>'],
+            ['Chụp màn hình', '—', 'Có', 'Có', 'Có', 'Có'],
+            ['Upload File (ô input hoặc vùng thả)', '—', 'Có', 'Có', 'Có', 'Có'],
+            ['Bước được ghi trong iframe', 'Kiểm tra: chỉ cùng site', 'Có', 'Có', 'Có', 'Có'],
+            ['Khối Switch theo biến', 'Có, <code>if / else if</code>', 'Có, <code>if / elif</code>', 'Có', 'Có, <code>IF / ELSE IF</code>', 'Có'],
             ['Switch sang kịch bản khác, tới #N, Always', '—', '—', '—', '—', '—'],
-            ['Assert (mềm, có chờ)', '✓ một alert ở cuối', '✓ <code>AssertionError</code> ở&nbsp;cuối', '✓ <code>expect.soft</code>', '✓ Continue On Failure', '✓ <code>SoftAssert</code>']
+            ['Assert (mềm, có chờ)', 'Có, một alert ở cuối', 'Có, <code>AssertionError</code> ở&nbsp;cuối', 'Có, <code>expect.soft</code>', 'Có, Continue On Failure', 'Có, <code>SoftAssert</code>']
           ]
         }
       },
@@ -567,14 +560,13 @@ var FEATURES_VI = {
   },
 
   highlights: {
-    eyebrow: 'Tab Highlight',
     title: 'Đánh dấu theo mẫu URL',
     lead: 'Đánh dấu bất kỳ trang nào bằng màu và ghi chú, tự hiện lại ở lần truy cập sau — gom theo mẫu URL, nên một bộ đánh dấu dùng được cho mọi trang có chung bố cục.',
-    facts: [['5', 'màu'], ['📝', 'ghi chú trên mọi đánh dấu'], ['JSON', 'xuất file']],
+    facts: [['5', 'màu'], ['Ghi chú', 'trên mọi đánh dấu'], ['JSON', 'xuất file']],
     tabLabel: 'tab Highlight',
     points: [
       'Bật Highlight ON, chọn chữ trên trang, rồi chọn vàng, xanh lá, hồng, xanh dương hoặc cam trong tooltip.',
-      'Thêm 📝 ghi chú cho bất kỳ đánh dấu nào; rê chuột lên sau đó để đọc.',
+      'Thêm ghi chú cho bất kỳ đánh dấu nào; rê chuột lên sau đó để đọc.',
       'Đánh dấu hiện lại ở lần truy cập sau — kể cả trên nội dung tải muộn.',
       'Tìm kiếm toàn văn trên mọi đánh dấu đã lưu, có bộ lọc màu.',
       'Thống kê cho trang này, tổng cộng và theo từng trang, có phân tích theo màu.',
@@ -614,7 +606,6 @@ var FEATURES_VI = {
   },
 
   'sql-test-designer': {
-    eyebrow: 'Tab Data',
     title: 'SQL Test Case Designer',
     lead: 'Dán một câu SQL để nhận danh sách test case dựng sẵn — phân vùng tương đương, giá trị biên, bảng quyết định, cùng các trường hợp biên NULL và JOIN mà hầu hết kế hoạch test thủ công bỏ sót — kèm dữ liệu test mà mỗi case cần.',
     facts: [['4', 'nhóm kỹ thuật'], ['4', 'định dạng xuất'], ['VI / EN', 'giao diện']],
@@ -695,12 +686,11 @@ var FEATURES_VI = {
       'Chỉ câu lệnh ngoài cùng được phân tích. CTE và subquery được đánh dấu — hãy dán riêng từng cái để có case của nó.',
       'Không có schema trực tiếp: kiểu dữ liệu của cột lấy từ giá trị literal trong phép so sánh trước, rồi tới tên cột. Khi cả hai đều không rõ, case sẽ ghi rõ điều đó.',
       'Kết quả mong đợi nêu điều mà ngữ nghĩa SQL yêu cầu, không phải dữ liệu hiện có của bạn.',
-      'Giao diện mặc định là tiếng Việt và chuyển sang tiếng Anh qua 🌐 — case được sinh theo ngôn ngữ đang dùng, nên file xuất luôn khớp với màn hình.'
+      'Giao diện mặc định là tiếng Việt và chuyển sang tiếng Anh qua nút quả địa cầu — case được sinh theo ngôn ngữ đang dùng, nên file xuất luôn khớp với màn hình.'
     ]
   },
 
   'db-test-session': {
-    eyebrow: 'Tab Data',
     title: 'DB Test Session & Rollback',
     lead: 'Thoải mái thay đổi dữ liệu test trong Adminer — mọi thao tác ghi đều được lưu vào một phiên, và một click đưa cơ sở dữ liệu về như cũ, kèm câu SQL chính xác hiện ra trước khi chạy.',
     facts: [['8', 'loại thao tác ghi được lưu'], ['1 click', 'để rollback'], ['0', 'byte rời khỏi trình duyệt']],
@@ -783,7 +773,6 @@ var FEATURES_VI = {
   },
 
   settings: {
-    eyebrow: 'Tab Settings',
     title: 'Phím tắt, sao lưu & cài đặt',
     lead: 'Những thứ bạn chỉ đặt một lần: phím tắt cho việc ghi và mọi kiểu chụp, thông báo theo từng loại, nhập/xuất và sao lưu toàn bộ — trong một popup nhớ cách bạn làm việc.',
     facts: [['10', 'phím tắt đổi được'], ['4', 'loại thông báo'], ['1 file', 'sao lưu toàn bộ']],
