@@ -62,7 +62,7 @@ localhost không render nội dung. Phải chốt trước mọi việc khác (T
   `update-vendor.mjs` (arg → `EXT_REPO` → `../Pocket QA`), dùng lại `launchWithExtension()` + `page.screenshot`
   của `tools/lib/cdp-browser.mjs` (đã chạy e2e của extension trong Edge/Chromium), seed dữ liệu bằng chính message
   của extension (`CREATE_SCENARIO`, `SAVE_VARIABLES`… như `tools/e2e.mjs`) hoặc `chrome.storage` cho DB session.
-  Mỗi shot: light + dark, `.png` + `.webp` (CDP `Page.captureScreenshot` có `format: 'webp'` → không thêm dependency).
+  Mỗi shot: light + dark, `.png` + `.webp` lossless qua Pillow, như các ảnh cũ (WebP của CDP lossy kể cả quality 100).
   Thay cho các harness dùng-một-lần mô tả trong README.
 - **Ảnh section cắt sát thành phần** (dialog Diagram, thanh triage, inspector, modal biến…), không chụp cả trang
   → giao diện `tool-base` (đổi top bar + cột trái) không làm chúng lỗi thời. Ảnh toàn trang tool chụp lại ở đợt B.
@@ -86,7 +86,7 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 ### Checkpoint 1: Người dùng duyệt gap matrix, chốt phạm vi section/ảnh
 
 ### Phase 2: Ảnh chụp thật
-- [ ] Task 5: `capture-shots.mjs` + shot đầu tiên (dialog Diagram)
+- [x] Task 5: `capture-shots.mjs` + shot đầu tiên (dialog Diagram)
 
 ### Phase 3: Đợt A — v1.0.27
 - [ ] Task 6: Vendor v1.0.27, preview popup đúng bản Store

@@ -145,13 +145,20 @@ chụp vùng cắt sẵn ở light rồi dark, ghi `screenshots/<name>.png` + `.
 3 bảng có JOIN, Analyze, tab Schema → Diagram, chụp dialog.
 
 **Acceptance criteria:**
-- [ ] `node capture-shots.mjs sql-diagram` tạo 4 file (`.png`/`.webp` × light/dark), chạy lại cho ảnh giống hệt.
-- [ ] Không thêm dependency; profile tạm, không đụng Downloads của người dùng.
-- [ ] Lỗi rõ ràng khi không tìm thấy Edge/Chromium hoặc repo extension.
+- [x] `node capture-shots.mjs sql-diagram` tạo 4 file (`.png`/`.webp` × light/dark), chạy lại cho ảnh giống hệt
+  (md5 khớp qua 2 lần chạy; ~4 s cho cả hai theme).
+- [x] Không thêm dependency npm; profile tạm, không đụng Downloads của người dùng. WebP lossless làm bằng Pillow — cùng
+  quy ước sẵn có trong README (WebP của Chrome lossy cả ở quality 100, đã thử) — script báo lỗi nếu thiếu Pillow.
+- [x] Lỗi rõ ràng khi không tìm thấy Edge/Chromium hoặc repo extension, hoặc khi gõ sai tên shot (đã thử 2 trường hợp sau).
 
 **Verification:**
-- [ ] Mở 4 ảnh, so với UI thật mở bằng tay
-- [ ] README promo: thay đoạn "throwaway harness" bằng cách dùng `capture-shots.mjs`
+- [x] Mở 4 ảnh, so với UI thật mở bằng tay (preview `ext-static`); viewport 1100×700 để dialog `86vh` ra số nguyên
+  (680 làm hàng pixel cuối lẫn nền), bấm **Fit** để sơ đồ lấp khung
+- [x] README promo: thêm `capture-shots.mjs` vào bảng file, mục "Capturing a shot", đoạn harness cũ thành "How the older
+  shots were made"
+
+**Ghi chú:** ảnh chụp từ extension ở `../Pocket QA` (HEAD, đã có `tool-base`); dialog Diagram không thuộc phần vỏ đổi ở
+1.0.28 nên dùng được cho đợt A.
 
 **Dependencies:** Checkpoint 1
 

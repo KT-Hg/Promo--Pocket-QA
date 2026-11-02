@@ -88,6 +88,7 @@ index.html        ← open this
 | `sync-from-source.mjs` | Regenerates `popup-demo.html` from `vendor/popup.html` (deterministic) | ~145 |
 | `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~95 |
 | `stamp-assets.mjs` | Cache-busts every local `.js` / `.css` the two pages load (`site.js?v=…`) with a content hash — run after editing any of them | ~45 |
+| `capture-shots.mjs` | Screenshots of the real extension (loaded in Edge/Chromium) for the feature pages, light + dark, PNG + lossless WebP — see "Screenshot comparison" | ~125 |
 | `vendor/`        | Vendored extension snapshot (`popup.html`, `popup/*.css`, `icon128.png`, `version.txt`) | — |
 | `og-image.png`   | Link-preview image (`og:image`): the light hero at 1200×630 — see "Link preview image" below | — |
 
@@ -226,6 +227,29 @@ See [`screenshots/`](screenshots/):
 | `shot-export-py.png` / `-dark.png`      | The real Export Python modal for that same scenario — actual generated Selenium code at Step 1, used on `feature.html?id=export` (captured from v1.0.24) |
 | `shot-dbtools-rollback.png` / `-dark.png` | The Adminer panel (`dbtools/panel.js`) beside the Undo SQL preview it opens for "↺ Roll back all" — a sample 7-change session, one change refused (no `WHERE`), Step by step / Merged switch, used on `feature.html?id=db-test-session` |
 | `shot-dbtools-manager.png` / `-dark.png`  | `dbtools.html`, the Test sessions & rollback page, on that same session — the rail of sessions, a DELETE and an UPDATE diff open, one change already undone, used on `feature.html?id=db-test-session` |
+| `shot-sql-diagram.png` / `-dark.png` | `sqltest.html`'s Diagram dialog (Schema tab → Diagram) for a four-table `JOIN` query, after **Fit** — boxes with PK/FK, crow's-foot links, zoom controls. Made by `capture-shots.mjs` |
+
+### Capturing a shot: `capture-shots.mjs`
+
+New shots, and old ones when they are next re-captured, come from one script:
+
+```
+node capture-shots.mjs                 # every shot
+node capture-shots.mjs sql-diagram     # one
+EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   # default ../Pocket QA, as update-vendor.mjs
+```
+
+It loads the unpacked extension in Edge or Chromium through the extension repo's own CDP driver
+(`tools/lib/cdp-browser.mjs`, the one its e2e tests run on — branded Chrome ignores `--load-extension`), opens the
+page as `chrome-extension://<id>/<page>`, so every `chrome.*` call is the real one, and sets it up with the page's own
+controls: English, the theme, the query typed in, the buttons pressed. It then saves one element's box — a dialog,
+a panel — not the whole window, so a restyle of the page around it doesn't date the picture. Each shot is taken
+light then dark, as `screenshots/shot-<name>[-dark].png` plus its lossless WebP twin (Pillow, the same settings as the
+one-liner below — Chrome's own WebP is lossy even at quality 100). Every run starts from a fresh profile, so running
+it again gives byte-identical files. Adding a shot is one entry in its `SHOTS` array: a page, a window size and a
+`setup` that runs in the page and returns the selector to capture.
+
+### How the older shots were made
 
 These are real UI, not mockups — `editor.html` and `sqlcases.html` don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a throwaway copy of the extension's `popup/`, `shared/`, `css/` and `popup.html` swaps `popup/init.js` for a harness that calls only `initExportBookmarklet()` / `initExportSelenium()`, with a `chrome-stub.js` answering `GET_SCENARIOS` / `GET_VARIABLES` with one sample "Login flow" scenario (navigate, two inputs, a click, a `textContains` assert, a screenshot) and two variables. It picks the scenario, clicks the real format button, then the modal's own **↧ Steps** — so the code in the screenshots is genuinely generated, not typed by hand.
 
@@ -239,9 +263,10 @@ Two `html2canvas` gotchas worth knowing if these ever need re-capturing:
 - **`<textarea>` value renders blank / unwrapped.** html2canvas can't render a form control's *native* text layout — the fix is to swap the real `<textarea>` for a plain `<div>` with the same box (font, padding, border) and `white-space: pre-wrap`, capture that, then swap back.
 - **`<button>`/`<select>` render with the browser's default chrome** (square corners, black 1px border) **instead of the real CSS** — same native-widget cause. Fix: inject `button, select, input, textarea { appearance: none !important; }` before capturing.
 
-If the real UI changes, redo the capture (funnelling both fixes above through it again) rather than hand-editing these PNGs.
+If the real UI changes, redo the capture rather than hand-editing these PNGs — by adding the shot to `capture-shots.mjs`,
+where neither html2canvas gotcha applies.
 
-**The page serves WebP, not these PNGs.** Every shot `features-en.js` references is a lossless WebP twin — pixel-identical, about a third of the size (1.59 MB → 0.53 MB for all twelve). The PNGs stay as the capture originals. After a re-capture, regenerate the WebP for every shot `features-en.js` points at (needs Pillow):
+**The page serves WebP, not these PNGs.** Every shot `features-en.js` references is a lossless WebP twin — pixel-identical, about a third of the size (1.59 MB → 0.53 MB for all twelve). The PNGs stay as the capture originals. `capture-shots.mjs` writes the WebP itself; after any other re-capture, regenerate the WebP for every shot `features-en.js` points at (needs Pillow):
 
 ```
 python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, lossless=True, quality=100, method=6) for w in set(re.findall(r'screenshots/[\w-]+\.webp', open('features-en.js', encoding='utf8').read()))]"
