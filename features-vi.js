@@ -26,78 +26,91 @@ var FEATURES_VI = {
     ],
     sections: [
       {
-        title: 'Thao tác trên trang và điều khiển',
-        nav: 'Trang &amp; điều khiển',
-        lead: 'Tổng cộng mười bảy khối xây dựng. Click và Input được ghi tự động; số còn lại lấy từ form Add Manual Action, mỗi loại có các trường riêng.',
+        title: 'Thao tác trên trang',
+        nav: 'Thao tác trang',
+        lead: 'Tổng cộng mười bảy khối. Click và Input được ghi tự động; số còn lại lấy từ Add Manual Action.',
         table: {
-          head: ['Hành động', 'Nhóm', 'Chức năng'],
+          head: ['Hành động', 'Chức năng'],
           rows: [
-            ['Click', 'Trang', 'Một cú click chuột lên phần tử đích.'],
-            ['Input', 'Trang', 'Đặt giá trị cho ô nhập và phát <code>input</code>, <code>change</code>, <code>blur</code> như khi người dùng gõ.'],
-            ['Hover', 'Trang', 'Phát <code>mouseover</code>, <code>mouseenter</code> và <code>mousemove</code> — mở menu và tooltip.'],
-            ['Dropdown (open / choose item)', 'Trang', 'Một cú click thật, tin cậy cho các dropdown bỏ qua click giả lập, kèm tuỳ chọn <b>Choose item #</b>.'],
-            ['Drag &amp; Drop', 'Trang', 'Kéo thả HTML5 từ selector nguồn sang selector đích.'],
-            ['Navigate', 'Điều&nbsp;khiển', 'Mở một URL — dùng được <code>${variables}</code>.'],
-            ['Wait', 'Điều&nbsp;khiển', 'Tạm dừng một số mili giây.'],
-            ['Run JS', 'Điều&nbsp;khiển', 'Chạy script của bạn trên trang, kể cả khi Content Security Policy của trang chặn script inline.']
+            ['Click', 'Một cú click chuột lên phần tử đích.'],
+            ['Input', 'Đặt giá trị cho ô nhập và phát <code>input</code>, <code>change</code>, <code>blur</code> như khi gõ.'],
+            ['Hover', 'Phát các sự kiện rê chuột — mở menu và tooltip.'],
+            ['Dropdown', 'Một cú click thật cho dropdown bỏ qua click giả lập, kèm tuỳ chọn <b>Choose item #</b>.'],
+            ['Drag &amp; Drop', 'Kéo thả HTML5 từ selector nguồn sang đích.']
           ]
         }
       },
       {
-        title: 'Logic và dữ liệu',
-        nav: 'Logic &amp; dữ liệu',
-        lead: 'Những bước biến một bản ghi thành bài test: kiểm tra, rẽ nhánh, đọc dữ liệu trang, chụp ảnh và tải file lên.',
+        title: 'Điều khiển và logic',
+        nav: 'Điều khiển &amp; logic',
+        lead: 'Những bước biến một bản ghi thành bài test: chờ, script, kiểm tra và rẽ nhánh.',
         table: {
-          head: ['Hành động', 'Nhóm', 'Chức năng'],
+          head: ['Hành động', 'Chức năng'],
           rows: [
-            ['Condition (If)', 'Logic', 'Một trong 12 phép kiểm tra; khi sai, N bước tiếp theo bị bỏ qua.'],
-            ['Assert (Expect)', 'Logic', 'Cũng 12 phép kiểm tra đó nhưng bắt buộc đúng — phép nào sai được ghi nhận và lần chạy vẫn tiếp tục.'],
-            ['Switch (branch)', 'Logic', 'Chọn một kịch bản, một bước nhảy hoặc một khối bước theo giá trị của biến.'],
-            ['Read DOM → Variable', 'Dữ liệu', 'Lưu chữ, giá trị ô nhập hoặc một thuộc tính trên trang vào biến.'],
-            ['Screenshot&nbsp;(Visible)', 'Dữ liệu', 'Chụp vùng đang hiển thị.'],
-            ['Screenshot (Full Page)', 'Dữ liệu', 'Chụp toàn bộ trang thành một ảnh.'],
-            ['Screenshot&nbsp;(Element)', 'Dữ liệu', 'Chụp đúng khung của một phần tử.'],
-            ['Screenshot → Variable (CSV)', 'Dữ liệu', 'Chụp vào một biến, để ảnh của từng dòng CSV nằm trong kết quả.'],
-            ['Upload File', 'Dữ liệu', 'Đưa file trên máy vào <code>&lt;input type="file"&gt;</code> hoặc vùng kéo thả.']
+            ['Navigate', 'Mở một URL — dùng được <code>${variables}</code>.'],
+            ['Wait', 'Tạm dừng một số mili giây.'],
+            ['Run JS', 'Chạy script của bạn trên trang, kể cả khi Content Security Policy chặn.'],
+            ['Condition (If)', 'Một trong 12 phép kiểm tra; khi sai, N bước tiếp theo bị bỏ qua.'],
+            ['Assert (Expect)', 'Cũng 12 phép đó nhưng bắt buộc đúng — sai thì được ghi nhận, lần chạy vẫn tiếp.'],
+            ['Switch', 'Theo giá trị biến: kịch bản khác, một bước nhảy, hoặc khối bước của một case.']
           ]
         }
+      },
+      {
+        title: 'Thao tác dữ liệu',
+        nav: 'Thao tác dữ liệu',
+        lead: 'Đọc trang, giữ ảnh của trang, và đưa file vào trang.',
+        table: {
+          head: ['Hành động', 'Chức năng'],
+          rows: [
+            ['Read DOM → Variable', 'Lưu chữ, giá trị ô nhập hoặc thuộc tính vào biến cho các bước sau.'],
+            ['Screenshot', 'Vùng đang hiển thị, toàn trang hoặc một phần tử.'],
+            ['Screenshot → Variable', 'Ảnh chụp giữ trong biến, để ảnh của từng dòng CSV nằm trong kết quả.'],
+            ['Upload File', 'File trên máy vào <code>&lt;input type="file"&gt;</code> hoặc vùng kéo thả.']
+          ]
+        }
+      },
+      {
+        title: 'Danh sách bước',
+        nav: 'Danh sách bước',
+        lead: 'Mọi bước vẫn sửa được sau khi ghi: sửa selector, đặt nhãn, tắt đi, kéo sang chỗ khác.',
+        images: [{
+          alt: 'Danh sách bước của kịch bản Checkout: navigate, input, click, một Condition bảo vệ một click, một Switch theo ${role} với case admin hai bước và case user một bước, bước Upload File có màu riêng, và bước cuối bị tắt, mỗi bước có Disable, Copy, Edit và Delete.',
+          caption: 'Một Condition, một khối Switch hai case, một bước tải file, một bước bị tắt.'
+        }],
+        points: [
+          'Số của một bước là vị trí của nó; các case của Switch thụt vào dưới hàng tiêu đề, mỗi case một màu.',
+          'Các bước một Condition bảo vệ thụt vào dưới nó với viền vàng cam, và thu gọn bằng ▾.',
+          'Tắt một Switch hay Condition sẽ tắt các bước dưới nó; từng bước vẫn bật lại riêng được.',
+          'Undo, redo tới 50 lần sửa; ô nhập sai báo lỗi ngay dưới hàng của nó.'
+        ]
       },
       {
         title: 'Selector vẫn chạy khi giao diện đổi',
         nav: 'Selector',
-        lead: 'Khi ghi, tối đa tám selector dự phòng được lưu cho mỗi phần tử. Lúc phát lại, chúng được thử từ chính xác nhất trở xuống cho tới khi tìm thấy — nên một class bị đổi tên hay một nút bị dời chỗ hiếm khi làm hỏng lần chạy.',
-        table: {
-          head: ['#', 'Chiến lược', 'Tìm theo'],
-          rows: [
-            ['1', 'Full XPath', 'Đúng vị trí đã ghi trong tài liệu.'],
-            ['2', 'ID', '<code>getElementById</code> — luôn là duy nhất.'],
-            ['3', 'XPath', 'XPath tương đối, neo vào id gần nhất.'],
-            ['4', 'CSS', 'Đường dẫn CSS được tính ra.'],
-            ['5', 'CSS xuyên shadow&nbsp;root', 'Cùng đường dẫn đó, đi vào các shadow root mở (LitElement, Stencil, …).'],
-            ['6', 'data-testid', '<code>[data-testid="…"]</code>'],
-            ['7', 'data-id', '<code>[data-id="…"]</code>'],
-            ['8', 'Name', '<code>[name="…"]</code>'],
-            ['9', 'Text', 'Khớp chính xác chữ trên thẻ đã ghi — cho link, nút và tiêu đề dài tối đa 50 ký tự.']
-          ]
-        },
+        lead: 'Tối đa tám selector cho mỗi phần tử, thử từ chính xác nhất — class đổi tên hiếm khi làm hỏng lần chạy.',
         points: [
-          'Loại selector bạn chọn trong form — CSS, XPath, Full XPath, ID, Name hoặc Text — luôn được thử trước; các loại còn lại giữ thứ tự này.',
-          'Id không ổn định bị loại ngay khi ghi — id kiểu <code>:r0:</code> của React và UUID đổi sau mỗi lần tải trang.',
-          'Chưa tìm thấy? Khi phát lại, tiện ích chờ phần tử xuất hiện, tối đa tới thời gian chờ, thay vì báo lỗi trên một trang chậm.',
-          '<code>${variables}</code> dùng được trong mọi selector, nên một bước có thể nhắm vào một dòng khác ở mỗi lần chạy.'
+          'Thứ tự: loại bạn chọn, rồi Full XPath, ID, XPath, CSS, CSS xuyên shadow root, data-testid, data-id, name, text.',
+          '<b>Pick element</b>: rê chuột trên trang rồi click — các trường tự điền, kể cả trong iframe.',
+          '<b>Child Condition</b> tìm đúng dòng trong danh sách theo giá trị, chữ, id, class hoặc loại.',
+          'Id không ổn định (<span class="nw"><code>:r0:</code></span> của React, UUID) bị bỏ qua khi ghi.',
+          'Chưa có phần tử? Khi phát lại, tiện ích chờ nó tới hết thời gian chờ thay vì báo lỗi.',
+          '<code>${variables}</code> dùng được trong mọi selector, nên một bước nhắm được dòng khác mỗi lần chạy.'
         ]
       },
       {
-        title: 'Chọn, nhắm và sắp xếp',
-        nav: 'Chọn & sắp xếp',
-        lead: 'Các công cụ quanh bộ ghi giúp kịch bản vẫn dễ đọc sau lần sửa thứ mười.',
+        title: 'Lưu, thư mục và kịch bản',
+        nav: 'Kịch bản',
+        lead: 'Kịch bản nằm trong thư mục và tìm được ngay khi gõ.',
+        images: [{
+          alt: 'Thẻ Manage Scenarios: ô tìm kiếm, bộ lọc thư mục, menu sắp xếp, bốn kịch bản đã lưu và các nút Play, Rename, Duplicate, Move, Delete.',
+          caption: 'Manage Scenarios: tìm, lọc, sắp xếp, chạy.'
+        }],
         points: [
-          '<b>Pick element</b>: rê chuột trên trang rồi click — các trường selector tự điền, kể cả trong iframe.',
-          '<b>Child Condition</b> nhắm vào một khung chứa và tìm đúng phần tử con theo giá trị, chữ, id, class hoặc loại ô nhập — cho danh sách và bảng có các dòng hay đổi chỗ. Dùng được với Click, Input, Hover và Read DOM.',
-          'Nhãn đặt tên cho bước bằng lời thường; nhãn hiện trong danh sách, trong code xuất ra và trong bug report.',
-          'Bước bị tắt vẫn nằm trong danh sách với số thứ tự của nó, nên tắt một bước không làm đánh số lại các bước khác.',
-          'Kịch bản nằm trong thư mục — đổi tên, nhân bản, di chuyển hoặc xoá, và sắp xếp theo mới nhất, cũ nhất hoặc theo tên.',
-          'Gõ <code>${</code> vào bất kỳ trường nào sẽ gợi ý các biến dùng được ở đó.'
+          '<b>New</b> kèm tên tạo kịch bản ngay: mọi thứ sau đó tự lưu vào nó.',
+          'Tìm ngay khi gõ, lọc theo thư mục, sắp xếp bốn kiểu — kiểu sắp xếp được nhớ.',
+          'Đổi tên, nhân bản, di chuyển hoặc xoá; đổi tên thư mục không làm mất liên kết kịch bản.',
+          'Xoá thư mục sẽ chuyển kịch bản của nó về No Folder, không bao giờ xoá chúng.'
         ]
       }
     ],
@@ -143,13 +156,43 @@ var FEATURES_VI = {
         }
       },
       {
+        title: 'Chạy nối tiếp',
+        nav: 'Chạy nối tiếp',
+        lead: 'Nhiều kịch bản liên tiếp, mỗi kịch bản có thời gian chờ riêng — một lần chạy, một kết quả.',
+        images: [{
+          alt: 'Thẻ Sequence Scenarios: ô chọn kịch bản với + Add, menu thời gian chờ, ba kịch bản trong hàng đợi có Disable, Copy, Edit và Delete, ô tên sequence, Start Sequence, Stop và Save as Scenario.',
+          caption: 'Ba kịch bản trong hàng đợi, mỗi cái một thời gian chờ.'
+        }],
+        points: [
+          'Thêm một kịch bản bao nhiêu lần cũng được, mỗi lần một thời gian chờ riêng.',
+          'Từng mục: tắt, nhân bản, đổi thời gian chờ hoặc xoá — hay kéo để đổi thứ tự.',
+          '<b>Save as Scenario</b> gộp hàng đợi thành một kịch bản; thời gian chờ thành bước Wait.',
+          'Badge hiện SEQ khi đang chạy; Stop dừng sau khi xong kịch bản đang chạy.'
+        ]
+      },
+      {
+        title: 'Hẹn lịch',
+        nav: 'Hẹn lịch',
+        lead: 'Chạy kịch bản vào giờ đã đặt, một lần hoặc mỗi ngày — tự bắt đầu dù popup đóng.',
+        images: [{
+          alt: 'Thẻ Scheduled Playback: ô chọn kịch bản, ô giờ và phút với AM/PM, nhãn, URL trang, ô Repeat daily, nút + Add, và hai lịch đã lưu — 8:00 AM hằng ngày và 1:30 PM một lần — có Disable, Copy, Edit và Delete.',
+          caption: 'Hai lịch: một lịch hằng ngày, một lịch một lần.'
+        }],
+        points: [
+          'Chọn kịch bản và giờ, thêm nhãn nếu muốn, tick Repeat daily để chạy mỗi ngày.',
+          'Sửa, tắt hoặc sao chép một lịch ngay trên hàng của nó.',
+          'Alarm chạy nền kiểm tra mỗi phút; một lịch không bao giờ chạy hai lần trong một phút.',
+          'Chrome phải đang mở vào giờ đó — trình duyệt đã tắt thì không chạy gì.'
+        ]
+      },
+      {
         title: 'Làm cho trang web thật',
         nav: 'Trang thật',
         lead: 'Những bước thường buộc công cụ ghi phải quay về code viết tay thì ở đây được hỗ trợ đầy đủ.',
         points: [
           '<b>Dropdown → Choose item #</b> chọn mục theo vị trí: đếm từ 1 như danh sách hiển thị, <code>-1</code> cho mục cuối, <code>random</code> cho một mục bất kỳ đang bật, hoặc một <code>${variable}</code>.',
           'Danh sách ảo hoá (<span class="nw">react-window</span>, MUI) được cuộn cho tới khi mục cần chọn thật sự được render.',
-          '<b>Upload File</b> đưa file trên máy vào <code>&lt;input type="file"&gt;</code> hoặc vùng kéo thả — nhiều file cùng lúc, tên file dùng được <code>${variable}</code>.',
+          '<b>Upload File</b> đưa file trên máy vào <code>&lt;input type="file"&gt;</code> hoặc vùng kéo thả, tên file dùng được <code>${variable}</code> — file không còn trên đĩa thì bước lỗi và nêu tên file.',
           '<b>Run JS</b> chạy script của bạn trên trang qua DevTools protocol, nên Content Security Policy của trang không chặn được.',
           '<b>Drag &amp; Drop</b> phát sự kiện kéo HTML5 thật từ nguồn sang đích.',
           'Navigate và Wait chạy từ background worker, nên việc chuyển trang không bao giờ cắt ngang lần chạy.'
@@ -169,7 +212,6 @@ var FEATURES_VI = {
     ],
     notes: [
       'Upload File hoạt động trong trang và các frame cùng origin; trong frame khác origin, bước này lỗi và cho biết lý do.',
-      'Lần chạy theo lịch dùng alarm của Chrome, nên Chrome phải đang mở vào giờ đã hẹn.',
       'Chụp cửa sổ không thể là một bước phát lại — bạn phải tự chọn cửa sổ. Các hành động Screenshot đã có chụp vùng hiển thị, cả trang và phần tử.'
     ]
   },
@@ -215,6 +257,21 @@ var FEATURES_VI = {
         ]
       },
       {
+        title: 'Thẻ Last run',
+        nav: 'Last run',
+        lead: 'Ở đầu tab Record &amp; Play: lần Play hoặc Resume gần nhất kết thúc ra sao — tới lần chạy sau.',
+        images: [{
+          alt: 'Thẻ Last run của một lần chạy “Checkout with coupon” bị Failed: kết luận, thời gian, một dòng lỗi — #4 Check the toast, mong đợi chữ chứa Saved, nhận được Error: coupon expired — và nút Bug report.',
+          caption: 'Một lần chạy thật bị lỗi: mong đợi gì, trang có gì.'
+        }],
+        points: [
+          'Kết luận, kịch bản và thời điểm — mỗi lỗi một dòng, kèm số thứ tự bước.',
+          'Assert sai ghi cả hai phía: <code>Expected text "Saved", got "Error"</code>.',
+          'Bấm vào một lỗi để nhảy tới bước đó trong danh sách.',
+          '× ẩn thẻ này cho tới lần chạy sau.'
+        ]
+      },
+      {
         title: '12 phép kiểm tra cho Condition và Assert',
         nav: '12 phép kiểm tra',
         lead: 'Cùng một danh sách cho cả hai: Condition quyết định có bỏ qua bước hay không, Assert quyết định lần chạy có đạt hay không.',
@@ -229,30 +286,29 @@ var FEATURES_VI = {
             ['Has class', 'Phần tử có class đã cho.'],
             ['Has attribute', 'Phần tử có thuộc tính đã cho.']
           ]
-        },
-        points: [
-          'Assert sai sẽ cho biết nó mong đợi gì và trang thực tế có gì: <code>Expected text "Saved", got "Error"</code>.',
-          'Phép kiểm tra chữ, giá trị, class hoặc thuộc tính mà không có phần tử thì được tính là <b>broken</b>, không phải failed — bài test không kiểm tra được.',
-          'Giá trị của ô mật khẩu không bao giờ rời khỏi trang: Assert của nó chỉ báo là không khớp.'
-        ]
+        }
       },
       {
         title: 'Bug report tự viết',
         nav: 'Bug report',
-        lead: 'Trên thẻ Last run của một lần chạy failed hoặc broken, Bug report mở ra Markdown sẵn sàng cho Jira, GitHub hay bất kỳ công cụ nào đọc được Markdown.',
+        lead: 'Trên thẻ Last run của lần chạy failed hoặc broken: Markdown sẵn cho Jira, GitHub hay công cụ bất kỳ.',
+        images: [{
+          alt: 'Hộp thoại Bug report của lần chạy đó: Markdown gồm lỗi, trang, thời gian, kết quả và môi trường, rồi các bước tái hiện với giá trị đã gõ hiện thành dấu chấm, ô Include typed values, và nút Copy, Download screenshot.',
+          caption: 'Báo cáo của lần chạy phía trên, giá trị đã gõ được ẩn.'
+        }],
         points: [
-          'Lỗi đầu tiên, URL của trang, thời điểm xảy ra (và ở vòng lặp nào), kết quả, trình duyệt, hệ điều hành và phiên bản Pocket QA.',
-          '<b>Các bước tái hiện</b> viết thành câu — bước bị Condition bỏ qua được lược đi, nhánh Switch đã chạy được giữ lại.',
-          'Giá trị được ẩn (•••) — những gì đã gõ, tải lên hoặc so sánh — cho tới khi bạn đánh dấu <b>Include typed values</b>; lựa chọn này không bao giờ được ghi nhớ.',
-          'Ảnh chụp là trang ở đúng thời điểm lỗi đầu tiên xảy ra, chụp trước khi hộp hỏi lỗi kịp che mất.'
+          'Lỗi đầu tiên, trang, thời điểm, kết quả, trình duyệt, hệ điều hành và phiên bản Pocket QA.',
+          'Các bước tái hiện viết thành câu; bước bị Condition bỏ qua được lược đi.',
+          'Giá trị đã gõ hiện ••• cho tới khi tick <b>Include typed values</b> — không bao giờ được nhớ.',
+          '<b>Download screenshot</b>: trang ở đúng lúc lỗi đầu tiên xảy ra.'
         ]
       }
     ],
     notes: [
-      'Báo cáo mẫu phía trên chỉ để minh hoạ — bố cục là thật, còn cửa hàng và các giá trị là giả định.',
+      'Phép kiểm tra chữ, giá trị, class hoặc thuộc tính mà không có phần tử thì được tính là <b>broken</b>, không phải failed — bài test không kiểm tra được.',
+      'Giá trị của ô mật khẩu không bao giờ rời khỏi trang: Assert của nó chỉ báo là không khớp.',
       'Không có ảnh chụp khi tab của lần chạy không nằm phía trước (chạy nền); báo cáo ghi rõ điều đó thay vì đính kèm nhầm trang.',
-      'Sequence và lần chạy CSV không tạo thẻ Last run — kết quả nằm trong thông báo và trong file CSV xuất ra.',
-      'Tên biến luôn hiện trong báo cáo (<code>${password}</code>); giá trị chỉ hiện khi đã đánh dấu Include typed values.'
+      'Sequence và lần chạy CSV không tạo thẻ Last run — kết quả nằm trong thông báo và trong file CSV xuất ra.'
     ]
   },
 
@@ -292,7 +348,22 @@ var FEATURES_VI = {
         points: [
           '<b>Thứ tự ưu tiên</b>: cột của dòng CSV thắng giá trị do Read DOM ghi trong lúc chạy, và giá trị đó thắng biến đã lưu.',
           'Giá trị được tính lại từ đầu ở mỗi vòng lặp và không bao giờ được ghi ngược — lần chạy không thể ghi đè biến bạn đã lưu.',
-          'Sắp xếp bảng theo tên, loại, lần sửa gần nhất hoặc thứ tự kéo thả tuỳ chỉnh.'
+          'Tên không có trong bảng thì giữ nguyên <code>${name}</code> trên trang, nên gõ sai sẽ lộ ra thay vì thành ô trống.'
+        ]
+      },
+      {
+        title: 'Đổi tên không làm vỡ kịch bản',
+        nav: 'Đổi tên',
+        lead: 'Đổi tên một biến ở tab Data thì mọi kịch bản dùng nó đổi theo.',
+        images: [{
+          alt: 'Thẻ Variables sau khi đổi userEmail thành loginEmail, cùng thông báo: “loginEmail” saved · 3 references in 2 scenarios updated.',
+          caption: 'userEmail → loginEmail: 3 chỗ trong 2 kịch bản.'
+        }],
+        points: [
+          'Mọi <code>${name}</code>, và tên trần trong Switch, Read DOM hay Screenshot → Variable.',
+          'Bước đang mở trong form và lịch sử Undo cũng đổi theo.',
+          'Tên đã có ở biến khác, hoặc kịch bản nào đó đang ghi vào, sẽ bị từ chối.',
+          'File xuất, bản backup và cột CSV giữ tên cũ — cột của file CSV đang nạp sẽ được chỉ ra.'
         ]
       },
       {
@@ -310,11 +381,15 @@ var FEATURES_VI = {
         title: 'Condition, switch và khối bước',
         nav: 'Rẽ nhánh',
         lead: 'Rẽ nhánh theo những gì trang hiển thị hoặc giá trị của biến, không cần rời popup.',
+        images: [{
+          alt: 'Danh sách bước có một Condition bảo vệ một bước và một Switch theo ${role}: case admin chạy bước 7 và 8, case user chạy bước 9, rồi kịch bản chạy tiếp ở bước 10.',
+          caption: 'Switch ${role}: admin chạy 7–8, user chạy 9, rồi tới 10.'
+        }],
         points: [
-          '<b>Condition (If)</b>: một trong 12 phép kiểm tra trên phần tử, chữ, giá trị, class, thuộc tính của nó, hoặc URL — sai thì bỏ qua N bước tiếp theo.',
-          '<b>Switch on a variable</b>: mỗi giá trị chạy một kịch bản khác, nhảy tới một hành động trong kịch bản này, hoặc chỉ chạy khối bước của riêng nó.',
-          'Chế độ <b>Always</b>: không cần biến — kịch bản đã chọn (hoặc một đoạn #–# của nó) được phát mỗi lần, rồi kịch bản này chạy tiếp. Viết bước đăng nhập một lần, dùng lại ở mọi nơi.',
-          'Các bước trong một khối được đánh số theo nhánh (1.1, 1.2, 2.1…); kéo thả, xoá và hoàn tác đều giữ đúng mọi khoảng.'
+          '<b>Condition (If)</b>: một trong 12 phép kiểm tra — sai thì bỏ qua N bước tiếp theo.',
+          '<b>Switch</b>: mỗi giá trị chạy kịch bản khác, nhảy tới bước khác, hoặc chỉ chạy khối của nó.',
+          '<b>Always</b>: không cần biến — một kịch bản hay đoạn #–# của nó chạy mỗi lần.',
+          'Switch mới đứng trước các bước của nó; không case nào được cắt ngang khối của Switch khác.'
         ]
       }
     ],
@@ -379,6 +454,7 @@ var FEATURES_VI = {
     notes: [
       'Đổi định dạng xuất sau khi chạy sẽ xoá kết quả đã gom — hãy chọn định dạng trước.',
       'Ký tự phân cách được tự nhận diện và giá trị trong dấu ngoặc kép được đọc đúng, nên file CSV lưu từ Excel dùng được ngay.',
+      'Đổi tên một biến sau khi đã nạp CSV thì popup chỉ ra cột vẫn mang tên cũ.',
       'Code xuất ra cũng đọc được cùng file CSV và chạy một lần cho mỗi dòng — xem <a href="feature.html?id=export">Xuất code</a>.'
     ]
   },
@@ -433,18 +509,46 @@ var FEATURES_VI = {
       {
         title: 'Bên trong Image Editor',
         nav: 'Image Editor',
-        lead: 'Mọi ảnh chụp — hoặc bất kỳ ảnh nào từ clipboard hay từ file — đều mở được trong trình cắt và chú thích đầy đủ. Trình sửa mở trong cửa sổ riêng, không chen chúc trong popup.',
+        lead: 'Mọi ảnh chụp — hoặc ảnh bất kỳ từ clipboard hay file — mở trong trình sửa có cửa sổ riêng.',
         images: [{
           alt: 'Image Editor đang mở một ảnh chụp dashboard mẫu, có khung chữ nhật và mũi tên chú thích, bảng Stamp mở bên phải với các tuỳ chọn watermark thời gian.',
-          caption: 'Cắt, chú thích và đóng dấu mọi ảnh chụp — ở đây là khung chữ nhật + mũi tên đánh dấu và bảng Stamp đang mở.'
+          caption: 'Một khung chữ nhật, một mũi tên và bảng Stamp.'
         }],
         points: [
-          'Bảy công cụ trên một thanh bên: Crop, Draw, Rectangle, Ellipse, Arrow, Text và Blur — mỗi công cụ có phím tắt một chữ (C, D, R, E, A, T, B).',
-          'Xoay 90° trái/phải, lật ngang hoặc dọc, và lịch sử hoàn tác/làm lại cho mọi thao tác.',
-          'Bảng Adjust: thanh trượt độ sáng, tương phản, bão hoà và độ nét, đặt lại bằng một chạm.',
-          'Bảng Resize: rộng/cao chính xác với tuỳ chọn khoá tỉ lệ, hoặc thanh trượt tỉ lệ&nbsp;10–300%.',
-          'Bảng Stamp: watermark thời gian hoặc chữ tuỳ chỉnh ở 1 trong 9 vị trí, chỉnh được cỡ chữ và độ mờ.',
-          'Phóng to/thu nhỏ với nút về 1:1, và bảng phím tắt chỉ cách một lần bấm phím.'
+          'Crop, Draw, Rectangle, Ellipse, Arrow, Text và Blur — mỗi công cụ một phím: C, D, R, E, A, T, B.',
+          'Xoay, lật, và hoàn tác hay làm lại mọi thao tác.',
+          'Chỉnh độ sáng, tương phản, bão hoà, độ nét; đổi kích thước chính xác hoặc theo 10–300%.',
+          'Đóng dấu thời gian hay chữ riêng ở 1 trong 9 vị trí; phóng to, về 1:1 chỉ bằng một phím.'
+        ]
+      },
+      {
+        title: 'So sánh ảnh',
+        nav: 'So sánh ảnh',
+        lead: 'Hai ảnh chụp, trước và sau một lần deploy: cái gì đã đổi, tính bằng điểm ảnh và đánh dấu trên ảnh.',
+        images: [{
+          alt: 'Hộp thoại Image Diff: đã chọn ảnh A và ảnh B, độ nhạy 10, đã bấm Compare, kết quả 4,123 px (0.65% diện tích), và ảnh xem trước với dòng thay đổi được tô màu hồng tím, cùng nút Save result.',
+          caption: 'Một dòng thay đổi: 4,123 px, 0.65% ảnh.'
+        }],
+        points: [
+          'Chọn ảnh A và ảnh B từ máy — hai ảnh bất kỳ, không chỉ ảnh chụp.',
+          'Độ nhạy: thấp thì bắt cả thay đổi rất nhỏ, cao thì bỏ qua nhiễu.',
+          'Số điểm ảnh thay đổi, tỉ lệ trên diện tích, và vùng thay đổi được đánh dấu trên ảnh.',
+          '<b>Save result</b> lưu lại ảnh đã đánh dấu.'
+        ]
+      },
+      {
+        title: 'Tệp, tên và cài đặt',
+        nav: 'Cài đặt',
+        lead: 'Ảnh lưu vào đâu và đặt tên ra sao — chỉnh một lần trong tab Settings.',
+        images: [{
+          alt: 'Thẻ Screenshot settings: chế độ lưu, tiền tố tên file với ví dụ trực tiếp, thêm kiểu chụp vào tên file, đếm ngược, định dạng và cỡ chữ watermark, tốc độ cuộn segment, và nút Save Settings.',
+          caption: 'Thẻ Screenshot trong tab Settings.'
+        }],
+        points: [
+          '<b>Auto</b> lưu thẳng vào Downloads/screenshots; <b>Ask</b> để bạn đặt tên từng ảnh.',
+          'Tên là tiền tố cộng thời điểm; thêm kiểu chụp (<code>_full</code>, <code>_elem</code>…) nếu bạn chụp lẫn nhiều kiểu.',
+          'Watermark: <code>{url}</code> và <code>{datetime}</code> in thẳng vào ảnh, cỡ chữ tuỳ chỉnh.',
+          'Tốc độ cuộn segment, dọc và ngang riêng — chậm lại cho trang tải ảnh muộn.'
         ]
       }
     ],
@@ -488,48 +592,37 @@ var FEATURES_VI = {
             ['Robot&nbsp;Framework', '<code>&lt;name&gt;.robot</code>', '<code>robot</code> với SeleniumLibrary — các bước đọc như keyword'],
             ['Selenium&nbsp;Java', '<code>&lt;Name&gt;Test.java</code>', '<code>mvn test</code> / <code>gradle test</code> với Selenium 4 và TestNG 7']
           ]
-        },
-        points: [
-          'Tên file giữ được chữ của mọi ngôn ngữ, như <code>đăng_nhập_selenium.py</code> hoặc <code>ĐăngNhậpTest.java</code>.',
-          'Tab Code tô màu cú pháp, nhảy qua phần helper tới Step 1, và tự xuống dòng câu dài nếu bạn muốn.',
-          '<b>↻ Reload scenario</b> cập nhật các chỉnh sửa làm trong lúc cửa sổ đang mở; thiết lập của từng định dạng được ghi nhớ.'
-        ]
+        }
       },
       {
         title: 'Từ popup đến code',
         nav: 'Ảnh chụp',
-        lead: 'Cùng kịch bản “Login flow”, xuất theo hai cách — đầu ra thật từ bộ sinh code thật, không phải ảnh dựng.',
+        lead: 'Cùng kịch bản “Login flow”, xuất theo hai cách — đầu ra thật. Dòng cảnh báo đếm các bước cần kiểm tra; bấm vào sẽ mở chúng trong tab Actions.',
         images: [
           {
             alt: 'Cửa sổ Export JS của kịch bản Login flow ở Step 1 của code bookmarklet được sinh ra, có các tab Code/Variables/Actions/Settings và cảnh báo 1 bước cần kiểm tra, 1 bước bị bỏ qua.',
-            caption: 'JS Bookmarklet — code cùng các tab Variables, Actions và Settings, sẵn sàng để copy hoặc tải xuống.'
+            caption: 'JS Bookmarklet, cùng các tab Variables, Actions và Settings.'
           },
           {
             alt: 'Cửa sổ Export Python của cùng kịch bản Login flow ở Step 1 của code Selenium được sinh ra.',
-            caption: 'Selenium Python — cùng kịch bản dưới dạng script độc lập; ↧ Steps nhảy qua phần helper tới Step 1.'
+            caption: 'Selenium Python; ↧ Steps nhảy qua phần helper.'
           }
-        ],
-        points: [
-          'Dòng cảnh báo là thật: các bước mà một định dạng không diễn đạt được sẽ được đếm và nêu tên — bấm vào sẽ mở chúng trong tab Actions.',
-          'Variables liệt kê mọi biến được gắn sẵn vào code; Actions liệt kê mọi bước với OK, Verify hoặc Skip.'
         ]
       },
       {
         title: 'Mỗi định dạng hỗ trợ những gì',
         nav: 'Phạm vi hỗ trợ',
-        lead: 'Ở chỗ một định dạng không làm được như khi phát lại, bước đó sẽ ghi rõ — trong tab Actions và bằng comment trong code.',
+        lead: 'Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM và Condition chạy ở cả năm. Phần còn lại:',
         table: {
           head: ['Bước', 'Bookmarklet', 'Selenium', 'Playwright', 'Robot', 'Java'],
           rows: [
-            ['Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM,&nbsp;Condition', 'Có', 'Có', 'Có', 'Có', 'Có'],
-            ['Navigate', 'Kiểm tra: mỗi trang một lần click', 'Có', 'Có', 'Có', 'Có'],
-            ['Run JS', 'Kiểm tra: dán nguyên văn', 'Kiểm tra: <code>execute_script</code>', 'Kiểm tra: <code>page.evaluate</code>', 'Kiểm tra: <code>Execute Javascript</code>', 'Kiểm tra: <code>executeScript</code>'],
-            ['Chụp màn hình', '—', 'Có', 'Có', 'Có', 'Có'],
-            ['Upload File (ô input hoặc vùng thả)', '—', 'Có', 'Có', 'Có', 'Có'],
-            ['Bước được ghi trong iframe', 'Kiểm tra: chỉ cùng site', 'Có', 'Có', 'Có', 'Có'],
-            ['Khối Switch theo biến', 'Có, <code>if / else if</code>', 'Có, <code>if / elif</code>', 'Có', 'Có, <code>IF / ELSE IF</code>', 'Có'],
-            ['Switch sang kịch bản khác, tới #N, Always', '—', '—', '—', '—', '—'],
-            ['Assert (mềm, có chờ)', 'Có, một alert ở cuối', 'Có, <code>AssertionError</code> ở&nbsp;cuối', 'Có, <code>expect.soft</code>', 'Có, Continue On Failure', 'Có, <code>SoftAssert</code>']
+            ['Navigate', 'Kiểm tra', 'Có', 'Có', 'Có', 'Có'],
+            ['Run JS', 'Kiểm tra', 'Kiểm tra', 'Kiểm tra', 'Kiểm tra', 'Kiểm tra'],
+            ['Chụp màn hình, Upload&nbsp;File', '—', 'Có', 'Có', 'Có', 'Có'],
+            ['Trong iframe', 'Cùng site', 'Có', 'Có', 'Có', 'Có'],
+            ['Khối Switch theo biến', 'Có', 'Có', 'Có', 'Có', 'Có'],
+            ['Switch sang kịch bản, #N, Always', '—', '—', '—', '—', '—'],
+            ['Assert mềm', 'Có', 'Có', 'Có', 'Có', 'Có']
           ]
         }
       },
@@ -545,17 +638,14 @@ var FEATURES_VI = {
             ['<code>PQA_HEADLESS</code>', '<code>1</code> để chạy không có cửa sổ trình duyệt, <code>0</code> để có cửa sổ.', 'Selenium, Robot, Java'],
             ['<code>PQA_&lt;name&gt;</code>', 'Giá trị của biến <code>&lt;name&gt;</code> — <code>PQA_username=bob</code>.', 'Selenium, Playwright, Robot, Java']
           ]
-        },
-        points: [
-          '<b>Data file (CSV)</b>: pytest, Playwright, Robot (qua DataDriver) và Java chạy bài test một lần cho mỗi dòng của file CSV đặt cạnh nó.',
-          'Lần chạy headless có cửa sổ 1920 × 1080, nên trang responsive hiển thị bố cục desktop.',
-          'Chữ trong kịch bản chỉ nằm trong chuỗi hoặc comment — một kịch bản nhập từ ngoài không thể lén chèn code vào bản xuất của bạn.'
-        ]
+        }
       }
     ],
     notes: [
+      '<b>Data file (CSV)</b>: pytest, Playwright, Robot (qua DataDriver) và Java chạy bài test một lần cho mỗi dòng của file CSV đặt cạnh nó.',
       'Bookmarklet dừng ở bước Navigate và chạy tiếp từ bước sau khi bạn bấm lại nó trên trang mới — bookmarklet không sống sót qua một lần tải trang.',
-      'Giá trị biến được gắn cố định lúc xuất — sửa bảng Variables rồi xuất lại, hoặc ghi đè bằng <code>PQA_&lt;name&gt;</code>.'
+      'Giá trị biến được gắn cố định lúc xuất — sửa bảng Variables rồi xuất lại, hoặc ghi đè bằng <code>PQA_&lt;name&gt;</code>.',
+      'Bước đã tắt (⊘) không được xuất. Chữ trong kịch bản chỉ nằm trong chuỗi hoặc comment — kịch bản nhập từ ngoài không thể lén chèn code.'
     ]
   },
 
@@ -580,6 +670,33 @@ var FEATURES_VI = {
     ],
     sections: [
       {
+        title: 'Trên trang',
+        nav: 'Trên trang',
+        lead: 'Đánh dấu ngay nơi bạn đọc: chọn đoạn chữ, chọn một màu.',
+        points: [
+          'Chọn chữ → một bảng nhỏ hiện năm màu và ô ghi chú.',
+          'Bấm vào một đánh dấu để đổi màu, sửa ghi chú hoặc xoá riêng nó.',
+          'Rê chuột lên đánh dấu có ghi chú để đọc, không cần bấm.',
+          'Chúng trở lại ở lần ghé sau, kể cả sau khi khởi động lại — cả với nội dung tải muộn.',
+          'Công tắc trong popup ẩn tất cả; bật lại thì mọi đánh dấu quay về.'
+        ]
+      },
+      {
+        title: 'Trong popup',
+        nav: 'Trong popup',
+        lead: 'Tab Highlight tìm lại những gì bạn đã đánh dấu, ở trang này hay trang khác.',
+        images: [{
+          alt: 'Tab Highlight: Highlight ON, Export, thống kê 3 trên trang này, 4 tổng cộng, 2 trang, trang hiện tại, menu Other pages, ô tìm kiếm với bộ lọc màu, ba đánh dấu vàng, hồng và xanh lá, và nút Clear page highlights.',
+          caption: '3 đánh dấu trên trang này, 4 trên 2 trang.'
+        }],
+        points: [
+          'Tìm theo chữ, hoặc lọc theo màu — mỗi chấm màu đếm số đánh dấu của nó.',
+          'Số đánh dấu trên trang này, tổng cộng, và trên bao nhiêu trang.',
+          '<b>Other pages</b>: đọc đánh dấu của trang khác mà không cần mở nó.',
+          'Xuất tất cả ra JSON, hoặc chỉ xoá đánh dấu của trang này.'
+        ]
+      },
+      {
         title: 'Mẫu URL',
         nav: 'Mẫu URL',
         lead: 'Mặc định, một đánh dấu thuộc về trang nơi nó được tạo. Một mẫu — có ký tự đại diện ở đường dẫn <em>và</em> subdomain — gom nhiều trang vào cùng một bộ đánh dấu.',
@@ -592,9 +709,10 @@ var FEATURES_VI = {
           ]
         },
         points: [
-          'Một công cụ dựng mẫu chuyển URL của tab hiện tại thành mẫu — không cần nhớ cú pháp.',
-          'Thêm hoặc xoá một mẫu sẽ gom lại các đánh dấu đã lưu. Mỗi đánh dấu nhớ trang nơi nó được tạo, nên không cái nào bị mất khi quy tắc thay đổi.',
-          'Link <code>#anchor</code> được tính là cùng một trang; hash <code>#/route</code> và <code>#!/route</code> được tính là trang thật, đúng cách các ứng dụng <span class="nw">single-page</span> dùng chúng.'
+          'Công cụ dựng mẫu lấy từ URL của tab: bấm vào một phần để đổi chính xác → <code>*</code> → bỏ.',
+          '<code>*</code> là đúng một đoạn đường dẫn, không vượt qua <code>?</code> hay <code>#</code>.',
+          'Thêm hoặc bỏ một mẫu sẽ gom lại dữ liệu đã lưu — mỗi đánh dấu vẫn nhớ trang của nó.',
+          '<code>#anchor</code> vẫn là cùng trang; <code>#/route</code> là một trang riêng.'
         ]
       }
     ],
@@ -841,32 +959,34 @@ var FEATURES_VI = {
         table: {
           head: ['Hành động', 'Mặc định'],
           rows: [
-            ['Start Recording', '<span class="kbd">Alt+R</span>'],
-            ['Stop Recording', '<span class="kbd">Alt+S</span>'],
+            ['Start / Stop Recording', '<span class="kbd">Alt+R</span> / <span class="kbd">Alt+S</span>'],
             ['Screenshot&nbsp;(Visible)', '<span class="kbd">Alt+P</span>'],
             ['Screenshot (Full Page)', '<span class="kbd">Alt+Shift+F</span>'],
-            ['Screenshot (Scroll V)', '<span class="kbd">Alt+V</span>'],
-            ['Screenshot (Scroll H)', '<span class="kbd">Alt+H</span>'],
-            ['Segment V — Start', '<span class="kbd">Alt+Shift+V</span>'],
-            ['Segment H — Start', '<span class="kbd">Alt+Shift+H</span>'],
+            ['Screenshot (Scroll V / H)', '<span class="kbd">Alt+V</span> / <span class="kbd">Alt+H</span>'],
+            ['Segment V / H — Start', '<span class="kbd">Alt+Shift+V</span> / <span class="kbd">Alt+Shift+H</span>'],
             ['Segment — Stop &amp; Capture', '<span class="kbd">Alt+X</span>'],
             ['Screenshot&nbsp;(Element)', '<span class="kbd">Alt+E</span>']
           ]
         },
         points: [
-          'Start/Stop Recording chỉ hoạt động trên tab đã kích hoạt Pocket QA.',
-          'Phím tắt chỉ phản hồi lần bấm phím thật — trang web không thể giả lập phím để bắt đầu ghi hay chụp ảnh.',
+          'Bấm Set rồi bấm chính tổ hợp phím; Esc để huỷ. Reset to defaults đưa tất cả về mặc định.',
+          'Chỉ phản hồi lần bấm phím thật, trên trang http, https và file; Start/Stop cần tab đã kích hoạt.',
           'Trong Adminer, <span class="kbd">Alt+Shift+Z</span> hoàn tác thay đổi cơ sở dữ liệu vừa được ghi.'
         ]
       },
       {
-        title: 'Nhập, xuất & sao lưu',
+        title: 'Nhập, xuất và sao lưu',
         nav: 'Sao lưu',
+        lead: 'Import / Export chuyển kịch bản. Backup / Restore chuyển tất cả.',
+        images: [{
+          alt: 'Thẻ Backup / Restore trong tab Settings: Backup All Data, ô chọn file và Restore All Data.',
+          caption: 'Backup / Restore trong tab Settings.'
+        }],
         points: [
-          '<b>Import / Export</b>: một kịch bản hoặc cả thư mục dưới dạng JSON — để chia sẻ bài test với đồng đội hoặc lưu trong hệ thống quản lý phiên bản.',
-          '<b>Backup / Restore</b>: mọi kịch bản, thư mục, biến và cài đặt trong một file.',
-          'File nhập có bước Run JS hoặc Upload File sẽ cảnh báo trước khi được thêm vào, nên file được chia sẻ không thể lặng lẽ chạy code hay đọc thư mục của bạn.',
-          'File xuất dùng tính năng mới hơn (khối Switch) sẽ ghi lại phiên bản đã tạo ra nó, để bản cũ hơn không đọc sai.'
+          '<b>Import / Export</b>: một kịch bản hay cả thư mục dạng JSON; file thư mục tạo lại thư mục đó.',
+          '<b>Backup</b>: kịch bản, thư mục, biến, đánh dấu và mẫu URL, lịch hẹn, cài đặt.',
+          '<b>Restore</b> ghi đè chứ không gộp — và bỏ qua những gì thuộc về máy cũ.',
+          'File nhập có bước Run JS hoặc Upload File sẽ cảnh báo trước, nêu tên thư mục nó sẽ đọc.'
         ]
       },
       {

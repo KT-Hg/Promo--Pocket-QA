@@ -30,7 +30,7 @@ What gets vendored (by `update-vendor.mjs`):
 | `vendor/popup/*.css`   | `css/popup/*.css` — every stylesheet `popup.html` links (`01-base.css` … `12-switch-blocks.css`), verbatim | `popup-demo.html` links each one, in the same order as `popup.html` (the real stylesheets → pixel-perfect) |
 | `vendor/popup.html`    | `popup.html`        | source markup the demo is generated from |
 | `vendor/icon128.png`   | `icons/icon128.png` | `index.html` favicon / logo |
-| `vendor/version.txt`   | `manifest.json` → `version` | stamped into the demo as `<meta name="ext-version">`; `demo.js` fills the Settings › Version card from it. `update-vendor.mjs` also rewrites the version in both page footers and the sample report on `feature.html?id=run-results`, and `minimum_chrome_version` into "Chrome 109+" / the FAQ. The Version card and footers then swap in the live Chrome Web Store version at runtime (via shields.io), so this is only their fallback. |
+| `vendor/version.txt`   | `manifest.json` → `version` | stamped into the demo as `<meta name="ext-version">`; `demo.js` fills the Settings › Version card from it. `update-vendor.mjs` also rewrites the version in both page footers, and `minimum_chrome_version` into "Chrome 109+" / the FAQ. The Version card and footers then swap in the live Chrome Web Store version at runtime (via shields.io), so this is only their fallback. |
 
 - **The stylesheet list is read from `popup.html`'s `<head>`**, not hard-coded:
   `update-vendor.mjs` copies whatever it links under `css/` (and clears
@@ -230,6 +230,7 @@ See [`screenshots/`](screenshots/):
 | `shot-sql-diagram.png` / `-dark.png` | `sqltest.html`'s Diagram dialog (Schema tab → Diagram) for a four-table `JOIN` query, after **Fit** — boxes with PK/FK, crow's-foot links, zoom controls. Made by `capture-shots.mjs` |
 | `shot-sql-compare.png` / `-dark.png` | Compare mode on the first example query (age range moved, country filter dropped): the Impacted / Unrelated / No longer applies counters over *Changes detected*. `capture-shots.mjs` |
 | `shot-sql-coverage.png` / `-dark.png` | The Coverage panel for the "Compound WHERE" example — five conditions, so pairwise, 6 of 32 combinations. `capture-shots.mjs` |
+| `shot-pop-*.png` / `-dark.png` | The real popup (`popup.html` opened as a tab on a sample “Checkout” page that `capture-shots.mjs` serves, data seeded through the extension's own messages): `pop-actions` (a Condition, a Switch block, Upload File, a disabled step — on recording and variables), `pop-manage`, `pop-sequence`, `pop-schedule` (playback), `pop-lastrun` and `pop-bugreport` (a scenario really played and failed — run-results), `pop-rename` (a variable renamed — the toast counts what followed), `pop-image-diff` and `pop-shot-settings` (screenshots), `pop-highlights` (seeded `hl_v1`), `pop-backup` (settings). `capture-shots.mjs` |
 
 ### Capturing a shot: `capture-shots.mjs`
 

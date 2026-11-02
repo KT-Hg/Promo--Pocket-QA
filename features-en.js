@@ -36,80 +36,97 @@ var FEATURES_EN = {
       ['Refine', 'Add what a recorder can’t see — a hover, a wait, an Assert — with Add Manual Action, and drag it into place.']
     ],
     sections: [
-      // Seventeen actions as two tables, split by group, so each fits one screen
+      // Seventeen actions as three short tables, so each fits one screen
       {
-        title: 'Page and control actions',
-        nav: 'Page &amp; control',
-        lead: 'Seventeen building blocks in all. Click and Input are recorded for you; the rest come from the Add Manual Action form, each with its own fields.',
+        title: 'Page actions',
+        nav: 'Page actions',
+        lead: 'Seventeen building blocks in all. Click and Input are recorded; the rest come from Add Manual Action.',
         table: {
-          head: ['Action', 'Group', 'What it does'],
+          head: ['Action', 'What it does'],
           rows: [
-            ['Click', 'Page', 'A mouse click on the target element.'],
-            ['Input', 'Page', 'Sets a field’s value and fires <code>input</code>, <code>change</code> and <code>blur</code>, as a user’s typing would.'],
-            ['Hover', 'Page', 'Fires <code>mouseover</code>, <code>mouseenter</code> and <code>mousemove</code> — opens menus and tooltips.'],
-            ['Dropdown (open / choose item)', 'Page', 'A real, trusted click for dropdowns that ignore a scripted one, and optionally <b>Choose item #</b>.'],
-            ['Drag &amp; Drop', 'Page', 'An HTML5 drag from a source selector onto a target selector.'],
-            ['Navigate', 'Control', 'Goes to a URL — <code>${variables}</code> allowed.'],
-            ['Wait', 'Control', 'Pauses for a number of milliseconds.'],
-            ['Run JS', 'Control', 'Runs your own script on the page, even where its Content Security Policy blocks inline scripts.']
+            ['Click', 'A mouse click on the target element.'],
+            ['Input', 'Sets a field’s value and fires <code>input</code>, <code>change</code> and <code>blur</code>, as typing would.'],
+            ['Hover', 'Fires the mouse-over events — opens menus and tooltips.'],
+            ['Dropdown', 'A real, trusted click for dropdowns that ignore a scripted one, and optionally <b>Choose item #</b>.'],
+            ['Drag &amp; Drop', 'An HTML5 drag from a source selector onto a target.']
           ]
         }
       },
       {
-        title: 'Logic and data actions',
-        nav: 'Logic &amp; data',
-        lead: 'The steps that turn a recording into a test: checks, branches, page reads, screenshots and file uploads.',
+        title: 'Control and logic',
+        nav: 'Control &amp; logic',
+        lead: 'The steps that turn a recording into a test: waits, scripts, checks and branches.',
         table: {
-          head: ['Action', 'Group', 'What it does'],
+          head: ['Action', 'What it does'],
           rows: [
-            ['Condition (If)', 'Logic', 'One of 12 checks; when it is false, the next N steps are skipped.'],
-            ['Assert (Expect)', 'Logic', 'The same 12 checks, which must hold — a false one is recorded and the run goes on.'],
-            ['Switch (branch)', 'Logic', 'Picks a scenario, a jump or a block of steps from a variable’s value.'],
-            ['Read DOM → Variable', 'Data', 'Stores text, an input’s value or an attribute from the page in a variable.'],
-            ['Screenshot&nbsp;(Visible)', 'Data', 'Captures the viewport.'],
-            ['Screenshot (Full Page)', 'Data', 'Captures the whole page in one image.'],
-            ['Screenshot&nbsp;(Element)', 'Data', 'Captures exactly one element’s box.'],
-            ['Screenshot → Variable (CSV)', 'Data', 'Captures into a variable, so each CSV row’s image lands in the results.'],
-            ['Upload File', 'Data', 'Puts local files into an <code>&lt;input type="file"&gt;</code> or a drag-and-drop zone.']
+            ['Navigate', 'Goes to a URL — <code>${variables}</code> allowed.'],
+            ['Wait', 'Pauses for a number of milliseconds.'],
+            ['Run JS', 'Runs your script on the page, even past its Content Security Policy.'],
+            ['Condition (If)', 'One of 12 checks; when it is false, the next N steps are skipped.'],
+            ['Assert (Expect)', 'The same 12 checks, which must hold — a false one is recorded, the run goes on.'],
+            ['Switch', 'From a variable’s value: another scenario, a jump, or one case’s block of steps.']
           ]
         }
+      },
+      {
+        title: 'Data actions',
+        nav: 'Data actions',
+        lead: 'Read the page, keep pictures of it, and give it files.',
+        table: {
+          head: ['Action', 'What it does'],
+          rows: [
+            ['Read DOM → Variable', 'Stores text, an input’s value or an attribute in a variable for later steps.'],
+            ['Screenshot', 'The viewport, the full page or one element.'],
+            ['Screenshot → Variable', 'A capture kept in a variable, so each CSV row’s image lands in the results.'],
+            ['Upload File', 'Local files into an <code>&lt;input type="file"&gt;</code> or a drop zone.']
+          ]
+        }
+      },
+      {
+        title: 'The action list',
+        nav: 'Action list',
+        lead: 'Every step stays editable after recording: fix a selector, label it, turn it off, drag it elsewhere.',
+        images: [{
+          src: 'screenshots/shot-pop-actions.webp',
+          srcDark: 'screenshots/shot-pop-actions-dark.webp',
+          alt: 'The action list of a Checkout scenario: navigate, input, click, a Condition guarding one click, a Switch on ${role} with an admin case of two steps and a user case of one, an Upload File step in its own colour, and a disabled last step, each with Disable, Copy, Edit and Delete.',
+          caption: 'A Condition, a Switch block of two cases, an upload, a step turned off.'
+        }],
+        points: [
+          'A step’s number is its place in the list; a Switch’s cases indent under a header, one colour each.',
+          'A Condition’s guarded steps indent under it with an amber edge, and fold away with ▾.',
+          'Turning a Switch or Condition off turns off the steps under it; each can come back on alone.',
+          'Undo and redo up to 50 edits; a field left wrong says so under its row.'
+        ]
       },
       {
         title: 'Selectors that survive a redesign',
         nav: 'Selectors',
-        lead: 'While recording, up to eight selector candidates are stored for every element. Playback tries them most-precise-first until one finds it — so a renamed class or a moved button rarely breaks a run.',
-        table: {
-          head: ['#', 'Strategy', 'Looks for'],
-          rows: [
-            ['1', 'Full XPath', 'The exact recorded position in the document.'],
-            ['2', 'ID', '<code>getElementById</code> — unique by definition.'],
-            ['3', 'XPath', 'A relative XPath anchored on the nearest id.'],
-            ['4', 'CSS', 'The computed CSS path.'],
-            ['5', 'CSS through shadow roots', 'The same path, followed into open shadow roots (LitElement, Stencil, …).'],
-            ['6', 'data-testid', '<code>[data-testid="…"]</code>'],
-            ['7', 'data-id', '<code>[data-id="…"]</code>'],
-            ['8', 'Name', '<code>[name="…"]</code>'],
-            ['9', 'Text', 'An exact text match on the recorded tag — for links, buttons and headings up to 50 characters.']
-          ]
-        },
+        lead: 'Up to eight selectors are stored per element, tried most precise first — a renamed class rarely breaks a run.',
         points: [
-          'The selector type you choose in the form — CSS, XPath, Full XPath, ID, Name or Text — is always tried first; the rest keep this order.',
-          'Unstable ids are rejected while recording — React’s <span class="nw"><code>:r0:</code>-style</span> ids and UUIDs change on every load.',
-          'Nothing found yet? Playback waits for the element to appear, up to the timeout, instead of failing on a slow page.',
-          '<code>${variables}</code> work inside any selector, so one step can target a different row on every run.'
+          'Order: the type you chose, then Full XPath, ID, XPath, CSS, CSS through shadow roots, data-testid, data-id, name, text.',
+          '<b>Pick element</b>: hover the page and click — the fields fill in, iframes included.',
+          '<b>Child Condition</b> finds the right row in a list by its value, text, id, class or type.',
+          'Unstable ids (React’s <span class="nw"><code>:r0:</code></span>, UUIDs) are left out while recording.',
+          'Not there yet? Playback waits for the element, up to the timeout, instead of failing.',
+          '<code>${variables}</code> work in any selector, so one step can target a new row each run.'
         ]
       },
       {
-        title: 'Pick, target and organise',
-        nav: 'Pick & organise',
-        lead: 'The tools around the recorder that keep a scenario readable after the tenth edit.',
+        title: 'Save, folders and scenarios',
+        nav: 'Scenarios',
+        lead: 'Scenarios live in folders and are found as you type.',
+        images: [{
+          src: 'screenshots/shot-pop-manage.webp',
+          srcDark: 'screenshots/shot-pop-manage-dark.webp',
+          alt: 'The Manage Scenarios card: a search box, a folder filter, a sort menu, four saved scenarios and Play, Rename, Duplicate, Move and Delete buttons.',
+          caption: 'Manage Scenarios: search, filter, sort, play.'
+        }],
         points: [
-          '<b>Pick element</b>: hover the page and click — the selector fields fill in for you, iframes included.',
-          '<b>Child Condition</b> targets a container and finds the right child by its value, text, id, class or input type — for lists and tables whose rows keep moving. Works with Click, Input, Hover and Read DOM.',
-          'Labels name a step in plain words; they show in the list, in exported code and in bug reports.',
-          'A disabled step stays in the list with its number, so turning one off never renumbers the rest.',
-          'Scenarios live in folders — rename, duplicate, move or delete them, and sort by newest, oldest or name.',
-          'Typing <code>${</code> in any field suggests the variables you can use there.'
+          '<b>New</b> with a name makes the scenario at once: everything after it saves into it.',
+          'Search as you type, filter by folder, sort four ways — the sort is remembered.',
+          'Rename, duplicate, move or delete; renaming a folder keeps its scenarios linked.',
+          'Deleting a folder moves its scenarios to No Folder, never deletes them.'
         ]
       }
     ],
@@ -157,13 +174,47 @@ var FEATURES_EN = {
         }
       },
       {
+        title: 'Sequences',
+        nav: 'Sequences',
+        lead: 'Several scenarios in a row, each with its own delay before it — one run, one verdict.',
+        images: [{
+          src: 'screenshots/shot-pop-sequence.webp',
+          srcDark: 'screenshots/shot-pop-sequence-dark.webp',
+          alt: 'The Sequence Scenarios card: a scenario picker with + Add, a delay menu, three queued scenarios with Disable, Copy, Edit and Delete, a sequence name field, Start Sequence, Stop and Save as Scenario.',
+          caption: 'Three scenarios queued, each with its own delay.'
+        }],
+        points: [
+          'Add a scenario as often as you like, each time with its own delay.',
+          'Per item: turn it off, duplicate it, change its delay or delete it — or drag to reorder.',
+          '<b>Save as Scenario</b> merges the queue into one scenario; the delays become Wait steps.',
+          'The badge shows SEQ while it runs; Stop ends it after the scenario in flight.'
+        ]
+      },
+      {
+        title: 'Schedules',
+        nav: 'Schedules',
+        lead: 'A scenario at a set time, once or every day — it starts on its own, popup closed.',
+        images: [{
+          src: 'screenshots/shot-pop-schedule.webp',
+          srcDark: 'screenshots/shot-pop-schedule-dark.webp',
+          alt: 'The Scheduled Playback card: a scenario picker, hour and minute fields with AM/PM, a label, the page URL, a Repeat daily box, + Add, and two saved schedules — 8:00 AM daily and 1:30 PM once — with Disable, Copy, Edit and Delete.',
+          caption: 'Two schedules: one every day, one once.'
+        }],
+        points: [
+          'Pick a scenario and a time, add a label if you like, tick Repeat daily for every day.',
+          'Edit, turn off or copy a schedule from its row.',
+          'A background alarm checks every minute; a schedule never fires twice in one minute.',
+          'Chrome has to be running at that time — a closed browser runs nothing.'
+        ]
+      },
+      {
         title: 'Built for real pages',
         nav: 'Real pages',
         lead: 'The steps that usually force a recorder back to hand-written code are first-class here.',
         points: [
           '<b>Dropdown → Choose item #</b> picks an item by position: counted from 1 as the list shows it, <code>-1</code> for the last, <code>random</code> for any enabled item, or a <code>${variable}</code>.',
           'Virtualised lists (react-window, MUI) are scrolled until the chosen item is actually rendered.',
-          '<b>Upload File</b> puts local files into an <code>&lt;input type="file"&gt;</code> or a drag-and-drop zone — several at once, with <code>${variable}</code> file names.',
+          '<b>Upload File</b> puts local files into an <code>&lt;input type="file"&gt;</code> or a drop zone, <code>${variable}</code> names allowed — a file missing from disk fails the step and names it.',
           '<b>Run JS</b> executes your script on the page through the DevTools protocol, so the site’s Content Security Policy doesn’t block it.',
           '<b>Drag &amp; Drop</b> fires real HTML5 drag events from a source onto a target.',
           'Navigate and Wait run from the background worker, so a page change never cuts a run short.'
@@ -183,7 +234,6 @@ var FEATURES_EN = {
     ],
     notes: [
       'Upload File works in the page and its same-origin frames; in a frame of another origin it fails and says why.',
-      'Scheduled runs use Chrome’s alarms, so Chrome has to be running at the scheduled time.',
       'Window capture can’t be a playback step — it needs you to pick the window by hand. The Screenshot actions cover visible, full page and element.'
     ]
   },
@@ -231,6 +281,23 @@ var FEATURES_EN = {
         ]
       },
       {
+        title: 'The Last run card',
+        nav: 'Last run',
+        lead: 'At the top of Record &amp; Play, how the last Play or Resume came out — until the next one.',
+        images: [{
+          src: 'screenshots/shot-pop-lastrun.webp',
+          srcDark: 'screenshots/shot-pop-lastrun-dark.webp',
+          alt: 'The Last run card of a failed run of “Checkout with coupon”: the verdict, the time, one failure line — #4 Check the toast, expected text containing Saved, got Error: coupon expired — and a Bug report button.',
+          caption: 'A real failed run: what was expected, what the page held.'
+        }],
+        points: [
+          'The verdict, the scenario and when — and one line per failure, with its step number.',
+          'A failed Assert says both sides: <code>Expected text "Saved", got "Error"</code>.',
+          'Click a failure to jump to its step in the list.',
+          '× hides the card until the next run.'
+        ]
+      },
+      {
         title: '12 checks for Conditions and Asserts',
         nav: '12 checks',
         lead: 'The same list drives both: a Condition decides whether to skip steps, an Assert decides whether the run passes.',
@@ -245,50 +312,31 @@ var FEATURES_EN = {
             ['Has class', 'The element carries the given class.'],
             ['Has attribute', 'The element carries the given attribute.']
           ]
-        },
-        points: [
-          'A failing Assert says what it expected and what the page held: <code>Expected text "Saved", got "Error"</code>.',
-          'A text, value, class or attribute check whose element isn’t there counts as <b>broken</b>, not failed — the test couldn’t check.',
-          'A password field’s value never leaves the page: its Assert only says it didn’t match.'
-        ]
+        }
       },
       {
         title: 'A bug report that writes itself',
         nav: 'Bug report',
-        lead: 'On the Last run card of a run that failed or broke, Bug report opens Markdown ready for Jira, GitHub or any tracker that reads it.',
+        lead: 'On the Last run card of a failed or broken run: Markdown ready for Jira, GitHub or any tracker.',
+        images: [{
+          src: 'screenshots/shot-pop-bugreport.webp',
+          srcDark: 'screenshots/shot-pop-bugreport-dark.webp',
+          alt: 'The Bug report dialog for that run: Markdown with the failure, page, time, result and environment, then the steps to reproduce with typed values shown as dots, an Include typed values box, and Copy and Download screenshot buttons.',
+          caption: 'The report for the run above, typed values hidden.'
+        }],
         points: [
-          'The first failure, the page URL, when it happened (and in which loop), the result, the browser, OS and Pocket QA version.',
-          '<b>Steps to reproduce</b> as sentences — steps a Condition skipped are left out, a Switch case that ran is kept.',
-          'Values stay hidden (•••) — what was typed, uploaded or compared — until you tick <b>Include typed values</b>; that choice is never remembered.',
-          'The screenshot is the page the moment the first failure happened, taken before the failure prompt could cover it.'
-        ],
-        code: [
-          '## Failed — Checkout, step #4',
-          '',
-          '- **Failure:** #4 Check toast — Expected text "Saved", got "Error"',
-          '- **Page:** https://shop.example.com/cart',
-          '- **When:** 2026-10-21 14:32:05',
-          '- **Result:** Failed — 1 check failed',
-          '- **Environment:** Chrome · Windows · Pocket QA 1.0.27',
-          '',
-          '### Steps to reproduce',
-          '',
-          '1. Go to https://shop.example.com/cart',
-          '2. Type ••• into #coupon',
-          '3. Click "Apply" (#apply)',
-          '4. Check that the text of #toast is "Saved"',
-          '',
-          '### Screenshot',
-          '',
-          'Attached: pocketqa-bug-Checkout-….jpg — the page when step #4 failed.'
-        ].join('\n')
+          'The first failure, page, time, result, browser, OS and Pocket QA version.',
+          'Steps to reproduce as sentences; steps a Condition skipped are left out.',
+          'Typed values stay ••• until you tick <b>Include typed values</b> — never remembered.',
+          '<b>Download screenshot</b>: the page the moment the first failure happened.'
+        ]
       }
     ],
     notes: [
-      'The example report above is illustrative — the layout is the real one, the shop and its values are made up.',
+      'A text, value, class or attribute check whose element isn’t there counts as <b>broken</b>, not failed — the test couldn’t check.',
+      'A password field’s value never leaves the page: its Assert only says it didn’t match.',
       'No screenshot when the run’s tab wasn’t the one in front (a background run); the report says so instead of attaching the wrong page.',
-      'Sequences and CSV runs leave no Last run card — their results are in the notification and in the CSV export.',
-      'Variable names always show in the report (<code>${password}</code>); their values only with Include typed values ticked.'
+      'Sequences and CSV runs leave no Last run card — their results are in the notification and in the CSV export.'
     ]
   },
 
@@ -330,7 +378,24 @@ var FEATURES_EN = {
         points: [
           '<b>Priority</b>: a CSV row’s column beats a value Read DOM wrote during the run, which beats the saved variable.',
           'Values are resolved fresh at the start of every loop and never written back — a run can’t overwrite your saved variables.',
-          'Sort the table by name, type, recently edited or a custom drag order.'
+          'A name that isn’t in the table stays <code>${name}</code> on the page, so a typo shows instead of an empty field.'
+        ]
+      },
+      {
+        title: 'Rename without breaking',
+        nav: 'Rename',
+        lead: 'Rename a variable in the Data tab and every scenario that uses it follows.',
+        images: [{
+          src: 'screenshots/shot-pop-rename.webp',
+          srcDark: 'screenshots/shot-pop-rename-dark.webp',
+          alt: 'The Variables card after userEmail was renamed to loginEmail, and the toast: “loginEmail” saved · 3 references in 2 scenarios updated.',
+          caption: 'userEmail → loginEmail: 3 references in 2 scenarios.'
+        }],
+        points: [
+          'Every <code>${name}</code>, and the bare name in a Switch, Read DOM or Screenshot → Variable.',
+          'The step open in the form and the Undo history follow too.',
+          'A name another variable has, or one a scenario already writes, is refused.',
+          'Exports, backups and CSV columns keep the old name — a loaded CSV’s column is pointed out.'
         ]
       },
       {
@@ -348,20 +413,18 @@ var FEATURES_EN = {
         title: 'Conditions, switches and blocks',
         nav: 'Branching',
         lead: 'Branch on what the page shows or what a variable holds, without leaving the popup.',
+        images: [{
+          src: 'screenshots/shot-pop-actions.webp',
+          srcDark: 'screenshots/shot-pop-actions-dark.webp',
+          alt: 'An action list with a Condition guarding one step and a Switch on ${role}: case admin runs steps 7 and 8, case user runs step 9, then the scenario goes on at step 10.',
+          caption: 'Switch ${role}: admin runs 7–8, user runs 9, then 10.'
+        }],
         points: [
-          '<b>Condition (If)</b>: one of 12 checks on an element, its text, value, class or attribute, or the URL — false skips the next N steps.',
-          '<b>Switch on a variable</b>: each value runs another scenario, jumps to an action in this one, or runs only its own block of steps.',
-          '<b>Always</b> mode: no variable — the chosen scenario (or a #–# range of it) plays every time, then this one carries on. Write the login once, reuse it everywhere.',
-          'Steps inside a block are numbered by case (1.1, 1.2, 2.1…); dragging, deleting and undo keep every range right.'
-        ],
-        code: [
-          '#1 Switch ${plan}   "free" → #2..#3   |   "pro" → #4..#5   |   anything else → nothing',
-          '#6 Continue',
-          '',
-          'plan = free   → runs 1, 2, 3, 6',
-          'plan = pro    → runs 1, 4, 5, 6',
-          'anything else → runs 1, 6'
-        ].join('\n')
+          '<b>Condition (If)</b>: one of 12 checks — when it is false, the next N steps are skipped.',
+          '<b>Switch</b>: each value runs another scenario, jumps, or runs only its own block.',
+          '<b>Always</b>: no variable — a scenario or a #–# range of it plays every time.',
+          'A new Switch goes in front of its steps; no case can cut through another Switch’s block.'
+        ]
       }
     ],
     notes: [
@@ -436,6 +499,7 @@ var FEATURES_EN = {
     notes: [
       'Changing the export format after a run clears the accumulated results — pick the format first.',
       'The delimiter is detected and quoted values are read properly, so a CSV saved from Excel just works.',
+      'Rename a variable after loading a CSV and the popup points out the column still under its old name.',
       'Exported tests can read the same CSV and run once per row — see <a href="feature.html?id=export">Code export</a>.'
     ]
   },
@@ -492,20 +556,52 @@ var FEATURES_EN = {
       {
         title: 'Inside the Image Editor',
         nav: 'Image Editor',
-        lead: 'Every capture — or any image from the clipboard or a file — can open in a full crop-and-annotate editor. It opens in its own window, not a cramped popup panel.',
+        lead: 'Any capture — or any image from the clipboard or a file — opens in an editor of its own window.',
         images: [{
           src: 'screenshots/shot-image-editor.webp',
           srcDark: 'screenshots/shot-image-editor-dark.webp',
           alt: 'The Image Editor open on a sample dashboard screenshot, with a rectangle and arrow annotation drawn on it and the Stamp panel open on the right showing timestamp watermark options.',
-          caption: 'Crop, annotate and stamp any capture — here with a rectangle + arrow highlight and the Stamp panel open.'
+          caption: 'A rectangle, an arrow and the Stamp panel.'
         }],
         points: [
-          'Seven tools on one sidebar: Crop, Draw, Rectangle, Ellipse, Arrow, Text and Blur — each with a one-key shortcut (C, D, R, E, A, T, B).',
-          'Rotate 90° left/right, flip horizontal or vertical, and a full undo/redo history for every edit.',
-          'Adjust panel: brightness, contrast, saturation and sharpness sliders, with one-tap reset.',
-          'Resize panel: exact width/height with a lock-ratio option, or a 10–300% scale slider.',
-          'Stamp panel: a timestamp or custom-text watermark in any of 9 positions, with font size and opacity control.',
-          'Zoom in/out with a 1:1 reset, and a keyboard-shortcuts panel a keypress away.'
+          'Crop, Draw, Rectangle, Ellipse, Arrow, Text and Blur — one key each: C, D, R, E, A, T, B.',
+          'Rotate, flip, and undo or redo every edit.',
+          'Adjust brightness, contrast, saturation and sharpness; resize exactly or by 10–300%.',
+          'Stamp a timestamp or your own text in one of 9 places; zoom, with 1:1 a key away.'
+        ]
+      },
+      {
+        title: 'Image Diff',
+        nav: 'Image Diff',
+        lead: 'Two screenshots, before and after a deploy: what changed, in pixels and on the picture.',
+        images: [{
+          src: 'screenshots/shot-pop-image-diff.webp',
+          srcDark: 'screenshots/shot-pop-image-diff-dark.webp',
+          alt: 'The Image Diff dialog: image A and image B chosen, sensitivity at 10, Compare pressed, the result 4,123 px (0.65% of total area), and a preview with the changed row marked in magenta, with Save result.',
+          caption: 'One row changed: 4,123 px, 0.65% of the image.'
+        }],
+        points: [
+          'Pick image A and image B from disk — any two images, not only captures.',
+          'Sensitivity: low catches faint changes, high ignores noise.',
+          'The count of changed pixels, its share of the area, and the changes marked on the picture.',
+          '<b>Save result</b> keeps the marked-up image.'
+        ]
+      },
+      {
+        title: 'Files, names and settings',
+        nav: 'Settings',
+        lead: 'Where captures go and what they are called — set once in the Settings tab.',
+        images: [{
+          src: 'screenshots/shot-pop-shot-settings.webp',
+          srcDark: 'screenshots/shot-pop-shot-settings-dark.webp',
+          alt: 'The Screenshot settings card: save mode, filename prefix with a live example, include capture type in filename, countdown, watermark format and font size, segment scroll speed, and Save Settings.',
+          caption: 'The Screenshot card in the Settings tab.'
+        }],
+        points: [
+          '<b>Auto</b> saves to Downloads/screenshots with no prompt; <b>Ask</b> lets you name each one.',
+          'Names are a prefix plus the time; add the kind (<code>_full</code>, <code>_elem</code>…) if you mix them.',
+          'Watermark: <code>{url}</code> and <code>{datetime}</code> burned into the image, at the size you set.',
+          'Segment scroll speed, vertical and horizontal — slower for lazy-loaded pages.'
         ]
       }
     ],
@@ -551,17 +647,12 @@ var FEATURES_EN = {
             ['Robot&nbsp;Framework', '<code>&lt;name&gt;.robot</code>', '<code>robot</code> with SeleniumLibrary — steps read as keywords'],
             ['Selenium&nbsp;Java', '<code>&lt;Name&gt;Test.java</code>', '<code>mvn test</code> / <code>gradle test</code> with Selenium 4 and TestNG 7']
           ]
-        },
-        points: [
-          'File names keep letters of any language, as in <code>đăng_nhập_selenium.py</code> or <code>ĐăngNhậpTest.java</code>.',
-          'The Code tab colours the output, jumps to Step 1 past the helpers, and wraps long lines if you like.',
-          '<b>↻ Reload scenario</b> picks up edits made while the window is open; each format’s settings are remembered.'
-        ]
+        }
       },
       {
         title: 'From popup to code',
         nav: 'Screenshots',
-        lead: 'The same “Login flow” scenario, exported two ways — real output from the real generator, not a mockup.',
+        lead: 'The same “Login flow” scenario exported two ways — real output. The warning line counts the steps to check; a click opens them in the Actions tab.',
         // Captured at the popup's real 480×600 size (see README), so they're
         // tall and narrow — side by side instead of full-width-stacked.
         imagesLayout: 'row',
@@ -570,36 +661,30 @@ var FEATURES_EN = {
             src: 'screenshots/shot-export-js.webp',
             srcDark: 'screenshots/shot-export-js-dark.webp',
             alt: 'The Export JS modal for the Login flow scenario at Step 1 of the generated bookmarklet code, with Code/Variables/Actions/Settings tabs and a warning that 1 step needs checking and 1 was skipped.',
-            caption: 'JS Bookmarklet — the code with Variables, Actions and Settings tabs, ready to copy or download.'
+            caption: 'JS Bookmarklet, with its Variables, Actions and Settings tabs.'
           },
           {
             src: 'screenshots/shot-export-py.webp',
             srcDark: 'screenshots/shot-export-py-dark.webp',
             alt: 'The Export Python modal for the same Login flow scenario at Step 1 of the generated Selenium code.',
-            caption: 'Selenium Python — the same scenario as a standalone script; ↧ Steps jumps past the helpers to Step 1.'
+            caption: 'Selenium Python; ↧ Steps jumps past the helpers.'
           }
-        ],
-        points: [
-          'The warning line is real: steps a format can’t express are counted and named — a click opens them in the Actions tab.',
-          'Variables lists every variable the code bakes in; Actions lists every step with OK, Verify or Skip.'
         ]
       },
       {
         title: 'What each format covers',
         nav: 'Coverage',
-        lead: 'Where a format can’t do what playback does, the step says so — in the Actions tab and as a comment in the code.',
+        lead: 'Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM and Condition run in all five. The rest:',
         table: {
           head: ['Step', 'Bookmarklet', 'Selenium', 'Playwright', 'Robot', 'Java'],
           rows: [
-            ['Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM,&nbsp;Condition', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes'],
-            ['Navigate', 'Verify: one click per page', 'Yes', 'Yes', 'Yes', 'Yes'],
-            ['Run JS', 'Verify: pasted as is', 'Verify: <code>execute_script</code>', 'Verify: <code>page.evaluate</code>', 'Verify: <code>Execute Javascript</code>', 'Verify: <code>executeScript</code>'],
-            ['Screenshots', '—', 'Yes', 'Yes', 'Yes', 'Yes'],
-            ['Upload File (input or drop zone)', '—', 'Yes', 'Yes', 'Yes', 'Yes'],
-            ['Step recorded inside an iframe', 'Verify: same site only', 'Yes', 'Yes', 'Yes', 'Yes'],
-            ['Switch block on a variable', 'Yes, <code>if / else if</code>', 'Yes, <code>if / elif</code>', 'Yes', 'Yes, <code>IF / ELSE IF</code>', 'Yes'],
-            ['Switch to another scenario, to #N, Always', '—', '—', '—', '—', '—'],
-            ['Assert (soft, waited for)', 'Yes, one alert at the end', 'Yes, <code>AssertionError</code> at the&nbsp;end', 'Yes, <code>expect.soft</code>', 'Yes, Continue On Failure', 'Yes, <code>SoftAssert</code>']
+            ['Navigate', 'Verify', 'Yes', 'Yes', 'Yes', 'Yes'],
+            ['Run JS', 'Verify', 'Verify', 'Verify', 'Verify', 'Verify'],
+            ['Screenshots, Upload&nbsp;File', '—', 'Yes', 'Yes', 'Yes', 'Yes'],
+            ['Inside an iframe', 'Same site', 'Yes', 'Yes', 'Yes', 'Yes'],
+            ['Switch block on a variable', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes'],
+            ['Switch to a scenario, #N, Always', '—', '—', '—', '—', '—'],
+            ['Soft Assert', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes']
           ]
         }
       },
@@ -616,17 +701,14 @@ var FEATURES_EN = {
             ['<code>PQA_&lt;name&gt;</code>', 'The value of variable <code>&lt;name&gt;</code> — <code>PQA_username=bob</code>.', 'Selenium, Playwright, Robot, Java']
           ]
         },
-        points: [
-          '<b>Data file (CSV)</b>: pytest, Playwright, Robot (through DataDriver) and Java run the test once per row of a CSV next to it.',
-          'Headless runs get a 1920 × 1080 window, so responsive pages show their desktop layout.',
-          'A scenario’s own text only ever lands in a string or a comment — an imported scenario can’t smuggle code into your export.'
-        ],
         code: 'PQA_BASE_URL=https://staging.example.com PQA_HEADLESS=1 PQA_username=bob pytest test_login_flow.py'
       }
     ],
     notes: [
+      '<b>Data file (CSV)</b>: pytest, Playwright, Robot (through DataDriver) and Java run the test once per row of a CSV next to it.',
       'The bookmarklet stops at a Navigate and goes on from the next step when you click it again on the new page — a bookmarklet can’t survive a page load.',
-      'Variable values are baked in at export time — edit the Variables table and export again, or override them with <code>PQA_&lt;name&gt;</code>.'
+      'Variable values are baked in at export time — edit the Variables table and export again, or override them with <code>PQA_&lt;name&gt;</code>.',
+      'Steps turned off (⊘) aren’t exported. A scenario’s own text only ever lands in a string or a comment — an imported scenario can’t smuggle code in.'
     ]
   },
 
@@ -653,6 +735,35 @@ var FEATURES_EN = {
     ],
     sections: [
       {
+        title: 'On the page',
+        nav: 'On the page',
+        lead: 'Highlights are made where you read: select the text, pick a colour.',
+        points: [
+          'Select text → a small panel offers five colours and a note field.',
+          'Click a highlight to change its colour, edit its note or delete just that one.',
+          'Hover a highlight that has a note to read it, without clicking.',
+          'They come back on the next visit, after a restart too — even on content that loads late.',
+          'The switch in the popup hides them all; switched back on, every one returns.'
+        ]
+      },
+      {
+        title: 'In the popup',
+        nav: 'In the popup',
+        lead: 'The Highlight tab finds what you marked, on this page or any other.',
+        images: [{
+          src: 'screenshots/shot-pop-highlights.webp',
+          srcDark: 'screenshots/shot-pop-highlights-dark.webp',
+          alt: 'The Highlight tab: Highlight ON, Export, stats of 3 on this page, 4 in total, 2 pages, the current page, an Other pages menu, a search box with colour filters, three highlights in yellow, pink and green, and Clear page highlights.',
+          caption: '3 highlights on this page, 4 across 2 pages.'
+        }],
+        points: [
+          'Search the text, or filter by colour — each dot counts its highlights.',
+          'How many on this page, in total, and on how many pages.',
+          '<b>Other pages</b>: read another page’s highlights without opening it.',
+          'Export them all as JSON, or clear only this page’s.'
+        ]
+      },
+      {
         title: 'URL patterns',
         nav: 'URL patterns',
         lead: 'By default a highlight belongs to the page it was made on. A pattern — with wildcards in the path <em>and</em> the subdomain — groups several pages under one shared set.',
@@ -665,9 +776,10 @@ var FEATURES_EN = {
           ]
         },
         points: [
-          'A builder turns the current tab’s URL into a pattern — no syntax to remember.',
-          'Adding or removing a pattern regroups highlights already stored. Each one remembers the page it was made on, so none go missing when the rules change.',
-          '<code>#anchor</code> links count as the same page; <code>#/route</code> and <code>#!/route</code> hashes count as real pages, the way single-page apps use them.'
+          'A builder makes one from the tab’s URL: click a part to cycle exact → <code>*</code> → off.',
+          '<code>*</code> is one path segment, never crossing <code>?</code> or <code>#</code>.',
+          'Adding or removing a pattern regroups what is stored — each highlight keeps its page.',
+          '<code>#anchor</code> stays the same page; <code>#/route</code> is a page of its own.'
         ]
       }
     ],
@@ -932,32 +1044,36 @@ var FEATURES_EN = {
         table: {
           head: ['Action', 'Default'],
           rows: [
-            ['Start Recording', '<span class="kbd">Alt+R</span>'],
-            ['Stop Recording', '<span class="kbd">Alt+S</span>'],
+            ['Start / Stop Recording', '<span class="kbd">Alt+R</span> / <span class="kbd">Alt+S</span>'],
             ['Screenshot&nbsp;(Visible)', '<span class="kbd">Alt+P</span>'],
             ['Screenshot (Full Page)', '<span class="kbd">Alt+Shift+F</span>'],
-            ['Screenshot (Scroll V)', '<span class="kbd">Alt+V</span>'],
-            ['Screenshot (Scroll H)', '<span class="kbd">Alt+H</span>'],
-            ['Segment V — Start', '<span class="kbd">Alt+Shift+V</span>'],
-            ['Segment H — Start', '<span class="kbd">Alt+Shift+H</span>'],
+            ['Screenshot (Scroll V / H)', '<span class="kbd">Alt+V</span> / <span class="kbd">Alt+H</span>'],
+            ['Segment V / H — Start', '<span class="kbd">Alt+Shift+V</span> / <span class="kbd">Alt+Shift+H</span>'],
             ['Segment — Stop &amp; Capture', '<span class="kbd">Alt+X</span>'],
             ['Screenshot&nbsp;(Element)', '<span class="kbd">Alt+E</span>']
           ]
         },
         points: [
-          'Start/Stop Recording only fire on a tab where Pocket QA is activated.',
-          'Hotkeys react to real key presses only — a page can’t dispatch a fake one to start a recording or take a capture.',
+          'Press Set, then the combination itself; Esc cancels. Reset to defaults puts them all back.',
+          'Real key presses only, on http, https and file pages; Start/Stop need the tab activated.',
           'In Adminer, <span class="kbd">Alt+Shift+Z</span> undoes the last recorded database change.'
         ]
       },
       {
-        title: 'Import, export & backup',
+        title: 'Import, export and backup',
         nav: 'Backup',
+        lead: 'Import / Export moves scenarios. Backup / Restore moves everything.',
+        images: [{
+          src: 'screenshots/shot-pop-backup.webp',
+          srcDark: 'screenshots/shot-pop-backup-dark.webp',
+          alt: 'The Backup / Restore card in the Settings tab: Backup All Data, a file picker, and Restore All Data.',
+          caption: 'Backup / Restore in the Settings tab.'
+        }],
         points: [
-          '<b>Import / Export</b>: one scenario or a whole folder as JSON — to share a test with a teammate or keep it in version control.',
-          '<b>Backup / Restore</b>: every scenario, folder, variable and setting in one file.',
-          'An import that holds Run JS or Upload File steps warns before it lands, so a shared file can’t quietly run code or read your folders.',
-          'An export that uses newer features (Switch blocks) records the version that wrote it, so an older copy doesn’t misread it.'
+          '<b>Import / Export</b>: a scenario or a folder as JSON; a folder file recreates its folder.',
+          '<b>Backup</b>: scenarios, folders, variables, highlights and patterns, schedules, settings.',
+          '<b>Restore</b> replaces, not merges — and skips what belonged to the old machine.',
+          'An import with Run JS or Upload File steps warns first, naming the folders it would read.'
         ]
       },
       {
