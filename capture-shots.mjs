@@ -50,7 +50,7 @@ const HELPERS = `
 `;
 
 // One entry per picture. `setup` runs in the page (with HELPERS and THEME) and returns the selector of the
-// element to capture; the shot is that element's box.
+// element to capture — or several, for the box around all of them; the shot is that box.
 const SHOTS = [
   {
     name: 'sql-diagram',
@@ -79,6 +79,45 @@ const SHOTS = [
       await wait(400);
       return '#diagramModal .modal';
     `
+  },
+  {
+    // Compare mode on the first example (the report query): the age range moved, the country filter went
+    name: 'sql-compare',
+    page: 'sqltest.html',
+    size: [1600, 900],
+    setup: `
+      await until(() => $('#btnAnalyze') && $('#sqlInput').value, 'the page to start');
+      await english('#toggleLang');
+      await themed('#toggleTheme', THEME);
+      [...document.querySelectorAll('#modeToggle button')].find(b => /Compare/.test(b.textContent)).click();
+      await until(() => !$('#sqlAfterCard').hidden, 'the second query box');
+      type('#sqlInputAfter', $('#sqlInput').value.replace('BETWEEN 18 AND 65', 'BETWEEN 21 AND 65').replace(/\\s+AND u\\.country IN \\('VN', 'SG'\\)/, ''));
+      $('#btnAnalyze').click();
+      await until(() => !$('#triage').hidden && !$('#insight').hidden, 'the triage');
+      [...document.querySelectorAll('#insightTabs > button')].find(b => /Changes/.test(b.textContent)).click();
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      await wait(400);
+      return ['#triage', '#insight'];
+    `
+  },
+  {
+    // The "Compound WHERE" example: its coverage card, with the decision table's mode and the per-clause numbers
+    name: 'sql-coverage',
+    page: 'sqltest.html',
+    size: [1600, 900],
+    setup: `
+      await until(() => $('#btnAnalyze') && $('#sqlInput').value, 'the page to start');
+      await english('#toggleLang');
+      await themed('#toggleTheme', THEME);
+      const sel = $('#sampleSelect');
+      sel.value = '2'; sel.dispatchEvent(new Event('change', { bubbles: true }));
+      $('#btnAnalyze').click();
+      await until(() => !$('#insight').hidden, 'the analysis');
+      [...document.querySelectorAll('#insightTabs > button')].find(b => /Coverage/.test(b.textContent)).click();
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      await wait(400);
+      return '#insight';
+    `
   }
 ];
 
@@ -96,10 +135,16 @@ try {
     for (const theme of ['light', 'dark']) {
       const out = join(here, 'screenshots', 'shot-' + shot.name + (theme === 'dark' ? '-dark' : ''));
       const [width, height] = shot.size;
+      // Pages remember their last state (open tab, mode, theme): every shot starts from none
+      await sw.evaluate('chrome.storage.local.clear().then(() => chrome.storage.sync.clear())');
       const page = await browser.openPage(`chrome-extension://${sw.extId}/${shot.page}`, { width, height });
       try {
         const sel = await page.evaluate(`(async () => { const THEME = ${JSON.stringify(theme)}; ${HELPERS} ${shot.setup} })()`, 30_000);
-        const box = await page.evaluate(`(() => { const r = document.querySelector(${JSON.stringify(sel)}).getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height }; })()`);
+        const box = await page.evaluate(`(() => {
+          const rs = [].concat(${JSON.stringify(sel)}).map(s => document.querySelector(s).getBoundingClientRect());
+          const x = Math.min(...rs.map(r => r.left)), y = Math.min(...rs.map(r => r.top));
+          return { x, y, width: Math.max(...rs.map(r => r.right)) - x, height: Math.max(...rs.map(r => r.bottom)) - y };
+        })()`);
         const { data } = await page.send('Page.captureScreenshot', { format: 'png', clip: { ...box, scale: 1 } });
         writeFileSync(`${out}.png`, Buffer.from(data, 'base64'));
         // The pages serve lossless WebP twins (README "Screenshot comparison"); Chrome's own WebP is lossy even at

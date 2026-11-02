@@ -90,7 +90,7 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 
 ### Phase 3: Đợt A — v1.0.27
 - [x] Task 6: Vendor v1.0.27, preview popup đúng bản Store
-- [ ] Task 7: SQL Test Case Designer chi tiết (Schema & diagram, Compare, Case list, Findings)
+- [x] Task 7: SQL Test Case Designer chi tiết (Schema & diagram, Compare, Case list, Findings)
 - [ ] Task 8: Variables — đổi tên biến, chặn tên sai, gợi ý `${`
 - [ ] Task 9: Recording & Playback — Switch, Upload File, validation
 - [ ] Task 10: Run results · CSV · Export theo gap matrix

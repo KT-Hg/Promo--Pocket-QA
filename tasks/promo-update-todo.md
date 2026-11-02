@@ -208,13 +208,17 @@ insight). Notes thêm tùy chọn giới hạn decision table / join conditions 
 `sqlcases/i18n/vi.js` khi có.
 
 **Acceptance criteria:**
-- [ ] Mọi dòng SQL `none`/`thin`/`hidden` (đã phát hành) trong gap matrix được xử lý hoặc ghi lý do bỏ.
-- [ ] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
-- [ ] Mỗi section mới có ảnh thật light + dark.
+- [x] Mọi dòng SQL `none`/`thin`/`hidden` (đã phát hành) trong gap matrix được xử lý hoặc ghi lý do bỏ — bỏ: #6 (pane
+  Techniques, không còn chỗ trong section có bảng), #14, #17, #21 (P3).
+- [x] `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
+- [x] Mỗi section mới có ảnh thật light + dark (`sql-diagram`, `sql-compare`, `sql-coverage`).
 
 **Verification:**
-- [ ] `node capture-shots.mjs sql-…` cho các ảnh mới; `node stamp-assets.mjs`
-- [ ] `checkLayout()`, `checkShape()`, `hiddenByFit()` ở 3 viewport, EN + VI, light + dark
+- [x] `node capture-shots.mjs`; `node stamp-assets.mjs`
+- [x] `auditFeatures(['sql-test-designer'])` (mới trong `check-layout.js`) ở 1366×657 và 1280×632: mọi danh sách rỗng
+
+**Bài học cho Task 8–15:** section "ảnh + ý" chỉ vừa một màn ở 1366×657 khi mỗi ý ≤ ~100 ký tự (2 dòng), chú thích
+1 dòng, lead ≤ 2 dòng; thêm ý vào section có bảng làm bảng hẹp lại và bị cắt.
 
 **Dependencies:** Task 5, Task 6
 

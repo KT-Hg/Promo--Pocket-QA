@@ -688,14 +688,14 @@ var FEATURES_EN = {
     points: [
       'Parses <code>SELECT</code> (joins, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>UNION</code>, CTEs, <code>CASE</code>) plus <code>INSERT</code>, <code>UPDATE</code> and <code>DELETE</code>.',
       'EP/BVA cases straight from the query’s conditions, with boundary steps that follow the inferred type.',
-      'A decision table covering the query’s logic — switching to MC/DC once the condition count passes a configurable limit.',
+      'A decision table covering the query’s logic — in full up to a limit you set, then pairwise, then MC/DC as the conditions add up.',
       'NULL, three-valued logic and JOIN cardinality cases that are easy to miss by hand.',
       'Findings flag defects in the query itself — a comma join, <code>= NULL</code>, a <code>DELETE</code> with no <code>WHERE</code>.',
       'Everything runs locally in the page — your SQL never leaves the browser.'
     ],
     steps: [
       ['Open it', 'Data → SQL Test Case Designer opens in its own tab.'],
-      ['Paste a query', 'MySQL backticks, SQL Server brackets, ANSI quotes and <code>?</code> / <code>:name</code> / <code>@name</code> / <code>$1</code> parameters all parse.'],
+      ['Paste a query', 'Or pick one of six examples. MySQL backticks, SQL Server brackets, ANSI quotes and <code>?</code> / <code>:name</code> / <code>@name</code> / <code>$1</code> parameters all parse.'],
       ['Review the cases', 'Filter by priority, clause or column; click a case for the rows it needs.'],
       ['Export', 'CSV for TestRail or Jira, JSON, a per-table Data CSV, or Verify SQL.']
     ],
@@ -707,29 +707,78 @@ var FEATURES_EN = {
           head: ['Technique', 'What it produces'],
           rows: [
             ['EP + BVA', 'One value per equivalence class of each predicate, plus the boundary and its two neighbours. The step follows the type — 1 for an integer, 0.01 for money, a day for a date; strings get length, empty and whitespace cases.'],
-            ['Decision table +&nbsp;coverage', 'The full 2ⁿ rule table while the condition count stays under the limit, then MC/DC — one rule pair per condition. <code>CASE</code> gets branch coverage, including the hidden NULL branch of a missing <code>ELSE</code>.'],
+            ['Decision table +&nbsp;coverage', 'The full 2ⁿ rule table up to the limit you set (4 conditions by default), then pairwise — every pair of conditions — up to 8, then MC/DC: one rule pair per condition. <code>CASE</code> gets branch coverage, including the hidden NULL branch of a missing <code>ELSE</code>.'],
             ['NULL &amp; 3-valued logic', '<code>&lt;&gt;</code> dropping NULL rows, <code>NOT IN</code> over a NULL, <code>COUNT(col)</code> vs <code>COUNT(*)</code>, NULL join keys that never match, NULL grouping keys collapsing into one group.'],
             ['JOIN / GROUP BY /&nbsp;ORDER–LIMIT', 'Each join at 1:1, orphan and 1:n; a <code>WHERE</code> on an outer-joined table silently making it inner; empty, single and multiple groups; ties in <code>ORDER BY</code>; pages at, below and past the row count.']
           ]
         }
       },
       {
-        title: 'Inside the analysis screen',
-        nav: 'Workspace',
-        lead: 'A dedicated three-column workspace, not a popup panel — everything a run needs stays visible at once.',
+        title: 'Schema and diagram',
+        nav: 'Diagram',
+        lead: 'No database is read: the schema comes from the query, shown as a list and as a diagram.',
+        images: [{
+          src: 'screenshots/shot-sql-diagram.webp',
+          srcDark: 'screenshots/shot-sql-diagram-dark.webp',
+          alt: 'The Table relationships dialog for a four-table join: customers, orders, order_items and products as boxes listing their columns with PK and FK tags, linked by crow’s-foot lines, with zoom and Fit buttons and a hint on how to move around.',
+          caption: 'Schema → Diagram for a four-table join.'
+        }],
+        points: [
+          'Columns, inferred types, the primary key, and foreign keys read off the join conditions.',
+          'Crow’s-foot lines from each foreign key to its table: the hub and the leaves stand out.',
+          'Drag a box, pan, scroll to zoom or press Fit; hover a table to pick out what it touches.',
+          'A table with no key gets an added <code>id</code>, marked as such: a wrong guess shows up here.'
+        ]
+      },
+      {
+        title: 'Compare before and after',
+        nav: 'Compare',
+        lead: 'Paste the old and the new version of a query: every case is sorted by what the change did to it.',
+        images: [{
+          src: 'screenshots/shot-sql-compare.webp',
+          srcDark: 'screenshots/shot-sql-compare-dark.webp',
+          alt: 'Compare mode after a change to a report query: three counters — 16 Impacted, 39 Unrelated, 20 No longer applies — above the Changes detected tab, which lists a removed country filter and an age range moved from 18–65 to 21–65.',
+          caption: '16 cases to rerun, 39 to keep, 20 to retire.'
+        }],
+        points: [
+          '<b>Impacted</b>: it tests something the change touched — run it again.',
+          '<b>Unrelated</b>: untouched by the change, still worth keeping for regression.',
+          '<b>No longer applies</b>: its condition, join or clause is gone — retire it.',
+          '<b>Changes detected</b>: the difference in twelve parts, from tables and joins to paging.'
+        ]
+      },
+      {
+        title: 'The case list and inspector',
+        nav: 'Case list',
+        lead: 'A three-column workspace in its own tab, not a popup panel.',
         images: [{
           src: 'screenshots/shot-sqlcases-analysis.webp',
           srcDark: 'screenshots/shot-sqlcases-analysis-dark.webp',
           alt: 'The SQL Test Case Designer: the query rail on the left with the pasted SQL, a generated case list in the middle with stats and technique filters, and a case inspector on the right with the rationale, fixture rows and the query to run.',
-          caption: 'Left to right: the pasted query, the generated case list, and the inspector for one selected case — 71 cases from one query.'
+          caption: 'Query, case list and one case’s inspector — 71 cases from one query.'
         }],
         points: [
-          'Left rail: the query, the techniques in play, the <span class="nw">sample-value</span> book and the inferred schema — as tabs, so opening one never pushes the others off screen.',
-          'The Schema tab draws an ER diagram from the query alone — tables as boxes, foreign keys as lines; pan, zoom and drag.',
-          'Compare mode diffs a “before” and “after” query and buckets every case as Changed, Unrelated or Stale.',
-          'A live stat row over the case list — total cases, high priority, conditions, joins and tables touched.',
-          'Search plus filters by priority, clause and column, an “only with a fixture” toggle, and a full/dense row switch.',
-          'Click a case for its inspector: the rationale, the fixture rows to prepare, and the query to run.'
+          'Over the list: cases, high priority, conditions, joins and tables.',
+          'Search; filter by priority, clause, column or “has sample data”; full or dense rows.',
+          'Each case names its technique, from EP and BVA to Pairwise and MC/DC; duplicates merge.',
+          'The inspector: why the case matters, the rows to prepare and the query to run.'
+        ]
+      },
+      {
+        title: 'Findings, coverage and what was parsed',
+        nav: 'Findings',
+        lead: 'Three panels about the query itself, closed until needed — Findings opens on a real error.',
+        images: [{
+          src: 'screenshots/shot-sql-coverage.webp',
+          srcDark: 'screenshots/shot-sql-coverage-dark.webp',
+          alt: 'The Coverage panel for a WHERE clause of five conditions: pairwise, 6 of 32 combinations, condition coverage 100% and decision coverage 50% as bars, and the five numbered conditions below.',
+          caption: 'Past the full-table limit: pairwise, 6 of 32 combinations.'
+        }],
+        points: [
+          '<b>Findings</b>: 15 kinds of defect — a comma join, <code>= NULL</code>, <code>LIMIT</code> with no <code>ORDER BY</code>…',
+          '<b>Coverage</b>: per clause, the decision-table mode, condition and decision coverage.',
+          '<b>What was parsed</b>: tables, numbered conditions with their types, joins, paging.',
+          'Values from Sample values, and parameters still without one, are named too.'
         ]
       },
       {
@@ -740,7 +789,7 @@ var FEATURES_EN = {
           'One block per table, the value under test highlighted, child rows already pointing at their parent.',
           'Row-count conditions are honoured: <code>HAVING COUNT(o.id) &gt; 3</code> seeds four child rows, an orphan-join case seeds none.',
           'The query to run comes with its expected result next to it, so a manual run checks itself.',
-          'The schema is inferred from the query — types from the literals, keys from names and join conditions — and shown, so a wrong guess is visible before anyone types data in.',
+          'Each sample value shows how far it reaches — <code>66 cells</code>, or “not used by any case” — with ↺ to restore one and Reset all for the lot; they are kept across visits.',
           '<b>Sample values</b>: set a bind parameter (<code>:min = 18</code>) and its boundary cases become a real 17 / 18 / 19; change a column sample and every case and fixture using it follows.',
           'Keys aren’t editable — they link the fixture rows, and typing over them would break the join the fixture exists to test.'
         ]
@@ -752,7 +801,7 @@ var FEATURES_EN = {
           head: ['Format', 'Contents'],
           rows: [
             ['CSV', 'UTF-8 with BOM, every field quoted — opens cleanly in Excel (Vietnamese diacritics included) and imports into TestRail or Jira.'],
-            ['JSON', 'The cases plus the parsed analysis — tables, joins, numbered conditions, parameters, findings, coverage — and the sample values in force.'],
+            ['JSON', 'The cases plus the parsed analysis — tables, joins, numbered conditions, parameters, findings, coverage — and the sample values in force. Also as Copy JSON to clipboard.'],
             ['Data CSV', 'One file per table, every fixture row tagged with the case it belongs to.'],
             ['Verify SQL', 'The query per case, with its expected result as a comment above it.']
           ]
@@ -760,7 +809,7 @@ var FEATURES_EN = {
       }
     ],
     notes: [
-      'Only the outer statement is analysed. CTEs and subqueries are flagged — paste each one separately for its own cases.',
+      'CTEs get cases of their own, marked <code>CTE · name ·</code>. A subquery nested in the statement is only flagged — paste it separately for its own cases.',
       'There is no live schema: column types come from comparison literals first and column names second. When neither settles it, the case says so.',
       'Expected results state what SQL semantics require, not what your current data contains.',
       'The interface is Vietnamese by default and English via the globe button — cases are generated in the active language, so an export always matches the screen.'

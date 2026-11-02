@@ -613,14 +613,14 @@ var FEATURES_VI = {
     points: [
       'Phân tích <code>SELECT</code> (join, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>UNION</code>, CTE, <code>CASE</code>) cùng <code>INSERT</code>, <code>UPDATE</code> và <code>DELETE</code>.',
       'Case EP/BVA lấy thẳng từ điều kiện của câu truy vấn, với bước giá trị biên theo kiểu dữ liệu suy ra.',
-      'Bảng quyết định bao phủ logic của câu truy vấn — chuyển sang MC/DC khi số điều kiện vượt một giới hạn tuỳ chỉnh.',
+      'Bảng quyết định bao phủ logic của câu truy vấn — đầy đủ tới giới hạn bạn đặt, rồi pairwise, rồi MC/DC khi điều kiện nhiều dần.',
       'Các case NULL, logic ba giá trị và số lượng bản ghi khi JOIN — những chỗ dễ bỏ sót khi làm tay.',
       'Phần Findings chỉ ra lỗi trong chính câu truy vấn — join bằng dấu phẩy, <code>= NULL</code>, <code>DELETE</code> không có <code>WHERE</code>.',
       'Mọi thứ chạy cục bộ trong trang — câu SQL của bạn không bao giờ rời khỏi trình duyệt.'
     ],
     steps: [
       ['Mở công cụ', 'Data → SQL Test Case Designer mở trong một tab riêng.'],
-      ['Dán câu truy vấn', 'Dấu backtick của MySQL, ngoặc vuông của SQL Server, dấu nháy ANSI và tham số <code>?</code> / <code>:name</code> / <code>@name</code> / <code>$1</code> đều đọc được.'],
+      ['Dán câu truy vấn', 'Hoặc chọn một trong sáu câu mẫu. Dấu backtick của MySQL, ngoặc vuông của SQL Server, dấu nháy ANSI và tham số <code>?</code> / <code>:name</code> / <code>@name</code> / <code>$1</code> đều đọc được.'],
       ['Xem các case', 'Lọc theo độ ưu tiên, mệnh đề hoặc cột; bấm vào một case để xem các dòng dữ liệu nó cần.'],
       ['Xuất', 'CSV cho TestRail hoặc Jira, JSON, Data CSV theo từng bảng, hoặc Verify SQL.']
     ],
@@ -632,27 +632,70 @@ var FEATURES_VI = {
           head: ['Kỹ thuật', 'Kết quả tạo ra'],
           rows: [
             ['EP + BVA', 'Một giá trị cho mỗi lớp tương đương của từng vị từ, cộng giá trị biên và hai giá trị kề nó. Bước nhảy theo kiểu dữ liệu — 1 cho số nguyên, 0.01 cho tiền, một ngày cho kiểu ngày; chuỗi có thêm case về độ dài, chuỗi rỗng và khoảng trắng.'],
-            ['Bảng quyết định + độ bao phủ', 'Bảng quy tắc đầy đủ 2ⁿ khi số điều kiện còn dưới giới hạn, sau đó là MC/DC — một cặp quy tắc cho mỗi điều kiện. <code>CASE</code> được bao phủ theo nhánh, gồm cả nhánh NULL ẩn khi thiếu <code>ELSE</code>.'],
+            ['Bảng quyết định + độ bao phủ', 'Bảng quy tắc đầy đủ 2ⁿ tới giới hạn bạn đặt (mặc định 4 điều kiện), rồi pairwise — mọi cặp điều kiện — tới 8, rồi MC/DC: một cặp quy tắc cho mỗi điều kiện. <code>CASE</code> được bao phủ theo nhánh, gồm cả nhánh NULL ẩn khi thiếu <code>ELSE</code>.'],
             ['NULL &amp; logic ba giá trị', '<code>&lt;&gt;</code> làm rơi các dòng NULL, <code>NOT IN</code> trên một NULL, <code>COUNT(col)</code> so với <code>COUNT(*)</code>, khoá join NULL không bao giờ khớp, khoá nhóm NULL dồn thành một nhóm.'],
             ['JOIN / GROUP BY /&nbsp;ORDER–LIMIT', 'Mỗi join ở dạng 1:1, mồ côi và 1:n; một <code>WHERE</code> trên bảng outer join âm thầm biến nó thành inner join; nhóm rỗng, một nhóm và nhiều nhóm; giá trị bằng nhau trong <code>ORDER BY</code>; trang ở đúng, dưới và vượt số dòng.']
           ]
         }
       },
       {
-        title: 'Bên trong màn hình phân tích',
-        nav: 'Không gian làm việc',
-        lead: 'Một không gian làm việc ba cột riêng, không phải bảng nhỏ trong popup — mọi thứ một lần chạy cần đều hiện cùng lúc.',
+        title: 'Lược đồ và sơ đồ quan hệ',
+        nav: 'Sơ đồ',
+        lead: 'Không đọc database nào: lược đồ suy ra từ câu truy vấn, xem dạng danh sách lẫn dạng sơ đồ.',
         images: [{
-          alt: 'SQL Test Case Designer: cột truy vấn bên trái với câu SQL đã dán, danh sách case được sinh ở giữa với thống kê và bộ lọc kỹ thuật, và khung chi tiết case bên phải với lý do, các dòng dữ liệu mẫu và câu truy vấn cần chạy.',
-          caption: 'Từ trái sang phải: câu truy vấn đã dán, danh sách case được sinh, và khung chi tiết của một case đang chọn — 71 case từ một câu truy vấn.'
+          alt: 'Hộp thoại Table relationships cho một join bốn bảng: customers, orders, order_items và products là các ô liệt kê cột kèm nhãn PK và FK, nối bằng đường chân chim, có nút phóng to/thu nhỏ, Fit và dòng hướng dẫn di chuyển.',
+          caption: 'Schema → Diagram cho một join bốn bảng.'
         }],
         points: [
-          'Cột trái: câu truy vấn, các kỹ thuật đang áp dụng, sổ giá trị mẫu và schema suy ra — dưới dạng tab, nên mở cái này không đẩy cái khác ra khỏi màn hình.',
-          'Tab Schema vẽ sơ đồ ER chỉ từ câu truy vấn — bảng là các ô, khoá ngoại là các đường nối; kéo, phóng to và di chuyển được.',
-          'Chế độ Compare so sánh câu truy vấn “trước” và “sau”, rồi xếp mỗi case vào Changed, Unrelated hoặc Stale.',
-          'Hàng thống kê trực tiếp phía trên danh sách — tổng số case, case ưu tiên cao, số điều kiện, số join và số bảng liên quan.',
-          'Tìm kiếm cùng bộ lọc theo độ ưu tiên, mệnh đề và cột, nút “chỉ case có dữ liệu mẫu”, và chuyển giữa dòng đầy đủ/gọn.',
-          'Bấm vào một case để mở khung chi tiết: lý do, các dòng dữ liệu cần chuẩn bị và câu truy vấn cần chạy.'
+          'Cột, kiểu dữ liệu suy ra, khoá chính và khoá ngoại đọc từ điều kiện join.',
+          'Đường chân chim từ mỗi khoá ngoại tới bảng của nó: thấy ngay bảng trung tâm, bảng nhánh.',
+          'Kéo ô, kéo nền, cuộn để phóng to hoặc bấm Fit; rê chuột lên bảng để làm nổi bảng liên quan.',
+          'Bảng không có khoá được thêm cột <code>id</code>, ghi rõ: đoán sai sẽ lộ ra ngay ở đây.'
+        ]
+      },
+      {
+        title: 'So sánh trước và sau',
+        nav: 'So sánh',
+        lead: 'Dán bản cũ và bản mới của câu truy vấn: mỗi case được xếp theo việc thay đổi đã làm với nó.',
+        images: [{
+          alt: 'Chế độ Compare sau khi sửa một câu báo cáo: ba bộ đếm — 16 Impacted, 39 Unrelated, 20 No longer applies — phía trên tab Changes detected, liệt kê một bộ lọc quốc gia bị bỏ và khoảng tuổi đổi từ 18–65 thành 21–65.',
+          caption: '16 case cần chạy lại, 39 case giữ lại, 20 case nên bỏ.'
+        }],
+        points: [
+          '<b>Impacted</b>: case chạm tới chỗ vừa đổi — cần chạy lại.',
+          '<b>Unrelated</b>: không bị ảnh hưởng, vẫn nên giữ cho test hồi quy.',
+          '<b>No longer applies</b>: điều kiện, join hay mệnh đề của nó đã mất — nên bỏ.',
+          '<b>Changes detected</b>: khác biệt theo mười hai phần, từ bảng, join tới phân trang.'
+        ]
+      },
+      {
+        title: 'Danh sách case và khung chi tiết',
+        nav: 'Danh sách case',
+        lead: 'Không gian làm việc ba cột trong tab riêng, không phải bảng nhỏ trong popup.',
+        images: [{
+          alt: 'SQL Test Case Designer: cột truy vấn bên trái với câu SQL đã dán, danh sách case được sinh ở giữa với thống kê và bộ lọc kỹ thuật, và khung chi tiết case bên phải với lý do, các dòng dữ liệu mẫu và câu truy vấn cần chạy.',
+          caption: 'Câu truy vấn, danh sách case và chi tiết một case — 71 case từ một câu.'
+        }],
+        points: [
+          'Trên danh sách: số case, case ưu tiên cao, điều kiện, join và bảng.',
+          'Tìm kiếm; lọc theo ưu tiên, mệnh đề, cột hay “có dữ liệu mẫu”; dòng đầy đủ hoặc gọn.',
+          'Mỗi case ghi kỹ thuật, từ EP, BVA tới Pairwise, MC/DC; case trùng được gộp.',
+          'Khung chi tiết: vì sao case quan trọng, các dòng cần chuẩn bị và câu truy vấn cần chạy.'
+        ]
+      },
+      {
+        title: 'Cảnh báo, độ phủ và kết quả phân tích',
+        nav: 'Cảnh báo',
+        lead: 'Ba khung về chính câu truy vấn, đóng sẵn tới khi cần — Findings tự mở khi có lỗi thật.',
+        images: [{
+          alt: 'Khung Coverage cho một mệnh đề WHERE năm điều kiện: pairwise, 6 trên 32 tổ hợp, độ phủ điều kiện 100% và độ phủ quyết định 50% dạng thanh, cùng năm điều kiện đã đánh số bên dưới.',
+          caption: 'Vượt giới hạn bảng đầy đủ: pairwise, 6 trên 32 tổ hợp.'
+        }],
+        points: [
+          '<b>Findings</b>: 15 loại lỗi — join bằng dấu phẩy, <code>= NULL</code>, <code>LIMIT</code> thiếu <code>ORDER BY</code>…',
+          '<b>Coverage</b>: theo mệnh đề, chế độ bảng quyết định, độ phủ điều kiện và quyết định.',
+          '<b>What was parsed</b>: bảng, điều kiện đánh số kèm kiểu, join, phân trang.',
+          'Giá trị lấy từ Sample values, và tham số chưa có giá trị, cũng được nêu ra.'
         ]
       },
       {
@@ -663,7 +706,7 @@ var FEATURES_VI = {
           'Mỗi bảng một khối, giá trị đang được test được tô nổi, các dòng con đã trỏ sẵn tới dòng cha.',
           'Điều kiện về số dòng được tôn trọng: <code>HAVING COUNT(o.id) &gt; 3</code> tạo sẵn bốn dòng con, case join mồ côi thì không tạo dòng nào.',
           'Câu truy vấn cần chạy có kết quả mong đợi đặt ngay bên cạnh, nên lần chạy thủ công tự kiểm tra được.',
-          'Schema được suy ra từ câu truy vấn — kiểu dữ liệu từ các giá trị literal, khoá từ tên và điều kiện join — và được hiển thị, nên đoán sai sẽ lộ ra trước khi ai đó nhập dữ liệu.',
+          'Mỗi giá trị mẫu cho biết nó ảnh hưởng tới đâu — <code>66 cells</code>, hoặc “not used by any case” — có ↺ để trả lại từng giá trị và Reset all cho tất cả; chúng được giữ qua các lần mở.',
           '<b>Giá trị mẫu</b>: đặt một tham số bind (<code>:min = 18</code>) thì các case biên của nó thành 17 / 18 / 19 thật; đổi giá trị mẫu của một cột thì mọi case và dữ liệu mẫu dùng cột đó đều đổi theo.',
           'Không sửa được khoá — chúng liên kết các dòng dữ liệu mẫu, và gõ đè lên sẽ phá vỡ đúng phép join mà dữ liệu mẫu được tạo ra để test.'
         ]
@@ -675,7 +718,7 @@ var FEATURES_VI = {
           head: ['Định dạng', 'Nội dung'],
           rows: [
             ['CSV', 'UTF-8 có BOM, mọi trường đều trong dấu nháy — mở gọn trong Excel (kể cả dấu tiếng Việt) và nhập được vào TestRail hoặc Jira.'],
-            ['JSON', 'Các case cùng kết quả phân tích — bảng, join, điều kiện đã đánh số, tham số, findings, độ bao phủ — và các giá trị mẫu đang áp dụng.'],
+            ['JSON', 'Các case cùng kết quả phân tích — bảng, join, điều kiện đã đánh số, tham số, findings, độ bao phủ — và các giá trị mẫu đang áp dụng. Có cả Copy JSON vào clipboard.'],
             ['Data CSV', 'Mỗi bảng một file, mỗi dòng dữ liệu mẫu được gắn với case mà nó thuộc về.'],
             ['Verify SQL', 'Câu truy vấn cho từng case, kèm kết quả mong đợi dưới dạng comment phía trên.']
           ]
@@ -683,7 +726,7 @@ var FEATURES_VI = {
       }
     ],
     notes: [
-      'Chỉ câu lệnh ngoài cùng được phân tích. CTE và subquery được đánh dấu — hãy dán riêng từng cái để có case của nó.',
+      'CTE có case riêng, đánh dấu <code>CTE · tên ·</code>. Subquery lồng trong câu lệnh chỉ được báo — hãy dán riêng nó để có case của nó.',
       'Không có schema trực tiếp: kiểu dữ liệu của cột lấy từ giá trị literal trong phép so sánh trước, rồi tới tên cột. Khi cả hai đều không rõ, case sẽ ghi rõ điều đó.',
       'Kết quả mong đợi nêu điều mà ngữ nghĩa SQL yêu cầu, không phải dữ liệu hiện có của bạn.',
       'Giao diện mặc định là tiếng Việt và chuyển sang tiếng Anh qua nút quả địa cầu — case được sinh theo ngôn ngữ đang dùng, nên file xuất luôn khớp với màn hình.'

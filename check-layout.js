@@ -40,6 +40,30 @@ window.checkShape = (EN = window.FEATURES_EN, VI = window.FEATURES_VI) => {
   return out;
 };
 
+// From any page of the site: every feature page (or `ids`) in a full-viewport iframe, fitted for this viewport,
+// with checkShape(), checkLayout() and hiddenByFit() run in it. A page passes with only empty lists in its entry.
+window.auditFeatures = async (ids = window.FEATURE_ORDER) => {
+  const out = {};
+  for (const id of ids) {
+    const f = Object.assign(document.createElement('iframe'), { style: 'position:fixed;inset:0;width:100vw;height:100vh;border:0;z-index:99999' });
+    document.body.append(f);
+    await new Promise(r => { f.onload = r; f.src = 'feature.html?id=' + id + '&_=' + Date.now(); });
+    const w = f.contentWindow;
+    await w.document.fonts.ready;
+    await new Promise(r => setTimeout(r, 1300));   // site.js fits the sections after the fonts and images
+    await new Promise(r => { const s = w.document.createElement('script'); s.src = 'check-layout.js?' + Date.now(); s.onload = r; w.document.head.append(s); });
+    const lay = await w.checkLayout(), lines = lay.lines;
+    out[id] = {
+      shape: w.checkShape(), overflow: lay.overflow, shift: lay.shift, hscroll: lay.hscroll ? [lay.hscroll] : [],
+      lines: [...lines.en.hyphen, ...lines.en.orphan, ...lines.vi.hyphen, ...lines.vi.orphan],
+      hidden: w.hiddenByFit().filter(x => x.section !== 'Explore other features').map(x => `${x.section}: ${x.hidden.length}${x.shrunk ? ' +' + x.shrunk + ' shrunk' : ''} ${x.hidden.map(h => h.slice(0, 40)).join(' / ')}`),
+      brokenImages: [...w.document.querySelectorAll('.shot img')].filter(i => !i.naturalWidth).map(i => i.src)
+    };
+    f.remove();
+  }
+  return out;
+};
+
 window.checkLayout = async () => {
   const d = document.documentElement;
   const style = document.createElement('style');

@@ -228,6 +228,8 @@ See [`screenshots/`](screenshots/):
 | `shot-dbtools-rollback.png` / `-dark.png` | The Adminer panel (`dbtools/panel.js`) beside the Undo SQL preview it opens for "↺ Roll back all" — a sample 7-change session, one change refused (no `WHERE`), Step by step / Merged switch, used on `feature.html?id=db-test-session` |
 | `shot-dbtools-manager.png` / `-dark.png`  | `dbtools.html`, the Test sessions & rollback page, on that same session — the rail of sessions, a DELETE and an UPDATE diff open, one change already undone, used on `feature.html?id=db-test-session` |
 | `shot-sql-diagram.png` / `-dark.png` | `sqltest.html`'s Diagram dialog (Schema tab → Diagram) for a four-table `JOIN` query, after **Fit** — boxes with PK/FK, crow's-foot links, zoom controls. Made by `capture-shots.mjs` |
+| `shot-sql-compare.png` / `-dark.png` | Compare mode on the first example query (age range moved, country filter dropped): the Impacted / Unrelated / No longer applies counters over *Changes detected*. `capture-shots.mjs` |
+| `shot-sql-coverage.png` / `-dark.png` | The Coverage panel for the "Compound WHERE" example — five conditions, so pairwise, 6 of 32 combinations. `capture-shots.mjs` |
 
 ### Capturing a shot: `capture-shots.mjs`
 
