@@ -332,18 +332,20 @@
   </section>
 
   <!-- ================= PRIVACY =================
-       Every claim here was checked against the extension source (v1.0.27):
-       storage areas, the one outbound request (bg/remote-config.js), and each manifest
-       permission's API calls. Claims copied as they are (wording trimmed in places so a row fits on 2 lines);
-       re-check after a permission change. -->
+       Every claim here was checked against the extension source (v1.0.27 as on the store, e98ed43):
+       storage areas, the one request it makes on its own (bg/remote-config.js), API Tests' requests
+       (shared/api-request.js, apicases/, help card "apicases"), and each manifest permission's API calls.
+       Claims copied as they are (wording trimmed in places so a row fits on 2 lines); re-check after a
+       permission change. The Origin header and tokens shown in the Environments dialog belong on the API Tests
+       page's notes — four cards are what fits one screen here. -->
   <section id="privacy">
     <div class="container collapsible">
       <div class="section-head reveal">
         <span class="eyebrow">04 · <span lang="en">Privacy</span><span lang="vi">Riêng tư</span></span>
         <h2 class="section-title"><span lang="en">Your tests stay in your browser</span><span lang="vi">Dữ liệu test ở lại trong trình duyệt của bạn</span></h2>
         <p class="section-sub">
-          <span lang="en">No account and no analytics. Here is what Pocket&nbsp;QA keeps and the one request it makes.</span>
-          <span lang="vi">Không tài khoản, không analytics. Đây là những gì Pocket&nbsp;QA lưu và yêu cầu mạng duy nhất nó gửi đi.</span>
+          <span lang="en">No account and no analytics. Here is what Pocket&nbsp;QA keeps and what it sends out.</span>
+          <span lang="vi">Không tài khoản, không analytics. Đây là những gì Pocket&nbsp;QA lưu và những gì nó gửi đi.</span>
         </p>
       </div>
       <div class="grid-2">
@@ -351,8 +353,8 @@
           <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8.5 20h7M12 16.5V20"/></svg></span>
           <h3><span lang="en">Stored on this computer</span><span lang="vi">Lưu trên máy này</span></h3>
           <p class="more">
-            <span lang="en">Scenarios, variables, CSV data, screenshots and run results live in Chrome's local extension storage. Nothing is uploaded.</span>
-            <span lang="vi">Kịch bản, biến, dữ liệu CSV, ảnh chụp và kết quả chạy nằm trong bộ nhớ cục bộ của tiện ích trên Chrome. Không có gì được tải lên.</span>
+            <span lang="en">Scenarios, variables, CSV data, screenshots, run results and API tests live in Chrome's local extension storage. Nothing is uploaded.</span>
+            <span lang="vi">Kịch bản, biến, dữ liệu CSV, ảnh chụp, kết quả chạy và API test nằm trong bộ nhớ cục bộ của tiện ích trên Chrome. Không có gì được tải lên.</span>
           </p>
         </article>
         <article class="card info reveal">
@@ -365,18 +367,18 @@
         </article>
         <article class="card info reveal">
           <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></span>
-          <h3><span lang="en">One request out, once a day</span><span lang="vi">Một yêu cầu mạng mỗi ngày</span></h3>
+          <h3><span lang="en">Its own request: once a day</span><span lang="vi">Tự gửi một yêu cầu mỗi ngày</span></h3>
           <p class="more">
             <span lang="en">Besides Chrome's own update check, Pocket&nbsp;QA reads a small version file from <code class="nw">kt-hg.github.io</code> so a broken release can be stopped. It carries none of your data.</span>
             <span lang="vi">Ngoài lần kiểm tra cập nhật của chính Chrome, Pocket&nbsp;QA đọc một file phiên bản nhỏ từ <code class="nw">kt-hg.github.io</code> để có thể dừng một bản phát hành lỗi. Yêu cầu này không mang dữ liệu nào của bạn.</span>
           </p>
         </article>
         <article class="card info reveal">
-          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7.5" ry="2.5"/><path d="M4.5 5.5v13c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5v-13M4.5 12c0 1.4 3.4 2.5 7.5 2.5s7.5-1.1 7.5-2.5"/></svg></span>
-          <h3><span lang="en">DB rollback stays on your Adminer</span><span lang="vi">Rollback DB chỉ chạy trên Adminer của bạn</span></h3>
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3 3 10.5l7.5 3L13.5 21z"/><path d="M10.5 13.5 21 3"/></svg></span>
+          <h3><span lang="en">Your requests go where you point them</span><span lang="vi">Request của bạn chỉ đi tới nơi bạn chỉ định</span></h3>
           <p class="more">
-            <span lang="en">Undo SQL goes only to the Adminer page you are working in, over your existing session.</span>
-            <span lang="vi">Câu SQL hoàn tác chỉ được gửi tới trang Adminer bạn đang làm việc, qua phiên đăng nhập hiện có.</span>
+            <span lang="en">API Tests sends only on Send or Run, to the server you typed, with your browser's cookies for it unless you turn them off. A Backup holds its tokens. Undo SQL goes only to your Adminer page.</span>
+            <span lang="vi">API Tests chỉ gửi khi bạn bấm Send hoặc Run, tới đúng server bạn ghi, kèm cookie của trình duyệt trừ khi bạn tắt. Backup chứa cả token. SQL hoàn tác chỉ tới trang Adminer của bạn.</span>
           </p>
         </article>
       </div>
@@ -398,7 +400,7 @@
       <dl class="card perms reveal">
         <div class="perm">
           <dt><code>&lt;all_urls&gt;</code></dt>
-          <dd><span lang="en">Read and change data on all websites — to record, replay and screenshot any site you test.</span><span lang="vi">Đọc và thay đổi dữ liệu trên mọi trang web — để ghi, phát lại và chụp ảnh trang bạn đang test.</span></dd>
+          <dd><span lang="en">Read and change data on all websites — to record, replay, screenshot, and send API tests.</span><span lang="vi">Đọc và thay đổi dữ liệu trên mọi trang web — để ghi, phát lại, chụp ảnh và gửi API test.</span></dd>
         </div>
         <div class="perm">
           <dt><code>tabs</code></dt>
