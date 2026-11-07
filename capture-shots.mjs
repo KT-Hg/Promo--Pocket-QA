@@ -8,7 +8,8 @@
  * own controls, and saves one element of it — light, then dark — as
  * screenshots/shot-<name>[-dark].png and .webp. Nothing is mocked: what is in the
  * picture is what the extension draws. Every run starts from a fresh profile,
- * so a shot comes out the same each time.
+ * so a shot comes out the same each time. The one stand-in is the server the API
+ * Tests shots call (api.shop.example): CDP answers its requests, below.
  *
  * The extension repo is found like update-vendor.mjs finds it:
  *   EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   (default ../Pocket QA)
@@ -42,6 +43,62 @@ const PAGE = `<!doctype html><meta charset="utf-8"><title>Checkout — Shop</tit
 <p><label>Email <input id="email"></label> <label>Coupon <input id="coupon"></label>
 <button id="apply" onclick="document.getElementById('toast').textContent = 'Error: coupon expired'">Apply</button></p>
 <p id="toast"></p>`;
+// The API Tests shots: a "Shop" folder of requests to a server that does not exist. The page's own fetch() goes out
+// as usual and CDP (Fetch.requestPaused) answers it here, so the picture shows a real-looking host, nothing leaves
+// the machine, and the request, checks and verdict are the page's own.
+const API = 'https://api.shop.example';
+const TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3In0.qa';
+const API_ROUTES = {   // 'METHOD /path' → [status, body, content type]
+  'POST /auth/login': [200, { access_token: TOKEN, token_type: 'Bearer', expires_in: 3600 }],
+  'GET /orders/42': [200, { data: { id: 42, status: 'PAID', total: 128.5, currency: 'USD',
+    customer: { id: 7, email: 'qa@shop.test' }, items: [{ sku: 'TEE-01', qty: 2, price: 39.5 }, { sku: 'MUG-03', qty: 1, price: 49.5 }] } }],
+  'GET /orders': [200, { data: [{ id: 42, status: 'PAID', total: 128.5 }, { id: 44, status: 'PAID', total: 61 }], total: 2 }],
+  'DELETE /orders/43': [204, ''],
+  'GET /reports/today': [200, '<!doctype html><title>Daily report</title><h1>Daily report</h1>', 'text/html']
+};
+const answerApi = async page => {
+  await page.send('Fetch.enable', { patterns: [{ urlPattern: API + '/*' }] });
+  let next = page.waitEvent('Fetch.requestPaused', 600_000);
+  (async () => {
+    for (;;) {
+      const e = await next.catch(() => null);
+      if (!e) return;
+      next = page.waitEvent('Fetch.requestPaused', 600_000);   // before answering: the next request may already be on its way
+      const { requestId, request } = e.params;
+      const [status, body, type = 'application/json'] = API_ROUTES[`${request.method} ${new URL(request.url).pathname}`]
+        || [404, { error: 'Not found' }];
+      await sleep(90);   // a server's answer, not an instant one
+      await page.send('Fetch.fulfillRequest', {
+        requestId, responseCode: status,
+        responseHeaders: [{ name: 'Content-Type', value: `${type}; charset=utf-8` }, { name: 'X-Request-Id', value: 'req-7f3a9c' }],
+        body: Buffer.from(typeof body === 'string' ? body : JSON.stringify(body)).toString('base64')
+      }).catch(() => {});
+    }
+  })();
+};
+// What the API Tests page holds when a shot opens it: chrome.storage.local apiCasesState (apicases/model.js)
+const jsonCheck = (path, op, expected = '') => ({ on: 'json', path, op, expected });
+const API_STATE = {
+  folders: [{ id: 'shop', name: 'Shop', auth: { type: 'bearer', token: '${token}' } }],
+  cases: [
+    { id: 'login', name: 'Log in', method: 'POST', url: '${baseUrl}/auth/login', headers: 'Content-Type: application/json',
+      bodyType: 'json', body: '{\n  "email": "${email}",\n  "password": "${password}"\n}', auth: { type: 'none' },
+      extracts: [{ varName: 'token', from: 'json', path: 'access_token' }] },
+    { id: 'order', name: 'Get order', method: 'GET', url: '${baseUrl}/orders/42', headers: 'Accept: application/json',
+      checks: [{ on: 'status', op: 'is', expected: '2xx' }, jsonCheck('data.status', 'equals', 'PAID'), jsonCheck('data.total', 'gt', '0'),
+        { on: 'header', path: 'Content-Type', op: 'contains', expected: 'json' }] },
+    { id: 'orders', name: 'List paid orders', method: 'GET', url: '${baseUrl}/orders?status=PAID',
+      checks: [{ on: 'status', op: 'is', expected: '200' }, jsonCheck('total', 'equals', '3'), { on: 'time', op: 'lt', expected: '500' }] },
+    { id: 'cancel', name: 'Cancel order', method: 'DELETE', url: '${baseUrl}/orders/43' },
+    { id: 'report', name: 'Daily report', method: 'GET', url: '${baseUrl}/reports/today', checks: [jsonCheck('data.sales', 'exists')] }
+  ].map(c => ({ folderId: 'shop', headers: '', bodyType: 'none', body: '', timeoutMs: 30_000, cookies: true, auth: { type: 'inherit' },
+    checks: [], extracts: [], ...c })),
+  environments: [
+    { id: 'dev', name: 'Dev', vars: [['baseUrl', API], ['email', 'qa@shop.test'], ['password', 'Spring-2026!'], ['token', TOKEN]].map(([name, value]) => ({ name, value })) },
+    { id: 'staging', name: 'Staging', vars: [{ name: 'baseUrl', value: 'https://staging.shop.example' }] }
+  ],
+  envId: 'dev', folderId: 'shop', caseId: 'order'
+};
 const WEBP = 'import sys; from PIL import Image; Image.open(sys.argv[1]).save(sys.argv[2], lossless=True, quality=100, method=6)';
 try { execFileSync('python', ['-c', 'import PIL'], { stdio: 'ignore' }); } catch {
   console.error('✗ The WebP twins need Python with Pillow (pip install pillow).');
@@ -385,6 +442,116 @@ const SHOTS = [
       await wait(500);
       return mark($('#diffModal').firstElementChild);
     `
+  },
+  {
+    // API Tests: "Get order" sent — the Headers tab with the folder's Bearer token, the JSON response, the verdict
+    name: 'api-send',
+    page: 'apitest.html',
+    size: [1400, 1080],   // the whole JSON of the order, not cut off mid-array
+    api: true,
+    seed: ({ set }) => set({ apiCasesState: API_STATE }),
+    setup: `
+      await until(() => $('.ac-send'), 'the open request');
+      await themed('#toggleTheme', THEME);
+      $('.ac-send').click();
+      await until(() => $('.ac-verdict'), 'the response');
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      await wait(400);
+      return '#insp';
+    `
+  },
+  {
+    // "List paid orders" sent with its Checks tab open: two checks hold, one does not — a Failed verdict and its reason
+    name: 'api-checks',
+    page: 'apitest.html',
+    size: [1400, 900],
+    api: true,
+    seed: ({ set }) => set({ apiCasesState: { ...API_STATE, caseId: 'orders' } }),
+    setup: `
+      await until(() => $('.ac-send') && $('.rtab[data-k="checks"]'), 'the open request');
+      await themed('#toggleTheme', THEME);
+      $('.rtab[data-k="checks"]').click();
+      $('.ac-send').click();
+      await until(() => $('.ac-verdict'), 'the response');
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      await wait(400);
+      return '#insp';
+    `
+  },
+  {
+    // Manage → the Environments dialog: Dev in use, its variables, and the Data tab's under them (Dev's email wins)
+    name: 'api-env',
+    page: 'apitest.html',
+    size: [1400, 900],
+    seed: async ({ send, set }) => {
+      await send(vars({ email: 'demo@shop.test', locale: 'en-US' }));
+      await set({ apiCasesState: API_STATE });
+    },
+    setup: `
+      await until(() => $('.ac-send'), 'the page to start');
+      await themed('#toggleTheme', THEME);
+      $('#btnEnvs').click();
+      await until(() => $('.modal.ac-envs'), 'the Environments dialog');
+      await wait(300);
+      return '.modal.ac-envs';
+    `
+  },
+  {
+    // ▶ Run folder: it asks first, since "Cancel order" is a DELETE — the question names the host
+    name: 'api-ask',
+    page: 'apitest.html',
+    size: [1400, 900],
+    seed: ({ set }) => set({ apiCasesState: API_STATE }),
+    setup: `
+      await until(() => $('#runBar button'), 'the run bar');
+      await themed('#toggleTheme', THEME);
+      [...document.querySelectorAll('#runBar button')].find(b => /Run folder/.test(b.textContent)).click();
+      await until(() => !$('#askModal').hidden, 'the question');
+      await wait(300);
+      return '#askModal .modal';
+    `
+  },
+  {
+    // The Shop folder after ▶ Run folder (Send on the question): ✓ ✗ ⚠ per request, the tally on the run bar
+    name: 'api-run',
+    page: 'apitest.html',
+    size: [1400, 760],
+    api: true,
+    seed: ({ set }) => set({ apiCasesState: API_STATE }),
+    setup: `
+      await until(() => $('#runBar button'), 'the run bar');
+      await themed('#toggleTheme', THEME);
+      [...document.querySelectorAll('#runBar button')].find(b => /Run folder/.test(b.textContent)).click();
+      await until(() => !$('#askModal').hidden, 'the question');
+      $('#askOk').click();
+      await until(() => /Last run/.test($('#runBar').textContent) && !$('.ac-stop'), 'the run to end', 20000);
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      await wait(400);
+      return ['#listHead', '#caseList'];
+    `
+  },
+  {
+    // Import → a Postman collection read and previewed: where its requests go, what is left out or changed
+    name: 'api-import',
+    page: 'apitest.html',
+    size: [1400, 900],
+    seed: ({ set }) => set({ apiCasesState: API_STATE }),
+    setup: `
+      await until(() => $('.ac-send'), 'the page to start');
+      await themed('#toggleTheme', THEME);
+      [...document.querySelectorAll('button')].find(b => b.textContent === 'Import').click();
+      await until(() => $('.modal.ac-import .ac-file'), 'the Import dialog');
+      // The extension's own sample collection (tests/fixtures), picked as a file would be
+      const text = await (await fetch('tests/fixtures/postman-sample.json')).text();
+      const dt = new DataTransfer();
+      dt.items.add(new File([text], 'Shop.postman_collection.json', { type: 'application/json' }));
+      const input = $('.modal.ac-import .ac-file');
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      await until(() => $('.ac-import-info').children.length, 'the preview');
+      await wait(300);
+      return '.modal.ac-import';
+    `
   }
 ];
 
@@ -432,6 +599,7 @@ try {
       const page = shot.page === 'popup.html'
         ? await browser.openPage(extUrl('popup.html'), { initScript: asActiveTab(`${base}/page`), width, height })
         : await browser.openPage(extUrl(shot.page), { width, height });
+      if (shot.api) await answerApi(page);
       try {
         if (shot.page === 'popup.html') {
           await page.evaluate(`chrome.storage.local.set({ activatedTabs: [${webTabId}] })`);

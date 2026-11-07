@@ -355,91 +355,207 @@ không mâu thuẫn với nội dung mới, chỉ đổi comment 1.0.24 → 1.0.
 ## Checkpoint A: Đợt A xong
 - [x] 11 trang + trang chủ đạt mọi check, EN + VI, light + dark
 - [x] README promo cập nhật (bảng files, bảng screenshots, cách chụp)
-- [ ] **Người dùng duyệt** → merge `promo-update` → deploy (bước của người dùng)
+- [x] **Người dùng duyệt** → merge `promo-update` → deploy (bước của người dùng) — merge `f62fe1c`, đã push (`origin/master` = `2fa0372`)
 
 ---
 
-## Phase 4: Đợt B — khi Store = 1.0.28
+## Phase 4: Đợt B — API Tests (đã có trên Store, bản 1.0.27)
 
-## Task 14: Vendor HEAD (thẻ API Tests, `var-suggest.css`)
+Viết lại 2026-11-03, rồi sửa cùng ngày khi người dùng xác nhận **1.0.27 trên Store đã có API Tests** (Store *last
+updated* = CN 01-11). Không chờ 1.0.28: promo đang **chậm hơn** bản thật, và Privacy ở trang chủ đang sai ngay lúc này.
+Hiện trạng, quyết định, rủi ro: mục *Đợt B* trong [`promo-update-plan.md`](promo-update-plan.md).
 
-**Description:** Kiểm tra shields.io = 1.0.28, rồi `node update-vendor.mjs` từ repo extension thật. Preview tab Data
-có thẻ API Tests; `<link>` `css/var-suggest.css` được vendor và trỏ đúng.
+**Bản Store** = `e98ed43`, người dùng xác nhận 2026-11-03 (Sun 11-01 23:35: API Tests đủ, đã đổi tên `sqltest.html`/`dbtest.html`,
+**chưa** có giao diện `tool-base` `9d25060` 11-02). Gọi là `<store>` bên dưới.
+Mọi ảnh chụp từ một worktree của `<store>` (repo extension đang ở `list-editing` có WIP chưa commit):
+`git -C "../Pocket QA" worktree add "<tạm>/pqa-store" <store>` → `EXT_REPO="<tạm>/pqa-store" node capture-shots.mjs …`.
 
-**Acceptance criteria:**
-- [ ] `vendor/version.txt` = 1.0.28; thẻ API Tests hiện ở tab Data (light + dark).
-- [ ] `sync-from-source.mjs` exit 0; console iframe không lỗi.
+### Phase 4a: Review thay đổi extension
 
-**Verification:**
-- [ ] `node update-vendor.mjs` rồi `node sync-from-source.mjs`; so ảnh tab Data
+## Task 14: Delta review `060fcf0..<store>` → gap matrix
 
-**Dependencies:** Checkpoint A, Store = 1.0.28
-
-**Files likely touched:** `vendor/*`, `popup-demo.html`, `demo.js`, `index.html`, `feature.html`
-
-**Estimated scope:** S
-
-## Task 15: Trang `api-tests` (trang thứ 12) + thẻ ở trang chủ
-
-**Description:** Thêm `'api-tests'` vào `FEATURES_EN`/`FEATURES_VI` + `FEATURE_ORDER` (`tab: 'tabData'`). Section theo
-gap matrix, mặc định: *Send & read the response* (Paste/Copy cURL), *Checks & the verdict*, *Environments, saved values,
-auth*, *Running many* (+ CSV), *Postman & CI* (export v2.1 cho Newman, import), notes = *Limits of a browser*. Thêm thẻ
-vào `#tools` trên `index.html` (6 thẻ — kiểm lưới), README "eleven" → "twelve". VI lấy từ help card `apicases` vi.
+**Description:** Gap matrix `api-tests` (Task 4) viết ngày 11-02 từ README + help card. Review lại theo nhóm, chia hai cột
+**trong bản Store** / **sau bản Store**: API Tests (`apitest.html`, `apicases/`, `css/apicases.css`,
+`shared/api-response.js`, `shared/file-export.js`), đổi tên trang tool (`d26264d`), popup (`popup.html` +thẻ API Tests,
+`css/var-suggest.css` tách từ `03-variables.css`, help card `apicases`) — trong bản Store; `tool-base` `9d25060`, docs
+`00590ec`, nhánh `list-editing` — sau. Đối chiếu 16 dòng API với **code UI ở `<store>`** (`apicases/ui/*.js`,
+`apitest.html`), không chỉ README: nhãn nút, toán tử check, menu Export/Import. Kiểm `00590ec` với promo (trang
+`export`: Robot qua DataDriver, Java qua TestNG có data file; SQL: Pairwise tới 8, CTE có case riêng) — commit đó chỉ sửa
+docs cho khớp code đã có, nên chữ promo phải đúng sẵn.
 
 **Acceptance criteria:**
-- [ ] Trang render đủ, prev/next + "Explore other features" có `api-tests`, popup hero mở tab Data.
-- [ ] Mỗi section có ảnh thật light + dark; `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
-- [ ] `checkShape()` = `[]`; lưới thẻ `#tools` không có thẻ lẻ hàng ở 3 viewport.
+- [x] Commit `<store>` được **người dùng xác nhận** và ghi vào plan (`e98ed43`, 2026-11-03).
+- [x] `promo-update-gaps.md` có bảng *Delta `060fcf0..main`*: nhóm commit → trong/sau bản Store → promo impact → task.
+- [x] 16 dòng `api-tests` có nguồn `file:line` ở `<store>`; danh sách section + ảnh (tên shot, seed, vùng cắt) cho Task 15–19.
 
 **Verification:**
-- [ ] `node capture-shots.mjs api-…`; `node stamp-assets.mjs`
-- [ ] `checkLayout()` trên `index.html` và trang mới, EN + VI, light + dark
+- [x] `git -C "../Pocket QA" log --oneline 060fcf0..main` — mọi commit có mặt trong bảng (33/33, cả 2 commit `list-editing`)
+- [x] `grep -n "DataDriver\|TestNG\|Pairwise\|CTE" features-en.js features-vi.js` khớp `00590ec` — không cần sửa
+
+**Dependencies:** Checkpoint A
+
+**Files likely touched:** `tasks/promo-update-gaps.md`, `tasks/promo-update-plan.md`
+
+**Estimated scope:** S (một file, đọc nhiều)
+
+## Task 15: `capture-shots.mjs` cho `apitest.html` — API giả + shot đầu
+
+**Description:** Rủi ro kỹ thuật lớn nhất, làm sớm. `apitest.html` cần `chrome.storage` và response thật → chụp qua
+trình duyệt có extension như shot SQL, từ worktree `<store>`. Thêm vào server cục bộ sẵn có của `capture-shots.mjs`
+vài route giả (vd. `POST /auth/login` → `{token}`, `GET /orders/42` → JSON, một `POST` cho bước hỏi-trước-khi-ghi), seed
+`apiCasesState` (`apicases/model.js:17`): folder *Shop*, login + order, auth Bearer `${token}`. Shot đầu `api-send`:
+request đã Send, response JSON, tab Checks có verdict. Host trông thật bằng `--host-resolver-rules` nếu
+`launchWithExtension` nhận thêm flag, không thì để `127.0.0.1`. Dùng chính các lần chạy này để bấm thử 16 dòng
+gap matrix → cột **thấy**.
+
+**Acceptance criteria:**
+- [x] `EXT_REPO=<worktree store> node capture-shots.mjs api-send` ra `shot-api-send{,-dark}.{png,webp}`, response từ route giả. (Thay worktree bằng `git archive e98ed43` ra thư mục tạm — không đụng repo extension; route giả = CDP `Fetch`, không cần server. Chụp luôn `api-checks`, `api-env`, `api-ask`, `api-run`, `api-import` cho Task 18–19.)
+- [x] Không cần mạng ngoài; chạy lại cho cùng ảnh (không giờ/ngày đổi trong vùng cắt). — Không cần mạng ✓; 3/6 shot giống hệt; `api-send`/`api-checks` khác số ms, `api-run` khác giờ chạy + ms — **người dùng chấp nhận (2026-11-04)**, không giả lập đồng hồ (như các shot popup có giờ).
+- [x] Gap matrix: 16 dòng API có **thấy** hoặc ghi chú khác biệt (bảng *Bấm thử trên bản Store*, 18 dòng).
+
+**Verification:**
+- [x] Chạy 2 lần, so ảnh (Pillow `ImageChops`); mở ảnh light + dark
 
 **Dependencies:** Task 14
 
-**Files likely touched:** `features-en.js`, `features-vi.js`, `index.html`, `capture-shots.mjs`, `README.md`
+**Files likely touched:** `capture-shots.mjs`, `screenshots/*`, `tasks/promo-update-gaps.md`
 
 **Estimated scope:** M
 
-## Task 16: Privacy / Permissions / FAQ cho API Tests
+## Checkpoint B1: Sau Task 14–15
+- [x] **Người dùng duyệt** gap matrix API + danh sách section/ảnh, trả lời Open Questions 5–9 của plan — duyệt theo mặc định, 2026-11-04
 
-**Description:** Sửa section Privacy (`index.html:345`, `:368` "One request out…"): Pocket QA tự gọi một request/ngày;
-request của API Tests đi tới server người dùng chọn, non-GET mang `Origin: chrome-extension://…`, `Set-Cookie` ghi
-thật vào trình duyệt, Backup chứa case + environment (cả token). Thêm FAQ nếu cần.
+### Phase 4b: Sửa ngay cái đang sai
+
+## Task 16: Privacy / Permissions cho API Tests — merge riêng, trước
+
+**Description:** Trang live đang nói sai: `index.html:345` ("the one request it makes"), `:368` ("One request out, once
+a day"). Viết lại: Pocket QA tự gọi một request/ngày; request của API Tests chỉ đi khi bấm Send/Run, tới server người dùng
+chọn, kèm cookie của trình duyệt (tắt được ở tab Settings của request), non-GET mang `Origin: chrome-extension://…`,
+`Set-Cookie` là thật; Backup chứa case + environment (cả token), và dialog Environments hiện token nguyên văn (Task 15). Permissions: `<all_urls>` (`index.html:400`) thêm
+"request của API Tests đi không vướng CORS" — manifest không đổi quyền. Nhánh nhỏ `promo-privacy-api`, merge + push
+ngay khi người dùng duyệt, không chờ trang API.
 
 **Acceptance criteria:**
-- [ ] Không câu nào trên trang khẳng định extension "chỉ gửi một request".
-- [ ] Bốn ý ở trên có mặt, EN + VI.
-- [ ] `checkLayout()` rỗng cho section Privacy/FAQ ở 3 viewport.
+- [x] Không câu nào khẳng định extension chỉ gửi một request; các ý trên có mặt, EN + VI. — `68b887c` trên `promo-privacy-api`. Trừ 2 ý chuyển sang notes trang API (Task 19): `Origin: chrome-extension://…` và token hiện nguyên văn trong dialog Environments — 6 thẻ cao 780px trong màn 593px ở 1366×657, nên giữ 4 thẻ (thẻ 4 gộp API + SQL hoàn tác).
+- [x] `checkLayout()` rỗng cho Privacy/Permissions ở 3 viewport. — 1366×657, 1280×632, 375×812 rỗng; so với `master` ở 10 viewport: Privacy không cao hơn ở đâu, Permissions y nguyên (overflow có sẵn ở 1280×585, 375×548, 360×612 là của `master`).
 
 **Verification:**
-- [ ] Đối chiếu help card `apicases` "Limits of a browser"; **người dùng duyệt nội dung privacy**
+- [x] Đối chiếu help card `apicases` *Giới hạn của trình duyệt* ở `<store>` ✓; **người dùng duyệt nội dung privacy** ✓ — merge `4d06c86` vào `master`, đã push (2026-11-07)
 
-**Dependencies:** Task 15
+**Dependencies:** Task 14 (chắc ý nào có trong bản Store)
 
 **Files likely touched:** `index.html`
 
 **Estimated scope:** S
 
-## Task 17: Chụp lại ảnh toàn trang tool theo `tool-base`
+### Phase 4c: Trang API Tests, nhánh `promo-api-store`
 
-**Description:** Thay `shot-sqlcases-analysis*` và `shot-dbtools-manager*` bằng ảnh chụp từ `sqltest.html`/`dbtest.html`
-mới (top bar + cột trái thu gọn) qua `capture-shots.mjs`; đổi tên file theo trang mới, sửa `src` trong `features-*.js`
-và bảng screenshots trong README (cả `sqlcases.html`/`dbtools.html` → tên mới).
+## Task 17: Vendor bản Store — thẻ API Tests ở tab Data
+
+**Description:** Đợt A vendor từ `060fcf0` để giấu thẻ API Tests — giờ thẻ đó có trên Store nên preview đang thiếu.
+`git -C "../Pocket QA" archive <store>` ra thư mục tạm → `node update-vendor.mjs <thư mục>` → `node sync-from-source.mjs`.
+Diff `popup.html` chỉ có `<link>` `css/var-suggest.css` và thẻ *API Tests* (`#openApiCases`). `03-variables.css` −117
+dòng chuyển sang `var-suggest.css` → so ảnh tab Data/Record trước–sau. `version.txt` vẫn 1.0.27.
 
 **Acceptance criteria:**
-- [ ] Không còn ảnh/README nào nhắc `sqlcases.html` hay `dbtools.html`.
-- [ ] Ảnh mới light + dark, `.png` + `.webp`; ảnh cũ bị xoá khỏi repo.
+- [ ] Preview tab Data có thẻ API Tests (light + dark); nút bị chặn như mọi nút khác (`demo.js` `BLOCKED`).
+- [ ] `sync-from-source.mjs` exit 0; console trang + iframe không lỗi; tab Record/Data không lệch ngoài thẻ mới.
 
 **Verification:**
-- [ ] `grep -r "sqlcases.html\|dbtools.html"` rỗng; mở 2 trang feature xem ảnh ở light + dark
+- [ ] So ảnh `shot-tab-data` cũ/mới; `checkLayout()` trên `index.html`
 
 **Dependencies:** Task 14
 
-**Files likely touched:** `capture-shots.mjs`, `features-en.js`, `features-vi.js`, `screenshots/*`, `README.md`
+**Files likely touched:** `vendor/*`, `popup-demo.html`
+
+**Estimated scope:** S
+
+## Task 18: Trang `api-tests` — khung + *Send & read the response* + *Checks & the verdict*
+
+**Description:** Thêm `'api-tests'` vào `FEATURES_EN`/`FEATURES_VI` (`tab: 'tabData'`) và `FEATURE_ORDER` (sau
+`db-test-session`). Lead + At a glance + steps (theo *From a cURL to a run in CI* của README extension), 2 section đầu
+theo gap matrix, ảnh `api-send` + 1 ảnh checks. VI lấy câu chữ từ help card `apicases` vi; nhãn UI giữ tiếng Anh
+(`apitest.html` không có i18n) và nói rõ một lần.
+
+**Acceptance criteria:**
+- [ ] `feature.html?id=api-tests` render đủ; prev/next và "Explore other features" có trang mới; hero mở tab Data có thẻ API Tests.
+- [ ] `checkShape()` = `[]`; `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
+
+**Verification:**
+- [ ] `node stamp-assets.mjs`; Verification chung ở 3 viewport, EN + VI, light + dark
+
+**Dependencies:** Checkpoint B1, Task 17
+
+**Files likely touched:** `features-en.js`, `features-vi.js`, `capture-shots.mjs`, `screenshots/*`
+
+**Estimated scope:** M
+
+## Task 19: Trang `api-tests` — environments/auth, chạy nhiều, Postman & CI, giới hạn
+
+**Description:** Các section còn lại: *Environments, saved values & auth* (ảnh dialog Environments / Save values),
+*Running many* (ảnh folder đã Run: ✓ ✗ ⚠, hỏi trước POST, Export → Results CSV), *Postman & CI* (Export v2.1, Import có
+xem trước, khối code `npx newman run …`), notes *Limits of a browser* — phải có `Origin: chrome-extension://…` và
+"dialog Environments hiện token nguyên văn" (chuyển từ Privacy trang chủ, Task 16). ≤ 8 section nội dung.
+
+**Acceptance criteria:**
+- [ ] Mỗi section có ảnh thật light + dark (trừ *Postman & CI* nếu chỉ cần khối code — ghi lý do).
+- [ ] Notes có đủ 6 ý *Limits of a browser* (README extension `## API Tests`).
+- [ ] `checkShape()`, `hiddenByFit()` như Task 18.
+
+**Verification:**
+- [ ] `EXT_REPO=<worktree store> node capture-shots.mjs api-…`; `node stamp-assets.mjs`; Verification chung
+
+**Dependencies:** Task 18
+
+**Files likely touched:** `features-en.js`, `features-vi.js`, `capture-shots.mjs`, `screenshots/*`
+
+**Estimated scope:** M
+
+## Task 20: Trang chủ & README — 12 tính năng
+
+**Description:** Thẻ *API Tests* trong `#tools` (`index.html:232`, thành 6 thẻ — kiểm lưới không lẻ hàng), link
+`feature.html?id=api-tests`; FAQ trỏ sang trang API nếu Task 16 cần. "eleven" → "twelve" ở `README.md:8`, `:81`, comment
+`features-en.js:2` (+ VI). Meta description / `og:description` (`index.html:12`, `:24`) theo Open Question 7 của plan.
+README promo: bảng screenshots thêm shot API; `sqlcases.html`/`dbtools.html` → `sqltest.html`/`dbtest.html` trong mô tả
+(`README.md:225–259`) — tên đã đổi từ bản Store (`d26264d`), ảnh thì giữ (giao diện chưa đổi).
+
+**Acceptance criteria:**
+- [ ] Lưới `#tools` không có thẻ lẻ hàng ở 1366×657, 1280×632, 375×812.
+- [ ] `grep -rn -i "eleven\|mười một"` và `grep -rn "sqlcases.html\|dbtools.html"` (trừ `tasks/`, `.claude/`) rỗng.
+
+**Verification:**
+- [ ] `checkLayout()` trên `index.html`, EN + VI, light + dark
+
+**Dependencies:** Task 18
+
+**Files likely touched:** `index.html`, `README.md`, `features-en.js`, `features-vi.js`
 
 **Estimated scope:** S
 
 ## Checkpoint B: Đợt B xong
-- [ ] 12 trang + trang chủ đạt mọi check, EN + VI, light + dark; Store = 1.0.28
-- [ ] **Người dùng duyệt** → merge → deploy (bước của người dùng)
+- [ ] 12 trang + trang chủ đạt `checkLayout`/`checkShape`/`hiddenByFit`, EN + VI, light + dark
+- [ ] Không câu nào nói về thứ chỉ có sau `<store>` (`tool-base`, `list-editing`)
+- [ ] **Người dùng đọc** trang `api-tests` (cả VI) → merge `promo-api-store` → push (bước của người dùng)
+
+### Phase 4d: Bản sau (1.0.28)
+
+## Task 21: Khi bản có `tool-base` lên Store — chụp lại ảnh toàn trang tool
+
+**Description:** `shot-sqlcases-analysis*`, `shot-dbtools-manager*` là giao diện trước `tool-base` — vẫn đúng với bản
+Store hiện tại. Khi Store có `9d25060`: chụp lại từ `sqltest.html` / `dbtest.html` (worktree của commit phát hành), tên
+mới `shot-sql-workspace*` / `shot-db-manager*`, sửa `src` trong `features-*.js` và README, xoá ảnh cũ; chụp lại các shot
+`api-*` nếu khung trang đổi. Cùng lúc: `git log <store>..<commit mới>` để xem `list-editing` (danh sách action không
+nháy, bộ lọc folder được nhớ, action vừa lưu nhấp nháy) có đáng một dòng trên trang `recording` không.
+
+**Acceptance criteria:**
+- [ ] Store có `tool-base`; ảnh mới light + dark, `.png` + `.webp`; `grep -rn "shot-sqlcases\|shot-dbtools-manager"` rỗng.
+
+**Verification:**
+- [ ] Mở `sql-test-designer`, `db-test-session`, `api-tests` ở light + dark; `hiddenByFit()` không đổi
+
+**Dependencies:** Checkpoint B, Store có `9d25060`
+
+**Files likely touched:** `capture-shots.mjs`, `features-en.js`, `features-vi.js`, `screenshots/*`, `README.md`
+
+**Estimated scope:** S
