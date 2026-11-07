@@ -444,10 +444,10 @@ const SHOTS = [
     `
   },
   {
-    // API Tests: "Get order" sent — the Headers tab with the folder's Bearer token, the JSON response, the verdict
+    // API Tests: "Get order" sent — the Headers tab, then the verdict, status, time, size and the URL as sent
     name: 'api-send',
     page: 'apitest.html',
-    size: [1400, 1080],   // the whole JSON of the order, not cut off mid-array
+    size: [1400, 900],
     api: true,
     seed: ({ set }) => set({ apiCasesState: API_STATE }),
     setup: `
@@ -457,6 +457,10 @@ const SHOTS = [
       await until(() => $('.ac-verdict'), 'the response');
       document.querySelectorAll('.toast').forEach(t => t.remove());
       await wait(400);
+      // Down to the line naming what was sent: the whole column shrinks to a third on the page and can't be read
+      const insp = $('#insp'), sent = $('#insp .ac-resp-meta').nextElementSibling;
+      insp.style.height = Math.ceil(sent.getBoundingClientRect().bottom - insp.getBoundingClientRect().top + 14) + 'px';
+      insp.style.overflow = 'hidden';
       return '#insp';
     `
   },
@@ -475,6 +479,10 @@ const SHOTS = [
       await until(() => $('.ac-verdict'), 'the response');
       document.querySelectorAll('.toast').forEach(t => t.remove());
       await wait(400);
+      // Down to the line naming what was sent: the whole column shrinks to a third on the page and can't be read
+      const insp = $('#insp'), sent = $('#insp .ac-resp-meta').nextElementSibling;
+      insp.style.height = Math.ceil(sent.getBoundingClientRect().bottom - insp.getBoundingClientRect().top + 14) + 'px';
+      insp.style.overflow = 'hidden';
       return '#insp';
     `
   },

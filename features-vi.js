@@ -958,6 +958,111 @@ var FEATURES_VI = {
     ]
   },
 
+  'api-tests': {
+    title: 'API Tests',
+    lead: 'Giữ request API cạnh bài test giao diện: dán một cURL, gửi đi, kiểm tra response — và chạy cả thư mục với token mà một request đã lưu.',
+    facts: [['5', 'loại kiểm tra'], ['v2.1', 'xuất &amp; nhập Postman'], ['CSV', 'kết quả chạy']],
+    tabLabel: 'tab Data',
+    points: [
+      'Dán cURL từ DevTools — method, URL, header và body tự điền; Copy cURL làm chiều ngược lại.',
+      'Kiểm tra status, JSON path, header, body và thời gian — mỗi lần Send một kết luận.',
+      'Môi trường cho từng server, và giá trị lưu từ response, như token đăng nhập.',
+      'Auth đặt một lần trên thư mục — Bearer, Basic hoặc API key — dùng chung cho các request.',
+      'Chạy cả thư mục từng request một; hỏi trước mọi thao tác ghi và nêu tên host.',
+      'Xuất sang Postman để chạy Newman trong CI, và nhập lại collection Postman.'
+    ],
+    steps: [
+      ['Mở công cụ', 'Data → API Tests → <b>Manage API tests</b> mở một tab riêng.'],
+      ['Thêm request', '<b>＋ Request</b>, hoặc <b>Paste cURL</b> từ DevTools → Network → Copy as cURL.'],
+      ['Kiểm tra', 'Thêm check, hoặc bấm vào một key trong JSON response để kiểm tra nó.'],
+      ['Chạy', 'Send từng cái, hoặc <b>▶ Run folder</b>; lưu kết quả ra CSV hoặc thư mục cho Postman.']
+    ],
+    sections: [
+      {
+        title: 'Gửi request và đọc response',
+        nav: 'Gửi',
+        lead: 'Request mở cạnh thư mục của nó: sáu tab ở trên, câu trả lời ở dưới.',
+        images: [{
+          alt: 'Request Get order: GET ${baseUrl}/orders/42 trong thư mục Shop, tab Headers có Accept: application/json, các nút thêm nhanh Accept JSON, Bearer token, No cache, và cookie của trình duyệt ở mục Also sent; bên dưới là response — Passed, 200 OK trong khoảng 100 ms, 194 B đã giải nén, và URL đã điền biến.',
+          caption: 'Get order đã gửi: Passed, 200 OK trong khoảng 100 ms.'
+        }],
+        points: [
+          'Đủ method, cả <b>OPTIONS</b>; body dạng <b>JSON</b>, <b>Form</b> hoặc <b>Text</b>, và <b>Format</b> căn lại JSON.',
+          '<b>Paste cURL</b> từ DevTools điền sẵn một request; <b>Copy cURL</b> làm chiều ngược lại, biến đã điền.',
+          'Header dạng bảng: bỏ tick để giữ mà không gửi, <b>Bulk edit</b> dán nhiều dòng, gõ <code>${</code> để gợi ý biến.',
+          'Status, thời gian và kích thước; ảnh hay file được hiện ra, hoặc lưu bằng <b>Download</b>.',
+          'Không vướng CORS; cookie của site được gửi kèm, trừ khi tắt ở tab <b>Settings</b>.'
+        ]
+      },
+      {
+        title: 'Check và kết luận',
+        nav: 'Check',
+        lead: 'Mỗi request được kiểm tra ở mỗi lần Send — không có check thì phải trả về 2xx.',
+        images: [{
+          alt: 'Request List paid orders, tab Checks: status is 200 đạt; JSON total = 3 sai, kèm “Expected total = "3", got 2”; time dưới 500 đạt. Response ghi Failed cùng lý do đó, và 200 OK.',
+          caption: 'Một trong ba check không đúng: Failed, kèm lý do.'
+        }],
+        points: [
+          '<b>Status</b> <code>201</code>, <code>2xx</code>, <code>200,201</code>, <code>not5xx</code>; <b>JSON path</b> =, contains, exists, does not exist, &gt;, &lt;.',
+          '<b>Header</b> exists, = hoặc contains; <b>body</b> có hoặc không chứa; tổng <b>thời gian</b> dưới một ngưỡng.',
+          'Bấm vào một key trong JSON response để biến nó thành check; giá trị mong đợi dùng được <code>${var}</code>.',
+          '<b>Failed</b>: có check sai — API sai. <b>Broken</b>: không có response, quá thời gian, không phải JSON — bài test sai.'
+        ]
+      },
+      {
+        title: 'Môi trường, giá trị lưu và auth',
+        nav: 'Môi trường',
+        lead: 'Đăng nhập một lần; mọi request sau đó đều gửi token.',
+        images: [{
+          alt: 'Dialog Environments: Dev đang dùng, và Staging. Dev đặt baseUrl là https://api.shop.example, email, password và token. Ở mục From the Data tab, email của tab Data bị gạch kèm “set here”, còn locale en-US vẫn được dùng.',
+          caption: 'email của Dev thắng email ở tab Data; locale vẫn lấy từ tab Data.'
+        }],
+        points: [
+          '<code>${name}</code> lấy từ biến ở tab Data, rồi từ môi trường đang dùng — môi trường thắng.',
+          '<b>Save values</b> ghi một JSON path, header, status hoặc một phần body vào môi trường.',
+          'Request đăng nhập lưu <code>token</code>; <b>Bearer</b> <code>${token}</code> của thư mục gửi nó cho mọi request sau.',
+          '<b>Auth</b> trên thư mục hoặc một request: Bearer, Basic, hoặc API key ở header hay query.'
+        ]
+      },
+      {
+        title: 'Chạy nhiều request',
+        nav: 'Chạy',
+        lead: 'Từng request một, nên giá trị một request lưu sẵn có cho request sau.',
+        images: [{
+          alt: 'Thư mục Shop sau Run folder, với “Last run · 3 passed · 1 failed · 1 broken”: Log in POST đạt; Get order GET đạt; List paid orders GET sai, “Expected total = "3", got 2”; Cancel order DELETE đạt, 204; Daily report GET bị broken, “The response is not JSON”.',
+          caption: 'Chạy một thư mục: 3 passed, 1 failed, 1 broken — mỗi cái nói rõ vì sao.'
+        }],
+        points: [
+          '<b>▶ Run folder</b>, Run all, <b>Run N shown</b> sau khi lọc, Run selected, hoặc Send trên một hàng.',
+          'Lần chạy có POST, PUT, PATCH hay DELETE sẽ hỏi trước, nêu tên host; ⏹ Stop để dừng.',
+          'Mỗi request giữ kết quả lần chạy cuối, kể cả sau khi đóng trang; lọc danh sách theo nó.',
+          '<b>Export ▾ → Results</b> lưu chúng ra CSV.'
+        ]
+      },
+      {
+        title: 'Postman và CI',
+        nav: 'Postman',
+        lead: 'Thư mục xuất cho Postman chạy được trong CI bằng Newman; collection Postman nhập ngược lại được.',
+        images: [{
+          alt: 'Import from Postman với một collection đã chọn: Shop API — 4 thư mục, 7 request. Requests go to shop.example.com, auth.partner.test và admin.shop.example.com. Left out or changed: script không chạy, auth oauth2 chuyển thành None, field form bị bỏ, body GraphQL gửi dạng JSON, PURGE gửi thành GET. Ô Also add the environment đã tick.',
+          caption: 'Trước khi thêm: request sẽ đi đâu, và những gì bị bỏ.'
+        }],
+        points: [
+          'Collection v2.1: <code>${x}</code> thành <code>{{x}}</code>, check và giá trị lưu thành test script.',
+          'Token và mật khẩu viết thẳng sẽ để trống, trừ khi tick Include secret values.',
+          'Trong CI: <code>npx newman run Shop.postman_collection.json</code>.',
+          'Nhập collection v2.0 / v2.1 hoặc file môi trường: host và những gì bị bỏ hiện ra trước; script của Postman không bao giờ chạy.'
+        ]
+      }
+    ],
+    notes: [
+      'Không đặt được Cookie, Origin, Host, Referer và User-Agent: cookie của chính trình duyệt được gửi kèm.',
+      'Request không phải GET mang <code>Origin: chrome-extension://…</code> — server chặn CSRF theo Origin có thể trả 403.',
+      '<code>Set-Cookie</code> ghi thật vào trình duyệt: gọi logout là đăng xuất thật.',
+      'Không tắt kiểm tra SSL, không client certificate, không proxy; luôn đi theo redirect. Thời gian chỉ có tổng, kích thước là sau khi giải nén.',
+      'Môi trường giữ token và mật khẩu nguyên văn: dialog Environments hiện chúng, file Backup mang theo chúng. Nhãn trong trang API Tests là tiếng Anh.'
+    ]
+  },
   settings: {
     title: 'Phím tắt, sao lưu & cài đặt',
     lead: 'Những thứ bạn chỉ đặt một lần: phím tắt cho việc ghi và mọi kiểu chụp, thông báo theo từng loại, nhập/xuất và sao lưu toàn bộ — trong một popup nhớ cách bạn làm việc.',

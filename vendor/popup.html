@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/popup/01-base.css" />
   <link rel="stylesheet" href="css/popup/02-action-list.css" />
   <link rel="stylesheet" href="css/popup/03-variables.css" />
+  <link rel="stylesheet" href="css/var-suggest.css" />
   <link rel="stylesheet" href="css/popup/04-lists-cards-forms.css" />
   <link rel="stylesheet" href="css/popup/05-shell.css" />
   <link rel="stylesheet" href="css/popup/06-modals-toast.css" />
@@ -824,6 +825,21 @@
         </div>
       </button>
       <p style="font-size:12px; color: var(--muted); margin:6px 0 0;">Opens in a full tab — test case tables need the width.</p>
+    </div>
+
+    <!-- API TESTS -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">API Tests</h3>
+        <button class="card-help-btn" data-card="apicases" title="API Tests guide">?</button>
+      </div>
+      <button id="openApiCases" class="export-code-btn" style="width:100%;" title="Keep API requests in folders, send them and check the response">
+        <span class="export-code-icon">🔌</span>
+        <div class="export-code-info">
+          <span class="export-code-name">Manage API tests</span>
+          <span class="export-code-desc">Folders · checks · run · cURL & Postman</span>
+        </div>
+      </button>
     </div>
 
     <!-- DB TEST SESSION (ADMINER) -->
