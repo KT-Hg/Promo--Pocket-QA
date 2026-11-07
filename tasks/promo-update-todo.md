@@ -536,7 +536,7 @@ README promo: bảng screenshots thêm shot API; `sqlcases.html`/`dbtools.html` 
 ## Checkpoint B: Đợt B xong
 - [x] 12 trang + trang chủ đạt `checkLayout`/`checkShape`/`hiddenByFit`, EN + VI, light + dark
 - [x] Không câu nào nói về thứ chỉ có sau `<store>` (`tool-base`, `list-editing`) — ảnh SQL `tool-base` của nhánh cũ không mang sang.
-- [ ] **Người dùng đọc** trang `api-tests` (cả VI) → merge `promo-api-store` → push (bước của người dùng)
+- [x] **Người dùng đọc** trang `api-tests` (cả VI) → merge `promo-api-store` → push (bước của người dùng) — merge `3017c2b`, đã push (2026-11-07)
 
 ### Phase 4d: Bản sau (1.0.28)
 

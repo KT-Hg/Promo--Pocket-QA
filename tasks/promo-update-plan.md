@@ -117,7 +117,7 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 - [x] Task 19: Trang `api-tests` — environments/auth, chạy nhiều, Postman & CI, giới hạn
 - [x] Task 20: Trang chủ & README — 12 tính năng (thẻ `#tools`, meta, tên trang tool mới)
 
-### Checkpoint B: 12 trang + trang chủ đạt, không nhắc thứ sau bản Store → người dùng duyệt → merge → push
+### Checkpoint B: 12 trang + trang chủ đạt, không nhắc thứ sau bản Store → người dùng duyệt → merge → push — ✓ `3017c2b`, đã push 2026-11-07
 
 **4d Bản sau (1.0.28)**
 - [ ] Task 21: Khi `tool-base` lên Store — chụp lại ảnh toàn trang tool, xem `list-editing`
