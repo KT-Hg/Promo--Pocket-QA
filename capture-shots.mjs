@@ -337,6 +337,7 @@ const SHOTS = [
       await themed('#toggleTheme', THEME);
       tab('tabRecord');
       await until(() => !$('#lastRunCard').hidden, 'the Last run card');
+      await wait(500);   // the theme just switched: the failure line's colour is still easing from light to dark
       return '#lastRunCard';
     `
   },
@@ -386,8 +387,11 @@ const SHOTS = [
     setup: `
       await themed('#toggleTheme', THEME);
       tab('tabSettings');
-      await wait(300);
-      return mark(opened($('#backupRestoreCard')));
+      // It sits below a 1400px popup: a clip outside the viewport comes back as bare background
+      const c = opened($('#backupRestoreCard'));
+      c.scrollIntoView({ block: 'center' });
+      await wait(500);
+      return mark(c);
     `
   },
   {
@@ -624,7 +628,8 @@ try {
         const box = await page.evaluate(`(() => {
           const rs = [].concat(${JSON.stringify(sel)}).map(s => document.querySelector(s).getBoundingClientRect());
           const x = Math.min(...rs.map(r => r.left)), y = Math.min(...rs.map(r => r.top));
-          return { x, y, width: Math.max(...rs.map(r => r.right)) - x, height: Math.max(...rs.map(r => r.bottom)) - y };
+          // The clip is in page coordinates: a setup that scrolled its element into view needs the scroll added
+          return { x: x + scrollX, y: y + scrollY, width: Math.max(...rs.map(r => r.right)) - x, height: Math.max(...rs.map(r => r.bottom)) - y };
         })()`);
         const { data } = await page.send('Page.captureScreenshot', { format: 'png', clip: { ...box, scale: 1 } });
         writeFileSync(`${out}.png`, Buffer.from(data, 'base64'));
