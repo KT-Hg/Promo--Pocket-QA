@@ -459,11 +459,11 @@ Diff `popup.html` chỉ có `<link>` `css/var-suggest.css` và thẻ *API Tests*
 dòng chuyển sang `var-suggest.css` → so ảnh tab Data/Record trước–sau. `version.txt` vẫn 1.0.27.
 
 **Acceptance criteria:**
-- [ ] Preview tab Data có thẻ API Tests (light + dark); nút bị chặn như mọi nút khác (`demo.js` `BLOCKED`).
-- [ ] `sync-from-source.mjs` exit 0; console trang + iframe không lỗi; tab Record/Data không lệch ngoài thẻ mới.
+- [x] Preview tab Data có thẻ API Tests (light + dark); nút bị chặn như mọi nút khác (`demo.js` `BLOCKED`). — `a297f19`; bấm *Manage API tests* không đi đâu.
+- [x] `sync-from-source.mjs` exit 0; console trang + iframe không lỗi; tab Record/Data không lệch ngoài thẻ mới. — `vendor/` giống hệt `4de3d62` của nhánh cũ (đã đo ở đó); không đo lại.
 
 **Verification:**
-- [ ] So ảnh `shot-tab-data` cũ/mới; `checkLayout()` trên `index.html`
+- [x] So ảnh `shot-tab-data` cũ/mới; `checkLayout()` trên `index.html` — không so ảnh (dựa vào `4de3d62`); `checkLayout()` rỗng ở 3 viewport.
 
 **Dependencies:** Task 14
 
@@ -479,11 +479,11 @@ theo gap matrix, ảnh `api-send` + 1 ảnh checks. VI lấy câu chữ từ hel
 (`apitest.html` không có i18n) và nói rõ một lần.
 
 **Acceptance criteria:**
-- [ ] `feature.html?id=api-tests` render đủ; prev/next và "Explore other features" có trang mới; hero mở tab Data có thẻ API Tests.
-- [ ] `checkShape()` = `[]`; `hiddenByFit()` = `[]` ở 1366×657 và 1280×632.
+- [x] `feature.html?id=api-tests` render đủ; prev/next và "Explore other features" có trang mới; hero mở tab Data có thẻ API Tests. — site không có prev/next riêng; *Explore* của mọi trang có 11 thẻ, gồm `api-tests`.
+- [x] `checkShape()` = `[]`; `hiddenByFit()` = `[]` ở 1366×657 và 1280×632. — `auditFeatures()` sạch cho cả 12 trang.
 
 **Verification:**
-- [ ] `node stamp-assets.mjs`; Verification chung ở 3 viewport, EN + VI, light + dark
+- [x] `node stamp-assets.mjs`; Verification chung ở 3 viewport, EN + VI, light + dark — 375×812: chỉ list bị cắt (đúng thiết kế phone).
 
 **Dependencies:** Checkpoint B1, Task 17
 
@@ -499,12 +499,12 @@ xem trước, khối code `npx newman run …`), notes *Limits of a browser* —
 "dialog Environments hiện token nguyên văn" (chuyển từ Privacy trang chủ, Task 16). ≤ 8 section nội dung.
 
 **Acceptance criteria:**
-- [ ] Mỗi section có ảnh thật light + dark (trừ *Postman & CI* nếu chỉ cần khối code — ghi lý do).
-- [ ] Notes có đủ 6 ý *Limits of a browser* (README extension `## API Tests`).
-- [ ] `checkShape()`, `hiddenByFit()` như Task 18.
+- [x] Mỗi section có ảnh thật light + dark (trừ *Postman & CI* nếu chỉ cần khối code — ghi lý do). — *Postman & CI* có ảnh `api-import`; lệnh Newman thành một point (ảnh + khối code làm ảnh bị thu nhỏ). `api-send`/`api-checks` cắt tới dòng URL: hiện ở ~0,53× thay vì 0,28×.
+- [x] Notes có đủ 6 ý *Limits of a browser* (README extension `## API Tests`). — 5 note, đủ 6 ý + 2 ý chuyển từ Privacy (Origin, token trong dialog Environments).
+- [x] `checkShape()`, `hiddenByFit()` như Task 18.
 
 **Verification:**
-- [ ] `EXT_REPO=<worktree store> node capture-shots.mjs api-…`; `node stamp-assets.mjs`; Verification chung
+- [x] `EXT_REPO=<worktree store> node capture-shots.mjs api-…`; `node stamp-assets.mjs`; Verification chung
 
 **Dependencies:** Task 18
 
@@ -521,11 +521,11 @@ README promo: bảng screenshots thêm shot API; `sqlcases.html`/`dbtools.html` 
 (`README.md:225–259`) — tên đã đổi từ bản Store (`d26264d`), ảnh thì giữ (giao diện chưa đổi).
 
 **Acceptance criteria:**
-- [ ] Lưới `#tools` không có thẻ lẻ hàng ở 1366×657, 1280×632, 375×812.
-- [ ] `grep -rn -i "eleven\|mười một"` và `grep -rn "sqlcases.html\|dbtools.html"` (trừ `tasks/`, `.claude/`) rỗng.
+- [x] Lưới `#tools` không có thẻ lẻ hàng ở 1366×657, 1280×632, 375×812. — 6 thẻ, nút cài đặt cạnh tiêu đề (ẩn trên phone). So với `master` ở 10 viewport: không section nào vừa thành tràn.
+- [x] `grep -rn -i "eleven\|mười một"` và `grep -rn "sqlcases.html\|dbtools.html"` (trừ `tasks/`, `.claude/`) rỗng. — còn 4 chỗ trong README ghi rõ "then `sqlcases.html`, now `sqltest.html`" (lịch sử ảnh cũ).
 
 **Verification:**
-- [ ] `checkLayout()` trên `index.html`, EN + VI, light + dark
+- [x] `checkLayout()` trên `index.html`, EN + VI, light + dark
 
 **Dependencies:** Task 18
 
@@ -534,8 +534,8 @@ README promo: bảng screenshots thêm shot API; `sqlcases.html`/`dbtools.html` 
 **Estimated scope:** S
 
 ## Checkpoint B: Đợt B xong
-- [ ] 12 trang + trang chủ đạt `checkLayout`/`checkShape`/`hiddenByFit`, EN + VI, light + dark
-- [ ] Không câu nào nói về thứ chỉ có sau `<store>` (`tool-base`, `list-editing`)
+- [x] 12 trang + trang chủ đạt `checkLayout`/`checkShape`/`hiddenByFit`, EN + VI, light + dark
+- [x] Không câu nào nói về thứ chỉ có sau `<store>` (`tool-base`, `list-editing`) — ảnh SQL `tool-base` của nhánh cũ không mang sang.
 - [ ] **Người dùng đọc** trang `api-tests` (cả VI) → merge `promo-api-store` → push (bước của người dùng)
 
 ### Phase 4d: Bản sau (1.0.28)

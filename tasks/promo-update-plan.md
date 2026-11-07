@@ -111,11 +111,11 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 **4b Sửa ngay cái đang sai**
 - [x] Task 16: Privacy / Permissions cho API Tests — nhánh nhỏ, merge riêng, trước (`4d06c86`, đã push 2026-11-07)
 
-**4c Trang API Tests, nhánh `promo-api-store`**
-- [ ] Task 17: Vendor bản Store — thẻ API Tests ở tab Data
-- [ ] Task 18: Trang `api-tests` — khung + *Send & read the response* + *Checks & the verdict*
-- [ ] Task 19: Trang `api-tests` — environments/auth, chạy nhiều, Postman & CI, giới hạn
-- [ ] Task 20: Trang chủ & README — 12 tính năng (thẻ `#tools`, meta, tên trang tool mới)
+**4c Trang API Tests, nhánh `promo-api-store`** — làm bằng cách mang sang từ nhánh cũ `promo-api-tests` (11-02), `a297f19`
+- [x] Task 17: Vendor bản Store — thẻ API Tests ở tab Data
+- [x] Task 18: Trang `api-tests` — khung + *Send & read the response* + *Checks & the verdict*
+- [x] Task 19: Trang `api-tests` — environments/auth, chạy nhiều, Postman & CI, giới hạn
+- [x] Task 20: Trang chủ & README — 12 tính năng (thẻ `#tools`, meta, tên trang tool mới)
 
 ### Checkpoint B: 12 trang + trang chủ đạt, không nhắc thứ sau bản Store → người dùng duyệt → merge → push
 
