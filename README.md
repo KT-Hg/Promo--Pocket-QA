@@ -5,7 +5,7 @@ A marketing landing page that shows the **real extension popup UI**
 switching and the theme toggle are interactive; every other control is seeded
 with demo data and shown for display only.
 
-The page and its eleven feature guides are **bilingual (EN/VI)** and follow the
+The page and its twelve feature guides are **bilingual (EN/VI)** and follow the
 look and layout rules of the author's portfolio (`kt-hg.github.io`): one section
 per screen, nothing moves when the language or theme switches, and the language
 and theme a visitor picks there carry over here (same `localStorage` keys, same
@@ -78,7 +78,7 @@ index.html        ← open this
 | `site.css`       | Styles for both pages (portfolio tokens, light/dark) | ~520 |
 | `site.js`        | Both pages' chrome: language/theme switch, `evenOut()` (holds every element at its larger language's size), mockup fitting, menu, "Read more", scroll spy; on feature pages it also shortens lists that would make a section taller than the screen | ~190 |
 | `store-version.js` | Footer version on both pages, read live from the Chrome Web Store via shields.io's JSON badge (the store itself has no CORS); the vendored version stays in the HTML as the fallback | ~20 |
-| `features-en.js` | The eleven features' English content (written against the extension README) | ~950 |
+| `features-en.js` | The twelve features' English content (written against the extension README) | ~950 |
 | `features-vi.js` | The same, in Vietnamese, same shape — `checkShape()` in `check-layout.js` lists anything missing | ~860 |
 | `feature.js`     | Renders `feature.html` from the `id` query param: every string as an EN/VI pair, sections, tables, scroll spy, the deep-linked popup, light/dark screenshots | ~200 |
 | `check-layout.js` | Dev check, not linked from either page — see "Layout rules" | ~130 |
@@ -222,15 +222,16 @@ See [`screenshots/`](screenshots/):
 | `shot-tab-data.png`       | Data tab — variables, export-code, collapsibles |
 | `shot-tab-highlight.png`  | Highlight tab in **dark** mode — colour-coded highlights, stats, switch |
 | `shot-image-editor.png` / `-dark.png`   | `editor.html`'s Crop & Edit UI, used on `feature.html?id=screenshots` — real editor, sample dashboard image, an arrow + rectangle annotation and the Stamp panel open |
-| `shot-sqlcases-analysis.png` / `-dark.png` | `sqlcases.html`'s full 3-column workspace, used on `feature.html?id=sql-test-designer` — query rail, a real generated case list (71 cases), and one case's fixture data open in the inspector |
+| `shot-sqlcases-analysis.png` / `-dark.png` | The SQL designer's full 3-column workspace (then `sqlcases.html`, now `sqltest.html`, same look on the Store's 1.0.27), used on `feature.html?id=sql-test-designer` — query rail, a real generated case list (71 cases), and one case's fixture data open in the inspector |
 | `shot-export-js.png` / `-dark.png`      | The real Export JS modal for a sample "Login flow" scenario — actual generated bookmarklet code at Step 1, stats and the to-check / skipped warning, used on `feature.html?id=export` (captured from v1.0.24) |
 | `shot-export-py.png` / `-dark.png`      | The real Export Python modal for that same scenario — actual generated Selenium code at Step 1, used on `feature.html?id=export` (captured from v1.0.24) |
 | `shot-dbtools-rollback.png` / `-dark.png` | The Adminer panel (`dbtools/panel.js`) beside the Undo SQL preview it opens for "↺ Roll back all" — a sample 7-change session, one change refused (no `WHERE`), Step by step / Merged switch, used on `feature.html?id=db-test-session` |
-| `shot-dbtools-manager.png` / `-dark.png`  | `dbtools.html`, the Test sessions & rollback page, on that same session — the rail of sessions, a DELETE and an UPDATE diff open, one change already undone, used on `feature.html?id=db-test-session` |
+| `shot-dbtools-manager.png` / `-dark.png`  | The Test sessions & rollback page (then `dbtools.html`, now `dbtest.html`), on that same session — the rail of sessions, a DELETE and an UPDATE diff open, one change already undone, used on `feature.html?id=db-test-session` |
 | `shot-sql-diagram.png` / `-dark.png` | `sqltest.html`'s Diagram dialog (Schema tab → Diagram) for a four-table `JOIN` query, after **Fit** — boxes with PK/FK, crow's-foot links, zoom controls. Made by `capture-shots.mjs` |
 | `shot-sql-compare.png` / `-dark.png` | Compare mode on the first example query (age range moved, country filter dropped): the Impacted / Unrelated / No longer applies counters over *Changes detected*. `capture-shots.mjs` |
 | `shot-sql-coverage.png` / `-dark.png` | The Coverage panel for the "Compound WHERE" example — five conditions, so pairwise, 6 of 32 combinations. `capture-shots.mjs` |
 | `shot-pop-*.png` / `-dark.png` | The real popup (`popup.html` opened as a tab on a sample “Checkout” page that `capture-shots.mjs` serves, data seeded through the extension's own messages): `pop-actions` (a Condition, a Switch block, Upload File, a disabled step — on recording and variables), `pop-manage`, `pop-sequence`, `pop-schedule` (playback), `pop-lastrun` and `pop-bugreport` (a scenario really played and failed — run-results), `pop-rename` (a variable renamed — the toast counts what followed), `pop-image-diff` and `pop-shot-settings` (screenshots), `pop-highlights` (seeded `hl_v1`), `pop-backup` (settings). `capture-shots.mjs` |
+| `shot-api-*.png` / `-dark.png` | `apitest.html` with a seeded "Shop" folder (`apiCasesState`) whose requests to `api.shop.example` are answered over CDP inside the browser: `api-send` (a request sent, Passed), `api-checks` (one check of three false — Failed), `api-env` (the Environments dialog over Data tab variables), `api-run` (a folder run: 3 passed, 1 failed, 1 broken), `api-import` (a Postman collection previewed), `api-ask` (the question before a run that writes; not on a page yet). Taken from the Store build, `e98ed43`. `capture-shots.mjs` |
 
 ### Capturing a shot: `capture-shots.mjs`
 
@@ -242,6 +243,9 @@ node capture-shots.mjs sql-diagram     # one
 EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   # default ../Pocket QA, as update-vendor.mjs
 ```
 
+Shoot the build that is on the Store, not whatever the extension repo has checked out: `git -C "../Pocket QA" archive <commit>`
+into an empty folder and point `EXT_REPO` at it (1.0.27 on the Store = `e98ed43`).
+
 It loads the unpacked extension in Edge or Chromium through the extension repo's own CDP driver
 (`tools/lib/cdp-browser.mjs`, the one its e2e tests run on — branded Chrome ignores `--load-extension`), opens the
 page as `chrome-extension://<id>/<page>`, so every `chrome.*` call is the real one, and sets it up with the page's own
@@ -249,14 +253,14 @@ controls: English, the theme, the query typed in, the buttons pressed. It then s
 a panel — not the whole window, so a restyle of the page around it doesn't date the picture. Each shot is taken
 light then dark, as `screenshots/shot-<name>[-dark].png` plus its lossless WebP twin (Pillow, the same settings as the
 one-liner below — Chrome's own WebP is lossy even at quality 100). Every run starts from a fresh profile, so running
-it again gives byte-identical files. Adding a shot is one entry in its `SHOTS` array: a page, a window size and a
+it again gives byte-identical files — except where the page shows a time it measured (the API shots' ms, a run's clock). Adding a shot is one entry in its `SHOTS` array: a page, a window size and a
 `setup` that runs in the page and returns the selector to capture.
 
 ### How the older shots were made
 
-These are real UI, not mockups — `editor.html` and `sqlcases.html` don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a throwaway copy of the extension's `popup/`, `shared/`, `css/` and `popup.html` swaps `popup/init.js` for a harness that calls only `initExportBookmarklet()` / `initExportSelenium()`, with a `chrome-stub.js` answering `GET_SCENARIOS` / `GET_VARIABLES` with one sample "Login flow" scenario (navigate, two inputs, a click, a `textContains` assert, a screenshot) and two variables. It picks the scenario, clicks the real format button, then the modal's own **↧ Steps** — so the code in the screenshots is genuinely generated, not typed by hand.
+These are real UI, not mockups — `editor.html` and the SQL designer (then `sqlcases.html`, now `sqltest.html`) don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a throwaway copy of the extension's `popup/`, `shared/`, `css/` and `popup.html` swaps `popup/init.js` for a harness that calls only `initExportBookmarklet()` / `initExportSelenium()`, with a `chrome-stub.js` answering `GET_SCENARIOS` / `GET_VARIABLES` with one sample "Login flow" scenario (navigate, two inputs, a click, a `textContains` assert, a screenshot) and two variables. It picks the scenario, clicks the real format button, then the modal's own **↧ Steps** — so the code in the screenshots is genuinely generated, not typed by hand.
 
-The DB Test Session shots are built the same way, from a throwaway harness that copies the extension's `dbtools/` modules, `dbtools.html` and `css/dbtools.css` into a temp folder (nothing is added to either repo). A small `chrome.storage` stub seeds one sample session in exactly the shape `dbtools/session.js` stores, plus `popupTheme` for light/dark, and nothing more is faked. `shot-dbtools-manager` is the real `dbtools.html` + `manager.js` rendering that session. `shot-dbtools-rollback` mounts the real panel via `mountPanel()`, writes the log lines `content-main.js` would write (`logRecorded`), and opens the real `preview()`. That preview gets the statements from a real `runRollback(…, { dryRun: true })` (and its `compact` twin for *Merged*), so the SQL is generated, not typed. The panel and the preview are both `position:fixed` overlays over Adminer. With no Adminer page behind them, they're re-anchored side by side on a plain stage, the same trick as the export modals below. Captured with headless Chrome (`--allow-file-access-from-files` so the ES modules load over `file://`) instead of html2canvas, so neither gotcha below applies.
+The DB Test Session shots are built the same way, from a throwaway harness that copies the extension's `dbtools/` modules, the manager page (then `dbtools.html`, now `dbtest.html`) and `css/dbtools.css` into a temp folder (nothing is added to either repo). A small `chrome.storage` stub seeds one sample session in exactly the shape `dbtools/session.js` stores, plus `popupTheme` for light/dark, and nothing more is faked. `shot-dbtools-manager` is the real `dbtools.html` + `manager.js` rendering that session. `shot-dbtools-rollback` mounts the real panel via `mountPanel()`, writes the log lines `content-main.js` would write (`logRecorded`), and opens the real `preview()`. That preview gets the statements from a real `runRollback(…, { dryRun: true })` (and its `compact` twin for *Merged*), so the SQL is generated, not typed. The panel and the preview are both `position:fixed` overlays over Adminer. With no Adminer page behind them, they're re-anchored side by side on a plain stage, the same trick as the export modals below. Captured with headless Chrome (`--allow-file-access-from-files` so the ES modules load over `file://`) instead of html2canvas, so neither gotcha below applies.
 
 The export modals use `position:fixed`, which sizes off the *browser viewport* — at a normal desktop viewport the modal comes out far wider than the real ~480px popup ever shows. So they're captured with headless Chrome at the popup's own window size: `chrome --headless=new --allow-file-access-from-files --window-size=480,600 --force-device-scale-factor=2 --virtual-time-budget=5000 --screenshot=… "file:///…/harness.html?fmt=js&theme=dark"` (`fmt=py` for Python). No re-anchoring, and neither html2canvas gotcha below applies.
 

@@ -346,7 +346,7 @@ là `released` trừ dòng ghi **1.0.28**. API Tests toàn bộ là **1.0.28**.
 - *Safe by design* — thêm #9.
 - **mới** *Settings & limits* / *Cài đặt & giới hạn* — ảnh: dialog Settings (không có phần đang ẩn). Ý: #11, các engine hỗ trợ.
 
-### api-tests — trang mới, toàn bộ **1.0.28** (Task 15)
+### api-tests — trang mới, toàn bộ **1.0.28** (Task 15) — *đã thay bằng bảng ở mục Đợt B cuối file*
 
 Giao diện `apitest.html` chỉ có tiếng Anh (0 `data-i18n`) → trang VI ghi rõ nhãn UI giữ tiếng Anh, như popup.
 
@@ -386,3 +386,127 @@ Giao diện `apitest.html` chỉ có tiếng Anh (0 `data-i18n`) → trang VI gh
 Section mới đề xuất: recording 2 · playback 2 · run-results 1 · variables 1 · screenshots 2 · highlights 2 = **10 section,
 mỗi section một ảnh thật**. Ảnh thêm vào section có sẵn: playback (Now Playing), run-results (Bug report), csv, variables
 (block Switch, dùng chung với recording), settings (Backup) = 4 ảnh mới. Tổng **~14 ảnh mới** cho trang popup ở đợt A.
+
+---
+
+## Đợt B — review `060fcf0..e98ed43` (Task 14, 2026-11-03)
+
+Bản Store 1.0.27 = **`e98ed43`** (người dùng xác nhận). Mọi `file:line` dưới đây là ở `e98ed43`
+(`git show e98ed43:<file>`), không phải `main` hay working copy (`list-editing` có WIP). Viết tắt: `ui/` =
+`apicases/ui/`, `R:` = README extension, `api.html` = `apitest.html`.
+
+### Delta `060fcf0..main` — 33 commit (31 trong bản Store) + nhánh `list-editing`
+
+| Nhóm | Commit | Trong bản Store | Promo impact → task |
+|---|---|---|---|
+| API Tests — trang, folder/request, Send, cURL | `ddca568` `fd66c81` `708975a` `d8e799e` `aac0bdb` `02497bb` | có | Trang `api-tests` → Task 15, 18 |
+| API Tests — check, verdict, environment, save values | `4597088` `729b7a9` `1ca86bf` `4bedc51` `adfadef` | có | Task 15, 18, 19 |
+| API Tests — Headers dạng bảng, gợi ý `${`, auth | `487061e` `dba535d` `b0726a4` `ae2784d` `c331884` | có | Task 18, 19 (1 ý) |
+| API Tests — chạy nhiều, Postman export/import, CSV kết quả | `db1ff8a` `fc80f61` `19c9258` `2211f3b` `78ff3d2` | có | Task 19 |
+| API Tests — README + help card `apicases` + nút `?` ở thẻ | `e98ed43` | có | Nguồn chữ EN/VI → Task 18–19; vendor → Task 17 |
+| Popup: thẻ API Tests (`popup.html:836`), `css/var-suggest.css` tách từ `03-variables.css` | `ddca568` `5218c13` (+ `dba535d`) | có | Task 17 — `update-vendor.mjs` đọc mọi `<link href="css/…">` nên tự lấy `vendor/var-suggest.css` |
+| Đổi tên trang: `sqlcases→sqltest`, `dbtools→dbtest`, `apicases→apitest` | `d26264d` `a2c4867` | có | README promo (Task 20); ảnh giữ (giao diện chưa đổi) |
+| Chỉ test / e2e | `7067a4c` `46bf875` `e41f012` `37d8438` `c8d6f98` `0f31528` | có | không |
+| `tool-base`: một giao diện SQL/DB/API, cột trái thu gọn | `9d25060` | **không** | Task 21 (bản sau) |
+| Docs: Export Code guide, README + help SQL | `00590ec` | **không** (chỉ docs) | không — promo đã đúng, xem dưới |
+| `list-editing`: `25b60e0` list không nháy, `706dbb5` bộ lọc folder được nhớ, WIP action vừa lưu nhấp nháy | chưa vào `main` | **không** | Task 21 |
+
+Popup ở `e98ed43` so với `vendor/`: `popup.html` chỉ khác 2 chỗ (`<link>` `css/var-suggest.css`, khối thẻ API Tests
+`popup.html:828–842`); `css/popup/` chỉ khác `03-variables.css`. Permissions không đổi.
+
+**`00590ec` so với promo:** đã khớp, không cần sửa. Robot qua DataDriver + Java có data file: `features-en.js:708`,
+`features-vi.js:645`. Pairwise tới 8 sau giới hạn bảng đầy đủ: en `:803`, `:822` · vi `:734`, `:753`. CTE có case riêng,
+subquery lồng chỉ được báo: en `:924` · vi `:847`.
+
+### api-tests — gap matrix theo code UI
+
+Thay cho bảng *api-tests* ở Task 4 (viết từ README). Giao diện chỉ tiếng Anh: trang VI giữ nhãn nút tiếng Anh.
+
+| # | Khả năng (nhãn UI đúng nguyên văn) | Nguồn ở `e98ed43` | Khác README / bảng cũ | Section |
+|---|---|---|---|---|
+| 1 | Data → thẻ **API Tests** → *Manage API tests* mở trang riêng. 3 cột: **Folders** · danh sách request · request đang mở. Lưu ở `apiCasesState`, còn nguyên khi mở lại. Trống: "No API tests yet" kèm gợi ý Paste cURL / Postman | `popup.html:836`, `api.html:18–58`, `apicases/model.js:17`, `ui/list.js:177–178` | — | lead · At a glance |
+| 2 | **Send** (Ctrl+Enter); method GET … HEAD, **OPTIONS**; tab **Headers · Auth · Body · Checks · Save values · Settings**; body **None / JSON / Text / Form**, nút **Format** cho JSON; GET/HEAD gửi không body | `ui/response.js:58`, `model.js:22–23`, `ui/editor.js:25–26`, `:97` | README ghi "Plain text" — UI là **Text** | *Send & read the response* |
+| 3 | Response: status, `ms`, kích thước (đã giải nén), "Redirected to …"; JSON xem được, bấm key; nhị phân → *Binary · type · size* + **Download**, ảnh xem trực tiếp; body dài chỉ hiện phần đầu | `ui/response.js:91–164`, `ui/json-view.js` | thêm: xem trước ảnh, cắt body dài | cùng section |
+| 4 | **Paste cURL** (DevTools → Copy as cURL (bash)) → **Add request**; bỏ header trình duyệt tự đặt và Cookie. **Copy cURL**: biến đã điền, "a terminal sends it without the browser's cookies" | `ui/paste-curl.js:31–47`, `ui/editor.js:60–73` | — | cùng section |
+| 5 | Tab **Settings**: Timeout (mặc định 30 s, tối đa 60), **Send the site's cookies** (mặc định bật; `Set-Cookie` đổi cookie thật — logout là đăng xuất thật) | `ui/editor.js:130–146`, `model.js:24–25` | — | cùng section + notes |
+| 6 | **Checks**: Status `is` (`200 · 2xx · 200,201 · not5xx`) · JSON `= / contains / exists / does not exist / > / <` · Header `exists / = / contains` · Body `contains / does not contain` · Time `<` ms. Không check nào → phải 2xx. **＋ Add check**, bấm key trong response để thêm, kéo để sắp xếp; `${` trong giá trị | `ui/checks.js:15–24`, `:97`, `:164–165`, `shared/api-response.js:242` | bảng cũ thiếu toán tử Header/Body | *Checks & the verdict* |
+| 7 | Mỗi check ✓ / ✗ / ⚠; verdict **Passed / Failed / Broken** (Broken = test sai: không response, timeout, không phải JSON, biến trống, không lấy được giá trị) | `ui/checks.js:27`, `ui/response.js:91–94`, help `card-help-data.js:378` | — | cùng section |
+| 8 | **Environment** ở top bar + **Manage**: ＋ New · Duplicate · Delete (có Undo) · **In use**; mỗi environment một bảng Variable/Value; khối **From the Data tab** = biến của popup, environment thắng khi trùng tên | `api.html:24–25`, `ui/environments.js:38–56`, `:82–83`, `:107–147` | — | *Environments, saved values & auth* |
+| 9 | **Save values** (**＋ Save a value**): từ **JSON path / Header / Status / Body** (body: cả body hoặc mẫu `token=${token};`) → environment đang dùng sau mỗi Send; toast "Saved token to "Dev""; tên kiểu token/secret/pass/key bị che, 👁 để xem; **Save as variable…** từ key trong response | `ui/extracts.js:20–31`, `:64–109`, `ui/editor.js:175` | — | cùng section |
+| 10 | **Auth**: **Inherit from folder (Shop: Bearer)** · No auth · Bearer token · Basic auth · API key (Header hoặc Query `?name=value`); dialog *Auth of "folder"*; header cùng tên ở tab Headers thắng | `model.js:62`, `ui/auth.js:17`, `:52–53`, `:82`, `:89`, `:107–123` | — | cùng section |
+| 11 | Headers dạng bảng: tick để gửi/không, gợi ý tên/giá trị ngay dưới ô, mẫu nhanh **Accept JSON · Bearer token · No cache**, **Bulk edit** dạng text, dòng **Also sent** (header tự thêm); gõ `${` gợi ý biến | `ui/headers.js:26–28`, `:58–66`, `:78`, `:127–131`, `ui/var-suggest.js` | mới so với bảng cũ: mẫu nhanh, Bulk edit, Also sent | 1 ý trong *Send…* |
+| 12 | Chạy: **▶ Run folder** / **▶ Run all** / **▶ Run N shown** (theo bộ lọc) / **▶ Run selected** / Send trên một hàng; lần lượt từng request, **Delay** giữa hai request; hỏi trước khi gửi request ghi dữ liệu, nêu host, nút **Send**; **⏹ Stop** | `ui/run-bar.js:36–41`, `:79–102`, `ui/list.js:73–76`, `apicases/run.js:71–78` | mới: Delay | *Running many* |
+| 13 | Kết quả: thanh "Last run 10:42 · 3 passed · 1 failed · 2 not run", mỗi hàng giữ kết quả cuối; lọc theo tên/URL, method, **✓ Passed / ✗ Failed / ⚠ Broken / · Not run**; chọn nhiều → Run selected / Move to… / Delete (có **Undo**); kéo để sắp xếp | `ui/run-bar.js:31–33`, `:103`, `api.html:46–53`, `ui/list.js:34`, `:62–76`, `:106–108` | mới: Undo, Move to | cùng section |
+| 14 | **Export ▾** → **Postman collection** (v2.1: `${x}`→`{{x}}`, check → `pm.test`, save value → `pm.environment.set`, dòng `// pocket-qa:` để import lại nguyên vẹn; **Include secret values** mặc định tắt) · **Results** (CSV kết quả cuối) | `ui/exports.js:49–61`, `postman-export.js:6–31`, `results-csv.js:16` | — | *Postman & CI* |
+| 15 | **Import** → *Import from Postman*: collection hoặc environment ≤ 5 MB; xem trước **Requests go to** (host) và **Left out or changed**; folder lồng → "Parent / Child"; script Postman không bao giờ chạy; GraphQL → JSON `{ query, variables }`; environment được thêm, không tự dùng | `ui/import.js:16–89`, `postman-import.js:11–26`, `:111`, `:139` | — | cùng section |
+| 16 | CI: `npx newman run Shop.postman_collection.json --env-var baseUrl=…` | `R:663–679` | — | cùng section (khối code) |
+| 17 | *Limits of a browser*: không đặt được Cookie/Origin/Host/Referer/User-Agent; non-GET mang `Origin: chrome-extension://…`; `Set-Cookie` thật; không tắt SSL, không client cert, không proxy, luôn theo redirect; time chỉ có tổng, size đã giải nén; Backup chứa case + environment (cả token) | `R:735–745`, help `card-help-data.js:378` | — | notes |
+| 18 | Ảnh hưởng trang chủ: `index.html:345`, `:368` (Privacy "one request"), `:400` (`<all_urls>`) | — | — | Task 16 |
+
+Không đưa lên trang: Duplicate/Delete request, Rename folder (thao tác thường), `Showing the first … of …` (chi tiết nhỏ).
+
+### Section & ảnh chốt cho Task 15–19
+
+Trang `api-tests`: lead, *At a glance* (#1, #2, #6, #8, #12), steps = *From a cURL to a run in CI* (R:663, rút 5 bước),
+5 section, notes. Trong trần 8 section.
+
+| Section (EN / VI) | Ý | Shot | Vùng cắt |
+|---|---|---|---|
+| *Send & read the response* / *Gửi request & đọc response* | #2–5, #11 | `api-send` | `#insp` sau Send `Get order`: tab Body/Headers + response JSON 200 |
+| *Checks & the verdict* / *Check & kết luận* | #6–7 | `api-checks` | `#insp` tab Checks: 4 check, 1 ✗ (verdict **Failed**, dòng lý do) |
+| *Environments, saved values & auth* / *Môi trường, giá trị lưu & auth* | #8–10 | `api-env` | dialog Environments: `Dev` In use, `baseUrl`, `token` bị che, khối *From the Data tab* |
+| *Running many* / *Chạy nhiều request* | #12–13 | `api-run` | `.main` sau ▶ Run folder: thanh Last run + hàng ✓ ✗ ⚠ |
+| *Postman & CI* / *Postman & CI* | #14–16 | `api-import` | dialog *Import from Postman* đang xem trước (`tests/fixtures/postman-sample.json` ở `e98ed43`) |
+| notes *Limits of a browser* | #17 | — | — |
+
+Tuỳ chọn nếu còn chỗ trong *Running many*: `api-ask` (hỏi trước khi gửi DELETE, nêu host).
+
+**Seed cho `capture-shots.mjs`** (Task 15): `chrome.storage.local` `apiCasesState` theo shape `apicases/model.js`
+(kiểm qua normalize khi load), environment `Dev` = `{ baseUrl: http://<host giả>:<port>, token: '' }`, folder **Shop**
+(auth Bearer `${token}`):
+- `Log in` — POST `${baseUrl}/auth/login`, Auth **No auth**, Save value `token` ← JSON `access_token`
+- `Get order` — GET `${baseUrl}/orders/42`; check status 2xx, `data.status` = `PAID`, `data.total` > 0, header
+  `Content-Type` contains `json`
+- `List orders` — GET `${baseUrl}/orders?status=PAID`
+- `Cancel order` — DELETE `${baseUrl}/orders/43` (để có hỏi-trước-khi-ghi)
+- `Daily report` — GET `${baseUrl}/reports/today`, check JSON trên body HTML → **Broken**
+
+Route giả (server cục bộ có sẵn của script): `POST /auth/login` → `{ "access_token": "…" }`, `GET /orders/42` → JSON
+order, `GET /orders` → danh sách, `DELETE /orders/43` → 204, `GET /reports/today` → `text/html`. Một check cố ý sai
+(vd. `data.total` > 1000) để có ✗.
+
+### Bấm thử trên bản Store (Task 15, 2026-11-03)
+
+Chạy `capture-shots.mjs` + một probe dùng một lần trên bản `e98ed43` giải nén ra thư mục tạm (`git archive`), Edge
+headless. API giả = CDP `Fetch.requestPaused` trả lời `https://api.shop.example` ngay trong trình duyệt — `fetch()` của
+trang extension bị chặn được, không cần server, không ra mạng.
+
+| # | Thấy ở | Ghi chú |
+|---|---|---|
+| 1 | `api-run` (đầu cột giữa: *Shop 5*, ＋ Request), diff `popup.html` | thẻ popup thấy qua diff, sẽ thấy trong preview ở Task 17 |
+| 2 | `api-send`, probe | 6 tab đúng như bảng; body None / JSON / Text / Form |
+| 3 | `api-send` | `200 OK · 105 ms · 194 B decoded`, URL đã điền biến, JSON tô màu |
+| 4 | probe | dialog *Paste a cURL command* đúng chữ bảng; title Copy cURL "variables filled in" |
+| 5 | probe | Settings: Timeout "(at most 60)", *Send the site's cookies* + câu logout |
+| 6 | `api-checks` (Status / JSON / Time), code | toán tử Header / Body theo code, chưa mở trên UI |
+| 7 | `api-checks`, `api-run` | ✗ Failed "Expected total = "3", got 2"; ⚠ "The response is not JSON" |
+| 8 | `api-env` | biến Data tab trùng tên bị gạch, kèm "set here" — đúng ý "environment thắng" |
+| 9 | `api-run` (Log in ✓ rồi Get order dùng token) | tab *Save values 1* |
+| 10 | `api-run` (nút *🔑 Auth: Bearer* ở đầu folder), probe | dialog *Auth of "Shop"*; tab Auth: *Inherit from folder (Shop: Bearer)* |
+| 11 | `api-send` | mẫu nhanh, Bulk edit, *Also sent* (Cookie; Content-Type khi body JSON) |
+| 12 | `api-ask`, `api-run`, probe | câu hỏi "Send 1 POST, 1 DELETE to api.shop.example?"; *▶ Run 1 shown* khi lọc; Delay |
+| 13 | `api-run`, probe | "Last run 09:34 PM · 3 passed · 1 failed · 1 broken"; bulk: Run selected / Move to… / Delete / Clear |
+| 14 | probe | menu Export: *📦 Postman collection .json · Include secret values · 📊 Results .csv* |
+| 15 | `api-import` | *Shop API — 4 folders, 7 requests*, 3 host, 7 dòng "Left out or changed" (script, oauth2, form-data, GraphQL, PURGE) |
+| 16–17 | — | README / help card, không phải UI — không cần bấm |
+
+**Phát hiện thêm**
+- Dialog Environments hiện **token / password nguyên văn** (chỉ hàng *Save values* mới che) → thêm vào ý Privacy của Task 16
+  cùng "Backup chứa token".
+- *Also sent* không liệt kê Authorization của auth folder (chỉ Cookie, Content-Type) — không ảnh hưởng chữ promo.
+- Giờ trên thanh run theo locale trình duyệt (`09:34 PM`).
+- Seed: giá trị lưu dùng field `varName` (không phải `name`) — đã sửa trong `API_STATE`.
+
+**Ảnh đã chụp** (light + dark, `.png` + `.webp`): `api-send` 480×1029, `api-checks` 480×849, `api-env` 860×437,
+`api-ask` 440×152, `api-run` 700×449, `api-import` 600×527. Chạy lại lần 2: `api-env`, `api-ask`, `api-import` giống hệt;
+`api-send`, `api-checks` chỉ khác số ms; `api-run` khác giờ chạy và số ms từng hàng.

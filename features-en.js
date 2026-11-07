@@ -1,5 +1,5 @@
 /**
- * features-en.js — English content of the eleven feature pages (feature.html?id=<key>), written against the
+ * features-en.js — English content of the twelve feature pages (feature.html?id=<key>), written against the
  * extension README. features-vi.js mirrors this shape
  * for the Vietnamese text: when a string changes here, change it there too (check-layout.js → checkShape()).
  */
@@ -1043,6 +1043,123 @@ var FEATURES_EN = {
     ]
   },
 
+  'api-tests': {
+    title: 'API Tests',
+    summary: 'Keep API requests in folders, send them, check the response — environments, saved tokens, folder runs, Postman both ways.',
+    lead: 'Keep your API requests next to your UI tests: paste a cURL, send it, check what comes back — and run a whole folder with the token one request saves.',
+    facts: [['5', 'kinds of check'], ['v2.1', 'Postman export &amp; import'], ['CSV', 'run results']],
+    tab: 'tabData',
+    tabLabel: 'Data tab',
+    points: [
+      'Paste a cURL from DevTools — method, URL, headers and body filled in; Copy cURL goes the other way.',
+      'Checks on the status, a JSON path, a header, the body and the time — a verdict per Send.',
+      'Environments per server, and values saved from a response, such as a login token.',
+      'Auth set once on a folder — Bearer, Basic or API key — and shared by its requests.',
+      'Run a folder one request at a time; it asks before any write and names the hosts.',
+      'Export to Postman for Newman in CI, and import a Postman collection back.'
+    ],
+    steps: [
+      ['Open it', 'Data → API Tests → <b>Manage API tests</b> opens a full tab.'],
+      ['Add a request', '<b>＋ Request</b>, or <b>Paste cURL</b> from DevTools → Network → Copy as cURL.'],
+      ['Check it', 'Add checks, or click a key in the JSON response to check it.'],
+      ['Run', 'Send one, or <b>▶ Run folder</b>; save the results as CSV or the folder for Postman.']
+    ],
+    sections: [
+      {
+        title: 'Send and read the response',
+        nav: 'Send',
+        lead: 'A request opens beside its folder: six tabs above, the answer below.',
+        images: [{
+          src: 'screenshots/shot-api-send.webp',
+          srcDark: 'screenshots/shot-api-send-dark.webp',
+          alt: 'The request Get order: GET ${baseUrl}/orders/42 in the Shop folder, its Headers tab with Accept: application/json, quick adds for Accept JSON, Bearer token and No cache, and the browser’s cookies under Also sent; below, the response — Passed, 200 OK in about 100 ms, 194 B decoded, and the URL with the variable filled in.',
+          caption: 'Get order sent: Passed, 200 OK in about 100 ms.'
+        }],
+        points: [
+          'Any method, <b>OPTIONS</b> too; a body as <b>JSON</b>, <b>Form</b> or <b>Text</b>, and <b>Format</b> tidies JSON.',
+          '<b>Paste cURL</b> from DevTools fills a request in; <b>Copy cURL</b> gives one back, variables filled in.',
+          'Headers as a table: untick one to keep it unsent, <b>Bulk edit</b> pastes many, <code>${</code> suggests variables.',
+          'The status, time and size; an image or a file is shown, or saved with <b>Download</b>.',
+          'No CORS in the way; the site’s cookies go along unless the <b>Settings</b> tab turns them off.'
+        ]
+      },
+      {
+        title: 'Checks and the verdict',
+        nav: 'Checks',
+        lead: 'Each request is checked on every Send — with no checks, it must answer 2xx.',
+        images: [{
+          src: 'screenshots/shot-api-checks.webp',
+          srcDark: 'screenshots/shot-api-checks-dark.webp',
+          alt: 'The request List paid orders, Checks tab: status is 200, ticked; JSON total = 3, crossed, with “Expected total = "3", got 2”; time under 500, ticked. The response reads Failed with the same reason, and 200 OK.',
+          caption: 'One check of three does not hold: Failed, and why.'
+        }],
+        points: [
+          '<b>Status</b> <code>201</code>, <code>2xx</code>, <code>200,201</code>, <code>not5xx</code>; a <b>JSON path</b> =, contains, exists, does not exist, &gt;, &lt;.',
+          '<b>Header</b> exists, = or contains; <b>body</b> contains or not; the total <b>time</b> under a limit.',
+          'Click a key in the JSON response to make it a check; <code>${var}</code> works in expected values.',
+          '<b>Failed</b>: a check is false — the API is wrong. <b>Broken</b>: no response, a timeout, not JSON — the test is wrong.'
+        ]
+      },
+      {
+        title: 'Environments, saved values and auth',
+        nav: 'Environments',
+        lead: 'Log in once; every request after it sends the token.',
+        images: [{
+          src: 'screenshots/shot-api-env.webp',
+          srcDark: 'screenshots/shot-api-env-dark.webp',
+          alt: 'The Environments dialog: Dev in use, and Staging. Dev sets baseUrl to https://api.shop.example, email, password and token. Under From the Data tab, the Data tab’s email is struck through with “set here”, and locale en-US still applies.',
+          caption: 'Dev’s email wins over the Data tab’s; locale still comes from it.'
+        }],
+        points: [
+          '<code>${name}</code> comes from the Data tab’s variables, then the environment in use, which wins.',
+          '<b>Save values</b> writes a JSON path, a header, the status or part of the body into the environment.',
+          'A login saves <code>token</code>; the folder’s <b>Bearer</b> <code>${token}</code> sends it with every request after.',
+          '<b>Auth</b> on a folder or one request: Bearer, Basic, or an API key in a header or the query.'
+        ]
+      },
+      {
+        title: 'Running many',
+        nav: 'Running',
+        lead: 'One request at a time, so a value one saves is there for the next.',
+        images: [{
+          src: 'screenshots/shot-api-run.webp',
+          srcDark: 'screenshots/shot-api-run-dark.webp',
+          alt: 'The Shop folder after Run folder, with “Last run · 3 passed · 1 failed · 1 broken”: Log in POST, ticked; Get order GET, ticked; List paid orders GET, crossed, “Expected total = "3", got 2”; Cancel order DELETE, ticked, 204; Daily report GET, broken, “The response is not JSON”.',
+          caption: 'A folder run: 3 passed, 1 failed, 1 broken — each says why.'
+        }],
+        points: [
+          '<b>▶ Run folder</b>, Run all, <b>Run N shown</b> after a filter, Run selected, or Send on one row.',
+          'A run with POST, PUT, PATCH or DELETE asks first, naming the hosts; ⏹ Stop ends it.',
+          'Each request keeps its last result, after the page is closed too; filter by it.',
+          '<b>Export ▾ → Results</b> saves them as CSV.'
+        ]
+      },
+      {
+        title: 'Postman and CI',
+        nav: 'Postman',
+        lead: 'A folder exported for Postman runs in CI with Newman; a Postman collection imports back.',
+        images: [{
+          src: 'screenshots/shot-api-import.webp',
+          srcDark: 'screenshots/shot-api-import-dark.webp',
+          alt: 'Import from Postman with a collection picked: Shop API — 4 folders, 7 requests. Requests go to shop.example.com, auth.partner.test and admin.shop.example.com. Left out or changed: scripts not run, an oauth2 auth set to None, form fields left out, a GraphQL body sent as JSON, PURGE sent as GET. Also add the environment, ticked.',
+          caption: 'Before anything is added: where the requests go, and what is left out.'
+        }],
+        points: [
+          'Collection v2.1: <code>${x}</code> becomes <code>{{x}}</code>, checks and saved values become test scripts.',
+          'Tokens and passwords written in full are left blank unless you tick Include secret values.',
+          'In CI: <code>npx newman run Shop.postman_collection.json</code>.',
+          'Import a v2.0 / v2.1 collection or an environment: the hosts and what is left out show first; Postman’s scripts never run.'
+        ]
+      }
+    ],
+    notes: [
+      'Cookie, Origin, Host, Referer and User-Agent can’t be set: the browser’s own cookies go along.',
+      'A request other than GET carries <code>Origin: chrome-extension://…</code> — a server guarding against CSRF by Origin may answer 403.',
+      '<code>Set-Cookie</code> lands in the browser: calling logout logs you out for real.',
+      'No turning off SSL checks, no client certificate, no proxy; redirects are always followed. The time is the total only, and the size is after decompression.',
+      'Environments keep tokens and passwords in full: the Environments dialog shows them, and a Backup carries them.'
+    ]
+  },
   settings: {
     title: 'Hotkeys, backup & settings',
     summary: 'Configurable hotkeys, import/export and full backup, per-category notifications, and a popup that remembers how you work.',
@@ -1122,4 +1239,4 @@ var FEATURES_EN = {
     ]
   }
 };
-var FEATURE_ORDER = ['recording', 'playback', 'run-results', 'variables', 'csv', 'screenshots', 'export', 'highlights', 'sql-test-designer', 'db-test-session', 'settings'];
+var FEATURE_ORDER = ['recording', 'playback', 'run-results', 'variables', 'csv', 'screenshots', 'export', 'highlights', 'sql-test-designer', 'db-test-session', 'api-tests', 'settings'];

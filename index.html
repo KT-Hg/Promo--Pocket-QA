@@ -9,7 +9,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pocket QA — Record web workflows, no code</title>
-<meta name="description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java.">
+<meta name="description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, API tests, and export to Selenium, Playwright, Robot or Java.">
 <link rel="canonical" href="https://kt-hg.github.io/Promo--Pocket-QA/">
 <link rel="icon" type="image/png" href="vendor/icon128.png">
 <link rel="apple-touch-icon" href="vendor/icon128.png">
@@ -21,7 +21,7 @@
 <meta property="og:site_name" content="Pocket QA">
 <meta property="og:url" content="https://kt-hg.github.io/Promo--Pocket-QA/">
 <meta property="og:title" content="Pocket QA — Record web workflows, no code">
-<meta property="og:description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, and export to Selenium, Playwright, Robot or Java.">
+<meta property="og:description" content="Free Chrome extension to record &amp; replay web tests with no code: variables, CSV runs, assertions, API tests, and export to Selenium, Playwright, Robot or Java.">
 <meta property="og:image" content="https://kt-hg.github.io/Promo--Pocket-QA/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -58,7 +58,7 @@
     (window.syncTitle = () => { document.title = (d.lang === 'vi' && d.dataset.titleVi) || d.dataset.titleEn || en; })();
   })();
 </script>
-<link rel="stylesheet" href="site.css?v=84f8c1a7">
+<link rel="stylesheet" href="site.css?v=2f638760">
 </head>
 <body>
 <a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="vi">Bỏ qua tới nội dung</span></a>
@@ -161,7 +161,6 @@
   <section class="alt" id="features">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow">01 · <span lang="en">Features</span><span lang="vi">Tính năng</span></span>
         <h2 class="section-title"><span lang="en">Record, run, report</span><span lang="vi">Ghi, chạy, báo cáo</span></h2>
         <p class="section-sub more">
           <span lang="en">From a quick smoke test to <span class="nw">data-driven</span> batch runs across hundreds of rows.</span>
@@ -232,12 +231,15 @@
   <section id="tools">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow">02 · <span lang="en">Tools</span><span lang="vi">Công cụ</span></span>
         <h2 class="section-title"><span lang="en">Test design &amp; everyday tools</span><span lang="vi">Thiết kế test &amp; công cụ hằng ngày</span></h2>
         <p class="section-sub more">
-          <span lang="en">Design SQL test cases, roll back test data, and keep screenshots and notes in one place.</span>
-          <span lang="vi">Thiết kế test case SQL, hoàn tác dữ liệu test, giữ ảnh chụp và ghi chú ở cùng một nơi.</span>
+          <span lang="en">Design SQL test cases, test APIs, roll back test data, and keep screenshots and notes in one place.</span>
+          <span lang="vi">Thiết kế test case SQL, test API, hoàn tác dữ liệu test, giữ ảnh chụp và ghi chú ở cùng một nơi.</span>
         </p>
+        <a class="btn btn-primary" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span lang="en">Add to Chrome — free</span><span lang="vi">Thêm vào Chrome — miễn phí</span>
+        </a>
       </div>
       <div class="cards">
         <a class="card feature reveal" href="feature.html?id=screenshots">
@@ -276,6 +278,15 @@
             <span lang="vi">Mọi thay đổi dữ liệu test trong Adminer đều được ghi lại — hoàn tác hết bằng một click, xem trước câu SQL.</span>
           </p>
         </a>
+        <a class="card feature reveal" href="feature.html?id=api-tests">
+          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3v4M15 3v4M7 7h10v4a5 5 0 0 1-10 0z"/><path d="M12 16v5"/></svg></span>
+          <h3>API Tests</h3>
+          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="more">
+            <span lang="en">Keep API requests in folders, send them and check the response — with environments, tokens and Postman.</span>
+            <span lang="vi">Lưu request API theo thư mục, gửi đi và kiểm tra response — có môi trường, token và Postman.</span>
+          </p>
+        </a>
         <a class="card feature reveal" href="feature.html?id=settings">
           <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg></span>
           <h3><span lang="en">Hotkeys, backup &amp; settings</span><span lang="vi">Phím tắt, sao lưu &amp; cài đặt</span></h3>
@@ -283,15 +294,6 @@
           <p class="more">
             <span lang="en">Configurable hotkeys, import/export and full backup, and <span class="nw">per-category</span> notifications.</span>
             <span lang="vi">Phím tắt tuỳ chỉnh, nhập/xuất và sao lưu toàn bộ, thông báo bật/tắt theo từng loại.</span>
-          </p>
-        </a>
-        <a class="card feature feature-cta reveal" href="https://chromewebstore.google.com/detail/hghkokkjbpedgjbpohpkgmejkeobocam" target="_blank" rel="noopener">
-          <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>
-          <h3><span lang="en">Get Pocket&nbsp;QA</span><span lang="vi">Cài Pocket&nbsp;QA</span></h3>
-          <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
-          <p class="more">
-            <span lang="en">Everything above in one Chrome extension. No account, and your scenarios stay in your browser.</span>
-            <span lang="vi">Tất cả trong một tiện ích Chrome. Không cần tài khoản, kịch bản nằm lại trong trình duyệt của bạn.</span>
           </p>
         </a>
       </div>
@@ -303,7 +305,6 @@
   <section class="alt" id="how">
     <div class="container">
       <div class="section-head reveal">
-        <span class="eyebrow">03 · <span lang="en">How it works</span><span lang="vi">Cách dùng</span></span>
         <h2 class="section-title"><span lang="en">From click to replay in seconds</span><span lang="vi">Từ click đến phát lại trong vài giây</span></h2>
       </div>
       <ol class="steps">
@@ -341,7 +342,6 @@
   <section id="privacy">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow">04 · <span lang="en">Privacy</span><span lang="vi">Riêng tư</span></span>
         <h2 class="section-title"><span lang="en">Your tests stay in your browser</span><span lang="vi">Dữ liệu test ở lại trong trình duyệt của bạn</span></h2>
         <p class="section-sub">
           <span lang="en">No account and no analytics. Here is what Pocket&nbsp;QA keeps and what it sends out.</span>
@@ -390,7 +390,6 @@
   <section class="alt" id="permissions">
     <div class="container collapsible">
       <div class="section-head reveal">
-        <span class="eyebrow">05 · <span lang="en">Permissions</span><span lang="vi">Quyền</span></span>
         <h2 class="section-title"><span lang="en">Why it asks for each permission</span><span lang="vi">Vì sao cần từng quyền</span></h2>
         <p class="section-sub more">
           <span lang="en">Every permission in the extension's manifest, and what Pocket&nbsp;QA uses it for.</span>
@@ -447,7 +446,6 @@
   <section id="faq">
     <div class="container">
       <div class="section-head reveal">
-        <span class="eyebrow">06 · <span lang="en">FAQ</span><span lang="vi">Hỏi đáp</span></span>
         <h2 class="section-title"><span lang="en">Questions, answered</span><span lang="vi">Câu hỏi thường gặp</span></h2>
       </div>
       <div class="faq-grid">

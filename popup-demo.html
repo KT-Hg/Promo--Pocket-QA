@@ -16,7 +16,8 @@
   <!-- Reuse the vendored extension stylesheets → guarantees pixel-perfect UI -->
   <link rel="stylesheet" href="vendor/popup/01-base.css?v=d551da9b" />
   <link rel="stylesheet" href="vendor/popup/02-action-list.css?v=8a9e6f3d" />
-  <link rel="stylesheet" href="vendor/popup/03-variables.css?v=79cabb39" />
+  <link rel="stylesheet" href="vendor/popup/03-variables.css?v=ac5d84b5" />
+  <link rel="stylesheet" href="vendor/var-suggest.css?v=cdd1c2dc" />
   <link rel="stylesheet" href="vendor/popup/04-lists-cards-forms.css?v=001b82f7" />
   <link rel="stylesheet" href="vendor/popup/05-shell.css?v=e791fc55" />
   <link rel="stylesheet" href="vendor/popup/06-modals-toast.css?v=16109faf" />
@@ -834,6 +835,21 @@
         </div>
       </button>
       <p style="font-size:12px; color: var(--muted); margin:6px 0 0;">Opens in a full tab — test case tables need the width.</p>
+    </div>
+
+    <!-- API TESTS -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <h3 style="margin:0;">API Tests</h3>
+        <button class="card-help-btn" data-card="apicases" title="API Tests guide">?</button>
+      </div>
+      <button id="openApiCases" class="export-code-btn" style="width:100%;" title="Keep API requests in folders, send them and check the response">
+        <span class="export-code-icon">🔌</span>
+        <div class="export-code-info">
+          <span class="export-code-name">Manage API tests</span>
+          <span class="export-code-desc">Folders · checks · run · cURL & Postman</span>
+        </div>
+      </button>
     </div>
 
     <!-- DB TEST SESSION (ADMINER) -->

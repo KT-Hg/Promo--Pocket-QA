@@ -293,6 +293,15 @@ main > section {
 .cards { display: grid; gap: calc(16px + var(--sy) / 3); }
 @media (min-width: 600px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 900px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* Tools: six cards fill two rows; the install button sits beside the heading instead of taking a seventh */
+@media (min-width: 900px) {
+  #tools .section-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 24px; align-items: end; }
+  #tools .section-head > :not(.btn) { grid-column: 1; }
+  #tools .section-head > .btn { grid-column: 2; grid-row: 1 / span 2; }
+}
+@media (max-width: 899px) { #tools .section-head > .btn { margin-top: 12px; } }
+/* Phones: Tools fits one screen without it; the hero and the closing call keep their install buttons */
+@media (max-width: 767px) { #tools .section-head > .btn { display: none; } }
 .feature {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; align-content: center; gap: 12px 14px;
   color: var(--text); text-decoration: none; transition: border-color .15s, transform .15s;
@@ -302,10 +311,6 @@ main > section {
 .feature .go { width: 18px; height: 18px; color: var(--muted); transition: transform .15s, color .15s; }
 .feature:hover .go { color: var(--primary); transform: translateX(2px); }
 .feature p { grid-column: 1 / -1; font-size: .92rem; line-height: 1.55; color: var(--muted); }
-.cards .feature-cta { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
-.feature-cta .ic { background: color-mix(in srgb, var(--primary-ink) 16%, transparent); color: inherit; }
-.feature-cta p, .feature-cta .go, .feature-cta:hover .go { color: inherit; }
-.feature-cta p { opacity: .88; }
 /* Phones: every card is one compact row (icon, title, arrow) and its text waits behind "Read more" */
 @media (max-width: 767px) {
   .cards, .grid-2 { gap: 8px; }

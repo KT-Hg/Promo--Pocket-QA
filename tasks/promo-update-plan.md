@@ -17,6 +17,7 @@ chụp ảnh UI thật từ extension; (3) viết lại các trang theo gap matr
 - `vendor/version.txt` = 1.0.24. Extension `manifest.json` = 1.0.27. Store (shields.io) = **v1.0.27**.
 - Bump 1.0.27 là `060fcf0` (2026-10-30). Mọi commit API Tests (`ddca568`…) và `tool-base` (`9d25060`) đến **sau**
   → chưa có trên Store. Không quảng cáo chúng trước khi Store lên 1.0.28.
+  **Sửa 2026-11-03: giả định này sai** — bản 1.0.27 trên Store đã có API Tests (xem mục *Đợt B*).
 
 **Thay đổi extension từ `9e77d06` (baseline của lần sync trước) tới HEAD — 46 commit, 87 file**
 | Đã phát hành (≤ `060fcf0`) | Chưa phát hành |
@@ -100,13 +101,69 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 
 ### Checkpoint A: 11 trang đạt check-layout/checkShape/hiddenByFit, EN+VI, light+dark → người dùng duyệt → deploy
 
-### Phase 4: Đợt B — khi Store = 1.0.28
-- [ ] Task 14: Vendor HEAD (thẻ API Tests, `var-suggest.css`)
-- [ ] Task 15: Trang `api-tests` (trang thứ 12) + thẻ ở trang chủ
-- [ ] Task 16: Privacy / Permissions / FAQ cho API Tests
-- [ ] Task 17: Chụp lại ảnh toàn trang tool theo `tool-base`, đổi tên file trong README
+### Phase 4: Đợt B — API Tests (đã có trên Store 1.0.27) · viết lại 2026-11-03, xem mục *Đợt B* bên dưới
+**4a Review**
+- [x] Task 14: Delta review `060fcf0..e98ed43` (bản Store) → gap matrix
+- [x] Task 15: `capture-shots.mjs` cho `apitest.html` — API giả, seed `apiCasesState`, shot `api-send`, bấm thử
 
-### Checkpoint B: 12 trang đạt, Store đã 1.0.28 → người dùng duyệt → deploy
+### Checkpoint B1: người dùng duyệt gap matrix API, danh sách section/ảnh, Open Questions 5–9 — ✓ duyệt theo mặc định, 2026-11-04
+
+**4b Sửa ngay cái đang sai**
+- [x] Task 16: Privacy / Permissions cho API Tests — nhánh nhỏ, merge riêng, trước (`4d06c86`, đã push 2026-11-07)
+
+**4c Trang API Tests, nhánh `promo-api-store`** — làm bằng cách mang sang từ nhánh cũ `promo-api-tests` (11-02), `a297f19`
+- [x] Task 17: Vendor bản Store — thẻ API Tests ở tab Data
+- [x] Task 18: Trang `api-tests` — khung + *Send & read the response* + *Checks & the verdict*
+- [x] Task 19: Trang `api-tests` — environments/auth, chạy nhiều, Postman & CI, giới hạn
+- [x] Task 20: Trang chủ & README — 12 tính năng (thẻ `#tools`, meta, tên trang tool mới)
+
+### Checkpoint B: 12 trang + trang chủ đạt, không nhắc thứ sau bản Store → người dùng duyệt → merge → push
+
+**4d Bản sau (1.0.28)**
+- [ ] Task 21: Khi `tool-base` lên Store — chụp lại ảnh toàn trang tool, xem `list-editing`
+
+## Đợt B — hiện trạng đã xác minh (2026-11-03)
+
+- **Phiên bản:** shields.io = **v1.0.27**, *last updated* = **CN 2026-11-01**; người dùng xác nhận bản đó **đã có API
+  Tests**. Giả định của đợt A ("Store 1.0.27 = `060fcf0`", tức commit bump) **sai**: bump ngày 10-30 nhưng bản được đưa lên
+  Store muộn hơn, dựng từ một commit có API Tests. Extension không có tag; mọi commit tới `00590ec` đều 1.0.27.
+- **Commit bản Store (`<store>`) = `e98ed43`** — người dùng xác nhận 2026-11-03 (Sun 11-01 23:35): API Tests
+  đủ, tên `sqltest.html`/`dbtest.html` (`d26264d`, 10-31), **chưa** có `tool-base` (`9d25060`, Mon 11-02).
+- Promo: đợt A đã merge (`f62fe1c`), `master` = `origin/master` = `2fa0372`; `vendor/` dựng từ `060fcf0` để giấu thẻ API
+  Tests → **preview popup đang thiếu thẻ mà bản Store có**.
+- **Extension `060fcf0..main` (`00590ec`) = 33 commit** (31 trong bản Store), theo nhóm — chi tiết từng commit ở `promo-update-gaps.md` mục *Đợt B*:
+  | Nhóm | Commit chính | Trong bản Store? | Promo phải đổi |
+  |---|---|---|---|
+  | API Tests — `apitest.html` + `apicases/` (16 file UI), `css/apicases.css`, `shared/api-response.js` | `ddca568` … `78ff3d2`, `e98ed43` (README + help card) | có | Trang mới `api-tests` (Task 15, 18–19), trang chủ (20), privacy (16) |
+  | Popup: thẻ *API Tests* ở tab Data, `<link>` `css/var-suggest.css` (tách từ `03-variables.css`, −117 dòng) | `ddca568`, `5218c13` | có | Vendor (Task 17) |
+  | Đổi tên `sqlcases.html→sqltest.html`, `dbtools.html→dbtest.html` | `d26264d` | có | README promo (Task 20) |
+  | `tool-base`: một giao diện cho SQL/DB/API, cột trái thu gọn | `9d25060` | **không** | Ảnh toàn trang (Task 21, bản sau) |
+  | Docs: Export Code guide (Robot/Java có data file), README + help SQL (Pairwise, CTE) | `00590ec` | không (chỉ docs, code có sẵn) | Kiểm chữ promo (Task 14) |
+  | Nhánh `list-editing`: `25b60e0` danh sách action không nháy, `706dbb5` bộ lọc folder được nhớ, WIP action vừa lưu nhấp nháy | chưa vào `main` | **không** | Xem ở Task 21 |
+- **Không đổi:** `manifest.json` permissions/host_permissions (`<all_urls>` có sẵn — API Tests dựa vào nó để không
+  vướng CORS). `apitest.html` chỉ tiếng Anh (0 `data-i18n`), có nút theme (`#toggleTheme`), lưu ở
+  `chrome.storage.local` `apiCasesState`.
+- **Nguồn cho trang mới:** README extension `## API Tests` (dòng 657–745: walkthrough *From a cURL to a run in CI*,
+  *Limits of a browser*), help card `apicases` (`popup/help/card-help-data.js:378`, VI + EN), code `apicases/ui/*.js`.
+- **Đang sai trên site live:** `index.html:345` ("the one request it makes"), `:368` ("One request out, once a day");
+  `:400` `<all_urls>` chỉ nói record/replay/screenshot.
+
+**Quyết định cho đợt B**
+- "Review" ở đây = review thay đổi của extension **cho promo** (cái gì đổi → trang nào phải nói gì), không phải code
+  review repo extension.
+- **Không chờ 1.0.28** — API Tests đã phát hành. Thứ tự theo độ "đang sai": Privacy (Task 16) merge riêng ngay sau review;
+  trang API + vendor + trang chủ merge cùng nhau ở Checkpoint B.
+- **Mọi thứ theo `<store>`, không theo `main`:** ảnh chụp từ `git worktree` của `<store>` (`EXT_REPO=…`), vendor từ
+  `git archive <store>`. Repo extension đang ở `list-editing` có WIP; chụp thẳng `../Pocket QA` sẽ lộ `tool-base`
+  và WIP chưa phát hành.
+- Review trước, viết sau: Task 14 đối chiếu code UI (lần trước README lệch UI ở 3 chỗ P1); Task 15 bấm thử thật qua
+  chính script chụp ảnh — gỡ rủi ro "cần response thật" trước khi viết chữ.
+- Response cho ảnh lấy từ **route giả trong server cục bộ của `capture-shots.mjs`**, không gọi API ngoài: ảnh cố định,
+  không lộ dữ liệu thật, chạy offline.
+- Không sửa `feature.js` / `site.js`: trang thứ 12 chỉ là một mục mới trong `features-*.js` + `FEATURE_ORDER`.
+
+**Song song được (sau Checkpoint B1):** Task 16 độc lập (chỉ `index.html` phần Privacy). Task 17 → 18 → 19 tuần tự
+(cùng `features-*.js`); Task 20 sau Task 18.
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
@@ -114,13 +171,26 @@ Thứ tự và chi tiết trong [`promo-update-todo.md`](promo-update-todo.md).
 | Branded Chrome bỏ qua `--load-extension` | High | `findBrowser()` của extension đã ưu tiên Edge/Chromium; Windows có sẵn Edge. Task 5 làm sớm để biết ngay |
 | Seed trạng thái phức tạp (Compare mode, DB session cần Adminer) | Med | SQL chạy được độc lập (chỉ cần nhập query); DB seed `chrome.storage` theo shape `dbtools/session.js` như harness cũ |
 | Thêm section → trang dài, section vượt một màn | Med | ≤5 point/section, đo bằng `hiddenByFit()` + `checkLayout()` ở 3 viewport |
-| Ảnh lỗi thời khi `tool-base` phát hành | Med | Ảnh section cắt sát thành phần; ảnh toàn trang chụp lại ở Task 17 |
+| Ảnh lỗi thời khi `tool-base` phát hành | Med | Ảnh section cắt sát thành phần; ảnh toàn trang chụp lại ở Task 21 (đợt B) |
 | Quảng cáo tính năng chưa có trên Store | High | Đợt B nhánh riêng; vendor đợt A từ `060fcf0`; kiểm tra shields.io trước khi merge |
 | Bản dịch VI kém tự nhiên | Med | Lấy câu chữ VI từ catalog/help card VI của extension trước khi tự dịch; người dùng đọc lại ở mỗi checkpoint |
 | WIP `taste-restyle` có ý đồ thiết kế chưa rõ | Med | Open Question 1; mặc định hoàn thiện theo hướng WIP đang đi (bỏ icon/eyebrow) |
+| **B:** Privacy trên site live đang sai về request của API Tests | High | Task 16 làm ngay sau review, merge riêng; chép ý từ *Limits of a browser*, người dùng duyệt |
+| **B:** `<store>` giả định sai → chữ/ảnh lệch bản thật | Med | Người dùng xác nhận ở Task 14; ảnh + vendor đều lấy từ đúng commit đó |
+| **B:** Chụp nhầm UI chưa phát hành (`tool-base`, WIP `list-editing`) | Med | Chụp từ `git worktree` của `<store>`, không từ `../Pocket QA` |
+| **B:** `apitest.html` cần response thật để chụp | High | Route giả trong server cục bộ của `capture-shots.mjs`; Task 15 làm sớm để biết ngay |
+| **B:** URL `127.0.0.1:<port>` trông giả trong ảnh | Low | Request viết `${baseUrl}/…`; thử `--host-resolver-rules` cho một host `.test`; không được thì chấp nhận |
+| **B:** 6 thẻ trong `#tools` làm lẻ hàng | Low | Kiểm ở 3 viewport (Task 20) |
 
 ## Open Questions
 1. WIP trên `taste-restyle` (bỏ icon/eyebrow/emoji): **hoàn thiện rồi commit** (mặc định) hay bỏ?
 2. Đợt B: **chờ Store 1.0.28** (mặc định) hay đăng trang API Tests sớm với nhãn "Sắp có"?
 3. Trần mỗi trang: mặc định ≤ 8 section nội dung (không tính overview/steps/notes/more) — đủ chưa?
 4. Ảnh mới có cần cặp light + dark như ảnh cũ không? (mặc định: có)
+
+**Đợt B** (mặc định in đậm; trả lời ở Checkpoint B1). Câu 2 đã có câu trả lời (2026-11-03): 1.0.27 đã có API Tests → không chờ.
+5. ~~Bản Store 1.0.27 dựng từ commit nào?~~ Đã trả lời 2026-11-03: **`e98ed43`**.
+6. Vị trí: **sau `db-test-session` trong `FEATURE_ORDER` và trong `#tools`** (cạnh SQL/DB) — hay nhóm khác? → **Mặc định** (2026-11-04).
+7. Meta description / `og:description`: **thêm một cụm ngắn "API tests"** hay giữ nguyên? → **Thêm** (2026-11-04).
+8. Privacy: **merge riêng trước** (Task 16) hay gộp cùng trang API? → **Merge riêng trước** (2026-11-04).
+9. "Review các thay đổi" có gồm cả **code review** repo extension không? Mặc định **không** (plan này chỉ review cho promo). → **Không** (2026-11-04).
