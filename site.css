@@ -532,8 +532,8 @@ pre.code code { padding: 0; background: none; font: inherit; }
 
 /* More features: ten compact cards (icon | title, two to a row) beside the closing CTA, like the index's FAQ */
 .more-grid { display: grid; gap: calc(20px + var(--sy) / 3); }
-@media (min-width: 1024px) { .more-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: center; } }
-.cards.mini { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+@media (min-width: 1024px) { .more-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
+.cards.mini { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 8px; }
 @media (max-width: 420px) { .cards.mini { grid-template-columns: minmax(0, 1fr); } }
 .mini .feature { grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 10px 14px; }
 .mini .feature h3 { font-size: .95rem; }
