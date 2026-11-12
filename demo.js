@@ -122,21 +122,25 @@
   }
 
   /* ───────────────────────────────────────────────────────────────────────────
-   * 4. SEED "ACTIVATED" STATUS  (display only)
+   * 4. SEED "TURNED ON" STATUS  (display only)
+   *    popup/tab-activation.js -> checkTabActivation for a tab that is turned
+   *    on while Allow on all tabs is off: "Active", green dot, Turn off shown.
+   *    That is the state the Last run below implies — it played on this tab.
    * ────────────────────────────────────────────────────────────────────────── */
   (function seedStatus() {
     var dot = $('statusDot');
-    if (dot) dot.className = 'status-dot active';
+    if (dot) { dot.dataset.idleClass = 'status-dot active'; dot.className = 'status-dot active'; }
     var status = $('activationStatus');
-    if (status) status.textContent = 'Active on this tab';
-    // Activate / Remove buttons stay hidden (demo is already "active").
+    if (status) { status.textContent = 'Active'; status.style.color = 'var(--success)'; }
+    var off = $('deactivateTab');
+    if (off) off.style.display = 'block';
 
     // The real popup stamps its state onto <body> at runtime (popup/main.js ->
     // data-activation, popup/init.js -> data-active-tab) and popup.css keys off
     // it. Without data-activation="active" every [data-requires-activation] row
-    // renders at 38% opacity with its Set button hidden and the "🔒 available
-    // after activating" notice showing — the preview would contradict its own
-    // "Active on this tab" header.
+    // renders at 38% opacity with its Set button hidden and the "🔒 Recording
+    // hotkeys work once Pocket QA is turned on" notice showing — the preview
+    // would contradict its own "Active" header.
     document.body.dataset.activation = 'active';
     var open = document.querySelector('.tab-panel.active');
     document.body.dataset.activeTab = open ? open.id : 'tabRecord';
@@ -145,25 +149,33 @@
   /* ───────────────────────────────────────────────────────────────────────────
    * 5. DEMO DATA — ACTION LIST  (display only; buttons are inert)
    *    Rows are built the way record/preview.js -> createActionListItem builds
-   *    them (value-main / value-sub lines, a Condition's block). `guards` is how
-   *    many of the next actions a Condition guards: those rows nest under it.
+   *    them at 4fb11ce: a recorded step reads by its name (content.js ->
+   *    _stepName) with what it targets on the line under it (.value-target), a
+   *    password field gets 🔒, and every row ends in the "+" insert gap.
+   *    `value` is what getActionDisplayValue shows (an input shows its selector,
+   *    not what was typed). `guards` is how many of the next actions a Condition
+   *    guards: those rows nest under it.
    * ────────────────────────────────────────────────────────────────────────── */
   var demoActions = [
     { type: 'navigate', value: 'https://app.example.com/login' },
-    { type: 'input', value: '#email  →  ${email}', label: 'Type the login email' },
-    { type: 'input', value: '#password  →  ••••••••' },
-    { type: 'click', value: 'button.btn-login', delay: 500 },
+    { type: 'input', value: '#email', label: 'Email' },
+    { type: 'input', value: '#password', label: 'Password', secret: true },
+    { type: 'click', value: 'button.btn-login', label: 'Log in', delay: 500 },
     { type: 'assert', value: 'textContains: .welcome = "Welcome back"' },
     { type: 'condition', value: 'elementVisible: .promo-modal', guards: 1 },
-    { type: 'click', value: '.promo-modal .close' },
+    { type: 'click', value: '.promo-modal .close', label: 'Close' },
     { type: 'screenshot', value: 'Visible viewport' },
-    { type: 'click', value: '#logout', disabled: true }
+    { type: 'click', value: '#logout', label: 'Log out', disabled: true }
   ];
+
+  // preview.js -> the secret-mark title, verbatim.
+  var SECRET_TITLE = 'Typed into a password field. The password is saved in this scenario as plain text, and goes into JSON exports and exported code — put it in a variable (Tools tab) to keep it out.';
 
   function buildActionLi(a, i, cond) {
     var li = document.createElement('li');
     li.className = 'action action-' + a.type + (a.disabled ? ' action-disabled' : '');
     li.dataset.index = i;
+    li.draggable = true;
     if (cond != null) {
       // A row a Condition guards (preview.js -> _applyBlockStyle, "cond" colour).
       li.classList.add('sw-in-block');
@@ -180,25 +192,42 @@
       var full = 'If true: runs ' + (i + 2) + (n > 1 ? '–' + (i + 1 + n) : '') + '\nIf false: skips them';
       subHtml = '<span class="sw-summary" title="' + esc(full) + '">if true → runs ' + n + ' action' + (n === 1 ? '' : 's') + '</span><span class="sw-hidden-count"></span>';
     }
-    if (a.label) subHtml = '<span class="value-label">' + esc(a.label) + '</span>' + subHtml;
+    if (a.label) subHtml = '<span class="value-target">' + esc(a.value) + '</span>' + subHtml;
+    var secretHtml = a.secret ? '<span class="secret-mark" title="' + esc(SECRET_TITLE) + '">🔒</span>' : '';
     li.innerHTML =
-      '<span class="index" title="#' + (i + 1) + '">' + (i + 1) + '.</span>' +
+      '<span class="index">' + (i + 1) + '.</span>' +
       '<span' + (typeAttrs || ' class="type"') + '>' + (ACTION_ICONS[a.type] || '') + esc(a.type) + toggleHtml + '</span>' +
-      '<span class="value" title="' + esc(a.value) + esc(delayText) + '">' +
-        '<span class="value-main">' + esc(a.value) + esc(delayText) + '</span>' +
+      '<span class="value" title="' + (a.label ? esc(a.label) + '&#10;' : '') + esc(a.value) + esc(delayText) + '">' +
+        '<span class="value-main">' + secretHtml + esc(a.label || a.value) + esc(delayText) + '</span>' +
         (subHtml ? '<span class="value-sub">' + subHtml + '</span>' : '') +
       '</span>';
 
+    // The buttons' labels, as preview.js names them for a screen reader.
+    var no = i + 1;
+    var name = a.label ? '"' + a.label + '"' : a.type + ' ' + no;
+    var nested = a.guards ? ' and the ' + a.guards + ' action' + (a.guards === 1 ? '' : 's') + ' under it' : '';
+    var verb = a.disabled ? 'Enable' : 'Disable';
     var btnRow = document.createElement('div');
     btnRow.className = 'btn-row';
-    [['secondary', a.disabled ? 'Enable' : 'Disable'], ['secondary', 'Copy'],
-     ['secondary', 'Edit'], ['danger', 'Delete']].forEach(function (b) {
+    [['secondary', verb, nested], ['secondary', 'Copy', nested],
+     ['secondary', 'Edit', ''], ['danger', 'Delete', '']].forEach(function (b) {
       var btn = document.createElement('button');
       btn.className = b[0];
       btn.textContent = b[1];
+      btn.setAttribute('aria-label', b[1] + ' action ' + no + ': ' + name + b[2]);
       btnRow.appendChild(btn);
     });
+    if (nested) btnRow.firstChild.title = verb + ' this Condition' + nested + ' — each can still be switched on its own';
     li.appendChild(btnRow);
+
+    // preview.js -> _gapBtn: the "+" under the row (CSS shows it on hover).
+    var gap = document.createElement('button');
+    gap.type = 'button';
+    gap.className = 'ins-gap';
+    gap.textContent = '+';
+    gap.title = 'Insert an action below action ' + no;
+    gap.setAttribute('aria-label', gap.title);
+    li.appendChild(gap);
     return li;
   }
 
@@ -343,7 +372,8 @@
   (function seedHlUrls() {
     var sel = $('hlUrlSelect');
     if (sel) {
-      sel.innerHTML = '<option value="">This page · app.example.com (' + demoHighlights.length + ')</option>';
+      // highlight.js -> the "Other pages" picker: a placeholder, then each other page.
+      sel.innerHTML = '<option value="">— Other pages —</option>';
       [['docs.example.com', 3], ['blog.example.com', 1]].forEach(function (p) {
         var o = document.createElement('option');
         o.value = p[0]; o.textContent = p[0] + ' (' + p[1] + ')';
@@ -457,15 +487,20 @@
       var min = parseFloat(slider.min) || 0, max = parseFloat(slider.max) || 100;
       slider.style.setProperty('--pct', ((s[1] - min) / (max - min) * 100).toFixed(2) + '%');
     });
-    // loadNotificationSetting() — NOTIFY_TOGGLES defaults (bg/notify.js).
-    check('notifyOnComplete', false);
+    // background.js -> onInstalled seeds the countdown on (3 s); loadScreenshotSettings shows its row.
+    check('screenshotCountdownEnabled', true);
+    val('screenshotCountdownSeconds', '3');
+    var countdownRow = $('screenshotCountdownRow');
+    if (countdownRow) countdownRow.style.display = 'flex';
+    // loadNotificationSetting() — NOTIFY_DEFAULT (bg/notify.js): all four on.
+    check('notifyOnComplete', true);
     check('notifyOnError', true);
     check('notifyOnCapture', true);
     check('notifyOnSchedule', true);
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
-   * 8d. DATA › DB TEST SESSION CARD  (display only)
+   * 8d. TOOLS › DB TEST SESSION CARD  (display only)
    *     Mirrors popup/init.js -> initDbGuardToggle: the Adminer switch defaults
    *     to on, and the "roll back after each Playback run" row is hidden while
    *     dbtools/features.js keeps TABLE_COPIES off — otherwise the static

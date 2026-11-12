@@ -84,7 +84,7 @@ index.html        ← open this
 | `check-layout.js` | Dev check, not linked from either page — see "Layout rules" | ~130 |
 | `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup/*.css` + `demo.js` | ~2010 |
 | `demo.css`       | A few tiny tweaks for the in-iframe demo context | ~25 |
-| `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~590 |
+| `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~650 |
 | `sync-from-source.mjs` | Regenerates `popup-demo.html` from `vendor/popup.html` (deterministic) | ~145 |
 | `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~95 |
 | `stamp-assets.mjs` | Cache-busts every local `.js` / `.css` the two pages load (`site.js?v=…`) with a content hash — run after editing any of them | ~45 |
@@ -143,7 +143,7 @@ a hyphen). How the code keeps them:
 ## What's interactive in the demo
 The preview is intentionally **static** — it showcases the UI without acting as a
 working sandbox. Only two things respond:
-- **Tabs** — Record & Play · Data · Capture · Highlight · Settings (+ Capture sub-tabs)
+- **Tabs** — Record & Play · Tools · Capture · Highlight · Settings (+ Capture sub-tabs)
 - **Theme** — light/dark toggle (🌙/☀️), persisted; independent of the landing page's own toggle
 
 Everything else (Start Recording, Play, Enable/Copy/Edit/Delete, Add Manual Action,
@@ -155,18 +155,20 @@ gives them a `not-allowed` cursor so visitors can tell it's a preview.
 ### Runtime state the preview has to fake
 The popup CSS styles several things off state that only the running popup sets, so
 the raw markup alone does **not** look like the real popup. `demo.js` reproduces
-the state of a healthy, activated install:
+the state of a healthy install, turned on for the tab it last played on:
 
 | State | Set by the real popup in | Left alone, the preview shows |
 |-------|--------------------------|-------------------------------|
-| `<body data-activation="active">` | `popup/main.js` | every `[data-requires-activation]` hotkey row at 38% opacity with its **Set** button hidden, plus the 🔒 *"available after activating on the current tab"* notice — contradicting the demo's own "Active on this tab" header |
+| Status bar: *Active* + **Turn off** | `popup/tab-activation.js` → `checkTabActivation` (tab turned on, Allow on all tabs off) | `Checking...` with neither Turn on nor Turn off — a state the popup only shows for a blink |
+| `<body data-activation="active">` | `popup/main.js` | every `[data-requires-activation]` hotkey row at 38% opacity with its **Set** button hidden, plus the 🔒 *"Recording hotkeys work once Pocket QA is turned on for the current tab"* notice — contradicting the demo's own "Active" header |
 | `<body data-active-tab="…">` | `popup/init.js` → `switchTab` | lock overlays lose the selector that positions them per tab |
 | Settings › Version card | `popup/settings.js` → `loadUpdateInfo` | three `—` placeholders no installed copy ever shows |
 | Last run card (top of Record & Play) | `popup/run/last-run.js` → `_render`, from the stored `lastRun` | nothing — the card stays `hidden`, as if no scenario had ever been played. The demo shows a `✓ Passed` run of the selected scenario |
-| Action list rows | `popup/record/preview.js` → `createActionListItem` | (demo.js builds them itself) — rows must use the real two-line `.value-main` / `.value-sub` markup, and rows a Condition guards nest under it (`sw-in-block`, `--sw-depth`, `--sw-color`), or the list no longer matches the real one |
+| Action list rows | `popup/record/preview.js` → `createActionListItem` | (demo.js builds them itself) — rows must use the real two-line `.value-main` / `.value-sub` markup: a named step reads by its name with its selector in `.value-target` under it, a password step carries `.secret-mark` 🔒, every row ends in the `+` insert gap (`.ins-gap`, shown on hover), and rows a Condition guards nest under it (`sw-in-block`, `--sw-depth`, `--sw-color`), or the list no longer matches the real one |
 | Export Code card | `popup/export/code-card.js` → takes Manage Scenarios' scenario | `-- Select scenario --` and all five format buttons disabled |
-| Settings › Screenshot + Notifications | `popup/settings.js` → `loadScreenshotSettings` / `loadNotificationSetting` | no save mode picked, an empty prefix, blank speed boxes and every notification off — instead of the defaults a fresh install shows |
-| Data › DB Test Session status line | `popup/init.js` → `initDbStatus` | the line stays `hidden` |
+| Settings › Screenshot + Notifications | `popup/settings.js` → `loadScreenshotSettings` / `loadNotificationSetting` | no save mode picked, an empty prefix, blank speed boxes, the countdown off and every notification off — instead of the defaults a fresh install shows (countdown on at 3 s, all four notification groups on) |
+| Highlight › other pages picker | `popup/highlight.js` | the `Loading…` placeholder instead of `— Other pages —` and the pages that have highlights |
+| Tools › DB Test Session status line | `popup/init.js` → `initDbStatus` | the line stays `hidden` |
 | Schedule start URL | `popup/run/time-picker.js` → `prefillScheduleUrl` | an empty field instead of this tab's address |
 
 When a sync pulls in new markup, re-check this list: anything the real popup
@@ -208,7 +210,7 @@ The demo supports query params so you can link straight to a tab / theme:
 
 ```
 popup-demo.html?tab=tabHighlight&theme=dark
-popup-demo.html?tab=tabData
+popup-demo.html?tab=tabData        # the Tools tab — its id is still tabData
 ```
 
 ## Screenshot comparison
@@ -219,7 +221,7 @@ See [`screenshots/`](screenshots/):
 | `shot-popup-original.png` | The real `popup.html` rendered without the extension runtime (empty/“Checking…”) |
 | `shot-popup-demo.png`     | The demo popup — identical styling, now populated & active |
 | `shot-landing-hero.png`   | Full landing hero with the popup embedded in the browser mockup |
-| `shot-tab-data.png`       | Data tab — variables, export-code, collapsibles |
+| `shot-tab-data.png`       | Data tab (Tools since 1.0.29) — variables, export-code, collapsibles |
 | `shot-tab-highlight.png`  | Highlight tab in **dark** mode — colour-coded highlights, stats, switch |
 | `shot-image-editor.png` / `-dark.png`   | `editor.html`'s Crop & Edit UI, used on `feature.html?id=screenshots` — real editor, sample dashboard image, an arrow + rectangle annotation and the Stamp panel open |
 | `shot-sqlcases-analysis.png` / `-dark.png` | The SQL designer's full 3-column workspace (then `sqlcases.html`, now `sqltest.html`, same look on the Store's 1.0.27), used on `feature.html?id=sql-test-designer` — query rail, a real generated case list (71 cases), and one case's fixture data open in the inspector |
@@ -244,7 +246,7 @@ EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   # default ../Pocket QA,
 ```
 
 Shoot the build that is on the Store, not whatever the extension repo has checked out: `git -C "../Pocket QA" archive <commit>`
-into an empty folder and point `EXT_REPO` at it (1.0.27 on the Store = `e98ed43`).
+into an empty folder and point `EXT_REPO` at it (1.0.30 on the Store = `4fb11ce`).
 
 It loads the unpacked extension in Edge or Chromium through the extension repo's own CDP driver
 (`tools/lib/cdp-browser.mjs`, the one its e2e tests run on — branded Chrome ignores `--load-extension`), opens the

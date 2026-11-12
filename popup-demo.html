@@ -10,23 +10,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=480, initial-scale=1" />
-  <meta name="ext-version" content="1.0.27" />
+  <meta name="ext-version" content="1.0.30" />
   <title>Pocket QA — Popup Preview</title>
 
   <!-- Reuse the vendored extension stylesheets → guarantees pixel-perfect UI -->
-  <link rel="stylesheet" href="vendor/popup/01-base.css?v=d551da9b" />
-  <link rel="stylesheet" href="vendor/popup/02-action-list.css?v=8a9e6f3d" />
+  <link rel="stylesheet" href="vendor/popup/01-base.css?v=26331c92" />
+  <link rel="stylesheet" href="vendor/popup/02-action-list.css?v=ac7196a8" />
   <link rel="stylesheet" href="vendor/popup/03-variables.css?v=ac5d84b5" />
   <link rel="stylesheet" href="vendor/var-suggest.css?v=cdd1c2dc" />
-  <link rel="stylesheet" href="vendor/popup/04-lists-cards-forms.css?v=001b82f7" />
+  <link rel="stylesheet" href="vendor/popup/04-lists-cards-forms.css?v=9a2b564c" />
   <link rel="stylesheet" href="vendor/popup/05-shell.css?v=e791fc55" />
-  <link rel="stylesheet" href="vendor/popup/06-modals-toast.css?v=16109faf" />
+  <link rel="stylesheet" href="vendor/popup/06-modals-toast.css?v=68e1d5a3" />
   <link rel="stylesheet" href="vendor/popup/07-switch-loop-csv.css?v=fd690503" />
   <link rel="stylesheet" href="vendor/popup/08-capture.css?v=7ecb0f11" />
-  <link rel="stylesheet" href="vendor/popup/09-header-update-playback.css?v=9b9c35fc" />
-  <link rel="stylesheet" href="vendor/popup/10-motion-export-lock.css?v=5319af45" />
+  <link rel="stylesheet" href="vendor/popup/09-header-update-playback.css?v=19286aec" />
+  <link rel="stylesheet" href="vendor/popup/10-motion-export-lock.css?v=180dba78" />
   <link rel="stylesheet" href="vendor/popup/11-highlight.css?v=66ab4640" />
-  <link rel="stylesheet" href="vendor/popup/12-switch-blocks.css?v=d6983e35" />
+  <link rel="stylesheet" href="vendor/popup/12-switch-blocks.css?v=7c69902c" />
   <link rel="stylesheet" href="demo.css?v=a9fd1d34" />
 </head>
 
@@ -62,16 +62,18 @@
       <span class="status-label" id="activationStatus">Checking...</span>
       <span class="status-spacer"></span>
       <span class="status-progress" id="statusText"></span>
-      <button id="activateTab" class="success" style="display:none;">Activate</button>
-      <button id="deactivateTab" class="danger" style="display:none;">Remove</button>
+      <button id="activateTab" class="success" style="display:none;" title="Turn Pocket QA on for this tab: record, play and pick elements here">Turn on</button>
+      <button id="deactivateTab" class="secondary" style="display:none;" title="Turn Pocket QA off on this tab (the page reloads). Your scenarios are kept.">Turn off</button>
       <button class="icon-btn" id="toggleTheme" title="Toggle theme" aria-label="Toggle dark or light theme"><span aria-hidden="true">🌙</span></button>
     </div>
-    <!-- Now Playing bar (click to toggle mini panel) -->
-    <div class="now-playing-bar" id="nowPlayingBar" style="display:none;">
+    <!-- Now Playing: the run panel the page shows, in the popup (click for the mini panel) -->
+    <div class="now-playing-bar" id="nowPlayingBar" style="display:none;" title="Click for details">
       <span class="now-playing-icon" id="nowPlayingIcon">▶</span>
       <span class="now-playing-name" id="nowPlayingName"></span>
       <span class="now-playing-step" id="nowPlayingStep"></span>
       <span class="chev chev--menu" id="nowPlayingCaret" aria-hidden="true">▾</span>
+      <button type="button" class="danger now-playing-stop" id="nowPlayingStop" title="Stop the run">■ Stop</button>
+      <span class="now-playing-track" aria-hidden="true"><span class="now-playing-fill" id="nowPlayingFill"></span></span>
     </div>
     <!-- Mini panel dropdown -->
     <div class="playback-panel" id="playbackPanel" style="display:none;">
@@ -128,7 +130,7 @@
     <!-- Tab Navigation -->
     <div class="tab-nav" id="tabNav">
       <button class="tab-btn" data-tab="tabRecord">Record & Play</button>
-      <button class="tab-btn" data-tab="tabData">Data</button>
+      <button class="tab-btn" data-tab="tabData">Tools</button>
       <button class="tab-btn" data-tab="tabCapture">Capture</button>
       <button class="tab-btn" data-tab="tabHighlight">Highlight <span id="hlTabBadge" class="count-badge" style="display:none;"></span></button>
       <button class="tab-btn" data-tab="tabSettings">Settings</button>
@@ -153,6 +155,7 @@
         <span class="lr-when"></span>
         <button type="button" id="lastRunDismiss" class="lr-dismiss" title="Hide until the next run" aria-label="Hide the last run until the next one">✕</button>
       </div>
+      <p class="lr-hint" hidden>No Assert ran, so nothing was checked. Add an <b>Assert</b> (Add Manual Action) to check the page shows what it should.</p>
       <ul class="lr-failures" aria-label="Failures of the last run"></ul>
       <button type="button" id="lastRunBugReport" class="secondary lr-report" hidden>📋 Bug report</button>
     </div>
@@ -179,6 +182,9 @@
     <!-- ADD MANUAL ACTION -->
     <div class="card collapsible" id="addManualActionCard">
       <h3 role="button" tabindex="0" aria-expanded="true" style="display:flex;align-items:center;"><span id="manualCardTitle">Add Manual Action</span> <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="addManual" title="Manual action guide" style="margin-left:auto;">?</button></h3>
+
+      <!-- Where the action goes, once a + in the list picked a place (record/insert-point.js) -->
+      <div id="insertPointNote" class="insert-point-note" role="status" hidden></div>
 
       <!-- Action Type — always first -->
       <div class="step-label">Action Type</div>
@@ -273,6 +279,8 @@
           <div class="sel-group">
             <button type="button" class="sel-group-type" id="selectorTypeBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="selectorTypeMenu"></button>
             <input id="manualSelector" />
+            <!-- 👁: the element on the page — hover to outline it, click to scroll to it (record/show-on-page.js) -->
+            <button type="button" class="sel-eye" id="showSelectorOnPage" title="Show on the page — hover to outline it, click to scroll to it" aria-label="Show the element on the page"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
             <div class="sel-menu" id="selectorTypeMenu" role="menu" aria-label="Selector type" hidden></div>
           </div>
           <select id="selectorType" hidden>
@@ -438,6 +446,7 @@
           <div class="sel-group">
             <button type="button" class="sel-group-type" id="dragdropTargetTypeBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="dragdropTargetTypeMenu"></button>
             <input id="dragdropTarget" />
+            <button type="button" class="sel-eye" id="showDragdropTargetOnPage" title="Show on the page — hover to outline it, click to scroll to it" aria-label="Show the drop target on the page"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
             <div class="sel-menu" id="dragdropTargetTypeMenu" role="menu" aria-label="Drop target selector type" hidden></div>
           </div>
           <select id="dragdropTargetSelectorType" hidden>
@@ -615,7 +624,8 @@
       <!-- Hidden until an action type is chosen (02-action-list.css) -->
       <div class="row" id="manualActionButtons">
         <button id="addManualAction">Add Action</button>
-        <button id="cancelEdit" class="secondary w-auto" style="display: none;">Cancel</button>
+        <!-- Adding or editing alike: Cancel empties the card (record/action-form.js) -->
+        <button id="cancelEdit" class="secondary w-auto" title="Cancel the new action — clears this card">Cancel</button>
       </div>
     </div>
 
@@ -625,7 +635,7 @@
         <h3 style="margin:0;">Save Scenario</h3>
         <button class="card-help-btn" data-card="save" title="Save scenario guide">?</button>
       </div>
-      <input id="scenarioName" placeholder="Scenario name *" class="required-field" />
+      <input id="scenarioName" placeholder="Name for a new scenario *" class="required-field" />
       <span class="helper-text"><b>New</b> with a name creates the scenario now and saves every edit into it; with no name it starts an unsaved draft.</span>
       <div class="row equalize">
         <select id="scenarioFolder">
@@ -726,6 +736,10 @@
       </div>
     </div>
 
+    <!-- RUN — several scenarios, on a schedule, or once per CSV row. They sat in the
+         Data tab, where nobody looked for a schedule. -->
+    <div class="tab-group-label">Run several · on a schedule · from a CSV</div>
+
     <!-- SEQUENCE PLAYBACK -->
     <div class="card collapsible collapsed" id="sequencePlaybackCard">
       <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Sequence Scenarios <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="sequence" title="Sequence guide" style="margin-left:auto;">?</button></h3>
@@ -758,10 +772,106 @@
       <button id="saveSequenceAsScenario" class="secondary" style="margin-top: 6px;">Save as Scenario</button>
     </div>
 
+
+    <!-- SCHEDULED PLAYBACK -->
+    <div class="card collapsible collapsed" id="scheduledPlaybackCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Scheduled Playback <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="schedule" title="Schedule guide" style="margin-left:auto;">?</button></h3>
+      <div class="row equalize">
+        <select id="scheduleScenarioSelect">
+          <option value="">-- Select scenario --</option>
+        </select>
+        <input id="scheduleTime" type="time" style="display:none;" />
+        <div class="schedule-time-picker">
+          <input id="stHour" type="number" min="1" max="12" value="12" title="Hour" />
+          <span class="st-colon">:</span>
+          <input id="stMin" type="number" min="0" max="59" value="00" title="Minute" />
+          <button type="button" id="stAmPm" class="secondary">AM</button>
+        </div>
+      </div>
+      <input id="scheduleLabel" placeholder="Schedule label (optional)" style="margin-top: 6px;" />
+      <input id="scheduleUrl" type="url" placeholder="Start URL — each run opens it in a new tab" style="margin-top: 6px;"
+             title="Filled in with this tab's address. Without a start URL a run plays on whatever tab is active at the time." />
+      <div class="row" style="margin-top: 6px; align-items: center; gap: 8px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;flex:1;margin:0;">
+          <input type="checkbox" id="scheduleRepeat" style="width:auto;margin:0;" /> Repeat daily
+        </label>
+        <button id="addSchedule" class="secondary" style="flex:0 0 auto;width:auto;">+ Add</button>
+      </div>
+      <span class="helper-text">Runs at the selected time (background must be active)</span>
+      <ul id="scheduleList" class="actions" style="margin-top: 8px;"></ul>
+    </div>
+
+    <!-- CSV DATA-DRIVEN RUN -->
+    <div class="card collapsible collapsed" id="csvRunCard">
+      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">CSV Data-Driven Run <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="csv" title="CSV run guide" style="margin-left:auto;">?</button></h3>
+      <select id="csvScenarioSelect" style="margin-bottom: 6px;">
+        <option value="">-- Select scenario --</option>
+      </select>
+      <input type="file" id="csvFile" accept=".csv,.txt" />
+      <span class="helper-text">First row = column headers → used as variable names (e.g. ${email})</span>
+      <div id="csvPreview" style="margin-top: 6px; font-size: 12px; color: var(--muted);"></div>
+
+      <!-- Delay between rows -->
+      <div class="row" style="gap:6px; margin-top: 6px;">
+        <select id="csvDelayBetweenPreset" style="flex: 1;">
+          <option value="500" selected>0.5s (default)</option>
+          <option value="1000">1s</option>
+          <option value="2000">2s</option>
+          <option value="3000">3s</option>
+          <option value="5000">5s</option>
+          <option value="10000">10s</option>
+          <option value="custom">Custom…</option>
+        </select>
+        <input id="csvDelayBetween" type="number" min="0" placeholder="ms"
+               style="display:none; width: 80px; flex: 0 0 80px;" />
+      </div>
+
+      <!-- Export format + Feature 3: locked warning -->
+      <div id="csvFormatRow" style="margin-top:6px;">
+        <div class="row" style="align-items:center;">
+          <label class="csv-format-label">Export format:</label>
+          <select id="csvExportFormat" style="flex:1; margin:0; font-size:12px;">
+            <option value="xlsx" selected>Excel XLSX (images in cells)</option>
+            <option value="html">HTML (embedded images)</option>
+            <option value="zip">ZIP (screenshots + CSV)</option>
+          </select>
+        </div>
+        <div id="csvFormatLocked" class="csv-format-locked" style="display:none;">
+          <span class="csv-format-lock-icon">⚠</span>
+          <span class="csv-format-lock-text">Changing format will clear results</span>
+          <button id="csvChangeFormat" class="csv-format-clear-btn">🗑 Clear &amp; change</button>
+        </div>
+      </div>
+
+      <!-- ZIP only (07-switch-loop-csv.css); never locked, so a finished run
+           can be downloaded again under other names -->
+      <details id="csvZipAdvanced">
+        <summary><span class="chev" aria-hidden="true">▸</span>Advanced</summary>
+        <div class="form-grid">
+          <label class="form-label" for="csvZipFolderName">Folder name</label>
+          <div>
+            <input id="csvZipFolderName" placeholder="row_01" spellcheck="false" autocomplete="off" />
+            <span class="form-hint">Empty = row_01. ${column} from the CSV, e.g. abc ${name}</span>
+            <label class="form-check" title="The row's number in the CSV after the name: abc john_01, abc kate_02. Off: a name used twice gets _2."><input type="checkbox" id="csvZipRowNumber" /> Add row number</label>
+          </div>
+        </div>
+      </details>
+
+      <!-- Status text: idle messages / run summary -->
+      <div id="csvStatus" style="font-size:12px; color:var(--muted); margin-top:4px;"></div>
+
+      <!-- Start button (disabled while running) -->
+      <div class="row csv-action-row" style="margin-top:6px;">
+        <button id="startCsvRun" class="primary-gradient" style="flex:1;">▶ Start CSV Run</button>
+      </div>
+
+      <button id="csvDownloadResult" class="secondary" style="display:none; margin-top:6px; width:100%; font-size:12px;">⬇ Download result</button>
+    </div>
+
     </div> <!-- End main-content -->
   </div>
 
-  <!-- ===== TAB: DATA ===== -->
+  <!-- ===== TAB: TOOLS (id tabData, kept for the saved tab order) ===== -->
   <div class="tab-panel" id="tabData">
     <div class="main-content" id="mainContentData" role="complementary">
 
@@ -880,124 +990,6 @@
       </label>
     </div>
 
-    <!-- The two cards below are the only ones on this tab that need a live,
-         activated tab to do anything. Variables, Export Code and the SQL Test
-         Case Designer read storage alone, so the lock overlay is scoped to this
-         wrapper rather than to the whole panel — see #lockOverlayData at the
-         end of it. -->
-    <div class="gated-zone" id="dataGatedZone">
-
-    <!-- SCHEDULED PLAYBACK -->
-    <div class="card collapsible collapsed" id="scheduledPlaybackCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">Scheduled Playback <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="schedule" title="Schedule guide" style="margin-left:auto;">?</button></h3>
-      <div class="row equalize">
-        <select id="scheduleScenarioSelect">
-          <option value="">-- Select scenario --</option>
-        </select>
-        <input id="scheduleTime" type="time" style="display:none;" />
-        <div class="schedule-time-picker">
-          <input id="stHour" type="number" min="1" max="12" value="12" title="Hour" />
-          <span class="st-colon">:</span>
-          <input id="stMin" type="number" min="0" max="59" value="0" title="Minute" />
-          <button type="button" id="stAmPm" class="secondary">AM</button>
-        </div>
-      </div>
-      <input id="scheduleLabel" placeholder="Schedule label (optional)" style="margin-top: 6px;" />
-      <input id="scheduleUrl" type="url" placeholder="Start URL — each run opens it in a new tab" style="margin-top: 6px;"
-             title="Filled in with this tab's address. Without a start URL a run plays on whatever tab is active at the time." />
-      <div class="row" style="margin-top: 6px; align-items: center; gap: 8px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;flex:1;margin:0;">
-          <input type="checkbox" id="scheduleRepeat" style="width:auto;margin:0;" /> Repeat daily
-        </label>
-        <button id="addSchedule" class="secondary" style="flex:0 0 auto;width:auto;">+ Add</button>
-      </div>
-      <span class="helper-text">Runs at the selected time (background must be active)</span>
-      <ul id="scheduleList" class="actions" style="margin-top: 8px;"></ul>
-    </div>
-
-    <!-- CSV DATA-DRIVEN RUN -->
-    <div class="card collapsible collapsed" id="csvRunCard">
-      <h3 role="button" tabindex="0" aria-expanded="false" style="display:flex;align-items:center;">CSV Data-Driven Run <span class="chev" aria-hidden="true">▸</span><button class="card-help-btn" data-card="csv" title="CSV run guide" style="margin-left:auto;">?</button></h3>
-      <select id="csvScenarioSelect" style="margin-bottom: 6px;">
-        <option value="">-- Select scenario --</option>
-      </select>
-      <input type="file" id="csvFile" accept=".csv,.txt" />
-      <span class="helper-text">First row = column headers → used as variable names (e.g. ${email})</span>
-      <div id="csvPreview" style="margin-top: 6px; font-size: 12px; color: var(--muted);"></div>
-
-      <!-- Delay between rows -->
-      <div class="row" style="gap:6px; margin-top: 6px;">
-        <select id="csvDelayBetweenPreset" style="flex: 1;">
-          <option value="500" selected>0.5s (default)</option>
-          <option value="1000">1s</option>
-          <option value="2000">2s</option>
-          <option value="3000">3s</option>
-          <option value="5000">5s</option>
-          <option value="10000">10s</option>
-          <option value="custom">Custom…</option>
-        </select>
-        <input id="csvDelayBetween" type="number" min="0" placeholder="ms"
-               style="display:none; width: 80px; flex: 0 0 80px;" />
-      </div>
-
-      <!-- Export format + Feature 3: locked warning -->
-      <div id="csvFormatRow" style="margin-top:6px;">
-        <div class="row" style="align-items:center;">
-          <label class="csv-format-label">Export format:</label>
-          <select id="csvExportFormat" style="flex:1; margin:0; font-size:12px;">
-            <option value="xlsx" selected>Excel XLSX (images in cells)</option>
-            <option value="html">HTML (embedded images)</option>
-            <option value="zip">ZIP (screenshots + CSV)</option>
-          </select>
-        </div>
-        <div id="csvFormatLocked" class="csv-format-locked" style="display:none;">
-          <span class="csv-format-lock-icon">⚠</span>
-          <span class="csv-format-lock-text">Changing format will clear results</span>
-          <button id="csvChangeFormat" class="csv-format-clear-btn">🗑 Clear &amp; change</button>
-        </div>
-      </div>
-
-      <!-- ZIP only (07-switch-loop-csv.css); never locked, so a finished run
-           can be downloaded again under other names -->
-      <details id="csvZipAdvanced">
-        <summary><span class="chev" aria-hidden="true">▸</span>Advanced</summary>
-        <div class="form-grid">
-          <label class="form-label" for="csvZipFolderName">Folder name</label>
-          <div>
-            <input id="csvZipFolderName" placeholder="row_01" spellcheck="false" autocomplete="off" />
-            <span class="form-hint">Empty = row_01. ${column} from the CSV, e.g. abc ${name}</span>
-            <label class="form-check" title="The row's number in the CSV after the name: abc john_01, abc kate_02. Off: a name used twice gets _2."><input type="checkbox" id="csvZipRowNumber" /> Add row number</label>
-          </div>
-        </div>
-      </details>
-
-      <!-- Status text: idle messages / run summary -->
-      <div id="csvStatus" style="font-size:12px; color:var(--muted); margin-top:4px;"></div>
-
-      <!-- Start button (disabled while running) -->
-      <div class="row csv-action-row" style="margin-top:6px;">
-        <button id="startCsvRun" class="primary-gradient" style="flex:1;">▶ Start CSV Run</button>
-      </div>
-
-      <button id="csvDownloadResult" class="secondary" style="display:none; margin-top:6px; width:100%; font-size:12px;">⬇ Download result</button>
-    </div>
-
-      <!-- Same frosted card as the Record tab's overlay, same wording; it lays
-           out as a row instead of a column because both cards above are
-           collapsed by default and a full-height card would not fit over two
-           headers. -->
-      <div class="lock-overlay lock-overlay-zone" id="lockOverlayData">
-        <div class="lock-overlay-card">
-          <div class="lock-overlay-icon">🔒</div>
-          <div class="lock-overlay-text">
-            <h3 class="lock-overlay-title" id="lockOverlayDataTitle">Activate on Tab</h3>
-            <p class="lock-overlay-sub" id="lockOverlayDataSub">Click Activate to enable recording and playback on the current tab.</p>
-          </div>
-          <button class="lock-overlay-activate-btn" id="lockOverlayDataBtn">Activate</button>
-        </div>
-      </div>
-    </div>
-
     </div>
   </div>
 
@@ -1033,19 +1025,19 @@
         <div class="capture-group-row">
           <span class="capture-group-label">Scroll</span>
           <div class="capture-btn-row">
-            <button id="screenshotScrollV"  class="cap-save-btn" title="Capture full vertical scroll">↕ V</button>
-            <button id="screenshotScrollH"  class="cap-save-btn" title="Capture full horizontal scroll">↔ H</button>
-            <button id="cropScrollV"        class="cap-edit-btn" title="Capture full vertical scroll, then open the editor">✂ ↕V</button>
-            <button id="cropScrollH"        class="cap-edit-btn" title="Capture full horizontal scroll, then open the editor">✂ ↔H</button>
+            <button id="screenshotScrollV"  class="cap-save-btn" title="Capture full vertical scroll">↕ Down</button>
+            <button id="screenshotScrollH"  class="cap-save-btn" title="Capture full horizontal scroll">↔ Across</button>
+            <button id="cropScrollV"        class="cap-edit-btn" title="Capture full vertical scroll, then open the editor">✂ Down</button>
+            <button id="cropScrollH"        class="cap-edit-btn" title="Capture full horizontal scroll, then open the editor">✂ Across</button>
           </div>
         </div>
         <div class="capture-group-row">
           <span class="capture-group-label">Segment</span>
           <div class="capture-btn-row">
-            <button id="segmentScrollV"     class="cap-save-btn" title="Mark start, scroll down to the end, then stop to capture">⬍ V</button>
-            <button id="segmentScrollH"     class="cap-save-btn" title="Mark start, scroll right to the end, then stop to capture">⬌ H</button>
-            <button id="cropSegmentScrollV" class="cap-edit-btn" title="Vertical segment capture, then open the editor">✂ ⬍V</button>
-            <button id="cropSegmentScrollH" class="cap-edit-btn" title="Horizontal segment capture, then open the editor">✂ ⬌H</button>
+            <button id="segmentScrollV"     class="cap-save-btn" title="Mark start, scroll down to the end, then stop to capture">⬍ Down</button>
+            <button id="segmentScrollH"     class="cap-save-btn" title="Mark start, scroll right to the end, then stop to capture">⬌ Across</button>
+            <button id="cropSegmentScrollV" class="cap-edit-btn" title="Vertical segment capture, then open the editor">✂ Down</button>
+            <button id="cropSegmentScrollH" class="cap-edit-btn" title="Horizontal segment capture, then open the editor">✂ Across</button>
           </div>
         </div>
         <div class="capture-group-row">
@@ -1062,6 +1054,8 @@
             <button id="cropScreenshotWindow" class="cap-edit-btn" title="Capture a whole application window, then open the editor">✂ Pick</button>
           </div>
         </div>
+        <!-- Symbols alone ("↕ V", "✂ ⬍V") told a newcomer nothing: say what the two kinds of button and the two long captures are. -->
+        <span class="helper-text">Blue buttons save the picture; dashed <b>✂</b> buttons open it in the editor first. <b>Scroll</b> takes the whole length of the page; <b>Segment</b> only the part you mark: press, scroll to where it should end, press again.</span>
       </div>
 
       <!-- Visible -->
@@ -1284,6 +1278,17 @@
   <!-- ===== TAB: SETTINGS ===== -->
   <div class="tab-panel" id="tabSettings">
 
+    <!-- Tabs card — allowAllTabs (storage.local): every web page counts as turned on
+         (tab-activation.js, bg IS_TAB_ACTIVATED / REGISTER_FRAME) -->
+    <div class="card" id="allowAllTabsCard">
+      <h3 style="margin:0 0 6px;">Tabs</h3>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; padding: 3px 0;">
+        <input type="checkbox" id="allowAllTabs" style="width: auto; margin: 0; cursor: pointer;" />
+        Allow on all tabs
+      </label>
+      <span class="helper-text">On: record, pick elements and use the recording hotkeys on any web page, without turning Pocket QA on for each tab. Off (default): it works only on tabs you turn on (Turn on in the status bar, or when Start Recording, Play or 🎯 Pick asks). Browser pages such as New Tab stay unavailable either way.</span>
+    </div>
+
     <!-- Hotkeys card -->
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
@@ -1343,7 +1348,7 @@
         </div>
       </div>
       <div class="activation-required-notice" role="status">
-        🔒 Recording hotkeys are available after activating on the current tab
+        🔒 Recording hotkeys work once Pocket QA is turned on for the current tab — or turn on Allow on all tabs above
       </div>
       <span class="helper-text" style="margin-top: 4px; display: block;">Click Set → press any key combo. ESC to cancel.</span>
       <button id="resetHotkeys" class="secondary" style="margin-top: 6px; font-size: 11px; padding: 5px 10px;">Reset to defaults</button>
@@ -1383,7 +1388,7 @@
           <option value="10">10 seconds</option>
         </select>
       </div>
-      <span class="helper-text">On: press hotkey/button → countdown → open dropdown → auto capture. Off: capture immediately (default).</span>
+      <span class="helper-text">On (default): press the hotkey or button → a countdown → open a dropdown → it captures. Off: it captures at once.</span>
 
       <div class="step-label step-label-divider-top">Watermark</div>
       <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer; padding:3px 0;">
@@ -1609,6 +1614,9 @@
         <button id="confirmModalCancel" class="secondary">Cancel</button>
         <button id="confirmModalOk">OK</button>
       </div>
+      <!-- showConfirm(…, { link }): another way out (e.g. to the setting behind the question);
+           after the buttons, so the dialog's first focus stays on Cancel -->
+      <button id="confirmModalLink" class="link-btn confirm-modal-link" type="button" hidden></button>
     </div>
   </div>
 
@@ -1975,14 +1983,14 @@
     </div>
   </div>
 
-  <!-- Record's lock overlay (always in DOM for smooth transitions). The Data
-       tab's lives inside #dataGatedZone, since it covers two cards, not a tab. -->
+  <!-- Record's lock overlay (always in DOM for smooth transitions), on a page
+       Pocket QA cannot use; the Tools tab reads storage only and has none. -->
   <div class="lock-overlay" id="lockOverlayRecord">
     <div class="lock-overlay-card">
       <div class="lock-overlay-icon">🔒</div>
-      <h3 class="lock-overlay-title" id="lockOverlayRecordTitle">Activate on Tab</h3>
-      <p class="lock-overlay-sub" id="lockOverlayRecordSub">Click Activate to enable recording and playback on the current tab.</p>
-      <button class="lock-overlay-activate-btn" id="lockOverlayRecordBtn">Activate</button>
+      <!-- A first click on the icon is often on the New Tab page: say what to do next. -->
+      <h3 class="lock-overlay-title" id="lockOverlayRecordTitle">Not available on this page</h3>
+      <p class="lock-overlay-sub" id="lockOverlayRecordSub">Open a website (an http or https page) in this tab, then click the Pocket QA icon again. Browser pages such as the New Tab page or Settings cannot be tested.</p>
     </div>
   </div>
 
@@ -2022,6 +2030,6 @@
   </div>
 
   <!-- Demo interactivity (replaces popup/init.js + chrome.* logic) -->
-  <script src="demo.js?v=8a6e3969"></script>
+  <script src="demo.js?v=712a5916"></script>
 </body>
 </html>
