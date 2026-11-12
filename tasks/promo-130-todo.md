@@ -5,9 +5,9 @@ với mục 5). Extension: `../Pocket QA`, bản Store 1.0.30 = **`4fb11ce`** (*
 1.0.27 = `e98ed43`. Nguyên tắc chốt 2026-11-12: **ưu tiên giống extension thực tế**.
 
 ## Trước Task 1
-- [ ] Trả lời 3 câu hỏi mở (plan mục 7); mặc định: Store = `4fb11ce` · thông điệp "tắt trên mỗi tab" vào **FAQ** ·
+- [x] Trả lời 3 câu hỏi mở (plan mục 7); mặc định: Store = `4fb11ce` · thông điệp "tắt trên mỗi tab" vào **FAQ** ·
   **Phase 1 deploy trước**. Ghi câu trả lời vào plan mục 7.
-- [ ] `c8ba363` (chữ trang API Tests: Data → Tools; popup không đổi) có lên Store trước Checkpoint 1 không? Quyết định
+- [x] `c8ba363` (chữ trang API Tests: Data → Tools; popup không đổi) có lên Store trước Checkpoint 1 không? Quyết định
   `<store>` cho Task 4 và `alt` của `api-env` — plan mục 9.
 - [x] Nhánh làm việc: `git switch -c promo-130 master`.
 
@@ -72,13 +72,13 @@ tab Highlight hiện `— Other pages —` như `popup/highlight.js` (trước �
 `ImageChops.difference`, in vùng khác (bbox). Chỗ nào không seed được y hệt thì sửa `demo.js` theo popup thật, không ngược lại.
 
 **Acceptance criteria:**
-- [ ] `node capture-shots.mjs parity` sinh 20 ảnh (5 tab × 2 theme × demo/thật) + báo cáo bbox khác biệt mỗi cặp.
-- [ ] Khác biệt chỉ nằm ở vùng liệt kê trong README (thời gian tương đối, banner cập nhật…), mỗi vùng một lý do.
-- [ ] Cặp `shot-popup-original` / `shot-popup-demo` trong README thay bằng kết quả parity.
+- [x] `node capture-shots.mjs parity` sinh 20 ảnh (5 tab × 2 theme × demo/thật) + báo cáo bbox khác biệt mỗi cặp.
+- [x] Khác biệt chỉ nằm ở vùng liệt kê trong README (thời gian tương đối, banner cập nhật…), mỗi vùng một lý do.
+- [x] Cặp `shot-popup-original` / `shot-popup-demo` trong README thay bằng kết quả parity.
 
 **Verification:**
-- [ ] Chạy 2 lần liền: cùng bbox (không nhiễu).
-- [ ] Cố ý đổi một chữ trong `demo.js` → parity báo khác ở đúng chỗ đó → hoàn lại.
+- [x] Chạy 2 lần liền: cùng bbox (không nhiễu).
+- [x] Cố ý đổi một chữ trong `demo.js` → parity báo khác ở đúng chỗ đó → hoàn lại.
 
 **Dependencies:** Task 1
 
@@ -94,15 +94,15 @@ several · on a schedule · from a CSV*, progress panel → run panel + Now Play
 Across**, SQL mở bằng tiếng Anh, thông báo bật sẵn, thêm hàng *Finished · no checks* vào bảng verdict `run-results`.
 
 **Acceptance criteria:**
-- [ ] `grep -n "Data tab\|Data →\|Data ›\|tab Data\|Activate\|activated\|kích hoạt\|Scroll V\|Segment V\|Vietnamese by default\|progress panel" features-*.js`
+- [x] `grep -n "Data tab\|Data →\|Data ›\|tab Data\|Activate\|activated\|kích hoạt\|Scroll V\|Segment V\|Vietnamese by default\|progress panel" features-*.js`
   chỉ còn chỗ cố ý (ghi lý do trong commit).
-- [ ] Bảng verdict có *✓ Finished · no checks* + ý gợi ý thêm Assert; `settings` không còn "Tick the categories".
-- [ ] Shape EN = VI.
+- [x] Bảng verdict có *✓ Finished · no checks* + ý gợi ý thêm Assert; `settings` không còn "Tick the categories".
+- [x] Shape EN = VI.
 
 **Verification:**
-- [ ] `checkShape()` = `[]`; `checkLayout()` sạch trên `recording`, `playback`, `csv`, `run-results`, `screenshots`,
+- [x] `checkShape()` = `[]`; `checkLayout()` sạch trên `recording`, `playback`, `csv`, `run-results`, `screenshots`,
   `settings`, `sql-test-designer` + 6 trang Tools, EN + VI.
-- [ ] `node stamp-assets.mjs`.
+- [x] `node stamp-assets.mjs`.
 
 **Dependencies:** Task 1 (chữ phải khớp demo mới)
 
@@ -117,12 +117,12 @@ Across**, SQL mở bằng tiếng Anh, thông báo bật sẵn, thêm hàng *Fin
 `tab: 'tabRecord'`, `card: 'csvRunCard'` ở cả EN và VI.
 
 **Acceptance criteria:**
-- [ ] `feature.html?id=csv` mở popup ở Record & Play, thẻ CSV Data-Driven Run mở sẵn, trong khung nhìn, light + dark.
-- [ ] Đổi theme / đổi ngôn ngữ vẫn giữ `card=`; trang không có `card` không đổi hành vi.
+- [x] `feature.html?id=csv` mở popup ở Record & Play, thẻ CSV Data-Driven Run mở sẵn, trong khung nhìn, light + dark.
+- [x] Đổi theme / đổi ngôn ngữ vẫn giữ `card=`; trang không có `card` không đổi hành vi.
 
 **Verification:**
-- [ ] Kiểm ở 1366×657, 1280×632, 375×812; `checkShape()` = `[]` (field `card` có ở cả hai file).
-- [ ] `node sync-from-source.mjs`; `node stamp-assets.mjs`.
+- [x] Kiểm ở 1366×657, 1280×632, 375×812; `checkShape()` = `[]` (field `card` có ở cả hai file).
+- [x] `node sync-from-source.mjs`; `node stamp-assets.mjs`.
 
 **Dependencies:** Task 2 (cùng sửa `features-*.js`)
 
@@ -140,14 +140,14 @@ Chạy hết `SHOTS`, so với ảnh cũ, chỉ commit ảnh khác; kiểm `dbto
 (`css/dbtools.css` đổi 177 dòng); chụp lại `og-image.png`. Đóng Task 21 trong `promo-update-todo.md`.
 
 **Acceptance criteria:**
-- [ ] `grep -rn "shot-sqlcases\|shot-dbtools-manager" --include=*.js --include=*.html --include=*.md . | grep -v tasks/`
+- [x] `grep -rn "shot-sqlcases\|shot-dbtools-manager" --include=*.js --include=*.html --include=*.md . | grep -v tasks/`
   rỗng; `src` trong `features-*.js` trỏ `shot-sql-workspace*` / `shot-db-manager*`; ảnh cũ đã xoá.
-- [ ] Mọi ảnh dùng trên site có light + dark, `.png` + `.webp`, chụp từ `$TEMP/pqa-130`; README ghi `4fb11ce`.
-- [ ] `og-image.png` hiện thanh trạng thái *Active* + hàng action mới.
+- [x] Mọi ảnh dùng trên site có light + dark, `.png` + `.webp`, chụp từ `$TEMP/pqa-130`; README ghi `4fb11ce`.
+- [x] `og-image.png` hiện thanh trạng thái *Active* + hàng action mới.
 
 **Verification:**
-- [ ] `EXT_REPO="$TEMP/pqa-130" node capture-shots.mjs` không shot nào lỗi.
-- [ ] Xem từng ảnh đổi trên trang của nó ở 1366×657, light + dark; `checkLayout()` sạch.
+- [x] `EXT_REPO="$TEMP/pqa-130" node capture-shots.mjs` không shot nào lỗi.
+- [x] Xem từng ảnh đổi trên trang của nó ở 1366×657, light + dark; `checkLayout()` sạch.
 
 **Dependencies:** Task 1b (cùng sửa `capture-shots.mjs`), Task 2–3 (cùng sửa `features-*.js`)
 
@@ -163,11 +163,11 @@ Chạy hết `SHOTS`, so với ảnh cũ, chỉ commit ảnh khác; kiểm `dbto
 `v1.0.30, 4fb11ce`. Nếu câu hỏi 2 chọn thẻ Privacy thay vì FAQ thì thêm thẻ ở đây (kiểm một-section-một-màn).
 
 **Acceptance criteria:**
-- [ ] `grep -n "1.0.27\|e98ed43" index.html` rỗng.
-- [ ] Không có request mạng / permission mới trong diff (ghi lệnh đã chạy vào commit message).
+- [x] `grep -n "1.0.27\|e98ed43" index.html` rỗng.
+- [x] Không có request mạng / permission mới trong diff (ghi lệnh đã chạy vào commit message).
 
 **Verification:**
-- [ ] `git -C "../Pocket QA" diff e98ed43 4fb11ce -- manifest.json` chỉ `version`; `checkLayout()` trên trang chủ sạch.
+- [x] `git -C "../Pocket QA" diff e98ed43 4fb11ce -- manifest.json` chỉ `version`; `checkLayout()` trên trang chủ sạch.
 
 **Dependencies:** Task 1
 
@@ -176,11 +176,11 @@ Chạy hết `SHOTS`, so với ảnh cũ, chỉ commit ảnh khác; kiểm `dbto
 **Estimated scope:** XS
 
 ## Checkpoint 1 — merge + deploy
-- [ ] 12 trang + trang chủ không còn câu sai so với `4fb11ce` (rà lại bảng 3a từng dòng).
-- [ ] Task 1b: khác biệt chỉ trong danh sách cho phép.
-- [ ] `checkLayout()` sạch ở mọi cỡ trong README, EN + VI, light + dark; `checkShape()` = `[]`.
-- [ ] Người dùng duyệt → merge `promo-130` vào `master` → push (GitHub Pages deploy) → kiểm site thật.
-- [ ] Người dùng chốt danh sách section/ảnh của Phase 2.
+- [x] 12 trang + trang chủ không còn câu sai so với `4fb11ce` (rà lại bảng 3a từng dòng).
+- [x] Task 1b: khác biệt chỉ trong danh sách cho phép.
+- [x] `checkLayout()` sạch ở mọi cỡ trong README, EN + VI, light + dark; `checkShape()` = `[]`.
+- [x] Người dùng duyệt → merge `promo-130` vào `master` → push (GitHub Pages deploy) → kiểm site thật.
+- [x] Người dùng chốt danh sách section/ảnh của Phase 2.
 
 ---
 
@@ -195,8 +195,8 @@ vị trí ở thẻ Add (seed scenario có Switch, bấm `.ins-gap` thật). Sec
 Switch/Condition, Paste vào scenario rỗng, case chạy scenario khác có hàng riêng. Sửa point của *The action list*.
 
 **Acceptance criteria:**
-- [ ] `capture-shots.mjs pop-insert` cho ảnh ổn định (chạy 2 lần giống nhau), light + dark.
-- [ ] Section EN + VI, chữ trên hàng giả chép đúng `popup/record/insert-point.js`.
+- [x] `capture-shots.mjs pop-insert` cho ảnh ổn định (chạy 2 lần giống nhau), light + dark.
+- [x] Section EN + VI, chữ trên hàng giả chép đúng `popup/record/insert-point.js`.
 
 **Verification:** Verification chung; `hiddenByFit()` = `[]` cho section mới.
 
@@ -213,8 +213,8 @@ thao tác (đứng yên). Dựng cách chụp overlay trên trang (tab web + `ac
 dùng lại. Section: bước được đặt tên theo phần tử, 🔒 ô mật khẩu, khung đang ghi, Start thành *● Recording…*.
 
 **Acceptance criteria:**
-- [ ] Ảnh chụp từ `content.js` thật (khung ghi ~dòng 121–135), không vẽ lại.
-- [ ] `recording` ≤ 8 section nội dung sau Task 7a + 7b.
+- [x] Ảnh chụp từ `content.js` thật (khung ghi ~dòng 121–135), không vẽ lại.
+- [x] `recording` ≤ 8 section nội dung sau Task 7a + 7b.
 
 **Verification:** Verification chung; `hiddenByFit()` = `[]`.
 
@@ -231,8 +231,8 @@ dùng lại. Section: bước được đặt tên theo phần tử, 🔒 ô m�
 được popup + trang cùng lúc; không thì chỉ chữ.
 
 **Acceptance criteria:**
-- [ ] Câu báo chép đúng `popup/record/show-on-page.js:78–96`.
-- [ ] Không ảnh giả; nếu bỏ `pop-eye`, ghi lý do vào task này.
+- [x] Câu báo chép đúng `popup/record/show-on-page.js:78–96`.
+- [x] Không ảnh giả; nếu bỏ `pop-eye`, ghi lý do vào task này.
 
 **Verification:** Verification chung; section *Selectors* vẫn ≤ 5 point, `hiddenByFit()` = `[]`.
 
@@ -248,8 +248,8 @@ dùng lại. Section: bước được đặt tên theo phần tử, 🔒 ô m�
 `pop-nowplaying` (Now Playing trong popup, ■ Stop, thanh tiến độ). Section *Watch a run*; point *Schedules* nói chỗ mới.
 
 **Acceptance criteria:**
-- [ ] Cả hai ảnh từ extension thật, chụp 2 lần giống nhau.
-- [ ] Chữ ▶/⏸/⏳, ■ Stop khớp `content.js` RUN PANEL / `bg/run-panel.js`.
+- [x] Cả hai ảnh từ extension thật, chụp 2 lần giống nhau.
+- [x] Chữ ▶/⏸/⏳, ■ Stop khớp `content.js` RUN PANEL / `bg/run-panel.js`.
 
 **Verification:** Verification chung; `hiddenByFit()` = `[]`.
 
@@ -266,8 +266,8 @@ thông báo kết thúc bật sẵn; bug report / thất bại đọc theo tên 
 for it by ID and CSS)*.
 
 **Acceptance criteria:**
-- [ ] Chữ verdict + gợi ý chép đúng `shared/verdict.js:37` và popup.
-- [ ] Ảnh light + dark.
+- [x] Chữ verdict + gợi ý chép đúng `shared/verdict.js:37` và popup.
+- [x] Ảnh light + dark.
 
 **Verification:** Verification chung; `hiddenByFit()` = `[]`.
 
@@ -284,8 +284,8 @@ mở bằng Start Recording trên tab chưa bật). Section *Turn on, Turn off, 
 giờ bắt phím ở site khác); *Notifications* nói 4 nhóm bật sẵn.
 
 **Acceptance criteria:**
-- [ ] Chữ hộp hỏi chép đúng `popup/tab-activation.js` (`TAB_OFF`, ~dòng 48).
-- [ ] Ảnh light + dark, từ popup thật.
+- [x] Chữ hộp hỏi chép đúng `popup/tab-activation.js` (`TAB_OFF`, ~dòng 48).
+- [x] Ảnh light + dark, từ popup thật.
 
 **Verification:** Verification chung; `hiddenByFit()` = `[]`.
 
@@ -303,8 +303,8 @@ cho `dbtools-rollback`). Point trên `db-test-session`: hỏi trước lệnh đ
 vượt trần snapshot) — *Run anyway* / *Cancel and fix it*. Mỗi trang 3 trang tool thêm một point: một giao diện, cột trái thu gọn.
 
 **Acceptance criteria:**
-- [ ] Chữ chép đúng `dbtools/i18n/en.js` / `vi.js` (`risk.*`).
-- [ ] Ảnh `db-risk` từ code thật của extension, light + dark.
+- [x] Chữ chép đúng `dbtools/i18n/en.js` / `vi.js` (`risk.*`).
+- [x] Ảnh `db-risk` từ code thật của extension, light + dark.
 
 **Verification:** Verification chung trên 3 trang; `hiddenByFit()` = `[]`.
 
@@ -320,8 +320,8 @@ vượt trần snapshot) — *Run anyway* / *Cancel and fix it*. Mỗi trang 3 t
 tab?"* (nếu câu hỏi 2 = FAQ); `og-image.png` nếu hero đổi.
 
 **Acceptance criteria:**
-- [ ] `#faq` vẫn một màn ở 1366×657 / 1280×632 (lố thì đưa vào `.more` trên điện thoại).
-- [ ] EN + VI cùng shape.
+- [x] `#faq` vẫn một màn ở 1366×657 / 1280×632 (lố thì đưa vào `.more` trên điện thoại).
+- [x] EN + VI cùng shape.
 
 **Verification:** `checkLayout()` trang chủ sạch, EN + VI, light + dark.
 
@@ -332,7 +332,28 @@ tab?"* (nếu câu hỏi 2 = FAQ); `og-image.png` nếu hero đổi.
 **Estimated scope:** S
 
 ## Checkpoint 2 — merge + push
-- [ ] Section mới: `hiddenByFit()` = `[]` ở 1366×657 / 1280×632; `checkShape()` = `[]`; `checkLayout()` sạch, EN + VI,
+- [x] Section mới: `hiddenByFit()` = `[]` ở 1366×657 / 1280×632; `checkShape()` = `[]`; `checkLayout()` sạch, EN + VI,
   light + dark.
-- [ ] Mọi ảnh mới có trong bảng screenshots README, chụp từ `4fb11ce`.
-- [ ] Người dùng duyệt → merge → push → kiểm site thật.
+- [x] Mọi ảnh mới có trong bảng screenshots README, chụp từ `4fb11ce`.
+- [x] Người dùng duyệt → merge → push → kiểm site thật.
+
+---
+
+## Kết quả (2026-11-12)
+
+Người dùng: "thực hiện hết tất cả rồi commit và push" → làm Phase 1 + Phase 2 một mạch, merge một lần (câu hỏi 3: gộp).
+Câu hỏi 1, 2 theo mặc định: Store = `4fb11ce`; thông điệp "tắt trên mỗi tab" vào FAQ. `c8ba363` chưa lên Store →
+`<store>` = `4fb11ce`, chú thích `api-env` giữ *From the Data tab* (plan mục 9).
+
+| Task | Commit | Ghi chú |
+|---|---|---|
+| 1 | `f4f34bd` | Thêm: ô *Other pages* ở Highlight |
+| 1b | `94138e8` | 8/10 cặp trùng từng pixel; Record & Play chỉ khác ↩ Undo (README *Parity check*). Tìm ra: font 75% của trang extension, `--header-h` 71px, badge Highlight, dạng hiện biến, thống kê Highlight |
+| 2, 3 | `78a5baa` | |
+| 4, 5 | `982dffc` | Ảnh khác thật mới commit (`api-import` giữ); sửa thêm: AM/PM của `pop-schedule`, toast che hàng, countdown của bản cài mới; `dbtools-rollback` giữ (panel không đổi) |
+| 6–11 | `6770e0d` | Task 6 tách vào từng trang; 7c: 5 point Selectors gộp còn 3 để có ảnh 👁 |
+| 12 | commit cuối | Thẻ recording; FAQ *Why does it ask to turn on a tab?* |
+
+Checkpoint 1 + 2: `checkLayout()` sạch ở 1366×657, 1280×632, 375×812 (+ trang chủ 1920×945), EN + VI; `checkShape()`
+= `[]`; `hiddenByFit()` = `[]` ở 1366×657 và 1280×632 cho cả 12 trang. Ở 1920×945, *Image Diff* (screenshots) và
+*From popup to code* (export) thu nhỏ ảnh cho vừa — hai section này không đổi trong đợt này.

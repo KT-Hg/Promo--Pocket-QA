@@ -208,7 +208,12 @@ VI, light + dark → người dùng duyệt → merge → push.
 - ~~Ảnh `db-risk`?~~ → **Làm, bằng code thật** của extension (Task 6).
 - Thêm: so pixel demo ↔ popup thật (Task 1b).
 
-**Còn mở** (mặc định in đậm):
+**Đã trả lời** (2026-11-12, người dùng bảo làm hết rồi commit và push — dùng mặc định cho 1–2, gộp cho 3):
+1. Store = **`4fb11ce`** ✓ (`c8ba363` chưa lên Store — mục 9).
+2. **FAQ** ✓ — *Why does it ask to turn on a tab?*
+3. **Gộp một lần** — Phase 1 + 2 merge cùng nhau.
+
+Câu hỏi gốc:
 1. Bản 1.0.30 trên Store dựng từ **`4fb11ce`** (HEAD hiện tại)?
 2. Thông điệp "tắt trên mỗi tab cho tới khi bạn bật": **FAQ** hay cả một thẻ trong Privacy (đang 4 thẻ vừa một màn)?
 3. Hai lần merge: **Phase 1 deploy trước**, Phase 2 sau — hay gộp một lần?
