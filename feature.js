@@ -204,7 +204,7 @@
 
   // The popup in the hero, opened on this feature's tab in the page's theme (reloaded when the page theme flips)
   const frame = $('#popupFrame'), full = $('#previewFullLink');
-  const syncPreview = () => { const src = 'popup-demo.html?tab=' + E.tab + '&theme=' + theme(); frame.src = src; full.href = src; };
+  const syncPreview = () => { const src = 'popup-demo.html?tab=' + E.tab + (E.card ? '&card=' + E.card : '') + '&theme=' + theme(); frame.src = src; full.href = src; };
   syncPreview();
   document.addEventListener('themechange', syncPreview);
   // The screenshots are fixed captures of the same UI, so they follow the preview's theme, which demo.js

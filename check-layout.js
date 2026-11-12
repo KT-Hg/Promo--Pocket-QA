@@ -21,7 +21,7 @@ window.hiddenByFit = () => {
 // Feature pages: every translatable English string has a Vietnamese one at the same path (and nothing extra).
 // In a feature page: checkShape() → [] when complete.
 window.checkShape = (EN = window.FEATURES_EN, VI = window.FEATURES_VI) => {
-  const skip = ['tab', 'src', 'srcDark', 'code', 'imagesLayout', 'summary'];   // English-only, or not shown
+  const skip = ['tab', 'card', 'src', 'srcDark', 'code', 'imagesLayout', 'summary'];   // English-only, or not shown
   const out = [];
   const walk = (e, v, path) => {
     if (typeof e === 'string') { if (typeof v !== 'string' || !v.trim()) out.push('missing ' + path); return; }

@@ -632,6 +632,17 @@
     var btn = tab && $('tabNav') ? $('tabNav').querySelector('[data-tab="' + tab + '"]') : null;
     if (btn) switchMainTab(btn);
 
+    // ?card=<id>: that card opened and brought into view, as a visitor would
+    // open it — the CSV page's card sits at the bottom of Record & Play. The
+    // popup's scroller is its <body> (max-height 600px), so that is what
+    // scrolls: scrollIntoView would drag the landing page around the frame too.
+    var card = $(params.get('card') || '');
+    if (card && card.classList.contains('card')) {
+      card.classList.remove('collapsed');
+      var header = document.querySelector('.sticky-header');
+      document.body.scrollTop += card.getBoundingClientRect().top - (header ? header.offsetHeight : 0) - 8;
+    }
+
     // Theme is fully settled now (deep-link ?theme= wins over the saved one
     // above if both were present) — tell the parent what it ended up being.
     notifyParentTheme();
