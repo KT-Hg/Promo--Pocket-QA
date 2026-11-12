@@ -100,6 +100,8 @@ const API_STATE = {
   ],
   envId: 'dev', folderId: 'shop', caseId: 'order'
 };
+// What background.js writes on install (chrome.runtime.onInstalled): cleared storage would show the countdown off
+const FRESH_INSTALL = { screenshotCountdownEnabled: true, screenshotCountdownSeconds: 3 };
 const WEBP = 'import sys; from PIL import Image; Image.open(sys.argv[1]).save(sys.argv[2], lossless=True, quality=100, method=6)';
 try { execFileSync('python', ['-c', 'import PIL'], { stdio: 'ignore' }); } catch {
   console.error('✗ The WebP twins need Python with Pillow (pip install pillow).');
@@ -143,13 +145,52 @@ const own = (value, startAt, endAt) => ({ value, scenarioId: '__self__', scenari
 // A checkout whose coupon always fails: played, it leaves a real Failed run on the Last run card
 const failingRun = async ({ scenario, play, set }) => {
   const id = await scenario('Checkout with coupon', [
-    { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Type the login email' },
-    { type: 'input', ...css('#coupon'), value: 'SPRING25' },
-    click('#apply', 'Apply the coupon'),
+    // named as the recorder names them (content.js _stepName): what the page calls the element
+    { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+    { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+    click('#apply', 'Apply'),
     { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: 'Saved', label: 'Check the toast' }
   ]);
   await set({ lastSelectedScenario: id });
   await play(id);
+};
+
+// Test sessions (dbtools/session.js, chrome.storage.local): what Adminer would have recorded on a shop's test
+// database — one session still recording, three ended
+const dbSessions = () => {
+  const origin = 'http://localhost:8080', conn = { driver: 'server', server: 'localhost', username: 'qa', db: 'shop_test' };
+  const key = [origin, 'server', 'localhost', 'shop_test', ''].join('|');
+  const at = (hms, day = 12) => `2026-11-${String(day).padStart(2, "0")}T${hms}`;
+  let n = 0;
+  const change = (op, table, time, rows, extra = {}) => ({ id: 'ch_' + (++n), at: at(time), op, table, source: 'edit-form',
+    keyCols: rows[0] && Object.keys(rows[0].where).length ? Object.keys(rows[0].where) : [], rows, warnings: [], verified: true, ...extra });
+  const row = (where, before, after) => ({ where, before, after });
+  const session = (id, name, started, closed, changes, c = conn) => ({ id, name, conn: c, origin, base: '/adminer.php',
+    key: [origin, 'server', c.server, c.db, ''].join('|'), guard: false, resumeId: '', startedAt: started, closedAt: closed,
+    nextSeq: changes.length + 1, changes: changes.map((x, i) => ({ seq: i + 1, undone: false, ...x })) });
+  // An ended session's changes: only their number shows in the rail
+  const filler = (count, table, day) => Array.from({ length: count }, (_, i) =>
+    ({ ...change('update', table, '10:00:00', [row({ id: 100 + i }, { status: 'draft' }, { status: 'live' })]), at: at(`10:${10 + i}:00`, day) }));
+  const current = session('ts_checkout', 'Checkout · coupon SUMMER20', at('14:01:48'), null, [
+    change('insert', 'coupons', '14:02:11', [row({ id: 305 }, null, { id: 305, code: 'SUMMER20', percent: 20, expires_at: '2026-11-30' })]),
+    change('update', 'customers', '14:03:40', [row({ id: 77 }, { tier: 'silver' }, { tier: 'gold' })], { undone: true }),
+    change('update', 'orders', '14:05:02', [row({ id: 1042 }, { status: 'pending', coupon_code: null, total: '120.00' }, { status: 'paid', coupon_code: 'SUMMER20', total: '96.00' })]),
+    change('delete', 'cart_items', '14:06:30', [row({ id: 5531 }, { id: 5531, cart_id: 918, product_id: 12, qty: 2, unit_price: '24.00', added_at: '2026-11-12 13:58:40' }, null)]),
+    change('update', 'products', '14:08:15', [12, 13, 14].map(id => row({ id }, { stock: 40 }, { stock: 38 }))),
+    change('update', 'products', '14:09:02', [], { warnings: ['no-before'] }),
+    change('update', 'orders', '14:10:47', [row({ id: 1042 }, { status: 'paid' }, { status: 'shipped' })])
+  ]);
+  return {
+    dbtoolsSessions: {
+      ts_checkout: current,
+      ts_refund: session('ts_refund', 'Refund flow — partial refund', at('16:14:00', 11), at('16:40:00', 11), filler(4, 'refunds', 11)),
+      ts_loyalty: session('ts_loyalty', 'Loyalty tier upgrade', at('10:20:00', 10), at('10:52:00', 10), filler(3, 'customers', 10)),
+      ts_banners: session('ts_banners', 'Seed promo banners', at('15:05:00', 9), at('15:30:00', 9), filler(12, 'banners', 9),
+        { driver: 'server', server: 'staging-db', username: 'qa', db: 'shop' })
+    },
+    dbtoolsActive: { [key]: 'ts_checkout' },
+    dbtoolsFocus: { [key]: 'ts_checkout' }
+  };
 };
 
 // One entry per picture. `setup` runs in the page (with HELPERS and THEME) and returns the selector of the
@@ -223,12 +264,48 @@ const SHOTS = [
     `
   },
   {
+    // The SQL designer's whole workspace (tool-base): the first example analysed, its query in the rail, the case
+    // list, and one case open in the inspector with the rows it needs
+    name: 'sql-workspace',
+    page: 'sqltest.html',
+    size: [1440, 830],
+    setup: `
+      await until(() => $('#btnAnalyze') && $('#sqlInput').value, 'the page to start');
+      await english('#toggleLang');
+      await themed('#toggleTheme', THEME);
+      $('#btnAnalyze').click();
+      await until(() => document.querySelectorAll('button.case').length, 'the cases');
+      ([...document.querySelectorAll('button.case')].find(b => /above the threshold/.test(b.textContent)) || $('button.case')).click();
+      await until(() => $('#app').classList.contains('insp-open'), 'the inspector');
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      await wait(500);
+      return '#app';
+    `
+  },
+  {
+    // Test sessions & rollback (dbtest.html): a session still recording, its changes newest first, a DELETE and an
+    // UPDATE opened to their before / after, one change already undone; three older sessions in the rail
+    name: 'db-manager',
+    page: 'dbtest.html',
+    size: [1360, 930],
+    seed: ({ set }) => set(dbSessions()),
+    setup: `
+      await until(() => document.querySelectorAll('details.change').length === 7, 'the session');
+      await english('#btnLang');
+      await themed('#toggleTheme', THEME);
+      // The DELETE on cart_items and the UPDATE that applied the coupon to order 1042 (dbSessions: ch_4, ch_3)
+      for (const id of ['ch_4', 'ch_3']) $('details.change[data-id="' + id + '"] > summary').click();
+      await wait(400);
+      return 'body';
+    `
+  },
+  {
     // DB Test Session's manager page: its Settings dialog (the parts held back by TABLE_COPIES stay hidden, as shipped)
     name: 'db-settings',
     page: 'dbtest.html',
     size: [1100, 900],
     setup: `
-      await until(() => $('#btnSettings'), 'the page to start');
+      await until(() => $('#btnSettings') && $('#btnSettings').textContent.trim(), 'the page to start');   // its i18n painted: the module's handlers are on
       await english('#btnLang');
       await themed('#toggleTheme', THEME);
       $('#btnSettings').click();
@@ -238,7 +315,8 @@ const SHOTS = [
     `
   },
   {
-    // Record & Play's action list: a Condition, a Switch block of two cases, an Upload File step, a disabled step
+    // Record & Play's action list: steps read by name, a password step (🔒), a Condition, a Switch block of two
+    // cases, an Upload File step, a disabled step
     name: 'pop-actions',
     page: 'popup.html',
     size: [480, 1400],
@@ -246,25 +324,26 @@ const SHOTS = [
       await send(vars({ role: 'admin', email: 'qa@shop.test' }));
       const id = await scenario('Checkout', [
         { type: 'navigate', url: base + '/page' },
-        { type: 'input', ...css('#email'), value: '${email}', label: 'Type the login email' },
-        click('#apply', 'Apply the coupon'),
+        { type: 'input', ...css('#email'), value: '${email}', label: 'Email' },
+        { type: 'input', ...css('#password'), value: 'Spring-2026!', label: 'Password', secret: true },
+        click('#apply', 'Apply'),
         { type: 'condition', conditionType: 'elementVisible', ...css('.promo'), skipCount: 1 },
-        click('.promo .close'),
-        { type: 'switch', switchVar: '${role}', cases: [own('admin', 7, 8), own('user', 9, 9)] },
-        click('#admin-orders'),
+        click('.promo .close', 'Close'),
+        { type: 'switch', switchVar: '${role}', cases: [own('admin', 8, 9), own('user', 10, 10)] },
+        click('#admin-orders', 'All orders'),
         { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: 'Saved' },
-        click('#my-orders'),
+        click('#my-orders', 'My orders'),
         { type: 'uploadFile', ...css('#invoice'), uploadMode: 'input', folderPath: 'C:\\\\data', fileNames: ['invoice.pdf'] },
-        click('#logout')
+        click('#logout', 'Log out')
       ]);
-      await send({ type: 'TOGGLE_ACTION_DISABLED', scenarioId: id, index: 10 });
+      await send({ type: 'TOGGLE_ACTION_DISABLED', scenarioId: id, index: 11 });
       await set({ lastSelectedScenario: id });
     },
     setup: `
       await themed('#toggleTheme', THEME);
       tab('tabRecord');
       if (!$('#actions').getClientRects().length) $('#preview').click();
-      await until(() => document.querySelectorAll('#actions > li').length >= 11, 'the action list');
+      await until(() => document.querySelectorAll('#actions > li.action').length >= 12, 'the action list');
       $('#actions').style.maxHeight = 'none';   // the whole list, as a taller popup shows it, instead of a 200px scroller
       await wait(300);
       return mark($('#actions'));
@@ -313,11 +392,12 @@ const SHOTS = [
     },
     setup: `
       await themed('#toggleTheme', THEME);
-      tab('tabData');
+      tab('tabRecord');   // under "Run several · on a schedule · from a CSV" since 1.0.29
       const c = opened($('#scheduledPlaybackCard'));
       const add = async (name, h, m, ampm, label, daily) => {
         pick('#scheduleScenarioSelect', [...$('#scheduleScenarioSelect').options].find(o => o.textContent.includes(name)).value);
-        pick('#stHour', h); pick('#stMin', m); pick('#stAmPm', ampm);
+        pick('#stHour', h); pick('#stMin', m);
+        if ($('#stAmPm').textContent !== ampm) $('#stAmPm').click();   // a button that flips AM / PM, not a select
         type('#scheduleLabel', label);
         $('#scheduleRepeat').checked = daily;
         $('#addSchedule').click();
@@ -326,6 +406,8 @@ const SHOTS = [
       await add('Nightly smoke', '8', '00', 'AM', 'Before stand-up', true);
       await add('Checkout with coupon', '1', '30', 'PM', 'After the deploy', false);
       await until(() => document.querySelectorAll('#scheduleList li').length === 2, 'the schedules');
+      $('#toast').classList.remove('show');   // "Schedule added" would cover the second row
+      await wait(400);
       return mark(c);
     `
   },
@@ -358,7 +440,7 @@ const SHOTS = [
     `
   },
   {
-    // Data → Variables: userEmail renamed to loginEmail — the toast counts what followed
+    // Tools → Variables: userEmail renamed to loginEmail — the toast counts what followed
     name: 'pop-rename',
     page: 'popup.html',
     size: [480, 400],   // short, so the toast (pinned to the bottom) sits right under the Variables card
@@ -492,7 +574,7 @@ const SHOTS = [
     `
   },
   {
-    // Manage → the Environments dialog: Dev in use, its variables, and the Data tab's under them (Dev's email wins)
+    // Manage → the Environments dialog: Dev in use, its variables, and the Tools tab's under them (Dev's email wins)
     name: 'api-env',
     page: 'apitest.html',
     size: [1400, 900],
@@ -607,8 +689,7 @@ const paritySeed = async ({ send, set, scenario }) => {
     lastSelectedScenario: id,
     // demo.js §5b: it played a few minutes ago and passed (its Assert held)
     lastRun: { scenarioId: id, scenarioName: 'Login flow', endedAt: Date.now() - 3 * 60_000, completed: true, verdict: { status: 'passed', checks: 1 }, failures: [] },
-    // background.js onInstalled: a fresh install has the screenshot countdown on (storage was just cleared)
-    screenshotCountdownEnabled: true, screenshotCountdownSeconds: 3,
+    ...FRESH_INSTALL,   // storage was just cleared
     hl_v1: {
       [PARITY_URL]: hl(PARITY_URL, [
         ['yellow', 'Record any web workflow with a single click — no code required.'],
@@ -732,6 +813,8 @@ try {
       const [width, height] = shot.size;
       // Pages remember their last state (open tab, mode, theme): every shot starts from none
       await sw.evaluate('chrome.storage.local.clear().then(() => chrome.storage.sync.clear())');
+      // …and back to what a fresh install has: background.js onInstalled turns the screenshot countdown on
+      await set(FRESH_INSTALL);
       if (shot.seed) await shot.seed(ctx);
       const page = shot.page === 'popup.html'
         ? await browser.openPage(extUrl('popup.html'), { initScript: asActiveTab(`${base}/page`), width, height })

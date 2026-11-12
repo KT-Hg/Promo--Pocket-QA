@@ -866,10 +866,10 @@ var FEATURES_EN = {
         nav: 'Case list',
         lead: 'A three-column workspace in its own tab, not a popup panel.',
         images: [{
-          src: 'screenshots/shot-sqlcases-analysis.webp',
-          srcDark: 'screenshots/shot-sqlcases-analysis-dark.webp',
+          src: 'screenshots/shot-sql-workspace.webp',
+          srcDark: 'screenshots/shot-sql-workspace-dark.webp',
           alt: 'The SQL Test Case Designer: the query rail on the left with the pasted SQL, a generated case list in the middle with stats and technique filters, and a case inspector on the right with the rationale, fixture rows and the query to run.',
-          caption: 'Query, case list and one case’s inspector — 71 cases from one query.'
+          caption: 'Query, case list and one case’s inspector — 67 cases from one query.'
         }],
         points: [
           'Over the list: cases, high priority, conditions, joins and tables.',
@@ -964,8 +964,8 @@ var FEATURES_EN = {
             caption: '↺ Roll back all shows the SQL first; nothing runs until you confirm.'
           },
           {
-            src: 'screenshots/shot-dbtools-manager.webp',
-            srcDark: 'screenshots/shot-dbtools-manager-dark.webp',
+            src: 'screenshots/shot-db-manager.webp',
+            srcDark: 'screenshots/shot-db-manager-dark.webp',
             alt: 'The Test sessions & rollback page: sessions listed on the left, and the selected session’s seven changes on the right, with the before/after of a DELETE on cart_items and an UPDATE on orders open, and one change already undone.',
             caption: 'The manager page: every session, each change’s before and after.'
           }

@@ -793,7 +793,7 @@ var FEATURES_VI = {
         lead: 'Không gian làm việc ba cột trong tab riêng, không phải bảng nhỏ trong popup.',
         images: [{
           alt: 'SQL Test Case Designer: cột truy vấn bên trái với câu SQL đã dán, danh sách case được sinh ở giữa với thống kê và bộ lọc kỹ thuật, và khung chi tiết case bên phải với lý do, các dòng dữ liệu mẫu và câu truy vấn cần chạy.',
-          caption: 'Câu truy vấn, danh sách case và chi tiết một case — 71 case từ một câu.'
+          caption: 'Câu truy vấn, danh sách case và chi tiết một case — 67 case từ một câu.'
         }],
         points: [
           'Trên danh sách: số case, case ưu tiên cao, điều kiện, join và bảng.',
