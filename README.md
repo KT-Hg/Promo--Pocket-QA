@@ -218,8 +218,7 @@ See [`screenshots/`](screenshots/):
 
 | Shot | What it shows |
 |------|---------------|
-| `shot-popup-original.png` | The real `popup.html` rendered without the extension runtime (empty/“Checking…”) |
-| `shot-popup-demo.png`     | The demo popup — identical styling, now populated & active |
+| `shot-parity.png`         | The parity check (below) on Record & Play, light: the real popup \| the demo \| where they differ, in red — only the ↩ Undo button |
 | `shot-landing-hero.png`   | Full landing hero with the popup embedded in the browser mockup |
 | `shot-tab-data.png`       | Data tab (Tools since 1.0.29) — variables, export-code, collapsibles |
 | `shot-tab-highlight.png`  | Highlight tab in **dark** mode — colour-coded highlights, stats, switch |
@@ -234,6 +233,28 @@ See [`screenshots/`](screenshots/):
 | `shot-sql-coverage.png` / `-dark.png` | The Coverage panel for the "Compound WHERE" example — five conditions, so pairwise, 6 of 32 combinations. `capture-shots.mjs` |
 | `shot-pop-*.png` / `-dark.png` | The real popup (`popup.html` opened as a tab on a sample “Checkout” page that `capture-shots.mjs` serves, data seeded through the extension's own messages): `pop-actions` (a Condition, a Switch block, Upload File, a disabled step — on recording and variables), `pop-manage`, `pop-sequence`, `pop-schedule` (playback), `pop-lastrun` and `pop-bugreport` (a scenario really played and failed — run-results), `pop-rename` (a variable renamed — the toast counts what followed), `pop-image-diff` and `pop-shot-settings` (screenshots), `pop-highlights` (seeded `hl_v1`), `pop-backup` (settings). `capture-shots.mjs` |
 | `shot-api-*.png` / `-dark.png` | `apitest.html` with a seeded "Shop" folder (`apiCasesState`) whose requests to `api.shop.example` are answered over CDP inside the browser: `api-send` (a request sent, Passed), `api-checks` (one check of three false — Failed), `api-env` (the Environments dialog over Data tab variables), `api-run` (a folder run: 3 passed, 1 failed, 1 broken), `api-import` (a Postman collection previewed), `api-ask` (the question before a run that writes; not on a page yet). Taken from the Store build, `e98ed43`. `capture-shots.mjs` |
+
+### Parity check: the demo against the real popup
+
+`node capture-shots.mjs parity` (with `EXT_REPO` set as below) seeds the real popup with the data `demo.js` shows —
+the *Login flow* scenario and its nine steps, the four variables, the five highlights on
+`https://app.example.com/login` and the two other pages, the passed Last run three minutes ago, a fresh install's
+settings, the tab turned on — opens it on a tab at that address, and takes each of the five tabs, light and dark,
+at the toolbar popup's 480×600. It takes `popup-demo.html?tab=…&theme=…` at the same size, and Pillow compares each
+pair: identical, or how much differs and where. The real | demo | diff strips go to `PARITY_OUT` (a temp folder by
+default); Record & Play light is copied to `screenshots/shot-parity.png`.
+
+Last run (2026-11-12, `4fb11ce`): **8 of 10 pairs identical**; Record & Play differs in one 12×10 box, light and dark.
+
+| Allowed difference | Why |
+|---|---|
+| ↩ Undo is on in the real popup, greyed in the demo | The seed adds the steps through the worker one by one, and the worker keeps them in its undo history (`bg/storage.js`, per browser session); a popup opened in a later session has nothing to undo, as the demo shows |
+
+What it does not compare: what lies below the first 600px of a tab (the Settings tab's Version card, the bottom of
+Record & Play), hover states, and the landing page's iframe around the demo. What making it pass took is in
+`demo.js`: the header spacer measured as `init.js` does, the Highlight badge only once that tab is opened, the
+variables and highlight stats as `variables.js` / `highlight.js` print them — and in `demo.css`, the 75% body font
+Chromium gives every extension page.
 
 ### Capturing a shot: `capture-shots.mjs`
 

@@ -15,14 +15,15 @@
  *   EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   (default ../Pocket QA)
  *
  * Usage:  node capture-shots.mjs [name…]     no name = every shot below
+ *         node capture-shots.mjs parity      the demo popup against the real one, pixel by pixel (below)
  * Needs:  Edge or Chromium (branded Chrome ignores --load-extension), Python with Pillow for the WebP twins.
  * Exit:   0 = all saved, 1 = no browser / extension / Pillow, or a shot failed.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -567,8 +568,80 @@ const SHOTS = [
   }
 ];
 
+// ── Parity: `node capture-shots.mjs parity` ──────────────────────────────────────────────────────────────────
+// The real popup, seeded with the data demo.js shows (§4–§8), next to popup-demo.html: every tab, both themes, at
+// the toolbar popup's 480×600. Pillow reports where each pair differs and writes real | demo | diff strips to
+// PARITY_OUT (default: a temp folder). README "Parity check" lists the differences that are expected, and why.
+const PARITY_URL = 'https://app.example.com/login';   // the tab the demo's popup is "on"
+// Highlight last: once its tab has been opened the real popup shows its badge (highlight.js loads then), and a
+// fresh demo page does not
+const PARITY_TABS = ['tabRecord', 'tabData', 'tabCapture', 'tabSettings', 'tabHighlight'];
+const PARITY_PAGE = '<!doctype html><meta charset="utf-8"><title>Log in — App</title><h1>Log in</h1>'
+  + '<p><input id="email"> <input id="password" type="password"> <button class="btn-login">Log in</button></p>';
+const paritySeed = async ({ send, set, scenario }) => {
+  // demo.js §6: one variable of each kind, in this order
+  await send(vars({
+    email: { activeType: 'p', p: ['john@acme.com', 'jane@acme.com', 'qa@acme.com', 'ops@acme.com'] },
+    password: { activeType: 's', s: 'Spring-2026!' },
+    orderId: { activeType: 'r', r: { type: 'alphanumeric', length: '8' } },
+    role: { activeType: 'f', f: ['admin', 'editor', 'viewer'] }
+  }));
+  // demo.js §5 + §8: "Login flow" first, the other three after it
+  const id = await scenario('Login flow', [
+    { type: 'navigate', url: PARITY_URL },
+    { type: 'input', ...css('#email'), value: '${email}', label: 'Email' },
+    { type: 'input', ...css('#password'), value: '${password}', label: 'Password', secret: true },
+    { type: 'click', ...css('button.btn-login'), label: 'Log in', delay: 500 },
+    { type: 'assert', conditionType: 'textContains', ...css('.welcome'), expectedValue: 'Welcome back' },
+    { type: 'condition', conditionType: 'elementVisible', ...css('.promo-modal'), skipCount: 1 },
+    click('.promo-modal .close', 'Close'),
+    { type: 'screenshot', value: 'Visible viewport' },
+    click('#logout', 'Log out')
+  ]);
+  await send({ type: 'TOGGLE_ACTION_DISABLED', scenarioId: id, index: 8 });
+  for (const name of ['Checkout — happy path', 'Bulk invoice upload', 'Profile update']) await scenario(name, [click('#go')]);
+  for (const name of ['Smoke tests', 'Regression', 'Demos']) await send({ type: 'CREATE_FOLDER', name });
+  // demo.js §7: five highlights on this page, others on two more pages
+  const hl = (url, texts) => texts.map(([color, text], i) => ({ id: url.length + color + i, text, color, note: '', createdAt: 1793600000000 + i, srcUrl: url }));
+  await set({
+    lastSelectedScenario: id,
+    // demo.js §5b: it played a few minutes ago and passed (its Assert held)
+    lastRun: { scenarioId: id, scenarioName: 'Login flow', endedAt: Date.now() - 3 * 60_000, completed: true, verdict: { status: 'passed', checks: 1 }, failures: [] },
+    // background.js onInstalled: a fresh install has the screenshot countdown on (storage was just cleared)
+    screenshotCountdownEnabled: true, screenshotCountdownSeconds: 3,
+    hl_v1: {
+      [PARITY_URL]: hl(PARITY_URL, [
+        ['yellow', 'Record any web workflow with a single click — no code required.'],
+        ['green', 'CSV data-driven runs repeat a scenario across hundreds of rows automatically.'],
+        ['pink', 'Export to Selenium Python or a JS bookmarklet in one tap.'],
+        ['blue', 'Capture full-page, scrolling, and element screenshots.'],
+        ['orange', 'Variables, conditions, and switch logic make scenarios truly dynamic.']]),
+      'https://docs.example.com': hl('https://docs.example.com', [['yellow', 'Docs one'], ['green', 'Docs two'], ['blue', 'Docs three']]),
+      'https://blog.example.com': hl('https://blog.example.com', [['pink', 'Blog one']])
+    }
+  });
+};
+// Per pair: the box that differs and how many pixels; a real | demo | diff strip for each
+const PARITY_DIFF = `
+import sys, json
+from PIL import Image, ImageChops
+out = []
+for real, demo, strip in json.loads(sys.argv[1]):
+    a, b = Image.open(real).convert('RGB'), Image.open(demo).convert('RGB')
+    d = ImageChops.difference(a, b)
+    mask = d.convert('L').point(lambda v: 255 if v > 24 else 0)
+    n = mask.histogram()[255]
+    s = Image.new('RGB', (a.width * 3 + 16, a.height), (255, 255, 255))
+    s.paste(a, (0, 0)); s.paste(b, (a.width + 8, 0))
+    s.paste(Image.composite(Image.new('RGB', a.size, (220, 38, 38)), a.point(lambda v: 128 + v // 2), mask), (a.width * 2 + 16, 0))
+    s.save(strip)
+    out.append({'strip': strip, 'box': mask.getbbox(), 'pixels': n, 'share': round(100 * n / (a.width * a.height), 2)})
+print(json.dumps(out))
+`;
+
 const wanted = process.argv.slice(2);
-const unknown = wanted.filter(n => !SHOTS.some(s => s.name === n));
+const parity = wanted[0] === 'parity';
+const unknown = parity ? [] : wanted.filter(n => !SHOTS.some(s => s.name === n));
 if (unknown.length) { console.error('✗ No such shot:', unknown.join(', '), '— known:', SHOTS.map(s => s.name).join(', ')); process.exit(1); }
 
 let browser, server;
@@ -578,7 +651,15 @@ try {
   const sw = await browser.serviceWorker();
   if (!sw) throw new Error('the extension did not start (no service worker)');
   const extUrl = p => `chrome-extension://${sw.extId}/${p}`;
-  server = createServer((req, res) => res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }).end(PAGE));
+  // /page is the sample web page; /promo/… is this repo, for the parity check's popup-demo.html
+  const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml' };
+  server = createServer((req, res) => {
+    const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    if (!path.startsWith('/promo/')) return res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }).end(PAGE);
+    const file = resolve(here, '.' + path.slice(6));
+    if (!file.startsWith(here) || !existsSync(file)) return res.writeHead(404).end();
+    res.writeHead(200, { 'content-type': (TYPES[extname(file)] || 'application/octet-stream') + '; charset=utf-8' }).end(readFileSync(file));
+  });
   // A fixed port, so the URL the popup and the bug report show is the same every run (any free one if it is taken)
   await new Promise((r, j) => server.once('error', j).listen(4170, '127.0.0.1', r)).catch(() => new Promise(r => server.listen(0, '127.0.0.1', r)));
   const base = `http://127.0.0.1:${server.address().port}`;
@@ -601,7 +682,51 @@ try {
     for (let t = 0; t < 30_000 && (await send({ type: 'GET_EXTENSION_STATUS' }))?.playing; t += 250) await sleep(250);
   };
   const ctx = { base, send, set, scenario, play };
-  for (const shot of SHOTS.filter(s => !wanted.length || wanted.includes(s.name))) {
+  if (parity) {
+    // The tab the popup is on: https://app.example.com/login, answered here through CDP like the API shots
+    const app = await browser.openPage('about:blank', { width: 1000, height: 700 });
+    await app.send('Fetch.enable', { patterns: [{ urlPattern: 'https://app.example.com/*' }] });
+    const paused = app.waitEvent('Fetch.requestPaused', 30_000);
+    const loaded = app.goto(PARITY_URL);
+    await app.send('Fetch.fulfillRequest', { requestId: (await paused).params.requestId, responseCode: 200,
+      responseHeaders: [{ name: 'Content-Type', value: 'text/html; charset=utf-8' }], body: Buffer.from(PARITY_PAGE).toString('base64') });
+    await loaded;
+    const appTabId = await extPage.evaluate(`new Promise(r => chrome.tabs.query({ url: ${JSON.stringify(PARITY_URL + '*')} }, t => r(t[0]?.id)))`);
+    const dir = process.env.PARITY_OUT || mkdtempSync(join(tmpdir(), 'pqa-parity-'));
+    mkdirSync(dir, { recursive: true });
+    await sw.evaluate('chrome.storage.local.clear().then(() => chrome.storage.sync.clear())');
+    await paritySeed(ctx);
+    await set({ activatedTabs: [appTabId] });
+    const shoot = async (page, file) => writeFileSync(file, Buffer.from((await page.send('Page.captureScreenshot', { format: 'png' })).data, 'base64'));
+    const pairs = [];
+    for (const theme of ['light', 'dark']) {
+      await set({ lastTab: 'tabRecord' });   // the popup reopens on the tab it was left on
+      const real = await browser.openPage(extUrl('popup.html'), { initScript: asActiveTab(PARITY_URL), width: 480, height: 600 });
+      await sleep(1500);
+      await real.evaluate(`(async () => { const THEME = ${JSON.stringify(theme)}; ${HELPERS} await themed('#toggleTheme', THEME); })()`);
+      for (const id of PARITY_TABS) {
+        const name = `${id}-${theme}`;
+        await real.evaluate(`(() => { ${HELPERS} tab(${JSON.stringify(id)}); document.querySelector('.main-content')?.scrollTo(0, 0); })()`);
+        await sleep(900);   // the panel's fade-in
+        await shoot(real, join(dir, `${name}-real.png`));
+        const demo = await browser.openPage(`${base}/promo/popup-demo.html?tab=${id}&theme=${theme}`, { width: 480, height: 600 });
+        await sleep(900);
+        await shoot(demo, join(dir, `${name}-demo.png`));
+        await demo.close();
+        pairs.push([join(dir, `${name}-real.png`), join(dir, `${name}-demo.png`), join(dir, `${name}-diff.png`)]);
+      }
+      const errors = real.errors();
+      if (errors.length) console.warn(`  ⚠ popup (${theme}) page errors:\n    ${errors.join('\n    ')}`);
+      await real.close();
+    }
+    for (const r of JSON.parse(execFileSync('python', ['-c', PARITY_DIFF, JSON.stringify(pairs)], { encoding: 'utf8' }))) {
+      console.log(`${r.pixels ? '≠' : '='} ${r.strip.replace(/.*[\\/]/, '').replace('-diff.png', '').padEnd(18)} ${r.pixels ? `${r.share}% of the popup, box ${JSON.stringify(r.box)}` : 'identical'}`);
+    }
+    // README's picture of it: Record & Play, light — the busiest tab
+    copyFileSync(join(dir, 'tabRecord-light-diff.png'), join(here, 'screenshots', 'shot-parity.png'));
+    console.log('Strips (real | demo | diff):', dir, '— Record & Play light → screenshots/shot-parity.png');
+  }
+  for (const shot of SHOTS.filter(s => !parity && (!wanted.length || wanted.includes(s.name)))) {
     for (const theme of ['light', 'dark']) {
       const out = join(here, 'screenshots', 'shot-' + shot.name + (theme === 'dark' ? '-dark' : ''));
       const [width, height] = shot.size;

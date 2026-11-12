@@ -21,6 +21,13 @@ body::-webkit-scrollbar { width: 0; height: 0; display: none; }  /* Chrome/Safar
  * so the original 600px height (from vendor/popup/01-base.css) is enough for the
  * Capture/Settings tabs to fit without any vertical scroll. */
 
+/* Chromium styles every extension page with its own sheet first
+ * (extension_fonts.css: body { font-size: 75% }), so the real popup's text that
+ * sets no size of its own is 12px, not a web page's 16px. Without this, every
+ * line-height built on the inherited size (the tab panel's top, the card
+ * headers) sits a pixel or two off the real one. */
+body { font-size: 75%; }
+
 /* Disable the real file-picker affordance feel — demo has no backend. */
 input[type="file"] { cursor: pointer; }
 

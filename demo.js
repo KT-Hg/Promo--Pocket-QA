@@ -108,6 +108,12 @@
     document.body.dataset.activeTab = id;
     var main = document.querySelector('.main-content');
     if (main) main.scrollTop = 0;
+    // highlight.js loads the highlights when its tab is first opened, and only
+    // then counts this page's on the tab's badge.
+    if (id === 'tabHighlight') {
+      var badge = $('hlTabBadge');
+      if (badge) { badge.textContent = demoHighlights.length; badge.style.display = 'inline-block'; }
+    }
   }
 
   /* ───────────────────────────────────────────────────────────────────────────
@@ -144,6 +150,26 @@
     document.body.dataset.activation = 'active';
     var open = document.querySelector('.tab-panel.active');
     document.body.dataset.activeTab = open ? open.id : 'tabRecord';
+  })();
+
+  /* 4b. HEADER SPACER — popup/init.js -> initHeaderSpacer, as is: the spacer
+   *     under the fixed header (and --header-h) takes the header's real height,
+   *     71px, not the markup's 72px placeholder, and follows it when it changes
+   *     (the Highlight tab's badge makes it taller). */
+  (function headerSpacer() {
+    var header = document.querySelector('.sticky-header');
+    var spacer = $('headerSpacer');
+    if (!header || !spacer) return;
+    function sync() {
+      var h = header.offsetHeight;
+      spacer.style.height = h + 'px';
+      document.documentElement.style.setProperty('--header-h', h + 'px');
+    }
+    sync();
+    new MutationObserver(sync).observe(header, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden']
+    });
+    window.addEventListener('resize', sync);
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
@@ -266,12 +292,15 @@
   /* ───────────────────────────────────────────────────────────────────────────
    * 6. DEMO DATA — VARIABLES  (display only; buttons are inert)
    * ────────────────────────────────────────────────────────────────────────── */
-  var TYPE_LABEL = { s: 'Static', r: 'Random', p: 'Pick', f: 'Fallback' };
+  // variables.js -> _buildRow: _typeLabel, _valueText (the row) and configValue (its title).
+  var TYPE_LABEL = { s: 'Static', r: 'Rand', p: 'Pick', f: 'Fallback' };
   var demoVars = [
-    { key: 'email', t: 'p', val: 'john@acme.com', sub: '4 options · random per run · CSV overrides' },
-    { key: 'password', t: 's', val: '••••••••' },
-    { key: 'orderId', t: 'r', val: '(generated)', sub: 'new value each run' },
-    { key: 'role', t: 'f', val: 'admin', sub: '3 values · tries A→B→C in Child Condition · sticky per run' }
+    { key: 'email', t: 'p', val: 'john@acme.com · jane@acme.com · qa@acme.com · ops@acme.com',
+      spec: '{pick:john@acme.com|jane@acme.com|qa@acme.com|ops@acme.com}', sub: '4 options · random per run · CSV overrides' },
+    { key: 'password', t: 's', val: 'Spring-2026!' },
+    { key: 'orderId', t: 'r', val: 'alphanumeric · 8', spec: '{random:alphanumeric:8}', sub: 'new value each run' },
+    { key: 'role', t: 'f', val: 'admin → editor → viewer', spec: '{fallback:admin|editor|viewer}',
+      sub: '3 values · tries A→B→C in Child Condition · sticky per run' }
   ];
 
   function buildVarRow(v, i) {
@@ -284,7 +313,7 @@
       '<span class="vr-type"><span class="vt-i ' + v.t + '">' + v.t.toUpperCase() + '</span> ' + TYPE_LABEL[v.t] + '</span>' +
       '<span class="vr-key" title="' + esc(v.key) + '">' + esc(v.key) + '</span>' +
       '<span class="vr-arr">→</span>' +
-      '<span class="vr-val" title="' + esc(v.val) + '">' + esc(v.val) + sub + '</span>';
+      '<span class="vr-val" title="' + esc(v.spec || v.val) + '">' + esc(v.val) + sub + '</span>';
     var btnRow = document.createElement('div');
     btnRow.className = 'var-btn-row';
     var edit = document.createElement('button');
@@ -313,6 +342,9 @@
     { color: 'blue', text: 'Capture full-page, scrolling, and element screenshots.' },
     { color: 'orange', text: 'Variables, conditions, and switch logic make scenarios truly dynamic.' }
   ];
+
+  // The other pages in the Highlight tab's picker hold the rest: 3 + 1.
+  var HL_OTHER_PAGES = [['docs.example.com', 3], ['blog.example.com', 1]];
 
   function buildHlLi(h, i) {
     var li = document.createElement('li');
@@ -347,12 +379,12 @@
   })();
 
   function refreshHlStats() {
-    var total = demoHighlights.length;
+    var page = demoHighlights.length;
+    var total = HL_OTHER_PAGES.reduce(function (n, p) { return n + p[1]; }, page);
+    var pages = HL_OTHER_PAGES.length + 1;
     var setText = function (id, v) { var el = $(id); if (el) el.textContent = v; };
-    setText('hlStatPage', total); setText('hlStatTotal', total); setText('hlStatPages', total ? 1 : '—');
-    setText('hlStatPageDetail', total); setText('hlStatTotalDetail', total); setText('hlStatPagesDetail', total ? 1 : '—');
-    var badge = $('hlTabBadge');
-    if (badge) { badge.textContent = total; badge.style.display = total ? 'inline-block' : 'none'; }
+    setText('hlStatPage', page); setText('hlStatTotal', total); setText('hlStatPages', pages);
+    setText('hlStatPageDetail', page); setText('hlStatTotalDetail', total); setText('hlStatPagesDetail', pages);
     var counts = {};
     demoHighlights.forEach(function (h) { counts[h.color] = (counts[h.color] || 0) + 1; });
     HL_ORDER.forEach(function (c) {
@@ -374,7 +406,7 @@
     if (sel) {
       // highlight.js -> the "Other pages" picker: a placeholder, then each other page.
       sel.innerHTML = '<option value="">— Other pages —</option>';
-      [['docs.example.com', 3], ['blog.example.com', 1]].forEach(function (p) {
+      HL_OTHER_PAGES.forEach(function (p) {
         var o = document.createElement('option');
         o.value = p[0]; o.textContent = p[0] + ' (' + p[1] + ')';
         sel.appendChild(o);
@@ -382,7 +414,8 @@
     }
     var ctx = $('hlCurrentPage');
     if (ctx) ctx.style.display = '';
-    var dom = $('hlPageDomain'); if (dom) dom.textContent = 'app.example.com';
+    // buildUrlSelect: the tab's address without its scheme.
+    var dom = $('hlPageDomain'); if (dom) dom.textContent = 'app.example.com/login';
     var cnt = $('hlPageCount'); if (cnt) cnt.textContent = demoHighlights.length;
   })();
 
@@ -426,7 +459,7 @@
   })();
   // run/time-picker.js -> prefillScheduleUrl: the start URL starts as this tab's.
   var scheduleUrl = $('scheduleUrl');
-  if (scheduleUrl) scheduleUrl.value = 'https://app.example.com/dashboard';
+  if (scheduleUrl) scheduleUrl.value = 'https://app.example.com/login';
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 8b. SETTINGS › VERSION CARD  (display only)
