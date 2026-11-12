@@ -108,6 +108,12 @@
     document.body.dataset.activeTab = id;
     var main = document.querySelector('.main-content');
     if (main) main.scrollTop = 0;
+    // highlight.js loads the highlights when its tab is first opened, and only
+    // then counts this page's on the tab's badge.
+    if (id === 'tabHighlight') {
+      var badge = $('hlTabBadge');
+      if (badge) { badge.textContent = demoHighlights.length; badge.style.display = 'inline-block'; }
+    }
   }
 
   /* ───────────────────────────────────────────────────────────────────────────
@@ -122,48 +128,80 @@
   }
 
   /* ───────────────────────────────────────────────────────────────────────────
-   * 4. SEED "ACTIVATED" STATUS  (display only)
+   * 4. SEED "TURNED ON" STATUS  (display only)
+   *    popup/tab-activation.js -> checkTabActivation for a tab that is turned
+   *    on while Allow on all tabs is off: "Active", green dot, Turn off shown.
+   *    That is the state the Last run below implies — it played on this tab.
    * ────────────────────────────────────────────────────────────────────────── */
   (function seedStatus() {
     var dot = $('statusDot');
-    if (dot) dot.className = 'status-dot active';
+    if (dot) { dot.dataset.idleClass = 'status-dot active'; dot.className = 'status-dot active'; }
     var status = $('activationStatus');
-    if (status) status.textContent = 'Active on this tab';
-    // Activate / Remove buttons stay hidden (demo is already "active").
+    if (status) { status.textContent = 'Active'; status.style.color = 'var(--success)'; }
+    var off = $('deactivateTab');
+    if (off) off.style.display = 'block';
 
     // The real popup stamps its state onto <body> at runtime (popup/main.js ->
     // data-activation, popup/init.js -> data-active-tab) and popup.css keys off
     // it. Without data-activation="active" every [data-requires-activation] row
-    // renders at 38% opacity with its Set button hidden and the "🔒 available
-    // after activating" notice showing — the preview would contradict its own
-    // "Active on this tab" header.
+    // renders at 38% opacity with its Set button hidden and the "🔒 Recording
+    // hotkeys work once Pocket QA is turned on" notice showing — the preview
+    // would contradict its own "Active" header.
     document.body.dataset.activation = 'active';
     var open = document.querySelector('.tab-panel.active');
     document.body.dataset.activeTab = open ? open.id : 'tabRecord';
   })();
 
+  /* 4b. HEADER SPACER — popup/init.js -> initHeaderSpacer, as is: the spacer
+   *     under the fixed header (and --header-h) takes the header's real height,
+   *     71px, not the markup's 72px placeholder, and follows it when it changes
+   *     (the Highlight tab's badge makes it taller). */
+  (function headerSpacer() {
+    var header = document.querySelector('.sticky-header');
+    var spacer = $('headerSpacer');
+    if (!header || !spacer) return;
+    function sync() {
+      var h = header.offsetHeight;
+      spacer.style.height = h + 'px';
+      document.documentElement.style.setProperty('--header-h', h + 'px');
+    }
+    sync();
+    new MutationObserver(sync).observe(header, {
+      childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden']
+    });
+    window.addEventListener('resize', sync);
+  })();
+
   /* ───────────────────────────────────────────────────────────────────────────
    * 5. DEMO DATA — ACTION LIST  (display only; buttons are inert)
    *    Rows are built the way record/preview.js -> createActionListItem builds
-   *    them (value-main / value-sub lines, a Condition's block). `guards` is how
-   *    many of the next actions a Condition guards: those rows nest under it.
+   *    them at 4fb11ce: a recorded step reads by its name (content.js ->
+   *    _stepName) with what it targets on the line under it (.value-target), a
+   *    password field gets 🔒, and every row ends in the "+" insert gap.
+   *    `value` is what getActionDisplayValue shows (an input shows its selector,
+   *    not what was typed). `guards` is how many of the next actions a Condition
+   *    guards: those rows nest under it.
    * ────────────────────────────────────────────────────────────────────────── */
   var demoActions = [
     { type: 'navigate', value: 'https://app.example.com/login' },
-    { type: 'input', value: '#email  →  ${email}', label: 'Type the login email' },
-    { type: 'input', value: '#password  →  ••••••••' },
-    { type: 'click', value: 'button.btn-login', delay: 500 },
+    { type: 'input', value: '#email', label: 'Email' },
+    { type: 'input', value: '#password', label: 'Password', secret: true },
+    { type: 'click', value: 'button.btn-login', label: 'Log in', delay: 500 },
     { type: 'assert', value: 'textContains: .welcome = "Welcome back"' },
     { type: 'condition', value: 'elementVisible: .promo-modal', guards: 1 },
-    { type: 'click', value: '.promo-modal .close' },
+    { type: 'click', value: '.promo-modal .close', label: 'Close' },
     { type: 'screenshot', value: 'Visible viewport' },
-    { type: 'click', value: '#logout', disabled: true }
+    { type: 'click', value: '#logout', label: 'Log out', disabled: true }
   ];
+
+  // preview.js -> the secret-mark title, verbatim.
+  var SECRET_TITLE = 'Typed into a password field. The password is saved in this scenario as plain text, and goes into JSON exports and exported code — put it in a variable (Tools tab) to keep it out.';
 
   function buildActionLi(a, i, cond) {
     var li = document.createElement('li');
     li.className = 'action action-' + a.type + (a.disabled ? ' action-disabled' : '');
     li.dataset.index = i;
+    li.draggable = true;
     if (cond != null) {
       // A row a Condition guards (preview.js -> _applyBlockStyle, "cond" colour).
       li.classList.add('sw-in-block');
@@ -180,25 +218,42 @@
       var full = 'If true: runs ' + (i + 2) + (n > 1 ? '–' + (i + 1 + n) : '') + '\nIf false: skips them';
       subHtml = '<span class="sw-summary" title="' + esc(full) + '">if true → runs ' + n + ' action' + (n === 1 ? '' : 's') + '</span><span class="sw-hidden-count"></span>';
     }
-    if (a.label) subHtml = '<span class="value-label">' + esc(a.label) + '</span>' + subHtml;
+    if (a.label) subHtml = '<span class="value-target">' + esc(a.value) + '</span>' + subHtml;
+    var secretHtml = a.secret ? '<span class="secret-mark" title="' + esc(SECRET_TITLE) + '">🔒</span>' : '';
     li.innerHTML =
-      '<span class="index" title="#' + (i + 1) + '">' + (i + 1) + '.</span>' +
+      '<span class="index">' + (i + 1) + '.</span>' +
       '<span' + (typeAttrs || ' class="type"') + '>' + (ACTION_ICONS[a.type] || '') + esc(a.type) + toggleHtml + '</span>' +
-      '<span class="value" title="' + esc(a.value) + esc(delayText) + '">' +
-        '<span class="value-main">' + esc(a.value) + esc(delayText) + '</span>' +
+      '<span class="value" title="' + (a.label ? esc(a.label) + '&#10;' : '') + esc(a.value) + esc(delayText) + '">' +
+        '<span class="value-main">' + secretHtml + esc(a.label || a.value) + esc(delayText) + '</span>' +
         (subHtml ? '<span class="value-sub">' + subHtml + '</span>' : '') +
       '</span>';
 
+    // The buttons' labels, as preview.js names them for a screen reader.
+    var no = i + 1;
+    var name = a.label ? '"' + a.label + '"' : a.type + ' ' + no;
+    var nested = a.guards ? ' and the ' + a.guards + ' action' + (a.guards === 1 ? '' : 's') + ' under it' : '';
+    var verb = a.disabled ? 'Enable' : 'Disable';
     var btnRow = document.createElement('div');
     btnRow.className = 'btn-row';
-    [['secondary', a.disabled ? 'Enable' : 'Disable'], ['secondary', 'Copy'],
-     ['secondary', 'Edit'], ['danger', 'Delete']].forEach(function (b) {
+    [['secondary', verb, nested], ['secondary', 'Copy', nested],
+     ['secondary', 'Edit', ''], ['danger', 'Delete', '']].forEach(function (b) {
       var btn = document.createElement('button');
       btn.className = b[0];
       btn.textContent = b[1];
+      btn.setAttribute('aria-label', b[1] + ' action ' + no + ': ' + name + b[2]);
       btnRow.appendChild(btn);
     });
+    if (nested) btnRow.firstChild.title = verb + ' this Condition' + nested + ' — each can still be switched on its own';
     li.appendChild(btnRow);
+
+    // preview.js -> _gapBtn: the "+" under the row (CSS shows it on hover).
+    var gap = document.createElement('button');
+    gap.type = 'button';
+    gap.className = 'ins-gap';
+    gap.textContent = '+';
+    gap.title = 'Insert an action below action ' + no;
+    gap.setAttribute('aria-label', gap.title);
+    li.appendChild(gap);
     return li;
   }
 
@@ -237,12 +292,15 @@
   /* ───────────────────────────────────────────────────────────────────────────
    * 6. DEMO DATA — VARIABLES  (display only; buttons are inert)
    * ────────────────────────────────────────────────────────────────────────── */
-  var TYPE_LABEL = { s: 'Static', r: 'Random', p: 'Pick', f: 'Fallback' };
+  // variables.js -> _buildRow: _typeLabel, _valueText (the row) and configValue (its title).
+  var TYPE_LABEL = { s: 'Static', r: 'Rand', p: 'Pick', f: 'Fallback' };
   var demoVars = [
-    { key: 'email', t: 'p', val: 'john@acme.com', sub: '4 options · random per run · CSV overrides' },
-    { key: 'password', t: 's', val: '••••••••' },
-    { key: 'orderId', t: 'r', val: '(generated)', sub: 'new value each run' },
-    { key: 'role', t: 'f', val: 'admin', sub: '3 values · tries A→B→C in Child Condition · sticky per run' }
+    { key: 'email', t: 'p', val: 'john@acme.com · jane@acme.com · qa@acme.com · ops@acme.com',
+      spec: '{pick:john@acme.com|jane@acme.com|qa@acme.com|ops@acme.com}', sub: '4 options · random per run · CSV overrides' },
+    { key: 'password', t: 's', val: 'Spring-2026!' },
+    { key: 'orderId', t: 'r', val: 'alphanumeric · 8', spec: '{random:alphanumeric:8}', sub: 'new value each run' },
+    { key: 'role', t: 'f', val: 'admin → editor → viewer', spec: '{fallback:admin|editor|viewer}',
+      sub: '3 values · tries A→B→C in Child Condition · sticky per run' }
   ];
 
   function buildVarRow(v, i) {
@@ -255,7 +313,7 @@
       '<span class="vr-type"><span class="vt-i ' + v.t + '">' + v.t.toUpperCase() + '</span> ' + TYPE_LABEL[v.t] + '</span>' +
       '<span class="vr-key" title="' + esc(v.key) + '">' + esc(v.key) + '</span>' +
       '<span class="vr-arr">→</span>' +
-      '<span class="vr-val" title="' + esc(v.val) + '">' + esc(v.val) + sub + '</span>';
+      '<span class="vr-val" title="' + esc(v.spec || v.val) + '">' + esc(v.val) + sub + '</span>';
     var btnRow = document.createElement('div');
     btnRow.className = 'var-btn-row';
     var edit = document.createElement('button');
@@ -284,6 +342,9 @@
     { color: 'blue', text: 'Capture full-page, scrolling, and element screenshots.' },
     { color: 'orange', text: 'Variables, conditions, and switch logic make scenarios truly dynamic.' }
   ];
+
+  // The other pages in the Highlight tab's picker hold the rest: 3 + 1.
+  var HL_OTHER_PAGES = [['docs.example.com', 3], ['blog.example.com', 1]];
 
   function buildHlLi(h, i) {
     var li = document.createElement('li');
@@ -318,12 +379,12 @@
   })();
 
   function refreshHlStats() {
-    var total = demoHighlights.length;
+    var page = demoHighlights.length;
+    var total = HL_OTHER_PAGES.reduce(function (n, p) { return n + p[1]; }, page);
+    var pages = HL_OTHER_PAGES.length + 1;
     var setText = function (id, v) { var el = $(id); if (el) el.textContent = v; };
-    setText('hlStatPage', total); setText('hlStatTotal', total); setText('hlStatPages', total ? 1 : '—');
-    setText('hlStatPageDetail', total); setText('hlStatTotalDetail', total); setText('hlStatPagesDetail', total ? 1 : '—');
-    var badge = $('hlTabBadge');
-    if (badge) { badge.textContent = total; badge.style.display = total ? 'inline-block' : 'none'; }
+    setText('hlStatPage', page); setText('hlStatTotal', total); setText('hlStatPages', pages);
+    setText('hlStatPageDetail', page); setText('hlStatTotalDetail', total); setText('hlStatPagesDetail', pages);
     var counts = {};
     demoHighlights.forEach(function (h) { counts[h.color] = (counts[h.color] || 0) + 1; });
     HL_ORDER.forEach(function (c) {
@@ -343,8 +404,9 @@
   (function seedHlUrls() {
     var sel = $('hlUrlSelect');
     if (sel) {
-      sel.innerHTML = '<option value="">This page · app.example.com (' + demoHighlights.length + ')</option>';
-      [['docs.example.com', 3], ['blog.example.com', 1]].forEach(function (p) {
+      // highlight.js -> the "Other pages" picker: a placeholder, then each other page.
+      sel.innerHTML = '<option value="">— Other pages —</option>';
+      HL_OTHER_PAGES.forEach(function (p) {
         var o = document.createElement('option');
         o.value = p[0]; o.textContent = p[0] + ' (' + p[1] + ')';
         sel.appendChild(o);
@@ -352,7 +414,8 @@
     }
     var ctx = $('hlCurrentPage');
     if (ctx) ctx.style.display = '';
-    var dom = $('hlPageDomain'); if (dom) dom.textContent = 'app.example.com';
+    // buildUrlSelect: the tab's address without its scheme.
+    var dom = $('hlPageDomain'); if (dom) dom.textContent = 'app.example.com/login';
     var cnt = $('hlPageCount'); if (cnt) cnt.textContent = demoHighlights.length;
   })();
 
@@ -396,7 +459,7 @@
   })();
   // run/time-picker.js -> prefillScheduleUrl: the start URL starts as this tab's.
   var scheduleUrl = $('scheduleUrl');
-  if (scheduleUrl) scheduleUrl.value = 'https://app.example.com/dashboard';
+  if (scheduleUrl) scheduleUrl.value = 'https://app.example.com/login';
 
   /* ───────────────────────────────────────────────────────────────────────────
    * 8b. SETTINGS › VERSION CARD  (display only)
@@ -457,15 +520,20 @@
       var min = parseFloat(slider.min) || 0, max = parseFloat(slider.max) || 100;
       slider.style.setProperty('--pct', ((s[1] - min) / (max - min) * 100).toFixed(2) + '%');
     });
-    // loadNotificationSetting() — NOTIFY_TOGGLES defaults (bg/notify.js).
-    check('notifyOnComplete', false);
+    // background.js -> onInstalled seeds the countdown on (3 s); loadScreenshotSettings shows its row.
+    check('screenshotCountdownEnabled', true);
+    val('screenshotCountdownSeconds', '3');
+    var countdownRow = $('screenshotCountdownRow');
+    if (countdownRow) countdownRow.style.display = 'flex';
+    // loadNotificationSetting() — NOTIFY_DEFAULT (bg/notify.js): all four on.
+    check('notifyOnComplete', true);
     check('notifyOnError', true);
     check('notifyOnCapture', true);
     check('notifyOnSchedule', true);
   })();
 
   /* ───────────────────────────────────────────────────────────────────────────
-   * 8d. DATA › DB TEST SESSION CARD  (display only)
+   * 8d. TOOLS › DB TEST SESSION CARD  (display only)
    *     Mirrors popup/init.js -> initDbGuardToggle: the Adminer switch defaults
    *     to on, and the "roll back after each Playback run" row is hidden while
    *     dbtools/features.js keeps TABLE_COPIES off — otherwise the static
@@ -563,6 +631,17 @@
     var tab = params.get('tab');
     var btn = tab && $('tabNav') ? $('tabNav').querySelector('[data-tab="' + tab + '"]') : null;
     if (btn) switchMainTab(btn);
+
+    // ?card=<id>: that card opened and brought into view, as a visitor would
+    // open it — the CSV page's card sits at the bottom of Record & Play. The
+    // popup's scroller is its <body> (max-height 600px), so that is what
+    // scrolls: scrollIntoView would drag the landing page around the frame too.
+    var card = $(params.get('card') || '');
+    if (card && card.classList.contains('card')) {
+      card.classList.remove('collapsed');
+      var header = document.querySelector('.sticky-header');
+      document.body.scrollTop += card.getBoundingClientRect().top - (header ? header.offsetHeight : 0) - 8;
+    }
 
     // Theme is fully settled now (deep-link ?theme= wins over the saved one
     // above if both were present) — tell the parent what it ended up being.

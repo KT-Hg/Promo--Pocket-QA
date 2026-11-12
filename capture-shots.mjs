@@ -15,14 +15,15 @@
  *   EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   (default ../Pocket QA)
  *
  * Usage:  node capture-shots.mjs [name…]     no name = every shot below
+ *         node capture-shots.mjs parity      the demo popup against the real one, pixel by pixel (below)
  * Needs:  Edge or Chromium (branded Chrome ignores --load-extension), Python with Pillow for the WebP twins.
  * Exit:   0 = all saved, 1 = no browser / extension / Pillow, or a shot failed.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -99,6 +100,8 @@ const API_STATE = {
   ],
   envId: 'dev', folderId: 'shop', caseId: 'order'
 };
+// What background.js writes on install (chrome.runtime.onInstalled): cleared storage would show the countdown off
+const FRESH_INSTALL = { screenshotCountdownEnabled: true, screenshotCountdownSeconds: 3 };
 const WEBP = 'import sys; from PIL import Image; Image.open(sys.argv[1]).save(sys.argv[2], lossless=True, quality=100, method=6)';
 try { execFileSync('python', ['-c', 'import PIL'], { stdio: 'ignore' }); } catch {
   console.error('✗ The WebP twins need Python with Pillow (pip install pillow).');
@@ -142,14 +145,74 @@ const own = (value, startAt, endAt) => ({ value, scenarioId: '__self__', scenari
 // A checkout whose coupon always fails: played, it leaves a real Failed run on the Last run card
 const failingRun = async ({ scenario, play, set }) => {
   const id = await scenario('Checkout with coupon', [
-    { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Type the login email' },
-    { type: 'input', ...css('#coupon'), value: 'SPRING25' },
-    click('#apply', 'Apply the coupon'),
+    // named as the recorder names them (content.js _stepName): what the page calls the element
+    { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+    { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+    click('#apply', 'Apply'),
     { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: 'Saved', label: 'Check the toast' }
   ]);
   await set({ lastSelectedScenario: id });
   await play(id);
 };
+
+// Test sessions (dbtools/session.js, chrome.storage.local): what Adminer would have recorded on a shop's test
+// database — one session still recording, three ended
+const dbSessions = () => {
+  const origin = 'http://localhost:8080', conn = { driver: 'server', server: 'localhost', username: 'qa', db: 'shop_test' };
+  const key = [origin, 'server', 'localhost', 'shop_test', ''].join('|');
+  const at = (hms, day = 12) => `2026-11-${String(day).padStart(2, "0")}T${hms}`;
+  let n = 0;
+  const change = (op, table, time, rows, extra = {}) => ({ id: 'ch_' + (++n), at: at(time), op, table, source: 'edit-form',
+    keyCols: rows[0] && Object.keys(rows[0].where).length ? Object.keys(rows[0].where) : [], rows, warnings: [], verified: true, ...extra });
+  const row = (where, before, after) => ({ where, before, after });
+  const session = (id, name, started, closed, changes, c = conn) => ({ id, name, conn: c, origin, base: '/adminer.php',
+    key: [origin, 'server', c.server, c.db, ''].join('|'), guard: false, resumeId: '', startedAt: started, closedAt: closed,
+    nextSeq: changes.length + 1, changes: changes.map((x, i) => ({ seq: i + 1, undone: false, ...x })) });
+  // An ended session's changes: only their number shows in the rail
+  const filler = (count, table, day) => Array.from({ length: count }, (_, i) =>
+    ({ ...change('update', table, '10:00:00', [row({ id: 100 + i }, { status: 'draft' }, { status: 'live' })]), at: at(`10:${10 + i}:00`, day) }));
+  const current = session('ts_checkout', 'Checkout · coupon SUMMER20', at('14:01:48'), null, [
+    change('insert', 'coupons', '14:02:11', [row({ id: 305 }, null, { id: 305, code: 'SUMMER20', percent: 20, expires_at: '2026-11-30' })]),
+    change('update', 'customers', '14:03:40', [row({ id: 77 }, { tier: 'silver' }, { tier: 'gold' })], { undone: true }),
+    change('update', 'orders', '14:05:02', [row({ id: 1042 }, { status: 'pending', coupon_code: null, total: '120.00' }, { status: 'paid', coupon_code: 'SUMMER20', total: '96.00' })]),
+    change('delete', 'cart_items', '14:06:30', [row({ id: 5531 }, { id: 5531, cart_id: 918, product_id: 12, qty: 2, unit_price: '24.00', added_at: '2026-11-12 13:58:40' }, null)]),
+    change('update', 'products', '14:08:15', [12, 13, 14].map(id => row({ id }, { stock: 40 }, { stock: 38 }))),
+    change('update', 'products', '14:09:02', [], { warnings: ['no-before'] }),
+    change('update', 'orders', '14:10:47', [row({ id: 1042 }, { status: 'paid' }, { status: 'shipped' })])
+  ]);
+  return {
+    dbtoolsSessions: {
+      ts_checkout: current,
+      ts_refund: session('ts_refund', 'Refund flow — partial refund', at('16:14:00', 11), at('16:40:00', 11), filler(4, 'refunds', 11)),
+      ts_loyalty: session('ts_loyalty', 'Loyalty tier upgrade', at('10:20:00', 10), at('10:52:00', 10), filler(3, 'customers', 10)),
+      ts_banners: session('ts_banners', 'Seed promo banners', at('15:05:00', 9), at('15:30:00', 9), filler(12, 'banners', 9),
+        { driver: 'server', server: 'staging-db', username: 'qa', db: 'shop' })
+    },
+    dbtoolsActive: { [key]: 'ts_checkout' },
+    dbtoolsFocus: { [key]: 'ts_checkout' }
+  };
+};
+
+// A run held at a failed step: "Place order" is not on the page, so after the element timeout the step fails and the
+// run waits for Retry / Skip / Stop — a still moment to take, in the popup and on the page
+const pausedRun = async ({ scenario, set, send, web }) => {
+  const id = await scenario('Checkout with coupon', [
+    { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+    { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+    click('#apply', 'Apply'),
+    click('#place-order', 'Place order'),
+    click('#confirm', 'Confirm')
+  ]);
+  await set({ lastSelectedScenario: id });
+  await web.bringToFront();
+  await send({ type: 'START_PLAYBACK_SCENARIO', scenarioId: id });
+  for (let t = 0; t < 30_000; t += 250) {
+    if (await web.evaluate(`/failed/.test(document.getElementById('__pqa_run')?.textContent || '')`)) return;
+    await sleep(250);
+  }
+  throw new Error('the run never stopped at its failed step');
+};
+const stopRun = async ({ send }) => { await send({ type: 'STOP_PLAYBACK' }); await sleep(800); };
 
 // One entry per picture. `setup` runs in the page (with HELPERS and THEME) and returns the selector of the
 // element to capture — or several, for the box around all of them; the shot is that box.
@@ -222,12 +285,48 @@ const SHOTS = [
     `
   },
   {
+    // The SQL designer's whole workspace (tool-base): the first example analysed, its query in the rail, the case
+    // list, and one case open in the inspector with the rows it needs
+    name: 'sql-workspace',
+    page: 'sqltest.html',
+    size: [1440, 830],
+    setup: `
+      await until(() => $('#btnAnalyze') && $('#sqlInput').value, 'the page to start');
+      await english('#toggleLang');
+      await themed('#toggleTheme', THEME);
+      $('#btnAnalyze').click();
+      await until(() => document.querySelectorAll('button.case').length, 'the cases');
+      ([...document.querySelectorAll('button.case')].find(b => /above the threshold/.test(b.textContent)) || $('button.case')).click();
+      await until(() => $('#app').classList.contains('insp-open'), 'the inspector');
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+      await wait(500);
+      return '#app';
+    `
+  },
+  {
+    // Test sessions & rollback (dbtest.html): a session still recording, its changes newest first, a DELETE and an
+    // UPDATE opened to their before / after, one change already undone; three older sessions in the rail
+    name: 'db-manager',
+    page: 'dbtest.html',
+    size: [1360, 930],
+    seed: ({ set }) => set(dbSessions()),
+    setup: `
+      await until(() => document.querySelectorAll('details.change').length === 7, 'the session');
+      await english('#btnLang');
+      await themed('#toggleTheme', THEME);
+      // The DELETE on cart_items and the UPDATE that applied the coupon to order 1042 (dbSessions: ch_4, ch_3)
+      for (const id of ['ch_4', 'ch_3']) $('details.change[data-id="' + id + '"] > summary').click();
+      await wait(400);
+      return 'body';
+    `
+  },
+  {
     // DB Test Session's manager page: its Settings dialog (the parts held back by TABLE_COPIES stay hidden, as shipped)
     name: 'db-settings',
     page: 'dbtest.html',
     size: [1100, 900],
     setup: `
-      await until(() => $('#btnSettings'), 'the page to start');
+      await until(() => $('#btnSettings') && $('#btnSettings').textContent.trim(), 'the page to start');   // its i18n painted: the module's handlers are on
       await english('#btnLang');
       await themed('#toggleTheme', THEME);
       $('#btnSettings').click();
@@ -237,7 +336,8 @@ const SHOTS = [
     `
   },
   {
-    // Record & Play's action list: a Condition, a Switch block of two cases, an Upload File step, a disabled step
+    // Record & Play's action list: steps read by name, a password step (🔒), a Condition, a Switch block of two
+    // cases, an Upload File step, a disabled step
     name: 'pop-actions',
     page: 'popup.html',
     size: [480, 1400],
@@ -245,25 +345,26 @@ const SHOTS = [
       await send(vars({ role: 'admin', email: 'qa@shop.test' }));
       const id = await scenario('Checkout', [
         { type: 'navigate', url: base + '/page' },
-        { type: 'input', ...css('#email'), value: '${email}', label: 'Type the login email' },
-        click('#apply', 'Apply the coupon'),
+        { type: 'input', ...css('#email'), value: '${email}', label: 'Email' },
+        { type: 'input', ...css('#password'), value: 'Spring-2026!', label: 'Password', secret: true },
+        click('#apply', 'Apply'),
         { type: 'condition', conditionType: 'elementVisible', ...css('.promo'), skipCount: 1 },
-        click('.promo .close'),
-        { type: 'switch', switchVar: '${role}', cases: [own('admin', 7, 8), own('user', 9, 9)] },
-        click('#admin-orders'),
+        click('.promo .close', 'Close'),
+        { type: 'switch', switchVar: '${role}', cases: [own('admin', 8, 9), own('user', 10, 10)] },
+        click('#admin-orders', 'All orders'),
         { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: 'Saved' },
-        click('#my-orders'),
+        click('#my-orders', 'My orders'),
         { type: 'uploadFile', ...css('#invoice'), uploadMode: 'input', folderPath: 'C:\\\\data', fileNames: ['invoice.pdf'] },
-        click('#logout')
+        click('#logout', 'Log out')
       ]);
-      await send({ type: 'TOGGLE_ACTION_DISABLED', scenarioId: id, index: 10 });
+      await send({ type: 'TOGGLE_ACTION_DISABLED', scenarioId: id, index: 11 });
       await set({ lastSelectedScenario: id });
     },
     setup: `
       await themed('#toggleTheme', THEME);
       tab('tabRecord');
       if (!$('#actions').getClientRects().length) $('#preview').click();
-      await until(() => document.querySelectorAll('#actions > li').length >= 11, 'the action list');
+      await until(() => document.querySelectorAll('#actions > li.action').length >= 12, 'the action list');
       $('#actions').style.maxHeight = 'none';   // the whole list, as a taller popup shows it, instead of a 200px scroller
       await wait(300);
       return mark($('#actions'));
@@ -312,11 +413,12 @@ const SHOTS = [
     },
     setup: `
       await themed('#toggleTheme', THEME);
-      tab('tabData');
+      tab('tabRecord');   // under "Run several · on a schedule · from a CSV" since 1.0.29
       const c = opened($('#scheduledPlaybackCard'));
       const add = async (name, h, m, ampm, label, daily) => {
         pick('#scheduleScenarioSelect', [...$('#scheduleScenarioSelect').options].find(o => o.textContent.includes(name)).value);
-        pick('#stHour', h); pick('#stMin', m); pick('#stAmPm', ampm);
+        pick('#stHour', h); pick('#stMin', m);
+        if ($('#stAmPm').textContent !== ampm) $('#stAmPm').click();   // a button that flips AM / PM, not a select
         type('#scheduleLabel', label);
         $('#scheduleRepeat').checked = daily;
         $('#addSchedule').click();
@@ -325,6 +427,8 @@ const SHOTS = [
       await add('Nightly smoke', '8', '00', 'AM', 'Before stand-up', true);
       await add('Checkout with coupon', '1', '30', 'PM', 'After the deploy', false);
       await until(() => document.querySelectorAll('#scheduleList li').length === 2, 'the schedules');
+      $('#toast').classList.remove('show');   // "Schedule added" would cover the second row
+      await wait(400);
       return mark(c);
     `
   },
@@ -357,7 +461,7 @@ const SHOTS = [
     `
   },
   {
-    // Data → Variables: userEmail renamed to loginEmail — the toast counts what followed
+    // Tools → Variables: userEmail renamed to loginEmail — the toast counts what followed
     name: 'pop-rename',
     page: 'popup.html',
     size: [480, 400],   // short, so the toast (pinned to the bottom) sits right under the Variables card
@@ -448,6 +552,164 @@ const SHOTS = [
     `
   },
   {
+    // Record & Play: the "+" under a step in a Switch case — the dummy row says where the new action goes, and the
+    // Add card's line says it again (record/insert-point.js)
+    name: 'pop-insert',
+    page: 'popup.html',
+    size: [480, 1400],
+    seed: async ({ send, set, scenario, base }) => {
+      await send(vars({ role: 'admin', email: 'qa@shop.test' }));
+      const id = await scenario('Checkout', [
+        { type: 'navigate', url: base + '/page' },
+        { type: 'input', ...css('#email'), value: '${email}', label: 'Email' },
+        click('#apply', 'Apply'),
+        { type: 'switch', switchVar: '${role}', cases: [own('admin', 5, 6), own('user', 7, 7)] },
+        click('#admin-orders', 'All orders'),
+        { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: 'Saved' },
+        click('#my-orders', 'My orders'),
+        click('#logout', 'Log out')
+      ]);
+      await set({ lastSelectedScenario: id });
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      if (!$('#actions').getClientRects().length) $('#preview').click();
+      await until(() => document.querySelectorAll('#actions > li.action').length >= 8, 'the action list');
+      $('#actions').style.maxHeight = 'none';
+      $('#actions > li.action[data-index="4"] > .ins-gap').click();   // under "All orders", in case "admin"
+      pick('#manualActionType', 'assert');
+      await until(() => $('#actions > li.action-ghost') && !$('#insertPointNote').hidden, 'the insertion point');
+      await wait(900);   // the dummy row's flash
+      return [mark($('#actions')), '#insertPointNote'];
+    `
+  },
+  {
+    // Add Manual Action: 👁 beside the selector outlines on the page what it finds; the line under the box speaks
+    // up when that is not one element — here two inputs (record/show-on-page.js)
+    name: 'pop-eye',
+    page: 'popup.html',
+    size: [480, 1400],
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      opened($('#addManualActionCard'));
+      pick('#manualActionType', 'click');
+      await until(() => $('#manualSelector').getClientRects().length, 'the selector box');
+      type('#manualSelector', 'input');
+      $('#showSelectorOnPage').click();
+      await until(() => document.querySelector('[data-preview="1"]'), 'what 👁 found', 15000);
+      await wait(300);
+      return [mark($('#manualActionType'), 'top'), mark(document.querySelector('[data-preview="1"]'), 'note')];
+    `
+  },
+  {
+    // A run with no Assert: it reached its end and checked nothing — "Finished · no checks", and the hint
+    name: 'pop-lastrun-nochecks',
+    page: 'popup.html',
+    size: [480, 900],
+    seed: async ({ scenario, play, set }) => {
+      const id = await scenario('Checkout with coupon', [
+        { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+        { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+        click('#apply', 'Apply')
+      ]);
+      await set({ lastSelectedScenario: id });
+      await play(id);
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      await until(() => !$('#lastRunCard').hidden && $('#lastRunCard').dataset.status === 'unchecked', 'the Last run card');
+      await wait(500);
+      return '#lastRunCard';
+    `
+  },
+  {
+    // A tab Pocket QA is off on: Start Recording asks first (popup/tab-activation.js askToTurnOn)
+    name: 'pop-turnon',
+    page: 'popup.html',
+    size: [480, 600],
+    off: true,
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      $('#startRecord').click();
+      await until(() => $('#confirmModal').classList.contains('show'), 'the question');
+      await wait(400);
+      return mark($('#confirmModal').firstElementChild);
+    `
+  },
+  {
+    // A run stopped at a failed step: Now Playing in the popup, amber, with its Stop
+    name: 'pop-nowplaying',
+    page: 'popup.html',
+    size: [480, 600],
+    seed: pausedRun,
+    cleanup: stopRun,
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      await until(() => $('#nowPlayingBar').getClientRects().length, 'Now Playing');
+      await wait(800);
+      return '.sticky-header';
+    `
+  },
+  {
+    // The page a run is on: the run panel bottom right, amber, held at the step that failed, and the question that
+    // step asks — Retry, Skip or Stop (content.js RUN PANEL, content-overlays.js)
+    name: 'page-run',
+    page: 'web',
+    size: [1000, 430],   // short: the panel sits at the bottom of the window, close under the page
+    seed: pausedRun,
+    cleanup: stopRun,
+    setup: `
+      const shown = () => [...document.querySelectorAll('[data-ext-overlay]')].filter(e => e.getClientRects().length);
+      await until(() => shown().length >= 2, 'the run panel and the question', 20000);
+      await wait(600);
+      return ['h1', ...shown().map((e, i) => mark(e, 'o' + i))];
+    `
+  },
+  {
+    // Recording: the page says so, bottom right, with its own Stop (content.js _syncRecordingPill)
+    name: 'page-recording',
+    page: 'web',
+    size: [1000, 400],
+    seed: ({ send, webTabId }) => send({ type: 'START_RECORD', tabId: webTabId, scenarioId: null }),
+    cleanup: ({ send }) => send({ type: 'STOP_RECORD' }),
+    setup: `
+      await until(() => $('#__pqa_recording'), 'the recording pill');
+      await wait(500);
+      return ['h1', '#__pqa_recording'];
+    `
+  },
+  {
+    // DB Test Session on Adminer's SQL page: a statement that may change a whole table waits for an answer. The
+    // question is the extension's own panel.preview(), called the way dbtools/capture-sql.js confirmRisks calls it
+    // for `DELETE FROM orders` (no WHERE) — there is no Adminer here to type it into
+    name: 'db-risk',
+    page: 'dbtest.html',
+    size: [900, 640],
+    setup: `
+      await until(() => $('#btnSettings') && $('#btnSettings').textContent.trim(), 'the page to start');
+      await themed('#toggleTheme', THEME);
+      document.body.replaceChildren();   // nothing behind the question but the page's own background
+      const { mountPanel } = await import('/dbtools/panel.js');
+      const { t, setLang } = await import('/dbtools/i18n.js');
+      setLang('en');
+      const panel = mountPanel({}, { theme: THEME });
+      panel.preview({ title: t('risk.title'), sql: 'DELETE FROM orders', note: t('risk.note'),
+        summary: [{ op: 'delete', table: 'orders', say: t('risk.noWhere') }],
+        cancelLabel: t('risk.cancel'), confirmLabel: t('risk.run'), confirmKind: 'danger' });
+      await wait(500);
+      const r = panel.host.shadowRoot.querySelector('.sheet').getBoundingClientRect();
+      const box = Object.assign(document.createElement('div'), { id: 'shotBox' });
+      Object.assign(box.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', pointerEvents: 'none' });
+      document.body.append(box);
+      return '#shotBox';
+    `
+  },
+  {
     // API Tests: "Get order" sent — the Headers tab, then the verdict, status, time, size and the URL as sent
     name: 'api-send',
     page: 'apitest.html',
@@ -491,7 +753,7 @@ const SHOTS = [
     `
   },
   {
-    // Manage → the Environments dialog: Dev in use, its variables, and the Data tab's under them (Dev's email wins)
+    // Manage → the Environments dialog: Dev in use, its variables, and the Tools tab's under them (Dev's email wins)
     name: 'api-env',
     page: 'apitest.html',
     size: [1400, 900],
@@ -567,8 +829,79 @@ const SHOTS = [
   }
 ];
 
+// ── Parity: `node capture-shots.mjs parity` ──────────────────────────────────────────────────────────────────
+// The real popup, seeded with the data demo.js shows (§4–§8), next to popup-demo.html: every tab, both themes, at
+// the toolbar popup's 480×600. Pillow reports where each pair differs and writes real | demo | diff strips to
+// PARITY_OUT (default: a temp folder). README "Parity check" lists the differences that are expected, and why.
+const PARITY_URL = 'https://app.example.com/login';   // the tab the demo's popup is "on"
+// Highlight last: once its tab has been opened the real popup shows its badge (highlight.js loads then), and a
+// fresh demo page does not
+const PARITY_TABS = ['tabRecord', 'tabData', 'tabCapture', 'tabSettings', 'tabHighlight'];
+const PARITY_PAGE = '<!doctype html><meta charset="utf-8"><title>Log in — App</title><h1>Log in</h1>'
+  + '<p><input id="email"> <input id="password" type="password"> <button class="btn-login">Log in</button></p>';
+const paritySeed = async ({ send, set, scenario }) => {
+  // demo.js §6: one variable of each kind, in this order
+  await send(vars({
+    email: { activeType: 'p', p: ['john@acme.com', 'jane@acme.com', 'qa@acme.com', 'ops@acme.com'] },
+    password: { activeType: 's', s: 'Spring-2026!' },
+    orderId: { activeType: 'r', r: { type: 'alphanumeric', length: '8' } },
+    role: { activeType: 'f', f: ['admin', 'editor', 'viewer'] }
+  }));
+  // demo.js §5 + §8: "Login flow" first, the other three after it
+  const id = await scenario('Login flow', [
+    { type: 'navigate', url: PARITY_URL },
+    { type: 'input', ...css('#email'), value: '${email}', label: 'Email' },
+    { type: 'input', ...css('#password'), value: '${password}', label: 'Password', secret: true },
+    { type: 'click', ...css('button.btn-login'), label: 'Log in', delay: 500 },
+    { type: 'assert', conditionType: 'textContains', ...css('.welcome'), expectedValue: 'Welcome back' },
+    { type: 'condition', conditionType: 'elementVisible', ...css('.promo-modal'), skipCount: 1 },
+    click('.promo-modal .close', 'Close'),
+    { type: 'screenshot', value: 'Visible viewport' },
+    click('#logout', 'Log out')
+  ]);
+  await send({ type: 'TOGGLE_ACTION_DISABLED', scenarioId: id, index: 8 });
+  for (const name of ['Checkout — happy path', 'Bulk invoice upload', 'Profile update']) await scenario(name, [click('#go')]);
+  for (const name of ['Smoke tests', 'Regression', 'Demos']) await send({ type: 'CREATE_FOLDER', name });
+  // demo.js §7: five highlights on this page, others on two more pages
+  const hl = (url, texts) => texts.map(([color, text], i) => ({ id: url.length + color + i, text, color, note: '', createdAt: 1793600000000 + i, srcUrl: url }));
+  await set({
+    lastSelectedScenario: id,
+    // demo.js §5b: it played a few minutes ago and passed (its Assert held)
+    lastRun: { scenarioId: id, scenarioName: 'Login flow', endedAt: Date.now() - 3 * 60_000, completed: true, verdict: { status: 'passed', checks: 1 }, failures: [] },
+    ...FRESH_INSTALL,   // storage was just cleared
+    hl_v1: {
+      [PARITY_URL]: hl(PARITY_URL, [
+        ['yellow', 'Record any web workflow with a single click — no code required.'],
+        ['green', 'CSV data-driven runs repeat a scenario across hundreds of rows automatically.'],
+        ['pink', 'Export to Selenium Python or a JS bookmarklet in one tap.'],
+        ['blue', 'Capture full-page, scrolling, and element screenshots.'],
+        ['orange', 'Variables, conditions, and switch logic make scenarios truly dynamic.']]),
+      'https://docs.example.com': hl('https://docs.example.com', [['yellow', 'Docs one'], ['green', 'Docs two'], ['blue', 'Docs three']]),
+      'https://blog.example.com': hl('https://blog.example.com', [['pink', 'Blog one']])
+    }
+  });
+};
+// Per pair: the box that differs and how many pixels; a real | demo | diff strip for each
+const PARITY_DIFF = `
+import sys, json
+from PIL import Image, ImageChops
+out = []
+for real, demo, strip in json.loads(sys.argv[1]):
+    a, b = Image.open(real).convert('RGB'), Image.open(demo).convert('RGB')
+    d = ImageChops.difference(a, b)
+    mask = d.convert('L').point(lambda v: 255 if v > 24 else 0)
+    n = mask.histogram()[255]
+    s = Image.new('RGB', (a.width * 3 + 16, a.height), (255, 255, 255))
+    s.paste(a, (0, 0)); s.paste(b, (a.width + 8, 0))
+    s.paste(Image.composite(Image.new('RGB', a.size, (220, 38, 38)), a.point(lambda v: 128 + v // 2), mask), (a.width * 2 + 16, 0))
+    s.save(strip)
+    out.append({'strip': strip, 'box': mask.getbbox(), 'pixels': n, 'share': round(100 * n / (a.width * a.height), 2)})
+print(json.dumps(out))
+`;
+
 const wanted = process.argv.slice(2);
-const unknown = wanted.filter(n => !SHOTS.some(s => s.name === n));
+const parity = wanted[0] === 'parity';
+const unknown = parity ? [] : wanted.filter(n => !SHOTS.some(s => s.name === n));
 if (unknown.length) { console.error('✗ No such shot:', unknown.join(', '), '— known:', SHOTS.map(s => s.name).join(', ')); process.exit(1); }
 
 let browser, server;
@@ -578,7 +911,15 @@ try {
   const sw = await browser.serviceWorker();
   if (!sw) throw new Error('the extension did not start (no service worker)');
   const extUrl = p => `chrome-extension://${sw.extId}/${p}`;
-  server = createServer((req, res) => res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }).end(PAGE));
+  // /page is the sample web page; /promo/… is this repo, for the parity check's popup-demo.html
+  const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml' };
+  server = createServer((req, res) => {
+    const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+    if (!path.startsWith('/promo/')) return res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }).end(PAGE);
+    const file = resolve(here, '.' + path.slice(6));
+    if (!file.startsWith(here) || !existsSync(file)) return res.writeHead(404).end();
+    res.writeHead(200, { 'content-type': (TYPES[extname(file)] || 'application/octet-stream') + '; charset=utf-8' }).end(readFileSync(file));
+  });
   // A fixed port, so the URL the popup and the bug report show is the same every run (any free one if it is taken)
   await new Promise((r, j) => server.once('error', j).listen(4170, '127.0.0.1', r)).catch(() => new Promise(r => server.listen(0, '127.0.0.1', r)));
   const base = `http://127.0.0.1:${server.address().port}`;
@@ -600,21 +941,77 @@ try {
     await sleep(500);
     for (let t = 0; t < 30_000 && (await send({ type: 'GET_EXTENSION_STATUS' }))?.playing; t += 250) await sleep(250);
   };
-  const ctx = { base, send, set, scenario, play };
-  for (const shot of SHOTS.filter(s => !wanted.length || wanted.includes(s.name))) {
+  const ctx = { base, send, set, scenario, play, web, webTabId };
+  if (parity) {
+    // The tab the popup is on: https://app.example.com/login, answered here through CDP like the API shots
+    const app = await browser.openPage('about:blank', { width: 1000, height: 700 });
+    await app.send('Fetch.enable', { patterns: [{ urlPattern: 'https://app.example.com/*' }] });
+    const paused = app.waitEvent('Fetch.requestPaused', 30_000);
+    const loaded = app.goto(PARITY_URL);
+    await app.send('Fetch.fulfillRequest', { requestId: (await paused).params.requestId, responseCode: 200,
+      responseHeaders: [{ name: 'Content-Type', value: 'text/html; charset=utf-8' }], body: Buffer.from(PARITY_PAGE).toString('base64') });
+    await loaded;
+    const appTabId = await extPage.evaluate(`new Promise(r => chrome.tabs.query({ url: ${JSON.stringify(PARITY_URL + '*')} }, t => r(t[0]?.id)))`);
+    const dir = process.env.PARITY_OUT || mkdtempSync(join(tmpdir(), 'pqa-parity-'));
+    mkdirSync(dir, { recursive: true });
+    await sw.evaluate('chrome.storage.local.clear().then(() => chrome.storage.sync.clear())');
+    await paritySeed(ctx);
+    await set({ activatedTabs: [appTabId] });
+    const shoot = async (page, file) => writeFileSync(file, Buffer.from((await page.send('Page.captureScreenshot', { format: 'png' })).data, 'base64'));
+    const pairs = [];
+    for (const theme of ['light', 'dark']) {
+      await set({ lastTab: 'tabRecord' });   // the popup reopens on the tab it was left on
+      const real = await browser.openPage(extUrl('popup.html'), { initScript: asActiveTab(PARITY_URL), width: 480, height: 600 });
+      await sleep(1500);
+      await real.evaluate(`(async () => { const THEME = ${JSON.stringify(theme)}; ${HELPERS} await themed('#toggleTheme', THEME); })()`);
+      for (const id of PARITY_TABS) {
+        const name = `${id}-${theme}`;
+        await real.evaluate(`(() => { ${HELPERS} tab(${JSON.stringify(id)}); document.querySelector('.main-content')?.scrollTo(0, 0); })()`);
+        await sleep(900);   // the panel's fade-in
+        await shoot(real, join(dir, `${name}-real.png`));
+        const demo = await browser.openPage(`${base}/promo/popup-demo.html?tab=${id}&theme=${theme}`, { width: 480, height: 600 });
+        await sleep(900);
+        await shoot(demo, join(dir, `${name}-demo.png`));
+        await demo.close();
+        pairs.push([join(dir, `${name}-real.png`), join(dir, `${name}-demo.png`), join(dir, `${name}-diff.png`)]);
+      }
+      const errors = real.errors();
+      if (errors.length) console.warn(`  ⚠ popup (${theme}) page errors:\n    ${errors.join('\n    ')}`);
+      await real.close();
+    }
+    for (const r of JSON.parse(execFileSync('python', ['-c', PARITY_DIFF, JSON.stringify(pairs)], { encoding: 'utf8' }))) {
+      console.log(`${r.pixels ? '≠' : '='} ${r.strip.replace(/.*[\\/]/, '').replace('-diff.png', '').padEnd(18)} ${r.pixels ? `${r.share}% of the popup, box ${JSON.stringify(r.box)}` : 'identical'}`);
+    }
+    // README's picture of it: Record & Play, light — the busiest tab
+    copyFileSync(join(dir, 'tabRecord-light-diff.png'), join(here, 'screenshots', 'shot-parity.png'));
+    console.log('Strips (real | demo | diff):', dir, '— Record & Play light → screenshots/shot-parity.png');
+  }
+  for (const shot of SHOTS.filter(s => !parity && (!wanted.length || wanted.includes(s.name)))) {
     for (const theme of ['light', 'dark']) {
       const out = join(here, 'screenshots', 'shot-' + shot.name + (theme === 'dark' ? '-dark' : ''));
       const [width, height] = shot.size;
       // Pages remember their last state (open tab, mode, theme): every shot starts from none
       await sw.evaluate('chrome.storage.local.clear().then(() => chrome.storage.sync.clear())');
+      // …and back to what a fresh install has: background.js onInstalled turns the screenshot countdown on
+      await set(FRESH_INSTALL);
+      // A shot of the sample page itself (page: 'web'): its content script draws the recording pill, the run panel
+      // and the prompts, in the theme the popup is set to
+      const onWeb = shot.page === 'web';
+      if (onWeb) {
+        await set({ popupTheme: theme, activatedTabs: [webTabId] });
+        await web.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+        await web.goto(`${base}/page`);
+        await sleep(500);
+      }
       if (shot.seed) await shot.seed(ctx);
-      const page = shot.page === 'popup.html'
+      const page = onWeb ? web : shot.page === 'popup.html'
         ? await browser.openPage(extUrl('popup.html'), { initScript: asActiveTab(`${base}/page`), width, height })
         : await browser.openPage(extUrl(shot.page), { width, height });
       if (shot.api) await answerApi(page);
       try {
         if (shot.page === 'popup.html') {
-          await page.evaluate(`chrome.storage.local.set({ activatedTabs: [${webTabId}] })`);
+          // The sample page counts as turned on — unless the shot is about a tab that is off
+          if (!shot.off) await page.evaluate(`chrome.storage.local.set({ activatedTabs: [${webTabId}] })`);
           await page.reload();
           await sleep(1500);
         }
@@ -643,7 +1040,8 @@ try {
         failed++;
         console.error(`✗ ${shot.name} (${theme}): ${e.message}`);
       } finally {
-        await page.close();
+        if (shot.cleanup) await shot.cleanup(ctx).catch(() => {});
+        if (!onWeb) await page.close();
       }
     }
   }

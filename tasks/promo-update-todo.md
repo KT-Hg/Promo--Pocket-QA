@@ -549,10 +549,11 @@ mới `shot-sql-workspace*` / `shot-db-manager*`, sửa `src` trong `features-*.
 nháy, bộ lọc folder được nhớ, action vừa lưu nhấp nháy) có đáng một dòng trên trang `recording` không.
 
 **Acceptance criteria:**
-- [ ] Store có `tool-base`; ảnh mới light + dark, `.png` + `.webp`; `grep -rn "shot-sqlcases\|shot-dbtools-manager"` rỗng.
+- [x] Store có `tool-base`; ảnh mới light + dark, `.png` + `.webp`; `grep -rn "shot-sqlcases\|shot-dbtools-manager"` rỗng.
+  *Xong 2026-11-12 trong [`promo-130-todo.md`](promo-130-todo.md) Task 4: Store 1.0.30 = `4fb11ce` có `tool-base`; `sql-workspace`, `db-manager` chụp bằng `capture-shots.mjs`.*
 
 **Verification:**
-- [ ] Mở `sql-test-designer`, `db-test-session`, `api-tests` ở light + dark; `hiddenByFit()` không đổi
+- [x] Mở `sql-test-designer`, `db-test-session`, `api-tests` ở light + dark; `hiddenByFit()` không đổi
 
 **Dependencies:** Checkpoint B, Store có `9d25060`
 

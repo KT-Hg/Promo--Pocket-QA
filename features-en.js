@@ -17,7 +17,7 @@ var FEATURES_EN = {
   recording: {
     title: 'Record in one click',
     summary: 'Clicks and typing become editable, reorderable steps — 17 action types in all, from hovers to file uploads.',
-    lead: 'Activate Pocket QA on a tab, hit Start Recording and do the task once. Every click and every field you type into becomes an editable step — no selectors to write by hand.',
+    lead: 'Turn Pocket QA on for a tab, hit Start Recording and do the task once. Every click and every field you type into becomes an editable step — no selectors to write by hand.',
     facts: [['17', 'action types'], ['8', 'selectors saved per element'], ['50', 'undo steps']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
@@ -30,7 +30,7 @@ var FEATURES_EN = {
       '<b>Pick element</b> picks a target straight off the page instead of writing a selector.'
     ],
     steps: [
-      ['Activate the tab', 'Open the popup on the page you want to automate and click <b>Activate</b> in the status bar.'],
+      ['Turn the tab on', 'Open the popup on the page you want to automate and click <b>Turn on</b> in the status bar — or just hit Start Recording, which asks.'],
       ['Record', 'Click <b>▶ Start Recording</b> (<span class="kbd">Alt+R</span>) and do the task once — clicks and typing are captured as you go.'],
       ['Stop &amp; save', 'Click <b>■ Stop</b> (<span class="kbd">Alt+S</span>), name the scenario and file it in a folder.'],
       ['Refine', 'Add what a recorder can’t see — a hover, a wait, an Assert — with Add Manual Action, and drag it into place.']
@@ -89,8 +89,8 @@ var FEATURES_EN = {
         images: [{
           src: 'screenshots/shot-pop-actions.webp',
           srcDark: 'screenshots/shot-pop-actions-dark.webp',
-          alt: 'The action list of a Checkout scenario: navigate, input, click, a Condition guarding one click, a Switch on ${role} with an admin case of two steps and a user case of one, an Upload File step in its own colour, and a disabled last step, each with Disable, Copy, Edit and Delete.',
-          caption: 'A Condition, a Switch block of two cases, an upload, a step turned off.'
+          alt: 'The action list of a Checkout scenario: navigate; Email and Password typed in, each read by its name with the selector under it, Password marked 🔒; Apply; a Condition guarding Close; a Switch on ${role} with an admin case of two steps and a user case of one; an Upload File step in its own colour; and Log out, turned off — each with Disable, Copy, Edit and Delete.',
+          caption: 'Steps by name, a password 🔒, a Condition, a Switch block, a step turned off.'
         }],
         points: [
           'A step’s number is its place in the list; a Switch’s cases indent under a header, one colour each.',
@@ -100,16 +100,53 @@ var FEATURES_EN = {
         ]
       },
       {
+        title: 'Insert anywhere, copy whole blocks',
+        nav: 'Insert &amp; copy',
+        lead: 'The <b>+</b> under any step puts the next action right there — inside a Switch case or a Condition too.',
+        images: [{
+          src: 'screenshots/shot-pop-insert.webp',
+          srcDark: 'screenshots/shot-pop-insert-dark.webp',
+          alt: 'The action list of a Checkout scenario with a Switch on ${role}: under All orders, in case “admin”, a dashed row reads assert — New action goes in at #6 · Switch 4 › case “admin” — with ↑, ↓ and ✕; below the list, the Add Manual Action card says Insert at #6 · Switch 4 › case “admin”.',
+          caption: 'The + under All orders: the new step goes in at #6, inside case “admin”.'
+        }],
+        points: [
+          'Hover a row and press <b>+</b> in the gap under it: a dashed row stands where the action will go, ↑ ↓ move it, ✕ drops it.',
+          'Add Manual Action and Paste both land there, and the Add card names the place.',
+          '<b>Copy</b> on a Switch or a Condition takes its whole block; <b>Paste</b> puts the block back in one step, into an empty scenario too.',
+          'A Switch case that runs another scenario has a row of its own: <i>↗ runs scenario “…”</i>.'
+        ]
+      },
+      {
+        title: 'While you record',
+        nav: 'While recording',
+        lead: 'The page says it is being recorded, and each step is named after what you clicked or typed into.',
+        images: [{
+          src: 'screenshots/shot-page-recording.webp',
+          srcDark: 'screenshots/shot-page-recording-dark.webp',
+          alt: 'The sample Checkout page while recording: bottom right, a bar reads ● Recording — Pocket QA, with a red ■ Stop button.',
+          caption: 'Recording: the page says so, and its own ■ Stop ends it.'
+        }],
+        points: [
+          'In the popup, Start Recording reads <b>● Recording…</b> and Stop turns red; on the page, a bar bottom right has its own <b>■ Stop</b>.',
+          'A step is named after its element — its label, placeholder, aria-label or text — so the list reads <i>Email</i>, <i>Password</i>, <i>Log in</i>, the selector on the line under.',
+          'Typing into a password field marks the step <b>🔒</b>: it is kept as typed, so put it in a variable to keep it out of exports.',
+          'A click on the bar itself is never recorded.'
+        ]
+      },
+      {
         title: 'Selectors that survive a redesign',
         nav: 'Selectors',
-        lead: 'Up to eight selectors are stored per element, tried most precise first — a renamed class rarely breaks a run.',
+        lead: 'Up to eight selectors are stored per element, tried most precise first — a renamed class rarely breaks a run, and an element not there yet is waited for.',
+        images: [{
+          src: 'screenshots/shot-pop-eye.webp',
+          srcDark: 'screenshots/shot-pop-eye-dark.webp',
+          alt: 'Add Manual Action with a Click: the selector box holds input, and under it: 2 matches — playback uses the first (solid outline: “Email”). Pick again or narrow the selector.',
+          caption: '👁 tries a selector on the page before you save it.'
+        }],
         points: [
-          'Order: the type you chose, then Full XPath, ID, XPath, CSS, CSS through shadow roots, data-testid, data-id, name, text.',
-          '<b>Pick element</b>: hover the page and click — the fields fill in, iframes included.',
-          '<b>Child Condition</b> finds the right row in a list by its value, text, id, class or type.',
-          'Unstable ids (React’s <span class="nw"><code>:r0:</code></span>, UUIDs) are left out while recording.',
-          'Not there yet? Playback waits for the element, up to the timeout, instead of failing.',
-          '<code>${variables}</code> work in any selector, so one step can target a new row each run.'
+          'Tried in order: the type you chose, Full XPath, ID, XPath, CSS (through shadow roots too), data-testid, data-id, name, text — unstable ids such as React’s <span class="nw"><code>:r0:</code></span> left out.',
+          '<b>Pick element</b>: hover the page and click, iframes included; <b>👁</b> beside the box shows on the page what a selector finds.',
+          '<b>Child Condition</b> finds a row in a list by its value, text, id, class or type; <code>${variables}</code> work in any selector.'
         ]
       },
       {
@@ -132,8 +169,8 @@ var FEATURES_EN = {
     ],
     notes: [
       'The recorder captures clicks and typing only. Hovers, waits and drags are added by hand, so a recording never fills up with mouse noise.',
-      'Recording and playback need the tab activated first — the status bar says whether it is.',
-      'The Start/Stop hotkeys only fire on an activated tab, and only on a real key press: a page can’t start a recording by faking a keystroke.'
+      'Pocket QA is off on a tab until you turn it on (or switch on <b>Allow on all tabs</b> in Settings) — the status bar says <b>Active</b> or <b>Off on this tab</b>.',
+      'The Start/Stop hotkeys only fire on a tab Pocket QA is on, and only on a real key press: a page can’t start a recording by faking a keystroke.'
     ]
   },
 
@@ -150,11 +187,11 @@ var FEATURES_EN = {
       'Steps run inside iframes, and a run picks up where it left off when the page reloads mid-playback.',
       'A step that fails asks <b>Retry / Skip / Stop</b>, so one flaky element doesn’t throw away the whole run.',
       'Native dropdowns that ignore a synthetic click get a real, trusted click instead.',
-      'A progress panel shows the step in flight, and a notification tells you how the run ended.'
+      'A run panel on the page and Now Playing in the popup show the step in flight, with ■ Stop; a notification tells you how the run ended.'
     ],
     steps: [
       ['Pick a scenario', 'Select it under Manage Scenarios — or several, in order, under Sequence Scenarios.'],
-      ['Choose how it runs', 'Set the loop count and delay, or a time under Data → Scheduled Playback.'],
+      ['Choose how it runs', 'Set the loop count and delay, or a time under Scheduled Playback, at the bottom of Record & Play.'],
       ['Press ▶ Play', 'The Now Playing panel follows each step; <b>Stop</b> ends the run at any point.'],
       ['Read the result', 'The verdict shows on the Last run card, the toolbar badge and the notification.']
     ],
@@ -168,10 +205,35 @@ var FEATURES_EN = {
             ['Single run', 'Record &amp; Play', 'Plays the selected scenario once, start to finish.'],
             ['Loop', 'Record &amp; Play', 'Repeats it N times with a delay between loops; variables are built fresh every loop.'],
             ['Sequence', 'Record &amp; Play → Sequence Scenarios', 'Runs several scenarios in order, each with its own delay — one run, one verdict.'],
-            ['Scheduled', 'Data → Scheduled Playback', 'Starts a scenario at a set time, once or every day, from a background alarm.'],
-            ['CSV data run', 'Data → <span class="nw">CSV Data-Driven Run</span>', 'Runs it once per row of a CSV file — see <a href="feature.html?id=csv">CSV <span class="nw">data-driven</span>&nbsp;runs</a>.']
+            ['Scheduled', 'Record &amp; Play → Scheduled Playback', 'Starts a scenario at a set time, once or every day, from a background alarm.'],
+            ['CSV data run', 'Record &amp; Play → <span class="nw">CSV Data-Driven Run</span>', 'Runs it once per row of a CSV file — see <a href="feature.html?id=csv">CSV <span class="nw">data-driven</span>&nbsp;runs</a>.']
           ]
         }
+      },
+      {
+        title: 'Watch a run',
+        nav: 'Watch a run',
+        lead: 'A run shows itself where you are looking: on the page it plays, and in the popup.',
+        images: [
+          {
+            src: 'screenshots/shot-page-run.webp',
+            srcDark: 'screenshots/shot-page-run-dark.webp',
+            alt: 'The sample Checkout page with a run held at its fourth step: a prompt reads Action 4 of 5 failed — click “Place order” — Element not found on the page within 5 s (looked for it by CSS), with Retry, Skip and Stop; bottom right, the run panel, in amber, reads Checkout with coupon · step 4 failed, with ■ Stop.',
+            caption: 'Held at a failed step: the question, and the run panel in amber.'
+          },
+          {
+            src: 'screenshots/shot-pop-nowplaying.webp',
+            srcDark: 'screenshots/shot-pop-nowplaying-dark.webp',
+            alt: 'The top of the popup during the same run: the status bar, then Now Playing — Checkout with coupon, step 4 failed, a ■ Stop button and an amber progress bar — above the tabs.',
+            caption: 'The same run in the popup: Now Playing, with its own ■ Stop.'
+          }
+        ],
+        points: [
+          'On the page, bottom right: <b>▶</b> the scenario and its step, a bar for the whole run, and <b>■ Stop</b>.',
+          'Held at a failed step it turns amber (<b>⏸</b>) while the page asks <b>Retry / Skip / Stop</b>; <b>⏳</b> while it waits for the next scenario.',
+          'In the popup, <b>Now Playing</b> shows the same run with its own ■ Stop; the Last run card hides until it ends.',
+          'The panel steps aside for screenshots, so a capture never shows it.'
+        ]
       },
       {
         title: 'Sequences',
@@ -201,7 +263,7 @@ var FEATURES_EN = {
           caption: 'Two schedules: one every day, one once.'
         }],
         points: [
-          'Pick a scenario and a time, add a label if you like, tick Repeat daily for every day.',
+          'At the bottom of Record &amp; Play, under <i>Run several · on a schedule · from a CSV</i>: pick a scenario and a time, tick Repeat daily for every day.',
           'Edit, turn off or copy a schedule from its row.',
           'A background alarm checks every minute; a schedule never fires twice in one minute.',
           'Chrome has to be running at that time — a closed browser runs nothing.'
@@ -267,7 +329,8 @@ var FEATURES_EN = {
         table: {
           head: ['Verdict', 'When'],
           rows: [
-            ['Passed', 'No failure, and the run reached its end.'],
+            ['Passed', 'No failure, the run reached its end, and at least one Assert ran.'],
+            ['Finished&nbsp;· no&nbsp;checks', 'No failure and it reached its end, but no Assert ran — nothing on the page was checked.'],
             ['Failed', 'The first failure is a false Assert — the page was wrong.'],
             ['Test&nbsp;broken', 'The first failure is anything else — an element not found, a script error, a broken block. The test couldn’t look.'],
             ['Stopped', 'No failure, but the run didn’t reach its end — you stopped it, or its tab closed. Never counted as Passed.']
@@ -289,11 +352,17 @@ var FEATURES_EN = {
           srcDark: 'screenshots/shot-pop-lastrun-dark.webp',
           alt: 'The Last run card of a failed run of “Checkout with coupon”: the verdict, the time, one failure line — #4 Check the toast, expected text containing Saved, got Error: coupon expired — and a Bug report button.',
           caption: 'A real failed run: what was expected, what the page held.'
+        }, {
+          src: 'screenshots/shot-pop-lastrun-nochecks.webp',
+          srcDark: 'screenshots/shot-pop-lastrun-nochecks-dark.webp',
+          alt: 'The Last run card of a run with no Assert: ✓ Finished · no checks, Checkout with coupon, just now, and the hint: No Assert ran, so nothing was checked. Add an Assert (Add Manual Action) to check the page shows what it should.',
+          caption: 'No Assert ran: Finished · no checks, not Passed.'
         }],
         points: [
           'The verdict, the scenario and when — and one line per failure, with its step number.',
           'A failed Assert says both sides: <code>Expected text "Saved", got "Error"</code>.',
           'Click a failure to jump to its step in the list.',
+          'No Assert ran? It reads <b>✓ Finished · no checks</b>, in grey, with a hint to add one.',
           '× hides the card until the next run.'
         ]
       },
@@ -321,7 +390,7 @@ var FEATURES_EN = {
         images: [{
           src: 'screenshots/shot-pop-bugreport.webp',
           srcDark: 'screenshots/shot-pop-bugreport-dark.webp',
-          alt: 'The Bug report dialog for that run: Markdown with the failure, page, time, result and environment, then the steps to reproduce with typed values shown as dots, an Include typed values box, and Copy and Download screenshot buttons.',
+          alt: 'The Bug report dialog for that run: Markdown with the failure, page, time, result and environment, then the steps to reproduce, each named after its element — Email, Coupon, Apply — with typed values shown as dots, an Include typed values box, and Copy and Download screenshot buttons.',
           caption: 'The report for the run above, typed values hidden.'
         }],
         points: [
@@ -346,7 +415,7 @@ var FEATURES_EN = {
     lead: 'Turn a one-off recording into a real script: variables you reuse as <code>${var}</code> anywhere, values read off the page mid-run, and conditions and switches that branch on them.',
     facts: [['4', 'variable types'], ['12', 'condition checks'], ['3', 'layers of priority']],
     tab: 'tabData',
-    tabLabel: 'Data tab',
+    tabLabel: 'Tools tab',
     points: [
       'Four variable types: <b>Static</b>, <b>Random</b> (letters, numbers, both, or a datetime stamp), <b>Pick</b> (one of a list) and <b>Fallback</b> (try A, then B, then C).',
       '<code>${var}</code> works in selectors, values, URLs, scripts, expected values, file names and more.',
@@ -356,7 +425,7 @@ var FEATURES_EN = {
       '<b>Switch</b> runs another scenario, jumps within this one, or runs only the matching case’s block of steps.'
     ],
     steps: [
-      ['Define', 'Data → Variables: add a name, pick a type, set its value.'],
+      ['Define', 'Tools → Variables: add a name, pick a type, set its value.'],
       ['Use', 'Type <code>${name}</code> in any step field — the suggestion list fills it in.'],
       ['Capture', 'Add a Read DOM step to store something from the page as a new variable.'],
       ['Branch', 'Add a Condition or a Switch that acts on what the page shows or a variable holds.']
@@ -384,7 +453,7 @@ var FEATURES_EN = {
       {
         title: 'Rename without breaking',
         nav: 'Rename',
-        lead: 'Rename a variable in the Data tab and every scenario that uses it follows.',
+        lead: 'Rename a variable in the Tools tab and every scenario that uses it follows.',
         images: [{
           src: 'screenshots/shot-pop-rename.webp',
           srcDark: 'screenshots/shot-pop-rename-dark.webp',
@@ -439,8 +508,9 @@ var FEATURES_EN = {
     summary: 'Upload a CSV — headers become <code>${variables}</code>. One scenario runs per row; results export to Excel, HTML or ZIP.',
     lead: 'Upload a CSV and replay the same scenario once per row — headers become <code>${variables}</code> automatically, so one recording drives an entire data set and every row gets its own verdict.',
     facts: [['1', 'recording, any number of rows'], ['3', 'export formats'], ['Per row', 'pass / fail verdict']],
-    tab: 'tabData',
-    tabLabel: 'Data tab',
+    tab: 'tabRecord',
+    card: 'csvRunCard',   // the hero opens the CSV card itself (demo.js ?card=)
+    tabLabel: 'Record & Play tab',
     points: [
       'The first row names the variables: a column <code>email</code> becomes <code>${email}</code>, no mapping step.',
       'A row’s columns override saved variables of the same name, for that row only.',
@@ -451,7 +521,7 @@ var FEATURES_EN = {
     ],
     steps: [
       ['Record with&nbsp;variables', 'Put <code>${name}</code> where the data goes — a login, a search term, a quantity.'],
-      ['Upload the CSV', 'Data → <span class="nw">CSV Data-Driven Run</span>: the header row names the variables, and a preview shows what was read.'],
+      ['Upload the CSV', 'Record & Play → <span class="nw">CSV Data-Driven Run</span>: the header row names the variables, and a preview shows what was read.'],
       ['Run', 'One execution per row, each row’s verdict collected as it goes.'],
       ['Export', 'XLSX, HTML or ZIP — each ending in Run Result and Action Failed columns.']
     ],
@@ -512,7 +582,7 @@ var FEATURES_EN = {
     tab: 'tabCapture',
     tabLabel: 'Capture tab',
     points: [
-      'Visible, Full Page, Scroll (vertical / horizontal), Segment (vertical / horizontal), Element and Window capture.',
+      'Visible, Full Page, Scroll (Down / Across), Segment (Down / Across), Element and Window capture.',
       'Every mode has a <b>Edit</b> twin that opens the image editor right after the shot.',
       'A 3, 5 or 10-second countdown before a visible capture — time to open the dropdown or hover state you need in the shot.',
       'Watermark with <code>{url}</code> and <code>{datetime}</code> tokens, stamped onto the image.',
@@ -534,8 +604,8 @@ var FEATURES_EN = {
           rows: [
             ['Visible', 'The viewport, as you see it.', '<span class="kbd">Alt+P</span>'],
             ['Full Page', 'The whole page in one image — fixed headers handled, zoom set to 100% for the shot.', '<span class="kbd">Alt+Shift+F</span>'],
-            ['Scroll V / H', 'Scrolls the page and stitches a vertical or horizontal panorama.', '<span class="kbd">Alt+V</span> / <span class="kbd">Alt+H</span>'],
-            ['Segment V / H', 'Mark the start, scroll to the end, stop — only the part you marked.', '<span class="kbd">Alt+Shift+V</span> / <span class="kbd">Alt+Shift+H</span>, then <span class="kbd">Alt+X</span>'],
+            ['Scroll ↕&nbsp;Down / ↔&nbsp;Across', 'Scrolls the page and stitches a vertical or horizontal panorama.', '<span class="kbd">Alt+V</span> / <span class="kbd">Alt+H</span>'],
+            ['Segment ⬍&nbsp;Down / ⬌&nbsp;Across', 'Mark the start, scroll to the end, stop — only the part you marked.', '<span class="kbd">Alt+Shift+V</span> / <span class="kbd">Alt+Shift+H</span>, then <span class="kbd">Alt+X</span>'],
             ['Element', 'Exactly one element’s box.', '<span class="kbd">Alt+E</span>'],
             ['Window', 'Any application window on screen — browser chrome and DevTools included.', '—']
           ]
@@ -619,7 +689,7 @@ var FEATURES_EN = {
     lead: 'Turn any recorded scenario into real, runnable test code — five formats, generated fresh from the scenario’s current steps, with nothing dropped silently.',
     facts: [['5', 'output formats'], ['8', 'fallback locators per step'], ['4', 'overrides via env vars']],
     tab: 'tabData',
-    tabLabel: 'Data tab',
+    tabLabel: 'Tools tab',
     points: [
       'JS Bookmarklet, Selenium Python (script or pytest), Playwright Test, Robot Framework and Selenium Java (TestNG).',
       'Playback is the standard: the code does what a run does — same locator fallbacks, and the extension’s own in-page helpers wherever a plain driver call would act differently.',
@@ -629,7 +699,7 @@ var FEATURES_EN = {
       'A failing step names itself — <code>Step 3: click — Sign in: no element found by …</code> — and saves a screenshot of the page.'
     ],
     steps: [
-      ['Pick the scenario', 'Data → Export Code — the list is grouped by folder and starts on the scenario you have selected.'],
+      ['Pick the scenario', 'Tools → Export Code — the list is grouped by folder and starts on the scenario you have selected.'],
       ['Pick a format', 'Five buttons; all open the same four-tab window: Code, Variables, Actions, Settings.'],
       ['Tune it', 'Starting URL, browser, headless, delays, timeouts, a CSV data file — the code follows as you type.'],
       ['Copy or download', 'Then run it with <code>pytest</code>, <code>npx playwright test</code>, <code>robot</code> or <code>mvn test</code>.']
@@ -796,7 +866,7 @@ var FEATURES_EN = {
     lead: 'Paste a SQL query and get a ready-made test case list — equivalence partitions, boundary values, a decision table, and the NULL and JOIN edge cases most manual test plans miss — with the test data each case needs.',
     facts: [['4', 'technique families'], ['4', 'export formats'], ['VI / EN', 'interface']],
     tab: 'tabData',
-    tabLabel: 'Data tab',
+    tabLabel: 'Tools tab',
     points: [
       'Parses <code>SELECT</code> (joins, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>UNION</code>, CTEs, <code>CASE</code>) plus <code>INSERT</code>, <code>UPDATE</code> and <code>DELETE</code>.',
       'EP/BVA cases straight from the query’s conditions, with boundary steps that follow the inferred type.',
@@ -806,7 +876,7 @@ var FEATURES_EN = {
       'Everything runs locally in the page — your SQL never leaves the browser.'
     ],
     steps: [
-      ['Open it', 'Data → SQL Test Case Designer opens in its own tab.'],
+      ['Open it', 'Tools → SQL Test Case Designer opens in its own tab.'],
       ['Paste a query', 'Or pick one of six examples. MySQL backticks, SQL Server brackets, ANSI quotes and <code>?</code> / <code>:name</code> / <code>@name</code> / <code>$1</code> parameters all parse.'],
       ['Review the cases', 'Filter by priority, clause or column; click a case for the rows it needs.'],
       ['Export', 'CSV for TestRail or Jira, JSON, a per-table Data CSV, or Verify SQL.']
@@ -864,16 +934,17 @@ var FEATURES_EN = {
         nav: 'Case list',
         lead: 'A three-column workspace in its own tab, not a popup panel.',
         images: [{
-          src: 'screenshots/shot-sqlcases-analysis.webp',
-          srcDark: 'screenshots/shot-sqlcases-analysis-dark.webp',
+          src: 'screenshots/shot-sql-workspace.webp',
+          srcDark: 'screenshots/shot-sql-workspace-dark.webp',
           alt: 'The SQL Test Case Designer: the query rail on the left with the pasted SQL, a generated case list in the middle with stats and technique filters, and a case inspector on the right with the rationale, fixture rows and the query to run.',
-          caption: 'Query, case list and one case’s inspector — 71 cases from one query.'
+          caption: 'Query, case list and one case’s inspector — 67 cases from one query.'
         }],
         points: [
           'Over the list: cases, high priority, conditions, joins and tables.',
           'Search; filter by priority, clause, column or “has sample data”; full or dense rows.',
           'Each case names its technique, from EP and BVA to Pairwise and MC/DC; duplicates merge.',
-          'The inspector: why the case matters, the rows to prepare and the query to run.'
+          'The inspector: why the case matters, the rows to prepare and the query to run.',
+          'The query rail folds away (☰ on the top bar, ⟨ at its head) for a wider list — the frame the API and DB pages share.'
         ]
       },
       {
@@ -924,7 +995,7 @@ var FEATURES_EN = {
       'CTEs get cases of their own, marked <code>CTE · name ·</code>. A subquery nested in the statement is only flagged — paste it separately for its own cases.',
       'There is no live schema: column types come from comparison literals first and column names second. When neither settles it, the case says so.',
       'Expected results state what SQL semantics require, not what your current data contains.',
-      'The interface is Vietnamese by default and English via the globe button — cases are generated in the active language, so an export always matches the screen.'
+      'The interface opens in English and switches to Vietnamese with the globe button — cases are generated in the active language, so an export always matches the screen.'
     ]
   },
 
@@ -934,7 +1005,7 @@ var FEATURES_EN = {
     lead: 'Change test data freely in Adminer — every write is recorded into a session, and one click puts the database back the way it was, with the exact SQL shown before it runs.',
     facts: [['8', 'kinds of write recorded'], ['1 click', 'to roll back'], ['0', 'bytes leave your browser']],
     tab: 'tabData',
-    tabLabel: 'Data tab',
+    tabLabel: 'Tools tab',
     points: [
       'Start a session from the small panel Adminer shows bottom-right; nothing is recorded until you do.',
       'Captures the edit form, grid cell edits, bulk and <span class="nw">whole-result</span> deletes, mass edits, <code>INSERT</code>s and the <code>UPDATE</code>/<code>DELETE</code> you type on the SQL page.',
@@ -944,7 +1015,7 @@ var FEATURES_EN = {
       'Refuses what it can’t undo safely — and says why, on the change itself.'
     ],
     steps: [
-      ['Open Adminer', 'A small panel appears bottom-right. The Adminer panel switch on the Data tab turns it off and on.'],
+      ['Open Adminer', 'A small panel appears bottom-right. The Adminer panel switch on the Tools tab turns it off and on.'],
       ['▶ Start session', 'Name the test run — from now on every write is recorded.'],
       ['Test', 'Edit, delete and insert as usual; each change lands in the panel’s log.'],
       ['↺ Roll back all', 'Read the SQL preview, confirm, and the data is back.']
@@ -962,8 +1033,8 @@ var FEATURES_EN = {
             caption: '↺ Roll back all shows the SQL first; nothing runs until you confirm.'
           },
           {
-            src: 'screenshots/shot-dbtools-manager.webp',
-            srcDark: 'screenshots/shot-dbtools-manager-dark.webp',
+            src: 'screenshots/shot-db-manager.webp',
+            srcDark: 'screenshots/shot-db-manager-dark.webp',
             alt: 'The Test sessions & rollback page: sessions listed on the left, and the selected session’s seven changes on the right, with the before/after of a DELETE on cart_items and an UPDATE on orders open, and one change already undone.',
             caption: 'The manager page: every session, each change’s before and after.'
           }
@@ -972,7 +1043,8 @@ var FEATURES_EN = {
           'The panel stays small: recording or not, how many changes, the few buttons you need mid-test.',
           '<b>Merged</b> folds A→B→C on one row into one statement straight back to A.',
           'Undo or re-apply one change from its row, or tick several and roll back just those.',
-          'Export a session as <code>.sql</code> or <code>.json</code>.'
+          'Export a session as <code>.sql</code> or <code>.json</code>.',
+          'The manager page has the SQL and API pages’ frame: its session rail folds away with ☰ or ⟨.'
         ]
       },
       {
@@ -1004,6 +1076,23 @@ var FEATURES_EN = {
             ['<code>INSERT</code> — form, Clone, SQL page', 'The new row’s key.', '<code>DELETE</code> of those rows']
           ]
         }
+      },
+      {
+        title: 'A whole table asks first',
+        nav: 'Whole table',
+        lead: 'On Adminer’s SQL page, a statement that may change a whole table waits for your answer before it runs.',
+        images: [{
+          src: 'screenshots/shot-db-risk.webp',
+          srcDark: 'screenshots/shot-db-risk-dark.webp',
+          alt: 'The Adminer panel’s question: This statement may change a whole table — DELETE orders: no WHERE, every row of the table is hit; the statement to run, DELETE FROM orders; and Copy, Cancel and fix it, Run anyway.',
+          caption: 'DELETE without WHERE: Run anyway, or Cancel and fix it.'
+        }],
+        points: [
+          '<b>No <code>WHERE</code></b>: every row of the table is hit.',
+          '<b>A <code>WHERE</code> that matches every row</b> — found when the rows are read before it runs.',
+          '<b>More rows than the snapshot cap</b>: it could not be rolled back.',
+          '<b>Cancel and fix it</b> runs nothing and leaves the statement in the editor; <b>Run anyway</b> sends it.'
+        ]
       },
       {
         title: 'Safe by design',
@@ -1049,7 +1138,7 @@ var FEATURES_EN = {
     lead: 'Keep your API requests next to your UI tests: paste a cURL, send it, check what comes back — and run a whole folder with the token one request saves.',
     facts: [['5', 'kinds of check'], ['v2.1', 'Postman export &amp; import'], ['CSV', 'run results']],
     tab: 'tabData',
-    tabLabel: 'Data tab',
+    tabLabel: 'Tools tab',
     points: [
       'Paste a cURL from DevTools — method, URL, headers and body filled in; Copy cURL goes the other way.',
       'Checks on the status, a JSON path, a header, the body and the time — a verdict per Send.',
@@ -1059,7 +1148,7 @@ var FEATURES_EN = {
       'Export to Postman for Newman in CI, and import a Postman collection back.'
     ],
     steps: [
-      ['Open it', 'Data → API Tests → <b>Manage API tests</b> opens a full tab.'],
+      ['Open it', 'Tools → API Tests → <b>Manage API tests</b> opens a full tab.'],
       ['Add a request', '<b>＋ Request</b>, or <b>Paste cURL</b> from DevTools → Network → Copy as cURL.'],
       ['Check it', 'Add checks, or click a key in the JSON response to check it.'],
       ['Run', 'Send one, or <b>▶ Run folder</b>; save the results as CSV or the folder for Postman.']
@@ -1068,7 +1157,7 @@ var FEATURES_EN = {
       {
         title: 'Send and read the response',
         nav: 'Send',
-        lead: 'A request opens beside its folder: six tabs above, the answer below.',
+        lead: 'A request opens beside its folder: six tabs above, the answer below. The folder column folds away (☰, ⟨), as on the SQL and DB pages.',
         images: [{
           src: 'screenshots/shot-api-send.webp',
           srcDark: 'screenshots/shot-api-send-dark.webp',
@@ -1107,11 +1196,11 @@ var FEATURES_EN = {
         images: [{
           src: 'screenshots/shot-api-env.webp',
           srcDark: 'screenshots/shot-api-env-dark.webp',
-          alt: 'The Environments dialog: Dev in use, and Staging. Dev sets baseUrl to https://api.shop.example, email, password and token. Under From the Data tab, the Data tab’s email is struck through with “set here”, and locale en-US still applies.',
-          caption: 'Dev’s email wins over the Data tab’s; locale still comes from it.'
+          alt: 'The Environments dialog: Dev in use, and Staging. Dev sets baseUrl to https://api.shop.example, email, password and token. Under From the Data tab, the Tools tab’s email is struck through with “set here”, and locale en-US still applies.',
+          caption: 'Dev’s email wins over the Tools tab’s; locale still comes from it.'
         }],
         points: [
-          '<code>${name}</code> comes from the Data tab’s variables, then the environment in use, which wins.',
+          '<code>${name}</code> comes from the Tools tab’s variables, then the environment in use, which wins.',
           '<b>Save values</b> writes a JSON path, a header, the status or part of the body into the environment.',
           'A login saves <code>token</code>; the folder’s <b>Bearer</b> <code>${token}</code> sends it with every request after.',
           '<b>Auth</b> on a folder or one request: Bearer, Basic, or an API key in a header or the query.'
@@ -1171,17 +1260,34 @@ var FEATURES_EN = {
       'Every hotkey can be rebound, and the bindings sync across your Chrome profile.',
       'Import and export scenarios or whole folders as JSON; back up and restore all data in one file.',
       'An import holding Run JS or Upload File steps warns you first, naming the folders the uploads read.',
-      'Notifications per category: run results, errors and warnings, capture results, scheduled runs.',
+      'Notifications per category — run results, errors and warnings, capture results, scheduled runs — all four on from the start.',
       'Light and dark themes; drag the five tabs into your own order, and the last one you used reopens.',
       'A <b>?</b> on each card opens a short guide, in Vietnamese or English.'
     ],
     steps: [
       ['Set your hotkeys', 'Settings → Hotkeys: click Set and press the new combination.'],
       ['Tune captures', 'Save mode (automatic or ask), filename prefix, watermark, countdown and segment scroll speed.'],
-      ['Choose&nbsp;notifications', 'Tick the categories you want to hear about.'],
+      ['Choose&nbsp;notifications', 'All four are on from the start; untick the ones you don’t need.'],
       ['Back up', 'Backup / Restore saves everything to one file — restore it on any machine.']
     ],
     sections: [
+      {
+        title: 'Turn on, turn off, all tabs',
+        nav: 'Turn on',
+        lead: 'Pocket QA is off on every tab until you turn it on there — so its hotkeys never catch a keystroke on a site you didn’t mean.',
+        images: [{
+          src: 'screenshots/shot-pop-turnon.webp',
+          srcDark: 'screenshots/shot-pop-turnon-dark.webp',
+          alt: 'The question Start Recording asks on a tab Pocket QA is off on: Off on this tab — Pocket QA is off on this tab. Turn it on to record, play or pick elements here — it stays on for this tab until you turn it off or close the tab. Cancel, Turn on, and the link Not ask again: Allow on all tabs in Settings →.',
+          caption: 'Record, Play, a Sequence, a CSV run or 🎯 Pick ask once per tab.'
+        }],
+        points: [
+          'The status bar says <b>Active</b> with <b>Turn off</b>, or <b>Off on this tab</b> with <b>Turn on</b>.',
+          'A tab turned on stays on until you turn it off or close it; Turn off reloads the page, and every scenario is kept.',
+          '<b>Settings → Tabs → Allow on all tabs</b> turns it on for every web page at once — the status bar then says <b>Active · all tabs</b>.',
+          'Browser pages — New Tab, Settings, the Web Store — stay unavailable either way.'
+        ]
+      },
       {
         title: 'Default hotkeys',
         nav: 'Hotkeys',
@@ -1199,7 +1305,7 @@ var FEATURES_EN = {
         },
         points: [
           'Press Set, then the combination itself; Esc cancels. Reset to defaults puts them all back.',
-          'Real key presses only, on http, https and file pages; Start/Stop need the tab activated.',
+          'Real key presses only, on http, https and file pages; Start/Stop need the tab turned on.',
           'In Adminer, <span class="kbd">Alt+Shift+Z</span> undoes the last recorded database change.'
         ]
       },

@@ -173,8 +173,8 @@
           <h3><span lang="en">Record in one click</span><span lang="vi">Ghi lại bằng một click</span></h3>
           <svg class="i go" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           <p class="more">
-            <span lang="en">Clicks and typing become editable, reorderable steps — 17 action types, from hovers to file uploads.</span>
-            <span lang="vi">Click và nhập liệu thành các bước sửa và sắp xếp lại được — 17 loại hành động, từ hover đến tải file.</span>
+            <span lang="en">Clicks and typing become steps named after their element — insert one anywhere; 17 action types, from hovers to file uploads.</span>
+            <span lang="vi">Click và nhập liệu thành các bước mang tên phần tử — chèn ở đâu cũng được; 17 loại hành động, từ hover đến tải file.</span>
           </p>
         </a>
         <a class="card feature reveal" href="feature.html?id=playback">
@@ -333,7 +333,8 @@
   </section>
 
   <!-- ================= PRIVACY =================
-       Every claim here was checked against the extension source (v1.0.27 as on the store, e98ed43):
+       Every claim here was checked against the extension source (v1.0.30 as on the store, 4fb11ce;
+       1.0.27 → 1.0.30 adds only chrome.storage.local keys such as allowAllTabs, no request, no permission):
        storage areas, the one request it makes on its own (bg/remote-config.js), API Tests' requests
        (shared/api-request.js, apicases/, help card "apicases"), and each manifest permission's API calls.
        Claims copied as they are (wording trimmed in places so a row fits on 2 lines); re-check after a
@@ -386,7 +387,7 @@
     </div>
   </section>
 
-  <!-- ================= PERMISSIONS (manifest.json, v1.0.27) ================= -->
+  <!-- ================= PERMISSIONS (manifest.json, v1.0.30) ================= -->
   <section class="alt" id="permissions">
     <div class="container collapsible">
       <div class="section-head reveal">
@@ -466,6 +467,10 @@
             <summary><span lang="en">Why does Chrome say Pocket&nbsp;QA "started debugging this browser"?</span><span lang="vi">Vì sao Chrome báo Pocket&nbsp;QA đang gỡ lỗi (debug) trình duyệt?</span></summary>
             <p><span lang="en">Chrome shows that bar whenever an extension uses its debugger API, which Pocket&nbsp;QA does for the steps listed under <code>debugger</code> above. It detaches when the run ends, and the bar goes away.</span><span lang="vi">Chrome hiện thanh báo đó mỗi khi một tiện ích dùng debugger API; Pocket&nbsp;QA dùng nó cho các bước nêu ở quyền <code>debugger</code> phía trên. Khi lần chạy kết thúc, tiện ích ngắt kết nối và thanh báo biến mất.</span></p>
           </details>
+          <details>
+            <summary><span lang="en">Why does it ask to turn on a tab?</span><span lang="vi">Vì sao tiện ích hỏi bật trên một tab?</span></summary>
+            <p><span lang="en">Pocket&nbsp;QA is off on every tab until you turn it on there, so its recording hotkeys never catch a keystroke on another site. <b>Turn on</b> in the status bar, or when Start Recording asks, and it stays on for that tab; Settings → <b>Allow on all tabs</b> turns it on everywhere.</span><span lang="vi">Pocket&nbsp;QA tắt trên mỗi tab cho tới khi bạn bật ở đó, để phím tắt ghi hình không bao giờ bắt phím trên trang khác. Bấm <b>Turn on</b> ở thanh trạng thái, hoặc khi Start Recording hỏi, là tab đó bật cho tới khi bạn tắt; Settings → <b>Allow on all tabs</b> bật cho mọi trang.</span></p>
+          </details>
         </div>
         <aside class="card cta-card reveal">
           <h3><span lang="en">Stop repeating&nbsp;yourself</span><span lang="vi">Không còn làm đi làm lại</span></h3>
@@ -495,7 +500,7 @@
       <a href="#how"><span lang="en">How it works</span><span lang="vi">Cách dùng</span></a>
       <a href="#privacy"><span lang="en">Privacy</span><span lang="vi">Riêng tư</span></a>
     </nav>
-    <span>v<span id="extVersion">1.0.27</span> · Manifest&nbsp;V3 · Chrome&nbsp;109+</span>
+    <span>v<span id="extVersion">1.0.30</span> · Manifest&nbsp;V3 · Chrome&nbsp;109+</span>
   </div>
 </footer>
 

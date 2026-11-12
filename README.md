@@ -84,7 +84,7 @@ index.html        ← open this
 | `check-layout.js` | Dev check, not linked from either page — see "Layout rules" | ~130 |
 | `popup-demo.html`| Verbatim copy of the popup markup; links the vendored `vendor/popup/*.css` + `demo.js` | ~2010 |
 | `demo.css`       | A few tiny tweaks for the in-iframe demo context | ~25 |
-| `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~590 |
+| `demo.js`        | Static preview: tab switching + theme only, seeds demo data, blocks the rest (no `chrome.*`) | ~650 |
 | `sync-from-source.mjs` | Regenerates `popup-demo.html` from `vendor/popup.html` (deterministic) | ~145 |
 | `update-vendor.mjs`    | Refreshes `vendor/` from the extension repo, then re-syncs | ~95 |
 | `stamp-assets.mjs` | Cache-busts every local `.js` / `.css` the two pages load (`site.js?v=…`) with a content hash — run after editing any of them | ~45 |
@@ -143,7 +143,7 @@ a hyphen). How the code keeps them:
 ## What's interactive in the demo
 The preview is intentionally **static** — it showcases the UI without acting as a
 working sandbox. Only two things respond:
-- **Tabs** — Record & Play · Data · Capture · Highlight · Settings (+ Capture sub-tabs)
+- **Tabs** — Record & Play · Tools · Capture · Highlight · Settings (+ Capture sub-tabs)
 - **Theme** — light/dark toggle (🌙/☀️), persisted; independent of the landing page's own toggle
 
 Everything else (Start Recording, Play, Enable/Copy/Edit/Delete, Add Manual Action,
@@ -155,18 +155,20 @@ gives them a `not-allowed` cursor so visitors can tell it's a preview.
 ### Runtime state the preview has to fake
 The popup CSS styles several things off state that only the running popup sets, so
 the raw markup alone does **not** look like the real popup. `demo.js` reproduces
-the state of a healthy, activated install:
+the state of a healthy install, turned on for the tab it last played on:
 
 | State | Set by the real popup in | Left alone, the preview shows |
 |-------|--------------------------|-------------------------------|
-| `<body data-activation="active">` | `popup/main.js` | every `[data-requires-activation]` hotkey row at 38% opacity with its **Set** button hidden, plus the 🔒 *"available after activating on the current tab"* notice — contradicting the demo's own "Active on this tab" header |
+| Status bar: *Active* + **Turn off** | `popup/tab-activation.js` → `checkTabActivation` (tab turned on, Allow on all tabs off) | `Checking...` with neither Turn on nor Turn off — a state the popup only shows for a blink |
+| `<body data-activation="active">` | `popup/main.js` | every `[data-requires-activation]` hotkey row at 38% opacity with its **Set** button hidden, plus the 🔒 *"Recording hotkeys work once Pocket QA is turned on for the current tab"* notice — contradicting the demo's own "Active" header |
 | `<body data-active-tab="…">` | `popup/init.js` → `switchTab` | lock overlays lose the selector that positions them per tab |
 | Settings › Version card | `popup/settings.js` → `loadUpdateInfo` | three `—` placeholders no installed copy ever shows |
 | Last run card (top of Record & Play) | `popup/run/last-run.js` → `_render`, from the stored `lastRun` | nothing — the card stays `hidden`, as if no scenario had ever been played. The demo shows a `✓ Passed` run of the selected scenario |
-| Action list rows | `popup/record/preview.js` → `createActionListItem` | (demo.js builds them itself) — rows must use the real two-line `.value-main` / `.value-sub` markup, and rows a Condition guards nest under it (`sw-in-block`, `--sw-depth`, `--sw-color`), or the list no longer matches the real one |
+| Action list rows | `popup/record/preview.js` → `createActionListItem` | (demo.js builds them itself) — rows must use the real two-line `.value-main` / `.value-sub` markup: a named step reads by its name with its selector in `.value-target` under it, a password step carries `.secret-mark` 🔒, every row ends in the `+` insert gap (`.ins-gap`, shown on hover), and rows a Condition guards nest under it (`sw-in-block`, `--sw-depth`, `--sw-color`), or the list no longer matches the real one |
 | Export Code card | `popup/export/code-card.js` → takes Manage Scenarios' scenario | `-- Select scenario --` and all five format buttons disabled |
-| Settings › Screenshot + Notifications | `popup/settings.js` → `loadScreenshotSettings` / `loadNotificationSetting` | no save mode picked, an empty prefix, blank speed boxes and every notification off — instead of the defaults a fresh install shows |
-| Data › DB Test Session status line | `popup/init.js` → `initDbStatus` | the line stays `hidden` |
+| Settings › Screenshot + Notifications | `popup/settings.js` → `loadScreenshotSettings` / `loadNotificationSetting` | no save mode picked, an empty prefix, blank speed boxes, the countdown off and every notification off — instead of the defaults a fresh install shows (countdown on at 3 s, all four notification groups on) |
+| Highlight › other pages picker | `popup/highlight.js` | the `Loading…` placeholder instead of `— Other pages —` and the pages that have highlights |
+| Tools › DB Test Session status line | `popup/init.js` → `initDbStatus` | the line stays `hidden` |
 | Schedule start URL | `popup/run/time-picker.js` → `prefillScheduleUrl` | an empty field instead of this tab's address |
 
 When a sync pulls in new markup, re-check this list: anything the real popup
@@ -208,7 +210,7 @@ The demo supports query params so you can link straight to a tab / theme:
 
 ```
 popup-demo.html?tab=tabHighlight&theme=dark
-popup-demo.html?tab=tabData
+popup-demo.html?tab=tabData        # the Tools tab — its id is still tabData
 ```
 
 ## Screenshot comparison
@@ -216,22 +218,46 @@ See [`screenshots/`](screenshots/):
 
 | Shot | What it shows |
 |------|---------------|
-| `shot-popup-original.png` | The real `popup.html` rendered without the extension runtime (empty/“Checking…”) |
-| `shot-popup-demo.png`     | The demo popup — identical styling, now populated & active |
+| `shot-parity.png`         | The parity check (below) on Record & Play, light: the real popup \| the demo \| where they differ, in red — only the ↩ Undo button |
 | `shot-landing-hero.png`   | Full landing hero with the popup embedded in the browser mockup |
-| `shot-tab-data.png`       | Data tab — variables, export-code, collapsibles |
+| `shot-tab-data.png`       | Data tab (Tools since 1.0.29) — variables, export-code, collapsibles |
 | `shot-tab-highlight.png`  | Highlight tab in **dark** mode — colour-coded highlights, stats, switch |
 | `shot-image-editor.png` / `-dark.png`   | `editor.html`'s Crop & Edit UI, used on `feature.html?id=screenshots` — real editor, sample dashboard image, an arrow + rectangle annotation and the Stamp panel open |
-| `shot-sqlcases-analysis.png` / `-dark.png` | The SQL designer's full 3-column workspace (then `sqlcases.html`, now `sqltest.html`, same look on the Store's 1.0.27), used on `feature.html?id=sql-test-designer` — query rail, a real generated case list (71 cases), and one case's fixture data open in the inspector |
+| `shot-sql-workspace.png` / `-dark.png` | `sqltest.html`'s whole workspace (the shared tool-base look: collapsible rail, list, inspector), used on `feature.html?id=sql-test-designer` — the first example analysed (67 cases), the HAVING case that EP and BVA share open in the inspector with the rows it needs. `capture-shots.mjs` |
 | `shot-export-js.png` / `-dark.png`      | The real Export JS modal for a sample "Login flow" scenario — actual generated bookmarklet code at Step 1, stats and the to-check / skipped warning, used on `feature.html?id=export` (captured from v1.0.24) |
 | `shot-export-py.png` / `-dark.png`      | The real Export Python modal for that same scenario — actual generated Selenium code at Step 1, used on `feature.html?id=export` (captured from v1.0.24) |
 | `shot-dbtools-rollback.png` / `-dark.png` | The Adminer panel (`dbtools/panel.js`) beside the Undo SQL preview it opens for "↺ Roll back all" — a sample 7-change session, one change refused (no `WHERE`), Step by step / Merged switch, used on `feature.html?id=db-test-session` |
-| `shot-dbtools-manager.png` / `-dark.png`  | The Test sessions & rollback page (then `dbtools.html`, now `dbtest.html`), on that same session — the rail of sessions, a DELETE and an UPDATE diff open, one change already undone, used on `feature.html?id=db-test-session` |
+| `shot-db-manager.png` / `-dark.png`  | `dbtest.html`, Test sessions & rollback, used on `feature.html?id=db-test-session` — a session still recording with seven changes (`dbtoolsSessions` seeded in the shape `dbtools/session.js` stores), a DELETE and an UPDATE open to their before / after, one change undone, three ended sessions in the rail. `capture-shots.mjs` |
 | `shot-sql-diagram.png` / `-dark.png` | `sqltest.html`'s Diagram dialog (Schema tab → Diagram) for a four-table `JOIN` query, after **Fit** — boxes with PK/FK, crow's-foot links, zoom controls. Made by `capture-shots.mjs` |
 | `shot-sql-compare.png` / `-dark.png` | Compare mode on the first example query (age range moved, country filter dropped): the Impacted / Unrelated / No longer applies counters over *Changes detected*. `capture-shots.mjs` |
 | `shot-sql-coverage.png` / `-dark.png` | The Coverage panel for the "Compound WHERE" example — five conditions, so pairwise, 6 of 32 combinations. `capture-shots.mjs` |
-| `shot-pop-*.png` / `-dark.png` | The real popup (`popup.html` opened as a tab on a sample “Checkout” page that `capture-shots.mjs` serves, data seeded through the extension's own messages): `pop-actions` (a Condition, a Switch block, Upload File, a disabled step — on recording and variables), `pop-manage`, `pop-sequence`, `pop-schedule` (playback), `pop-lastrun` and `pop-bugreport` (a scenario really played and failed — run-results), `pop-rename` (a variable renamed — the toast counts what followed), `pop-image-diff` and `pop-shot-settings` (screenshots), `pop-highlights` (seeded `hl_v1`), `pop-backup` (settings). `capture-shots.mjs` |
-| `shot-api-*.png` / `-dark.png` | `apitest.html` with a seeded "Shop" folder (`apiCasesState`) whose requests to `api.shop.example` are answered over CDP inside the browser: `api-send` (a request sent, Passed), `api-checks` (one check of three false — Failed), `api-env` (the Environments dialog over Data tab variables), `api-run` (a folder run: 3 passed, 1 failed, 1 broken), `api-import` (a Postman collection previewed), `api-ask` (the question before a run that writes; not on a page yet). Taken from the Store build, `e98ed43`. `capture-shots.mjs` |
+| `shot-pop-*.png` / `-dark.png` | The real popup (`popup.html` opened as a tab on a sample “Checkout” page that `capture-shots.mjs` serves, data seeded through the extension's own messages): `pop-actions` (steps named after their element with the selector under them, a password step with its 🔒, a Condition, a Switch block, Upload File, a disabled step — on recording and variables), `pop-manage`, `pop-sequence`, `pop-schedule` (playback), `pop-lastrun` and `pop-bugreport` (a scenario really played and failed — run-results), `pop-rename` (a variable renamed — the toast counts what followed), `pop-image-diff` and `pop-shot-settings` (screenshots), `pop-highlights` (seeded `hl_v1`), `pop-backup` (settings). `capture-shots.mjs` |
+| `shot-pop-insert`, `-eye`, `-lastrun-nochecks`, `-turnon`, `-nowplaying` (`.png` / `-dark.png`) | The real popup, as the other `pop-*`: `pop-insert` (the `+` under a step in a Switch case — the dashed row and the Add card's *Insert at #6 · Switch 4 › case "admin"*), `pop-eye` (👁 on the selector `input`: *2 matches — playback uses the first…*), `pop-lastrun-nochecks` (a played run with no Assert: *✓ Finished · no checks* and its hint), `pop-turnon` (the *Off on this tab* question Start Recording asks on a tab that is off), `pop-nowplaying` (Now Playing, amber, during a run held at a failed step). `capture-shots.mjs` |
+| `shot-page-recording`, `shot-page-run` (`.png` / `-dark.png`) | The sample Checkout page itself (`page: 'web'` in `capture-shots.mjs`), drawn on by the content script in the popup's theme: `page-recording` (the *● Recording — Pocket QA* bar after a real `START_RECORD`), `page-run` (a real run held at a step whose element is missing: the *Action 4 of 5 failed* question with Retry / Skip / Stop, and the run panel in amber) |
+| `shot-db-risk.png` / `-dark.png` | The Adminer panel's question before a statement that may change a whole table — the extension's own `panel.preview()` with the `risk.*` strings, called the way `dbtools/capture-sql.js` `confirmRisks` calls it for `DELETE FROM orders`; no Adminer runs in the script to type it into. `capture-shots.mjs` |
+| `shot-api-*.png` / `-dark.png` | `apitest.html` with a seeded "Shop" folder (`apiCasesState`) whose requests to `api.shop.example` are answered over CDP inside the browser: `api-send` (a request sent, Passed), `api-checks` (one check of three false — Failed), `api-env` (the Environments dialog over the Tools tab's variables — the 1.0.30 dialog still heads them "From the Data tab"), `api-run` (a folder run: 3 passed, 1 failed, 1 broken), `api-import` (a Postman collection previewed), `api-ask` (the question before a run that writes; not on a page yet). Taken from the Store build, `4fb11ce`. `capture-shots.mjs` |
+
+### Parity check: the demo against the real popup
+
+`node capture-shots.mjs parity` (with `EXT_REPO` set as below) seeds the real popup with the data `demo.js` shows —
+the *Login flow* scenario and its nine steps, the four variables, the five highlights on
+`https://app.example.com/login` and the two other pages, the passed Last run three minutes ago, a fresh install's
+settings, the tab turned on — opens it on a tab at that address, and takes each of the five tabs, light and dark,
+at the toolbar popup's 480×600. It takes `popup-demo.html?tab=…&theme=…` at the same size, and Pillow compares each
+pair: identical, or how much differs and where. The real | demo | diff strips go to `PARITY_OUT` (a temp folder by
+default); Record & Play light is copied to `screenshots/shot-parity.png`.
+
+Last run (2026-11-12, `4fb11ce`): **8 of 10 pairs identical**; Record & Play differs in one 12×10 box, light and dark.
+
+| Allowed difference | Why |
+|---|---|
+| ↩ Undo is on in the real popup, greyed in the demo | The seed adds the steps through the worker one by one, and the worker keeps them in its undo history (`bg/storage.js`, per browser session); a popup opened in a later session has nothing to undo, as the demo shows |
+
+What it does not compare: what lies below the first 600px of a tab (the Settings tab's Version card, the bottom of
+Record & Play), hover states, and the landing page's iframe around the demo. What making it pass took is in
+`demo.js`: the header spacer measured as `init.js` does, the Highlight badge only once that tab is opened, the
+variables and highlight stats as `variables.js` / `highlight.js` print them — and in `demo.css`, the 75% body font
+Chromium gives every extension page.
 
 ### Capturing a shot: `capture-shots.mjs`
 
@@ -244,7 +270,7 @@ EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   # default ../Pocket QA,
 ```
 
 Shoot the build that is on the Store, not whatever the extension repo has checked out: `git -C "../Pocket QA" archive <commit>`
-into an empty folder and point `EXT_REPO` at it (1.0.27 on the Store = `e98ed43`).
+into an empty folder and point `EXT_REPO` at it (1.0.30 on the Store = `4fb11ce`).
 
 It loads the unpacked extension in Edge or Chromium through the extension repo's own CDP driver
 (`tools/lib/cdp-browser.mjs`, the one its e2e tests run on — branded Chrome ignores `--load-extension`), opens the
@@ -260,7 +286,7 @@ it again gives byte-identical files — except where the page shows a time it me
 
 These are real UI, not mockups — `editor.html` and the SQL designer (then `sqlcases.html`, now `sqltest.html`) don't ship in this repo (only `popup.html` is vendored), so each was captured straight from the extension repo: `editor.html` needs `chrome.runtime` to receive an image, so a throwaway `chrome-stub.js` fed it a synthetic sample "dashboard" screenshot and a fake storage/theme response, the same trick `demo.js` plays on `popup.html`; `sqlcases.html` runs standalone and just needed a sample query analysed. The export shots go one step further: rather than the whole popup (which needs the full `popup/init.js` module graph and dozens of `chrome.*` calls), a throwaway copy of the extension's `popup/`, `shared/`, `css/` and `popup.html` swaps `popup/init.js` for a harness that calls only `initExportBookmarklet()` / `initExportSelenium()`, with a `chrome-stub.js` answering `GET_SCENARIOS` / `GET_VARIABLES` with one sample "Login flow" scenario (navigate, two inputs, a click, a `textContains` assert, a screenshot) and two variables. It picks the scenario, clicks the real format button, then the modal's own **↧ Steps** — so the code in the screenshots is genuinely generated, not typed by hand.
 
-The DB Test Session shots are built the same way, from a throwaway harness that copies the extension's `dbtools/` modules, the manager page (then `dbtools.html`, now `dbtest.html`) and `css/dbtools.css` into a temp folder (nothing is added to either repo). A small `chrome.storage` stub seeds one sample session in exactly the shape `dbtools/session.js` stores, plus `popupTheme` for light/dark, and nothing more is faked. `shot-dbtools-manager` is the real `dbtools.html` + `manager.js` rendering that session. `shot-dbtools-rollback` mounts the real panel via `mountPanel()`, writes the log lines `content-main.js` would write (`logRecorded`), and opens the real `preview()`. That preview gets the statements from a real `runRollback(…, { dryRun: true })` (and its `compact` twin for *Merged*), so the SQL is generated, not typed. The panel and the preview are both `position:fixed` overlays over Adminer. With no Adminer page behind them, they're re-anchored side by side on a plain stage, the same trick as the export modals below. Captured with headless Chrome (`--allow-file-access-from-files` so the ES modules load over `file://`) instead of html2canvas, so neither gotcha below applies.
+The DB Test Session shots are built the same way, from a throwaway harness that copies the extension's `dbtools/` modules, the manager page (then `dbtools.html`, now `dbtest.html`) and `css/dbtools.css` into a temp folder (nothing is added to either repo). A small `chrome.storage` stub seeds one sample session in exactly the shape `dbtools/session.js` stores, plus `popupTheme` for light/dark, and nothing more is faked. (The manager page shot is `capture-shots.mjs`'s `db-manager` now.) `shot-dbtools-rollback` mounts the real panel via `mountPanel()`, writes the log lines `content-main.js` would write (`logRecorded`), and opens the real `preview()`. That preview gets the statements from a real `runRollback(…, { dryRun: true })` (and its `compact` twin for *Merged*), so the SQL is generated, not typed. The panel and the preview are both `position:fixed` overlays over Adminer. With no Adminer page behind them, they're re-anchored side by side on a plain stage, the same trick as the export modals below. Captured with headless Chrome (`--allow-file-access-from-files` so the ES modules load over `file://`) instead of html2canvas, so neither gotcha below applies.
 
 The export modals use `position:fixed`, which sizes off the *browser viewport* — at a normal desktop viewport the modal comes out far wider than the real ~480px popup ever shows. So they're captured with headless Chrome at the popup's own window size: `chrome --headless=new --allow-file-access-from-files --window-size=480,600 --force-device-scale-factor=2 --virtual-time-budget=5000 --screenshot=… "file:///…/harness.html?fmt=js&theme=dark"` (`fmt=py` for Python). No re-anchoring, and neither html2canvas gotcha below applies.
 

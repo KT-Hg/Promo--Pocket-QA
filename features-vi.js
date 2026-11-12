@@ -7,7 +7,7 @@
 var FEATURES_VI = {
   recording: {
     title: 'Ghi lại bằng một click',
-    lead: 'Kích hoạt Pocket QA trên một tab, bấm Start Recording rồi làm thao tác một lần. Mỗi cú click và mỗi ô bạn nhập liệu đều thành một bước sửa được — không phải tự viết selector.',
+    lead: 'Bật Pocket QA trên một tab, bấm Start Recording rồi làm thao tác một lần. Mỗi cú click và mỗi ô bạn nhập liệu đều thành một bước sửa được — không phải tự viết selector.',
     facts: [['17', 'loại hành động'], ['8', 'selector lưu cho mỗi phần tử'], ['50', 'bước hoàn tác']],
     tabLabel: 'tab Record & Play',
     points: [
@@ -19,7 +19,7 @@ var FEATURES_VI = {
       '<b>Pick element</b> chọn phần tử đích ngay trên trang thay vì phải viết selector.'
     ],
     steps: [
-      ['Kích hoạt tab', 'Mở popup trên trang muốn tự động hoá và bấm <b>Activate</b> ở thanh trạng thái.'],
+      ['Bật tab', 'Mở popup trên trang muốn tự động hoá và bấm <b>Turn on</b> ở thanh trạng thái — hoặc bấm luôn Start Recording, nó sẽ hỏi.'],
       ['Ghi lại', 'Bấm <b>▶ Start Recording</b> (<span class="kbd">Alt+R</span>) và làm thao tác một lần — click và nhập liệu được ghi ngay khi bạn làm.'],
       ['Dừng &amp; lưu', 'Bấm <b>■ Stop</b> (<span class="kbd">Alt+S</span>), đặt tên kịch bản và xếp vào một thư mục.'],
       ['Tinh chỉnh', 'Thêm những gì bộ ghi không thấy được — hover, thời gian chờ, Assert — bằng Add Manual Action, rồi kéo vào đúng chỗ.']
@@ -75,8 +75,8 @@ var FEATURES_VI = {
         nav: 'Danh sách bước',
         lead: 'Mọi bước vẫn sửa được sau khi ghi: sửa selector, đặt nhãn, tắt đi, kéo sang chỗ khác.',
         images: [{
-          alt: 'Danh sách bước của kịch bản Checkout: navigate, input, click, một Condition bảo vệ một click, một Switch theo ${role} với case admin hai bước và case user một bước, bước Upload File có màu riêng, và bước cuối bị tắt, mỗi bước có Disable, Copy, Edit và Delete.',
-          caption: 'Một Condition, một khối Switch hai case, một bước tải file, một bước bị tắt.'
+          alt: 'Danh sách bước của kịch bản Checkout: navigate; nhập Email và Password, mỗi bước đọc theo tên với selector ở dòng dưới, Password có dấu 🔒; Apply; một Condition bảo vệ Close; một Switch theo ${role} với case admin hai bước và case user một bước; bước Upload File có màu riêng; và Log out bị tắt — mỗi bước có Disable, Copy, Edit và Delete.',
+          caption: 'Bước theo tên, mật khẩu 🔒, một Condition, một khối Switch, một bước bị tắt.'
         }],
         points: [
           'Số của một bước là vị trí của nó; các case của Switch thụt vào dưới hàng tiêu đề, mỗi case một màu.',
@@ -86,16 +86,47 @@ var FEATURES_VI = {
         ]
       },
       {
+        title: 'Chèn ở đâu cũng được, chép cả khối',
+        nav: 'Chèn &amp; chép',
+        lead: 'Nút <b>+</b> dưới bất kỳ bước nào đặt hành động kế tiếp ngay tại đó — cả bên trong một case của Switch hay một Condition.',
+        images: [{
+          alt: 'Danh sách bước của kịch bản Checkout có một Switch theo ${role}: dưới All orders, trong case “admin”, một hàng nét đứt ghi assert — New action goes in at #6 · Switch 4 › case “admin” — kèm ↑, ↓ và ✕; dưới danh sách, thẻ Add Manual Action ghi Insert at #6 · Switch 4 › case “admin”.',
+          caption: 'Nút + dưới All orders: bước mới vào #6, bên trong case “admin”.'
+        }],
+        points: [
+          'Rê chuột lên một hàng và bấm <b>+</b> ở khe dưới nó: một hàng nét đứt đứng đúng chỗ hành động sẽ vào, ↑ ↓ dời nó, ✕ bỏ nó.',
+          'Add Manual Action và Paste đều vào đúng chỗ đó, và thẻ Add ghi rõ vị trí.',
+          '<b>Copy</b> trên một Switch hay Condition lấy cả khối của nó; <b>Paste</b> đặt lại cả khối trong một bước, kể cả vào kịch bản trống.',
+          'Case của Switch chạy một kịch bản khác có hàng riêng: <i>↗ runs scenario “…”</i>.'
+        ]
+      },
+      {
+        title: 'Trong lúc ghi',
+        nav: 'Trong lúc ghi',
+        lead: 'Trang web cho biết nó đang được ghi, và mỗi bước được đặt tên theo thứ bạn đã click hay nhập vào.',
+        images: [{
+          alt: 'Trang Checkout mẫu trong lúc ghi: góc dưới bên phải có thanh ● Recording — Pocket QA với nút đỏ ■ Stop.',
+          caption: 'Đang ghi: trang báo rõ, và nút ■ Stop của chính nó dừng ghi.'
+        }],
+        points: [
+          'Trong popup, Start Recording thành <b>● Recording…</b> và Stop chuyển đỏ; trên trang, thanh ở góc dưới phải có nút <b>■ Stop</b> riêng.',
+          'Bước được đặt tên theo phần tử — label, placeholder, aria-label hoặc chữ trên nó — nên danh sách đọc là <i>Email</i>, <i>Password</i>, <i>Log in</i>, selector ở dòng dưới.',
+          'Nhập vào ô mật khẩu thì bước có dấu <b>🔒</b>: mật khẩu được giữ nguyên như đã gõ, nên hãy đưa vào biến để nó không lọt vào file xuất.',
+          'Click lên chính thanh đó không bao giờ bị ghi lại.'
+        ]
+      },
+      {
         title: 'Selector vẫn chạy khi giao diện đổi',
         nav: 'Selector',
-        lead: 'Tối đa tám selector cho mỗi phần tử, thử từ chính xác nhất — class đổi tên hiếm khi làm hỏng lần chạy.',
+        lead: 'Tối đa tám selector cho mỗi phần tử, thử từ chính xác nhất — class đổi tên hiếm khi làm hỏng lần chạy, và phần tử chưa có thì được chờ.',
+        images: [{
+          alt: 'Add Manual Action với bước Click: ô selector ghi input, và bên dưới: 2 matches — playback uses the first (solid outline: “Email”). Pick again or narrow the selector.',
+          caption: '👁 thử selector trên trang trước khi bạn lưu.'
+        }],
         points: [
-          'Thứ tự: loại bạn chọn, rồi Full XPath, ID, XPath, CSS, CSS xuyên shadow root, data-testid, data-id, name, text.',
-          '<b>Pick element</b>: rê chuột trên trang rồi click — các trường tự điền, kể cả trong iframe.',
-          '<b>Child Condition</b> tìm đúng dòng trong danh sách theo giá trị, chữ, id, class hoặc loại.',
-          'Id không ổn định (<span class="nw"><code>:r0:</code></span> của React, UUID) bị bỏ qua khi ghi.',
-          'Chưa có phần tử? Khi phát lại, tiện ích chờ nó tới hết thời gian chờ thay vì báo lỗi.',
-          '<code>${variables}</code> dùng được trong mọi selector, nên một bước nhắm được dòng khác mỗi lần chạy.'
+          'Thử theo thứ tự: loại bạn chọn, Full XPath, ID, XPath, CSS (cả xuyên shadow root), data-testid, data-id, name, text — bỏ id không ổn định như <span class="nw"><code>:r0:</code></span> của React.',
+          '<b>Pick element</b>: rê chuột trên trang rồi click, kể cả trong iframe; <b>👁</b> cạnh ô cho thấy trên trang selector tìm được gì.',
+          '<b>Child Condition</b> tìm một dòng trong danh sách theo giá trị, chữ, id, class hoặc loại; <code>${variables}</code> dùng được trong mọi selector.'
         ]
       },
       {
@@ -116,8 +147,8 @@ var FEATURES_VI = {
     ],
     notes: [
       'Bộ ghi chỉ ghi click và nhập liệu. Hover, chờ và kéo thả được thêm bằng tay, nên bản ghi không bao giờ đầy những chuyển động chuột thừa.',
-      'Ghi và phát lại cần kích hoạt tab trước — thanh trạng thái cho biết tab đã được kích hoạt chưa.',
-      'Phím tắt Start/Stop chỉ hoạt động trên tab đã kích hoạt và chỉ với lần bấm phím thật: trang web không thể tự bắt đầu ghi bằng cách giả lập phím.'
+      'Pocket QA tắt trên mỗi tab cho tới khi bạn bật (hoặc bật <b>Allow on all tabs</b> trong Settings) — thanh trạng thái hiện <b>Active</b> hoặc <b>Off on this tab</b>.',
+      'Phím tắt Start/Stop chỉ hoạt động trên tab đã bật Pocket QA và chỉ với lần bấm phím thật: trang web không thể tự bắt đầu ghi bằng cách giả lập phím.'
     ]
   },
 
@@ -132,11 +163,11 @@ var FEATURES_VI = {
       'Các bước chạy được bên trong iframe, và lần chạy tiếp tục từ chỗ dừng khi trang tải lại giữa chừng.',
       'Bước bị lỗi sẽ hỏi <b>Retry / Skip / Stop</b>, nên một phần tử chập chờn không làm hỏng cả lần chạy.',
       'Dropdown gốc bỏ qua click giả lập sẽ nhận một cú click thật, tin cậy.',
-      'Bảng tiến trình cho thấy bước đang chạy, và một thông báo cho biết lần chạy kết thúc ra sao.'
+      'Run panel trên trang và Now Playing trong popup cho thấy bước đang chạy, kèm nút ■ Stop; một thông báo cho biết lần chạy kết thúc ra sao.'
     ],
     steps: [
       ['Chọn kịch bản', 'Chọn trong Manage Scenarios — hoặc chọn nhiều, theo thứ tự, trong Sequence Scenarios.'],
-      ['Chọn cách chạy', 'Đặt số vòng lặp và thời gian nghỉ, hoặc một giờ chạy trong Data → Scheduled Playback.'],
+      ['Chọn cách chạy', 'Đặt số vòng lặp và thời gian nghỉ, hoặc một giờ chạy ở Scheduled Playback, cuối tab Record & Play.'],
       ['Bấm ▶ Play', 'Bảng Now Playing theo dõi từng bước; <b>Stop</b> kết thúc lần chạy bất cứ lúc nào.'],
       ['Xem kết quả', 'Kết quả hiện trên thẻ Last run, huy hiệu trên thanh công cụ và trong thông báo.']
     ],
@@ -150,10 +181,31 @@ var FEATURES_VI = {
             ['Chạy một lần', 'Record &amp; Play', 'Phát kịch bản đã chọn một lần, từ đầu đến cuối.'],
             ['Lặp', 'Record &amp; Play', 'Lặp lại N lần với thời gian nghỉ giữa các vòng; biến được tạo mới ở mỗi vòng.'],
             ['Sequence', 'Record &amp; Play → Sequence Scenarios', 'Chạy nhiều kịch bản theo thứ tự, mỗi kịch bản có thời gian nghỉ riêng — một lần chạy, một kết quả.'],
-            ['Hẹn lịch', 'Data → Scheduled Playback', 'Bắt đầu kịch bản vào giờ đã đặt, một lần hoặc mỗi ngày, từ một alarm chạy nền.'],
-            ['Chạy theo&nbsp;CSV', 'Data → <span class="nw">CSV Data-Driven Run</span>', 'Chạy một lần cho mỗi dòng của file CSV — xem <a href="feature.html?id=csv">Chạy theo dữ liệu CSV</a>.']
+            ['Hẹn lịch', 'Record &amp; Play → Scheduled Playback', 'Bắt đầu kịch bản vào giờ đã đặt, một lần hoặc mỗi ngày, từ một alarm chạy nền.'],
+            ['Chạy theo&nbsp;CSV', 'Record &amp; Play → <span class="nw">CSV Data-Driven Run</span>', 'Chạy một lần cho mỗi dòng của file CSV — xem <a href="feature.html?id=csv">Chạy theo dữ liệu CSV</a>.']
           ]
         }
+      },
+      {
+        title: 'Theo dõi lần chạy',
+        nav: 'Theo dõi',
+        lead: 'Lần chạy hiện ngay nơi bạn đang nhìn: trên trang nó phát, và trong popup.',
+        images: [
+          {
+            alt: 'Trang Checkout mẫu với lần chạy dừng ở bước thứ tư: hộp hỏi ghi Action 4 of 5 failed — click “Place order” — Element not found on the page within 5 s (looked for it by CSS), kèm Retry, Skip và Stop; góc dưới phải là run panel màu hổ phách ghi Checkout with coupon · step 4 failed, có nút ■ Stop.',
+            caption: 'Dừng ở bước lỗi: câu hỏi, và run panel màu hổ phách.'
+          },
+          {
+            alt: 'Phần trên của popup trong cùng lần chạy: thanh trạng thái, rồi Now Playing — Checkout with coupon, step 4 failed, nút ■ Stop và thanh tiến độ màu hổ phách — phía trên các tab.',
+            caption: 'Cùng lần chạy trong popup: Now Playing, có ■ Stop riêng.'
+          }
+        ],
+        points: [
+          'Trên trang, góc dưới phải: <b>▶</b> tên kịch bản và bước đang chạy, một thanh cho cả lần chạy, và <b>■ Stop</b>.',
+          'Dừng ở bước lỗi thì chuyển màu hổ phách (<b>⏸</b>) trong lúc trang hỏi <b>Retry / Skip / Stop</b>; <b>⏳</b> khi đang chờ kịch bản kế tiếp.',
+          'Trong popup, <b>Now Playing</b> hiện cùng lần chạy với nút ■ Stop riêng; thẻ Last run ẩn cho tới khi chạy xong.',
+          'Panel tự tránh đi khi chụp ảnh, nên ảnh chụp không bao giờ dính nó.'
+        ]
       },
       {
         title: 'Chạy nối tiếp',
@@ -179,7 +231,7 @@ var FEATURES_VI = {
           caption: 'Hai lịch: một lịch hằng ngày, một lịch một lần.'
         }],
         points: [
-          'Chọn kịch bản và giờ, thêm nhãn nếu muốn, tick Repeat daily để chạy mỗi ngày.',
+          'Ở cuối tab Record &amp; Play, dưới nhãn <i>Run several · on a schedule · from a CSV</i>: chọn kịch bản và giờ, tick Repeat daily để chạy mỗi ngày.',
           'Sửa, tắt hoặc sao chép một lịch ngay trên hàng của nó.',
           'Alarm chạy nền kiểm tra mỗi phút; một lịch không bao giờ chạy hai lần trong một phút.',
           'Chrome phải đang mở vào giờ đó — trình duyệt đã tắt thì không chạy gì.'
@@ -243,7 +295,8 @@ var FEATURES_VI = {
         table: {
           head: ['Kết luận', 'Khi nào'],
           rows: [
-            ['Passed', 'Không có lỗi và lần chạy đi tới cuối.'],
+            ['Passed', 'Không có lỗi, lần chạy đi tới cuối, và có ít nhất một Assert đã chạy.'],
+            ['Finished&nbsp;· no&nbsp;checks', 'Không có lỗi và đi tới cuối, nhưng không Assert nào chạy — chưa kiểm gì trên trang.'],
             ['Failed', 'Lỗi đầu tiên là một Assert sai — trang hiển thị sai.'],
             ['Test&nbsp;broken', 'Lỗi đầu tiên là thứ khác — không tìm thấy phần tử, lỗi script, khối bước hỏng. Bài test không kiểm tra được.'],
             ['Stopped', 'Không có lỗi nhưng lần chạy chưa tới cuối — bạn đã dừng nó, hoặc tab của nó bị đóng. Không bao giờ được tính là Passed.']
@@ -263,11 +316,15 @@ var FEATURES_VI = {
         images: [{
           alt: 'Thẻ Last run của một lần chạy “Checkout with coupon” bị Failed: kết luận, thời gian, một dòng lỗi — #4 Check the toast, mong đợi chữ chứa Saved, nhận được Error: coupon expired — và nút Bug report.',
           caption: 'Một lần chạy thật bị lỗi: mong đợi gì, trang có gì.'
+        }, {
+          alt: 'Thẻ Last run của một lần chạy không có Assert: ✓ Finished · no checks, Checkout with coupon, just now, và gợi ý: No Assert ran, so nothing was checked. Add an Assert (Add Manual Action) to check the page shows what it should.',
+          caption: 'Không Assert nào chạy: Finished · no checks, không phải Passed.'
         }],
         points: [
           'Kết luận, kịch bản và thời điểm — mỗi lỗi một dòng, kèm số thứ tự bước.',
           'Assert sai ghi cả hai phía: <code>Expected text "Saved", got "Error"</code>.',
           'Bấm vào một lỗi để nhảy tới bước đó trong danh sách.',
+          'Không Assert nào chạy? Thẻ ghi <b>✓ Finished · no checks</b>, màu xám, kèm gợi ý thêm một Assert.',
           '× ẩn thẻ này cho tới lần chạy sau.'
         ]
       },
@@ -293,7 +350,7 @@ var FEATURES_VI = {
         nav: 'Bug report',
         lead: 'Trên thẻ Last run của lần chạy failed hoặc broken: Markdown sẵn cho Jira, GitHub hay công cụ bất kỳ.',
         images: [{
-          alt: 'Hộp thoại Bug report của lần chạy đó: Markdown gồm lỗi, trang, thời gian, kết quả và môi trường, rồi các bước tái hiện với giá trị đã gõ hiện thành dấu chấm, ô Include typed values, và nút Copy, Download screenshot.',
+          alt: 'Hộp thoại Bug report của lần chạy đó: Markdown gồm lỗi, trang, thời gian, kết quả và môi trường, rồi các bước tái hiện, mỗi bước mang tên phần tử của nó — Email, Coupon, Apply — với giá trị đã gõ hiện thành dấu chấm, ô Include typed values, và nút Copy, Download screenshot.',
           caption: 'Báo cáo của lần chạy phía trên, giá trị đã gõ được ẩn.'
         }],
         points: [
@@ -316,7 +373,7 @@ var FEATURES_VI = {
     title: 'Biến & logic',
     lead: 'Biến một bản ghi dùng một lần thành script thật: biến dùng lại ở mọi nơi dưới dạng <code>${var}</code>, giá trị đọc từ trang ngay lúc chạy, cùng điều kiện và switch rẽ nhánh theo chúng.',
     facts: [['4', 'loại biến'], ['12', 'phép kiểm tra điều kiện'], ['3', 'lớp ưu tiên']],
-    tabLabel: 'tab Data',
+    tabLabel: 'tab Tools',
     points: [
       'Bốn loại biến: <b>Static</b>, <b>Random</b> (chữ, số, cả hai, hoặc mốc ngày giờ), <b>Pick</b> (một giá trị trong danh sách) và <b>Fallback</b> (thử A, rồi B, rồi C).',
       '<code>${var}</code> dùng được trong selector, giá trị, URL, script, giá trị mong đợi, tên file và nhiều chỗ khác.',
@@ -326,7 +383,7 @@ var FEATURES_VI = {
       '<b>Switch</b> chạy một kịch bản khác, nhảy trong kịch bản này, hoặc chỉ chạy khối bước của nhánh khớp.'
     ],
     steps: [
-      ['Khai báo', 'Data → Variables: thêm tên, chọn loại, đặt giá trị.'],
+      ['Khai báo', 'Tools → Variables: thêm tên, chọn loại, đặt giá trị.'],
       ['Sử dụng', 'Gõ <code>${name}</code> vào bất kỳ trường nào của bước — danh sách gợi ý sẽ điền giúp.'],
       ['Lấy giá trị', 'Thêm một bước Read DOM để lưu thứ gì đó trên trang thành biến mới.'],
       ['Rẽ nhánh', 'Thêm Condition hoặc Switch hành động theo những gì trang hiển thị hay giá trị một biến đang giữ.']
@@ -354,7 +411,7 @@ var FEATURES_VI = {
       {
         title: 'Đổi tên không làm vỡ kịch bản',
         nav: 'Đổi tên',
-        lead: 'Đổi tên một biến ở tab Data thì mọi kịch bản dùng nó đổi theo.',
+        lead: 'Đổi tên một biến ở tab Tools thì mọi kịch bản dùng nó đổi theo.',
         images: [{
           alt: 'Thẻ Variables sau khi đổi userEmail thành loginEmail, cùng thông báo: “loginEmail” saved · 3 references in 2 scenarios updated.',
           caption: 'userEmail → loginEmail: 3 chỗ trong 2 kịch bản.'
@@ -404,7 +461,7 @@ var FEATURES_VI = {
     title: 'Chạy theo dữ liệu CSV',
     lead: 'Tải file CSV lên và phát lại cùng một kịch bản cho mỗi dòng — tiêu đề cột tự thành <code>${variables}</code>, nên một bản ghi chạy được cả bộ dữ liệu và mỗi dòng có kết luận riêng.',
     facts: [['1', 'bản ghi, bao nhiêu dòng cũng được'], ['3', 'định dạng xuất'], ['Mỗi dòng', 'một kết luận pass / fail']],
-    tabLabel: 'tab Data',
+    tabLabel: 'tab Record & Play',
     points: [
       'Dòng đầu đặt tên cho biến: cột <code>email</code> thành <code>${email}</code>, không cần bước ánh xạ.',
       'Các cột của một dòng ghi đè biến đã lưu cùng tên, chỉ trong dòng đó.',
@@ -415,7 +472,7 @@ var FEATURES_VI = {
     ],
     steps: [
       ['Ghi với biến', 'Đặt <code>${name}</code> vào chỗ cần dữ liệu — thông tin đăng nhập, từ khoá tìm kiếm, số lượng.'],
-      ['Tải CSV lên', 'Data → <span class="nw">CSV Data-Driven Run</span>: dòng tiêu đề đặt tên cho biến, và bản xem trước cho thấy dữ liệu đã đọc.'],
+      ['Tải CSV lên', 'Record & Play → <span class="nw">CSV Data-Driven Run</span>: dòng tiêu đề đặt tên cho biến, và bản xem trước cho thấy dữ liệu đã đọc.'],
       ['Chạy', 'Mỗi dòng chạy một lần, kết luận của từng dòng được thu thập ngay trong lúc chạy.'],
       ['Xuất', 'XLSX, HTML hoặc ZIP — định dạng nào cũng kết thúc bằng cột Run Result và Action Failed.']
     ],
@@ -465,7 +522,7 @@ var FEATURES_VI = {
     facts: [['6', 'kiểu chụp'], ['10', 'phím tắt chụp & ghi'], ['3 · 5 · 10 s', 'đếm ngược']],
     tabLabel: 'tab Capture',
     points: [
-      'Chụp Visible, Full Page, Scroll (dọc / ngang), Segment (dọc / ngang), Element và Window.',
+      'Chụp Visible, Full Page, Scroll (Down / Across), Segment (Down / Across), Element và Window.',
       'Mỗi chế độ có một bản <b>Edit</b> mở trình sửa ảnh ngay sau khi chụp.',
       'Đếm ngược 3, 5 hoặc 10 giây trước khi chụp vùng hiển thị — đủ thời gian mở dropdown hay trạng thái hover cần có trong ảnh.',
       'Watermark với token <code>{url}</code> và <code>{datetime}</code>, in thẳng lên ảnh.',
@@ -487,8 +544,8 @@ var FEATURES_VI = {
           rows: [
             ['Visible', 'Vùng đang hiển thị, đúng như bạn thấy.', '<span class="kbd">Alt+P</span>'],
             ['Full Page', 'Toàn bộ trang trong một ảnh — xử lý cả header cố định, đặt zoom 100% khi chụp.', '<span class="kbd">Alt+Shift+F</span>'],
-            ['Scroll V / H', 'Cuộn trang và ghép thành ảnh toàn cảnh dọc hoặc ngang.', '<span class="kbd">Alt+V</span> / <span class="kbd">Alt+H</span>'],
-            ['Segment V / H', 'Đánh dấu điểm đầu, cuộn tới điểm cuối, dừng — chỉ lấy phần đã đánh dấu.', '<span class="kbd">Alt+Shift+V</span> / <span class="kbd">Alt+Shift+H</span>, rồi <span class="kbd">Alt+X</span>'],
+            ['Scroll ↕&nbsp;Down / ↔&nbsp;Across', 'Cuộn trang và ghép thành ảnh toàn cảnh dọc hoặc ngang.', '<span class="kbd">Alt+V</span> / <span class="kbd">Alt+H</span>'],
+            ['Segment ⬍&nbsp;Down / ⬌&nbsp;Across', 'Đánh dấu điểm đầu, cuộn tới điểm cuối, dừng — chỉ lấy phần đã đánh dấu.', '<span class="kbd">Alt+Shift+V</span> / <span class="kbd">Alt+Shift+H</span>, rồi <span class="kbd">Alt+X</span>'],
             ['Element', 'Đúng khung của một phần tử.', '<span class="kbd">Alt+E</span>'],
             ['Window', 'Bất kỳ cửa sổ ứng dụng nào trên màn hình — gồm cả khung trình duyệt và DevTools.', '—']
           ]
@@ -564,7 +621,7 @@ var FEATURES_VI = {
     title: 'Xuất code 5 định dạng',
     lead: 'Biến mọi kịch bản đã ghi thành code test thật, chạy được — năm định dạng, sinh mới từ các bước hiện tại của kịch bản, không lặng lẽ bỏ sót bước nào.',
     facts: [['5', 'định dạng đầu ra'], ['8', 'locator dự phòng mỗi bước'], ['4', 'biến môi trường ghi đè']],
-    tabLabel: 'tab Data',
+    tabLabel: 'tab Tools',
     points: [
       'JS Bookmarklet, Selenium Python (script hoặc pytest), Playwright Test, Robot Framework và Selenium Java (TestNG).',
       'Lấy lần phát lại làm chuẩn: code làm đúng như một lần chạy — cùng các locator dự phòng, và dùng helper trong trang của chính tiện ích ở mọi chỗ mà lệnh driver thông thường sẽ hành xử khác.',
@@ -574,7 +631,7 @@ var FEATURES_VI = {
       'Bước lỗi tự nêu tên — <code>Step 3: click — Sign in: no element found by …</code> — và lưu ảnh chụp trang.'
     ],
     steps: [
-      ['Chọn kịch bản', 'Data → Export Code — danh sách được nhóm theo thư mục và mở sẵn ở kịch bản bạn đang chọn.'],
+      ['Chọn kịch bản', 'Tools → Export Code — danh sách được nhóm theo thư mục và mở sẵn ở kịch bản bạn đang chọn.'],
       ['Chọn định dạng', 'Năm nút; nút nào cũng mở cùng một cửa sổ bốn tab: Code, Variables, Actions, Settings.'],
       ['Tinh chỉnh', 'URL bắt đầu, trình duyệt, headless, thời gian nghỉ, thời gian chờ, file dữ liệu CSV — code cập nhật ngay khi bạn gõ.'],
       ['Copy hoặc tải xuống', 'Rồi chạy bằng <code>pytest</code>, <code>npx playwright test</code>, <code>robot</code> hoặc <code>mvn test</code>.']
@@ -727,7 +784,7 @@ var FEATURES_VI = {
     title: 'SQL Test Case Designer',
     lead: 'Dán một câu SQL để nhận danh sách test case dựng sẵn — phân vùng tương đương, giá trị biên, bảng quyết định, cùng các trường hợp biên NULL và JOIN mà hầu hết kế hoạch test thủ công bỏ sót — kèm dữ liệu test mà mỗi case cần.',
     facts: [['4', 'nhóm kỹ thuật'], ['4', 'định dạng xuất'], ['VI / EN', 'giao diện']],
-    tabLabel: 'tab Data',
+    tabLabel: 'tab Tools',
     points: [
       'Phân tích <code>SELECT</code> (join, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>UNION</code>, CTE, <code>CASE</code>) cùng <code>INSERT</code>, <code>UPDATE</code> và <code>DELETE</code>.',
       'Case EP/BVA lấy thẳng từ điều kiện của câu truy vấn, với bước giá trị biên theo kiểu dữ liệu suy ra.',
@@ -737,7 +794,7 @@ var FEATURES_VI = {
       'Mọi thứ chạy cục bộ trong trang — câu SQL của bạn không bao giờ rời khỏi trình duyệt.'
     ],
     steps: [
-      ['Mở công cụ', 'Data → SQL Test Case Designer mở trong một tab riêng.'],
+      ['Mở công cụ', 'Tools → SQL Test Case Designer mở trong một tab riêng.'],
       ['Dán câu truy vấn', 'Hoặc chọn một trong sáu câu mẫu. Dấu backtick của MySQL, ngoặc vuông của SQL Server, dấu nháy ANSI và tham số <code>?</code> / <code>:name</code> / <code>@name</code> / <code>$1</code> đều đọc được.'],
       ['Xem các case', 'Lọc theo độ ưu tiên, mệnh đề hoặc cột; bấm vào một case để xem các dòng dữ liệu nó cần.'],
       ['Xuất', 'CSV cho TestRail hoặc Jira, JSON, Data CSV theo từng bảng, hoặc Verify SQL.']
@@ -792,13 +849,14 @@ var FEATURES_VI = {
         lead: 'Không gian làm việc ba cột trong tab riêng, không phải bảng nhỏ trong popup.',
         images: [{
           alt: 'SQL Test Case Designer: cột truy vấn bên trái với câu SQL đã dán, danh sách case được sinh ở giữa với thống kê và bộ lọc kỹ thuật, và khung chi tiết case bên phải với lý do, các dòng dữ liệu mẫu và câu truy vấn cần chạy.',
-          caption: 'Câu truy vấn, danh sách case và chi tiết một case — 71 case từ một câu.'
+          caption: 'Câu truy vấn, danh sách case và chi tiết một case — 67 case từ một câu.'
         }],
         points: [
           'Trên danh sách: số case, case ưu tiên cao, điều kiện, join và bảng.',
           'Tìm kiếm; lọc theo ưu tiên, mệnh đề, cột hay “có dữ liệu mẫu”; dòng đầy đủ hoặc gọn.',
           'Mỗi case ghi kỹ thuật, từ EP, BVA tới Pairwise, MC/DC; case trùng được gộp.',
-          'Khung chi tiết: vì sao case quan trọng, các dòng cần chuẩn bị và câu truy vấn cần chạy.'
+          'Khung chi tiết: vì sao case quan trọng, các dòng cần chuẩn bị và câu truy vấn cần chạy.',
+          'Cột truy vấn thu gọn được (☰ trên thanh trên, ⟨ ở đầu cột) cho danh sách rộng hơn — cùng khung với trang API và DB.'
         ]
       },
       {
@@ -847,7 +905,7 @@ var FEATURES_VI = {
       'CTE có case riêng, đánh dấu <code>CTE · tên ·</code>. Subquery lồng trong câu lệnh chỉ được báo — hãy dán riêng nó để có case của nó.',
       'Không có schema trực tiếp: kiểu dữ liệu của cột lấy từ giá trị literal trong phép so sánh trước, rồi tới tên cột. Khi cả hai đều không rõ, case sẽ ghi rõ điều đó.',
       'Kết quả mong đợi nêu điều mà ngữ nghĩa SQL yêu cầu, không phải dữ liệu hiện có của bạn.',
-      'Giao diện mặc định là tiếng Việt và chuyển sang tiếng Anh qua nút quả địa cầu — case được sinh theo ngôn ngữ đang dùng, nên file xuất luôn khớp với màn hình.'
+      'Giao diện mở bằng tiếng Anh và chuyển sang tiếng Việt qua nút quả địa cầu — case được sinh theo ngôn ngữ đang dùng, nên file xuất luôn khớp với màn hình.'
     ]
   },
 
@@ -855,7 +913,7 @@ var FEATURES_VI = {
     title: 'DB Test Session & Rollback',
     lead: 'Thoải mái thay đổi dữ liệu test trong Adminer — mọi thao tác ghi đều được lưu vào một phiên, và một click đưa cơ sở dữ liệu về như cũ, kèm câu SQL chính xác hiện ra trước khi chạy.',
     facts: [['8', 'loại thao tác ghi được lưu'], ['1 click', 'để rollback'], ['0', 'byte rời khỏi trình duyệt']],
-    tabLabel: 'tab Data',
+    tabLabel: 'tab Tools',
     points: [
       'Bắt đầu phiên từ bảng nhỏ mà Adminer hiện ở góc dưới bên phải; chưa bắt đầu thì không có gì được ghi.',
       'Ghi lại form sửa, sửa ô trong lưới, xoá hàng loạt và xoá cả kết quả, sửa hàng loạt, các lệnh <code>INSERT</code> và <code>UPDATE</code>/<code>DELETE</code> bạn gõ ở trang SQL.',
@@ -865,7 +923,7 @@ var FEATURES_VI = {
       'Từ chối những gì không hoàn tác an toàn được — và nêu lý do ngay trên thay đổi đó.'
     ],
     steps: [
-      ['Mở Adminer', 'Một bảng nhỏ hiện ở góc dưới bên phải. Công tắc Adminer panel ở tab Data bật/tắt bảng này.'],
+      ['Mở Adminer', 'Một bảng nhỏ hiện ở góc dưới bên phải. Công tắc Adminer panel ở tab Tools bật/tắt bảng này.'],
       ['▶ Start session', 'Đặt tên cho lần test — từ đây mọi thao tác ghi đều được lưu.'],
       ['Test', 'Sửa, xoá và thêm dữ liệu như bình thường; mỗi thay đổi được ghi vào nhật ký của bảng.'],
       ['↺ Roll back all', 'Đọc bản xem trước câu SQL, xác nhận, và dữ liệu trở lại như cũ.']
@@ -889,7 +947,8 @@ var FEATURES_VI = {
           'Bảng luôn gọn: đang ghi hay không, bao nhiêu thay đổi, vài nút cần dùng giữa lúc test.',
           '<b>Merged</b> gộp A→B→C trên một dòng thành một câu lệnh đưa thẳng về A.',
           'Hoàn tác hoặc áp lại một thay đổi ngay trên dòng của nó, hoặc đánh dấu vài cái và chỉ rollback chúng.',
-          'Xuất phiên ra <code>.sql</code> hoặc <code>.json</code>.'
+          'Xuất phiên ra <code>.sql</code> hoặc <code>.json</code>.',
+          'Trang quản lý dùng chung khung với trang SQL và API: cột phiên bên trái thu gọn bằng ☰ hoặc ⟨.'
         ]
       },
       {
@@ -921,6 +980,21 @@ var FEATURES_VI = {
             ['<code>INSERT</code> — form, Clone, trang SQL', 'Khoá của dòng mới.', '<code>DELETE</code> đúng những dòng đó']
           ]
         }
+      },
+      {
+        title: 'Cả bảng thì hỏi trước',
+        nav: 'Cả bảng',
+        lead: 'Trên trang SQL của Adminer, câu lệnh có thể đổi cả một bảng sẽ chờ bạn trả lời rồi mới chạy.',
+        images: [{
+          alt: 'Câu hỏi của bảng Adminer: This statement may change a whole table — DELETE orders: no WHERE, every row of the table is hit; câu lệnh sẽ chạy, DELETE FROM orders; và nút Copy, Cancel and fix it, Run anyway.',
+          caption: 'DELETE không có WHERE: Run anyway, hoặc Cancel and fix it.'
+        }],
+        points: [
+          '<b>Không có <code>WHERE</code></b>: mọi dòng của bảng đều bị đổi.',
+          '<b><code>WHERE</code> khớp mọi dòng</b> — phát hiện khi đọc các dòng trước lúc chạy.',
+          '<b>Nhiều dòng hơn giới hạn snapshot</b>: không rollback được.',
+          '<b>Cancel and fix it</b> không chạy gì và giữ câu lệnh trong ô soạn; <b>Run anyway</b> gửi nó đi.'
+        ]
       },
       {
         title: 'An toàn từ thiết kế',
@@ -962,7 +1036,7 @@ var FEATURES_VI = {
     title: 'API Tests',
     lead: 'Giữ request API cạnh bài test giao diện: dán một cURL, gửi đi, kiểm tra response — và chạy cả thư mục với token mà một request đã lưu.',
     facts: [['5', 'loại kiểm tra'], ['v2.1', 'xuất &amp; nhập Postman'], ['CSV', 'kết quả chạy']],
-    tabLabel: 'tab Data',
+    tabLabel: 'tab Tools',
     points: [
       'Dán cURL từ DevTools — method, URL, header và body tự điền; Copy cURL làm chiều ngược lại.',
       'Kiểm tra status, JSON path, header, body và thời gian — mỗi lần Send một kết luận.',
@@ -972,7 +1046,7 @@ var FEATURES_VI = {
       'Xuất sang Postman để chạy Newman trong CI, và nhập lại collection Postman.'
     ],
     steps: [
-      ['Mở công cụ', 'Data → API Tests → <b>Manage API tests</b> mở một tab riêng.'],
+      ['Mở công cụ', 'Tools → API Tests → <b>Manage API tests</b> mở một tab riêng.'],
       ['Thêm request', '<b>＋ Request</b>, hoặc <b>Paste cURL</b> từ DevTools → Network → Copy as cURL.'],
       ['Kiểm tra', 'Thêm check, hoặc bấm vào một key trong JSON response để kiểm tra nó.'],
       ['Chạy', 'Send từng cái, hoặc <b>▶ Run folder</b>; lưu kết quả ra CSV hoặc thư mục cho Postman.']
@@ -981,7 +1055,7 @@ var FEATURES_VI = {
       {
         title: 'Gửi request và đọc response',
         nav: 'Gửi',
-        lead: 'Request mở cạnh thư mục của nó: sáu tab ở trên, câu trả lời ở dưới.',
+        lead: 'Request mở cạnh thư mục của nó: sáu tab ở trên, câu trả lời ở dưới. Cột thư mục thu gọn được (☰, ⟨), như ở trang SQL và DB.',
         images: [{
           alt: 'Request Get order: GET ${baseUrl}/orders/42 trong thư mục Shop, tab Headers có Accept: application/json, các nút thêm nhanh Accept JSON, Bearer token, No cache, và cookie của trình duyệt ở mục Also sent; bên dưới là response — Passed, 200 OK trong khoảng 100 ms, 194 B đã giải nén, và URL đã điền biến.',
           caption: 'Get order đã gửi: Passed, 200 OK trong khoảng 100 ms.'
@@ -1014,11 +1088,11 @@ var FEATURES_VI = {
         nav: 'Môi trường',
         lead: 'Đăng nhập một lần; mọi request sau đó đều gửi token.',
         images: [{
-          alt: 'Dialog Environments: Dev đang dùng, và Staging. Dev đặt baseUrl là https://api.shop.example, email, password và token. Ở mục From the Data tab, email của tab Data bị gạch kèm “set here”, còn locale en-US vẫn được dùng.',
-          caption: 'email của Dev thắng email ở tab Data; locale vẫn lấy từ tab Data.'
+          alt: 'Dialog Environments: Dev đang dùng, và Staging. Dev đặt baseUrl là https://api.shop.example, email, password và token. Ở mục From the Data tab, email của tab Tools bị gạch kèm “set here”, còn locale en-US vẫn được dùng.',
+          caption: 'email của Dev thắng email ở tab Tools; locale vẫn lấy từ tab Tools.'
         }],
         points: [
-          '<code>${name}</code> lấy từ biến ở tab Data, rồi từ môi trường đang dùng — môi trường thắng.',
+          '<code>${name}</code> lấy từ biến ở tab Tools, rồi từ môi trường đang dùng — môi trường thắng.',
           '<b>Save values</b> ghi một JSON path, header, status hoặc một phần body vào môi trường.',
           'Request đăng nhập lưu <code>token</code>; <b>Bearer</b> <code>${token}</code> của thư mục gửi nó cho mọi request sau.',
           '<b>Auth</b> trên thư mục hoặc một request: Bearer, Basic, hoặc API key ở header hay query.'
@@ -1072,17 +1146,32 @@ var FEATURES_VI = {
       'Mọi phím tắt đều đổi được, và thiết lập được đồng bộ theo hồ sơ Chrome của bạn.',
       'Nhập và xuất kịch bản hoặc cả thư mục dưới dạng JSON; sao lưu và khôi phục toàn bộ dữ liệu trong một file.',
       'File nhập có bước Run JS hoặc Upload File sẽ cảnh báo trước, nêu rõ các thư mục mà bước tải file sẽ đọc.',
-      'Thông báo theo từng loại: kết quả chạy, lỗi và cảnh báo, kết quả chụp, lần chạy theo lịch.',
+      'Thông báo theo từng loại — kết quả chạy, lỗi và cảnh báo, kết quả chụp, lần chạy theo lịch — cả bốn loại bật sẵn.',
       'Giao diện sáng và tối; kéo năm tab theo thứ tự bạn muốn, và tab dùng gần nhất sẽ mở lại.',
       'Nút <b>?</b> trên mỗi thẻ mở một hướng dẫn ngắn, bằng tiếng Việt hoặc tiếng Anh.'
     ],
     steps: [
       ['Đặt phím tắt', 'Settings → Hotkeys: bấm Set rồi nhấn tổ hợp phím mới.'],
       ['Tinh chỉnh việc chụp', 'Chế độ lưu (tự động hoặc hỏi), tiền tố tên file, watermark, đếm ngược và tốc độ cuộn khi chụp segment.'],
-      ['Chọn thông báo', 'Đánh dấu các loại thông báo bạn muốn nhận.'],
+      ['Chọn thông báo', 'Cả bốn loại bật sẵn; bỏ chọn loại bạn không cần.'],
       ['Sao lưu', 'Backup / Restore lưu mọi thứ vào một file — khôi phục được trên bất kỳ máy nào.']
     ],
     sections: [
+      {
+        title: 'Turn on, Turn off và mọi tab',
+        nav: 'Turn on',
+        lead: 'Pocket QA tắt trên mỗi tab cho tới khi bạn bật nó ở đó — để phím tắt không bao giờ bắt phím trên một trang bạn không định dùng.',
+        images: [{
+          alt: 'Câu hỏi Start Recording hiện ra trên tab Pocket QA đang tắt: Off on this tab — Pocket QA is off on this tab. Turn it on to record, play or pick elements here — it stays on for this tab until you turn it off or close the tab. Nút Cancel, Turn on, và link Not ask again: Allow on all tabs in Settings →.',
+          caption: 'Record, Play, Sequence, chạy CSV hay 🎯 Pick hỏi một lần cho mỗi tab.'
+        }],
+        points: [
+          'Thanh trạng thái ghi <b>Active</b> kèm nút <b>Turn off</b>, hoặc <b>Off on this tab</b> kèm nút <b>Turn on</b>.',
+          'Tab đã bật giữ nguyên trạng thái cho tới khi bạn tắt hoặc đóng tab; Turn off tải lại trang, mọi kịch bản vẫn còn.',
+          '<b>Settings → Tabs → Allow on all tabs</b> bật cho mọi trang web cùng lúc — thanh trạng thái khi đó ghi <b>Active · all tabs</b>.',
+          'Trang của trình duyệt — New Tab, Settings, Web Store — vẫn không dùng được trong cả hai trường hợp.'
+        ]
+      },
       {
         title: 'Phím tắt mặc định',
         nav: 'Phím tắt',
@@ -1100,7 +1189,7 @@ var FEATURES_VI = {
         },
         points: [
           'Bấm Set rồi bấm chính tổ hợp phím; Esc để huỷ. Reset to defaults đưa tất cả về mặc định.',
-          'Chỉ phản hồi lần bấm phím thật, trên trang http, https và file; Start/Stop cần tab đã kích hoạt.',
+          'Chỉ phản hồi lần bấm phím thật, trên trang http, https và file; Start/Stop cần tab đã bật Pocket QA.',
           'Trong Adminer, <span class="kbd">Alt+Shift+Z</span> hoàn tác thay đổi cơ sở dữ liệu vừa được ghi.'
         ]
       },
