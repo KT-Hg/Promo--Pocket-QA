@@ -75,8 +75,8 @@ var FEATURES_VI = {
         nav: 'Danh sách bước',
         lead: 'Mọi bước vẫn sửa được sau khi ghi: sửa selector, đặt nhãn, tắt đi, kéo sang chỗ khác.',
         images: [{
-          alt: 'Danh sách bước của kịch bản Checkout: navigate, input, click, một Condition bảo vệ một click, một Switch theo ${role} với case admin hai bước và case user một bước, bước Upload File có màu riêng, và bước cuối bị tắt, mỗi bước có Disable, Copy, Edit và Delete.',
-          caption: 'Một Condition, một khối Switch hai case, một bước tải file, một bước bị tắt.'
+          alt: 'Danh sách bước của kịch bản Checkout: navigate; nhập Email và Password, mỗi bước đọc theo tên với selector ở dòng dưới, Password có dấu 🔒; Apply; một Condition bảo vệ Close; một Switch theo ${role} với case admin hai bước và case user một bước; bước Upload File có màu riêng; và Log out bị tắt — mỗi bước có Disable, Copy, Edit và Delete.',
+          caption: 'Bước theo tên, mật khẩu 🔒, một Condition, một khối Switch, một bước bị tắt.'
         }],
         points: [
           'Số của một bước là vị trí của nó; các case của Switch thụt vào dưới hàng tiêu đề, mỗi case một màu.',
@@ -86,16 +86,47 @@ var FEATURES_VI = {
         ]
       },
       {
+        title: 'Chèn ở đâu cũng được, chép cả khối',
+        nav: 'Chèn &amp; chép',
+        lead: 'Nút <b>+</b> dưới bất kỳ bước nào đặt hành động kế tiếp ngay tại đó — cả bên trong một case của Switch hay một Condition.',
+        images: [{
+          alt: 'Danh sách bước của kịch bản Checkout có một Switch theo ${role}: dưới All orders, trong case “admin”, một hàng nét đứt ghi assert — New action goes in at #6 · Switch 4 › case “admin” — kèm ↑, ↓ và ✕; dưới danh sách, thẻ Add Manual Action ghi Insert at #6 · Switch 4 › case “admin”.',
+          caption: 'Nút + dưới All orders: bước mới vào #6, bên trong case “admin”.'
+        }],
+        points: [
+          'Rê chuột lên một hàng và bấm <b>+</b> ở khe dưới nó: một hàng nét đứt đứng đúng chỗ hành động sẽ vào, ↑ ↓ dời nó, ✕ bỏ nó.',
+          'Add Manual Action và Paste đều vào đúng chỗ đó, và thẻ Add ghi rõ vị trí.',
+          '<b>Copy</b> trên một Switch hay Condition lấy cả khối của nó; <b>Paste</b> đặt lại cả khối trong một bước, kể cả vào kịch bản trống.',
+          'Case của Switch chạy một kịch bản khác có hàng riêng: <i>↗ runs scenario “…”</i>.'
+        ]
+      },
+      {
+        title: 'Trong lúc ghi',
+        nav: 'Trong lúc ghi',
+        lead: 'Trang web cho biết nó đang được ghi, và mỗi bước được đặt tên theo thứ bạn đã click hay nhập vào.',
+        images: [{
+          alt: 'Trang Checkout mẫu trong lúc ghi: góc dưới bên phải có thanh ● Recording — Pocket QA với nút đỏ ■ Stop.',
+          caption: 'Đang ghi: trang báo rõ, và nút ■ Stop của chính nó dừng ghi.'
+        }],
+        points: [
+          'Trong popup, Start Recording thành <b>● Recording…</b> và Stop chuyển đỏ; trên trang, thanh ở góc dưới phải có nút <b>■ Stop</b> riêng.',
+          'Bước được đặt tên theo phần tử — label, placeholder, aria-label hoặc chữ trên nó — nên danh sách đọc là <i>Email</i>, <i>Password</i>, <i>Log in</i>, selector ở dòng dưới.',
+          'Nhập vào ô mật khẩu thì bước có dấu <b>🔒</b>: mật khẩu được giữ nguyên như đã gõ, nên hãy đưa vào biến để nó không lọt vào file xuất.',
+          'Click lên chính thanh đó không bao giờ bị ghi lại.'
+        ]
+      },
+      {
         title: 'Selector vẫn chạy khi giao diện đổi',
         nav: 'Selector',
-        lead: 'Tối đa tám selector cho mỗi phần tử, thử từ chính xác nhất — class đổi tên hiếm khi làm hỏng lần chạy.',
+        lead: 'Tối đa tám selector cho mỗi phần tử, thử từ chính xác nhất — class đổi tên hiếm khi làm hỏng lần chạy, và phần tử chưa có thì được chờ.',
+        images: [{
+          alt: 'Add Manual Action với bước Click: ô selector ghi input, và bên dưới: 2 matches — playback uses the first (solid outline: “Email”). Pick again or narrow the selector.',
+          caption: '👁 thử selector trên trang trước khi bạn lưu.'
+        }],
         points: [
-          'Thứ tự: loại bạn chọn, rồi Full XPath, ID, XPath, CSS, CSS xuyên shadow root, data-testid, data-id, name, text.',
-          '<b>Pick element</b>: rê chuột trên trang rồi click — các trường tự điền, kể cả trong iframe.',
-          '<b>Child Condition</b> tìm đúng dòng trong danh sách theo giá trị, chữ, id, class hoặc loại.',
-          'Id không ổn định (<span class="nw"><code>:r0:</code></span> của React, UUID) bị bỏ qua khi ghi.',
-          'Chưa có phần tử? Khi phát lại, tiện ích chờ nó tới hết thời gian chờ thay vì báo lỗi.',
-          '<code>${variables}</code> dùng được trong mọi selector, nên một bước nhắm được dòng khác mỗi lần chạy.'
+          'Thử theo thứ tự: loại bạn chọn, Full XPath, ID, XPath, CSS (cả xuyên shadow root), data-testid, data-id, name, text — bỏ id không ổn định như <span class="nw"><code>:r0:</code></span> của React.',
+          '<b>Pick element</b>: rê chuột trên trang rồi click, kể cả trong iframe; <b>👁</b> cạnh ô cho thấy trên trang selector tìm được gì.',
+          '<b>Child Condition</b> tìm một dòng trong danh sách theo giá trị, chữ, id, class hoặc loại; <code>${variables}</code> dùng được trong mọi selector.'
         ]
       },
       {
@@ -150,10 +181,31 @@ var FEATURES_VI = {
             ['Chạy một lần', 'Record &amp; Play', 'Phát kịch bản đã chọn một lần, từ đầu đến cuối.'],
             ['Lặp', 'Record &amp; Play', 'Lặp lại N lần với thời gian nghỉ giữa các vòng; biến được tạo mới ở mỗi vòng.'],
             ['Sequence', 'Record &amp; Play → Sequence Scenarios', 'Chạy nhiều kịch bản theo thứ tự, mỗi kịch bản có thời gian nghỉ riêng — một lần chạy, một kết quả.'],
-            ['Hẹn lịch', 'Record & Play → Scheduled Playback', 'Bắt đầu kịch bản vào giờ đã đặt, một lần hoặc mỗi ngày, từ một alarm chạy nền.'],
-            ['Chạy theo&nbsp;CSV', 'Record & Play → <span class="nw">CSV Data-Driven Run</span>', 'Chạy một lần cho mỗi dòng của file CSV — xem <a href="feature.html?id=csv">Chạy theo dữ liệu CSV</a>.']
+            ['Hẹn lịch', 'Record &amp; Play → Scheduled Playback', 'Bắt đầu kịch bản vào giờ đã đặt, một lần hoặc mỗi ngày, từ một alarm chạy nền.'],
+            ['Chạy theo&nbsp;CSV', 'Record &amp; Play → <span class="nw">CSV Data-Driven Run</span>', 'Chạy một lần cho mỗi dòng của file CSV — xem <a href="feature.html?id=csv">Chạy theo dữ liệu CSV</a>.']
           ]
         }
+      },
+      {
+        title: 'Theo dõi lần chạy',
+        nav: 'Theo dõi',
+        lead: 'Lần chạy hiện ngay nơi bạn đang nhìn: trên trang nó phát, và trong popup.',
+        images: [
+          {
+            alt: 'Trang Checkout mẫu với lần chạy dừng ở bước thứ tư: hộp hỏi ghi Action 4 of 5 failed — click “Place order” — Element not found on the page within 5 s (looked for it by CSS), kèm Retry, Skip và Stop; góc dưới phải là run panel màu hổ phách ghi Checkout with coupon · step 4 failed, có nút ■ Stop.',
+            caption: 'Dừng ở bước lỗi: câu hỏi, và run panel màu hổ phách.'
+          },
+          {
+            alt: 'Phần trên của popup trong cùng lần chạy: thanh trạng thái, rồi Now Playing — Checkout with coupon, step 4 failed, nút ■ Stop và thanh tiến độ màu hổ phách — phía trên các tab.',
+            caption: 'Cùng lần chạy trong popup: Now Playing, có ■ Stop riêng.'
+          }
+        ],
+        points: [
+          'Trên trang, góc dưới phải: <b>▶</b> tên kịch bản và bước đang chạy, một thanh cho cả lần chạy, và <b>■ Stop</b>.',
+          'Dừng ở bước lỗi thì chuyển màu hổ phách (<b>⏸</b>) trong lúc trang hỏi <b>Retry / Skip / Stop</b>; <b>⏳</b> khi đang chờ kịch bản kế tiếp.',
+          'Trong popup, <b>Now Playing</b> hiện cùng lần chạy với nút ■ Stop riêng; thẻ Last run ẩn cho tới khi chạy xong.',
+          'Panel tự tránh đi khi chụp ảnh, nên ảnh chụp không bao giờ dính nó.'
+        ]
       },
       {
         title: 'Chạy nối tiếp',
@@ -179,7 +231,7 @@ var FEATURES_VI = {
           caption: 'Hai lịch: một lịch hằng ngày, một lịch một lần.'
         }],
         points: [
-          'Chọn kịch bản và giờ, thêm nhãn nếu muốn, tick Repeat daily để chạy mỗi ngày.',
+          'Ở cuối tab Record &amp; Play, dưới nhãn <i>Run several · on a schedule · from a CSV</i>: chọn kịch bản và giờ, tick Repeat daily để chạy mỗi ngày.',
           'Sửa, tắt hoặc sao chép một lịch ngay trên hàng của nó.',
           'Alarm chạy nền kiểm tra mỗi phút; một lịch không bao giờ chạy hai lần trong một phút.',
           'Chrome phải đang mở vào giờ đó — trình duyệt đã tắt thì không chạy gì.'
@@ -264,11 +316,15 @@ var FEATURES_VI = {
         images: [{
           alt: 'Thẻ Last run của một lần chạy “Checkout with coupon” bị Failed: kết luận, thời gian, một dòng lỗi — #4 Check the toast, mong đợi chữ chứa Saved, nhận được Error: coupon expired — và nút Bug report.',
           caption: 'Một lần chạy thật bị lỗi: mong đợi gì, trang có gì.'
+        }, {
+          alt: 'Thẻ Last run của một lần chạy không có Assert: ✓ Finished · no checks, Checkout with coupon, just now, và gợi ý: No Assert ran, so nothing was checked. Add an Assert (Add Manual Action) to check the page shows what it should.',
+          caption: 'Không Assert nào chạy: Finished · no checks, không phải Passed.'
         }],
         points: [
           'Kết luận, kịch bản và thời điểm — mỗi lỗi một dòng, kèm số thứ tự bước.',
           'Assert sai ghi cả hai phía: <code>Expected text "Saved", got "Error"</code>.',
           'Bấm vào một lỗi để nhảy tới bước đó trong danh sách.',
+          'Không Assert nào chạy? Thẻ ghi <b>✓ Finished · no checks</b>, màu xám, kèm gợi ý thêm một Assert.',
           '× ẩn thẻ này cho tới lần chạy sau.'
         ]
       },
@@ -294,7 +350,7 @@ var FEATURES_VI = {
         nav: 'Bug report',
         lead: 'Trên thẻ Last run của lần chạy failed hoặc broken: Markdown sẵn cho Jira, GitHub hay công cụ bất kỳ.',
         images: [{
-          alt: 'Hộp thoại Bug report của lần chạy đó: Markdown gồm lỗi, trang, thời gian, kết quả và môi trường, rồi các bước tái hiện với giá trị đã gõ hiện thành dấu chấm, ô Include typed values, và nút Copy, Download screenshot.',
+          alt: 'Hộp thoại Bug report của lần chạy đó: Markdown gồm lỗi, trang, thời gian, kết quả và môi trường, rồi các bước tái hiện, mỗi bước mang tên phần tử của nó — Email, Coupon, Apply — với giá trị đã gõ hiện thành dấu chấm, ô Include typed values, và nút Copy, Download screenshot.',
           caption: 'Báo cáo của lần chạy phía trên, giá trị đã gõ được ẩn.'
         }],
         points: [
@@ -799,7 +855,8 @@ var FEATURES_VI = {
           'Trên danh sách: số case, case ưu tiên cao, điều kiện, join và bảng.',
           'Tìm kiếm; lọc theo ưu tiên, mệnh đề, cột hay “có dữ liệu mẫu”; dòng đầy đủ hoặc gọn.',
           'Mỗi case ghi kỹ thuật, từ EP, BVA tới Pairwise, MC/DC; case trùng được gộp.',
-          'Khung chi tiết: vì sao case quan trọng, các dòng cần chuẩn bị và câu truy vấn cần chạy.'
+          'Khung chi tiết: vì sao case quan trọng, các dòng cần chuẩn bị và câu truy vấn cần chạy.',
+          'Cột truy vấn thu gọn được (☰ trên thanh trên, ⟨ ở đầu cột) cho danh sách rộng hơn — cùng khung với trang API và DB.'
         ]
       },
       {
@@ -890,7 +947,8 @@ var FEATURES_VI = {
           'Bảng luôn gọn: đang ghi hay không, bao nhiêu thay đổi, vài nút cần dùng giữa lúc test.',
           '<b>Merged</b> gộp A→B→C trên một dòng thành một câu lệnh đưa thẳng về A.',
           'Hoàn tác hoặc áp lại một thay đổi ngay trên dòng của nó, hoặc đánh dấu vài cái và chỉ rollback chúng.',
-          'Xuất phiên ra <code>.sql</code> hoặc <code>.json</code>.'
+          'Xuất phiên ra <code>.sql</code> hoặc <code>.json</code>.',
+          'Trang quản lý dùng chung khung với trang SQL và API: cột phiên bên trái thu gọn bằng ☰ hoặc ⟨.'
         ]
       },
       {
@@ -922,6 +980,21 @@ var FEATURES_VI = {
             ['<code>INSERT</code> — form, Clone, trang SQL', 'Khoá của dòng mới.', '<code>DELETE</code> đúng những dòng đó']
           ]
         }
+      },
+      {
+        title: 'Cả bảng thì hỏi trước',
+        nav: 'Cả bảng',
+        lead: 'Trên trang SQL của Adminer, câu lệnh có thể đổi cả một bảng sẽ chờ bạn trả lời rồi mới chạy.',
+        images: [{
+          alt: 'Câu hỏi của bảng Adminer: This statement may change a whole table — DELETE orders: no WHERE, every row of the table is hit; câu lệnh sẽ chạy, DELETE FROM orders; và nút Copy, Cancel and fix it, Run anyway.',
+          caption: 'DELETE không có WHERE: Run anyway, hoặc Cancel and fix it.'
+        }],
+        points: [
+          '<b>Không có <code>WHERE</code></b>: mọi dòng của bảng đều bị đổi.',
+          '<b><code>WHERE</code> khớp mọi dòng</b> — phát hiện khi đọc các dòng trước lúc chạy.',
+          '<b>Nhiều dòng hơn giới hạn snapshot</b>: không rollback được.',
+          '<b>Cancel and fix it</b> không chạy gì và giữ câu lệnh trong ô soạn; <b>Run anyway</b> gửi nó đi.'
+        ]
       },
       {
         title: 'An toàn từ thiết kế',
@@ -982,7 +1055,7 @@ var FEATURES_VI = {
       {
         title: 'Gửi request và đọc response',
         nav: 'Gửi',
-        lead: 'Request mở cạnh thư mục của nó: sáu tab ở trên, câu trả lời ở dưới.',
+        lead: 'Request mở cạnh thư mục của nó: sáu tab ở trên, câu trả lời ở dưới. Cột thư mục thu gọn được (☰, ⟨), như ở trang SQL và DB.',
         images: [{
           alt: 'Request Get order: GET ${baseUrl}/orders/42 trong thư mục Shop, tab Headers có Accept: application/json, các nút thêm nhanh Accept JSON, Bearer token, No cache, và cookie của trình duyệt ở mục Also sent; bên dưới là response — Passed, 200 OK trong khoảng 100 ms, 194 B đã giải nén, và URL đã điền biến.',
           caption: 'Get order đã gửi: Passed, 200 OK trong khoảng 100 ms.'
@@ -1084,6 +1157,21 @@ var FEATURES_VI = {
       ['Sao lưu', 'Backup / Restore lưu mọi thứ vào một file — khôi phục được trên bất kỳ máy nào.']
     ],
     sections: [
+      {
+        title: 'Turn on, Turn off và mọi tab',
+        nav: 'Turn on',
+        lead: 'Pocket QA tắt trên mỗi tab cho tới khi bạn bật nó ở đó — để phím tắt không bao giờ bắt phím trên một trang bạn không định dùng.',
+        images: [{
+          alt: 'Câu hỏi Start Recording hiện ra trên tab Pocket QA đang tắt: Off on this tab — Pocket QA is off on this tab. Turn it on to record, play or pick elements here — it stays on for this tab until you turn it off or close the tab. Nút Cancel, Turn on, và link Not ask again: Allow on all tabs in Settings →.',
+          caption: 'Record, Play, Sequence, chạy CSV hay 🎯 Pick hỏi một lần cho mỗi tab.'
+        }],
+        points: [
+          'Thanh trạng thái ghi <b>Active</b> kèm nút <b>Turn off</b>, hoặc <b>Off on this tab</b> kèm nút <b>Turn on</b>.',
+          'Tab đã bật giữ nguyên trạng thái cho tới khi bạn tắt hoặc đóng tab; Turn off tải lại trang, mọi kịch bản vẫn còn.',
+          '<b>Settings → Tabs → Allow on all tabs</b> bật cho mọi trang web cùng lúc — thanh trạng thái khi đó ghi <b>Active · all tabs</b>.',
+          'Trang của trình duyệt — New Tab, Settings, Web Store — vẫn không dùng được trong cả hai trường hợp.'
+        ]
+      },
       {
         title: 'Phím tắt mặc định',
         nav: 'Phím tắt',

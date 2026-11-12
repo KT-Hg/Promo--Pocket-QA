@@ -193,6 +193,27 @@ const dbSessions = () => {
   };
 };
 
+// A run held at a failed step: "Place order" is not on the page, so after the element timeout the step fails and the
+// run waits for Retry / Skip / Stop — a still moment to take, in the popup and on the page
+const pausedRun = async ({ scenario, set, send, web }) => {
+  const id = await scenario('Checkout with coupon', [
+    { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+    { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+    click('#apply', 'Apply'),
+    click('#place-order', 'Place order'),
+    click('#confirm', 'Confirm')
+  ]);
+  await set({ lastSelectedScenario: id });
+  await web.bringToFront();
+  await send({ type: 'START_PLAYBACK_SCENARIO', scenarioId: id });
+  for (let t = 0; t < 30_000; t += 250) {
+    if (await web.evaluate(`/failed/.test(document.getElementById('__pqa_run')?.textContent || '')`)) return;
+    await sleep(250);
+  }
+  throw new Error('the run never stopped at its failed step');
+};
+const stopRun = async ({ send }) => { await send({ type: 'STOP_PLAYBACK' }); await sleep(800); };
+
 // One entry per picture. `setup` runs in the page (with HELPERS and THEME) and returns the selector of the
 // element to capture — or several, for the box around all of them; the shot is that box.
 const SHOTS = [
@@ -531,6 +552,164 @@ const SHOTS = [
     `
   },
   {
+    // Record & Play: the "+" under a step in a Switch case — the dummy row says where the new action goes, and the
+    // Add card's line says it again (record/insert-point.js)
+    name: 'pop-insert',
+    page: 'popup.html',
+    size: [480, 1400],
+    seed: async ({ send, set, scenario, base }) => {
+      await send(vars({ role: 'admin', email: 'qa@shop.test' }));
+      const id = await scenario('Checkout', [
+        { type: 'navigate', url: base + '/page' },
+        { type: 'input', ...css('#email'), value: '${email}', label: 'Email' },
+        click('#apply', 'Apply'),
+        { type: 'switch', switchVar: '${role}', cases: [own('admin', 5, 6), own('user', 7, 7)] },
+        click('#admin-orders', 'All orders'),
+        { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: 'Saved' },
+        click('#my-orders', 'My orders'),
+        click('#logout', 'Log out')
+      ]);
+      await set({ lastSelectedScenario: id });
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      if (!$('#actions').getClientRects().length) $('#preview').click();
+      await until(() => document.querySelectorAll('#actions > li.action').length >= 8, 'the action list');
+      $('#actions').style.maxHeight = 'none';
+      $('#actions > li.action[data-index="4"] > .ins-gap').click();   // under "All orders", in case "admin"
+      pick('#manualActionType', 'assert');
+      await until(() => $('#actions > li.action-ghost') && !$('#insertPointNote').hidden, 'the insertion point');
+      await wait(900);   // the dummy row's flash
+      return [mark($('#actions')), '#insertPointNote'];
+    `
+  },
+  {
+    // Add Manual Action: 👁 beside the selector outlines on the page what it finds; the line under the box speaks
+    // up when that is not one element — here two inputs (record/show-on-page.js)
+    name: 'pop-eye',
+    page: 'popup.html',
+    size: [480, 1400],
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      opened($('#addManualActionCard'));
+      pick('#manualActionType', 'click');
+      await until(() => $('#manualSelector').getClientRects().length, 'the selector box');
+      type('#manualSelector', 'input');
+      $('#showSelectorOnPage').click();
+      await until(() => document.querySelector('[data-preview="1"]'), 'what 👁 found', 15000);
+      await wait(300);
+      return [mark($('#manualActionType'), 'top'), mark(document.querySelector('[data-preview="1"]'), 'note')];
+    `
+  },
+  {
+    // A run with no Assert: it reached its end and checked nothing — "Finished · no checks", and the hint
+    name: 'pop-lastrun-nochecks',
+    page: 'popup.html',
+    size: [480, 900],
+    seed: async ({ scenario, play, set }) => {
+      const id = await scenario('Checkout with coupon', [
+        { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+        { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+        click('#apply', 'Apply')
+      ]);
+      await set({ lastSelectedScenario: id });
+      await play(id);
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      await until(() => !$('#lastRunCard').hidden && $('#lastRunCard').dataset.status === 'unchecked', 'the Last run card');
+      await wait(500);
+      return '#lastRunCard';
+    `
+  },
+  {
+    // A tab Pocket QA is off on: Start Recording asks first (popup/tab-activation.js askToTurnOn)
+    name: 'pop-turnon',
+    page: 'popup.html',
+    size: [480, 600],
+    off: true,
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      $('#startRecord').click();
+      await until(() => $('#confirmModal').classList.contains('show'), 'the question');
+      await wait(400);
+      return mark($('#confirmModal').firstElementChild);
+    `
+  },
+  {
+    // A run stopped at a failed step: Now Playing in the popup, amber, with its Stop
+    name: 'pop-nowplaying',
+    page: 'popup.html',
+    size: [480, 600],
+    seed: pausedRun,
+    cleanup: stopRun,
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      await until(() => $('#nowPlayingBar').getClientRects().length, 'Now Playing');
+      await wait(800);
+      return '.sticky-header';
+    `
+  },
+  {
+    // The page a run is on: the run panel bottom right, amber, held at the step that failed, and the question that
+    // step asks — Retry, Skip or Stop (content.js RUN PANEL, content-overlays.js)
+    name: 'page-run',
+    page: 'web',
+    size: [1000, 430],   // short: the panel sits at the bottom of the window, close under the page
+    seed: pausedRun,
+    cleanup: stopRun,
+    setup: `
+      const shown = () => [...document.querySelectorAll('[data-ext-overlay]')].filter(e => e.getClientRects().length);
+      await until(() => shown().length >= 2, 'the run panel and the question', 20000);
+      await wait(600);
+      return ['h1', ...shown().map((e, i) => mark(e, 'o' + i))];
+    `
+  },
+  {
+    // Recording: the page says so, bottom right, with its own Stop (content.js _syncRecordingPill)
+    name: 'page-recording',
+    page: 'web',
+    size: [1000, 400],
+    seed: ({ send, webTabId }) => send({ type: 'START_RECORD', tabId: webTabId, scenarioId: null }),
+    cleanup: ({ send }) => send({ type: 'STOP_RECORD' }),
+    setup: `
+      await until(() => $('#__pqa_recording'), 'the recording pill');
+      await wait(500);
+      return ['h1', '#__pqa_recording'];
+    `
+  },
+  {
+    // DB Test Session on Adminer's SQL page: a statement that may change a whole table waits for an answer. The
+    // question is the extension's own panel.preview(), called the way dbtools/capture-sql.js confirmRisks calls it
+    // for `DELETE FROM orders` (no WHERE) — there is no Adminer here to type it into
+    name: 'db-risk',
+    page: 'dbtest.html',
+    size: [900, 640],
+    setup: `
+      await until(() => $('#btnSettings') && $('#btnSettings').textContent.trim(), 'the page to start');
+      await themed('#toggleTheme', THEME);
+      document.body.replaceChildren();   // nothing behind the question but the page's own background
+      const { mountPanel } = await import('/dbtools/panel.js');
+      const { t, setLang } = await import('/dbtools/i18n.js');
+      setLang('en');
+      const panel = mountPanel({}, { theme: THEME });
+      panel.preview({ title: t('risk.title'), sql: 'DELETE FROM orders', note: t('risk.note'),
+        summary: [{ op: 'delete', table: 'orders', say: t('risk.noWhere') }],
+        cancelLabel: t('risk.cancel'), confirmLabel: t('risk.run'), confirmKind: 'danger' });
+      await wait(500);
+      const r = panel.host.shadowRoot.querySelector('.sheet').getBoundingClientRect();
+      const box = Object.assign(document.createElement('div'), { id: 'shotBox' });
+      Object.assign(box.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', pointerEvents: 'none' });
+      document.body.append(box);
+      return '#shotBox';
+    `
+  },
+  {
     // API Tests: "Get order" sent — the Headers tab, then the verdict, status, time, size and the URL as sent
     name: 'api-send',
     page: 'apitest.html',
@@ -762,7 +941,7 @@ try {
     await sleep(500);
     for (let t = 0; t < 30_000 && (await send({ type: 'GET_EXTENSION_STATUS' }))?.playing; t += 250) await sleep(250);
   };
-  const ctx = { base, send, set, scenario, play };
+  const ctx = { base, send, set, scenario, play, web, webTabId };
   if (parity) {
     // The tab the popup is on: https://app.example.com/login, answered here through CDP like the API shots
     const app = await browser.openPage('about:blank', { width: 1000, height: 700 });
@@ -815,14 +994,24 @@ try {
       await sw.evaluate('chrome.storage.local.clear().then(() => chrome.storage.sync.clear())');
       // …and back to what a fresh install has: background.js onInstalled turns the screenshot countdown on
       await set(FRESH_INSTALL);
+      // A shot of the sample page itself (page: 'web'): its content script draws the recording pill, the run panel
+      // and the prompts, in the theme the popup is set to
+      const onWeb = shot.page === 'web';
+      if (onWeb) {
+        await set({ popupTheme: theme, activatedTabs: [webTabId] });
+        await web.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+        await web.goto(`${base}/page`);
+        await sleep(500);
+      }
       if (shot.seed) await shot.seed(ctx);
-      const page = shot.page === 'popup.html'
+      const page = onWeb ? web : shot.page === 'popup.html'
         ? await browser.openPage(extUrl('popup.html'), { initScript: asActiveTab(`${base}/page`), width, height })
         : await browser.openPage(extUrl(shot.page), { width, height });
       if (shot.api) await answerApi(page);
       try {
         if (shot.page === 'popup.html') {
-          await page.evaluate(`chrome.storage.local.set({ activatedTabs: [${webTabId}] })`);
+          // The sample page counts as turned on — unless the shot is about a tab that is off
+          if (!shot.off) await page.evaluate(`chrome.storage.local.set({ activatedTabs: [${webTabId}] })`);
           await page.reload();
           await sleep(1500);
         }
@@ -851,7 +1040,8 @@ try {
         failed++;
         console.error(`✗ ${shot.name} (${theme}): ${e.message}`);
       } finally {
-        await page.close();
+        if (shot.cleanup) await shot.cleanup(ctx).catch(() => {});
+        if (!onWeb) await page.close();
       }
     }
   }
