@@ -198,15 +198,16 @@ extension, tên tệp phải giữ nguyên vì khớp bản YouTube, thay video 
 nén lại, không LFS, trường `video` trong `features-*.js`). Chạy lại toàn bộ kiểm tra ở mọi cỡ màn, sáng + tối.
 
 **Acceptance criteria:**
-- [ ] README mô tả `videos/` và cách thay một video.
-- [ ] Mọi điều ở "Xong khi" của handoff §8 đạt trên localhost.
-- [ ] `git ls-files` không có `HANDOFF-VIDEOS.md`, không có gì dưới `demo-videos/`.
+- [x] README mô tả `videos/` và cách thay một video.
+- [x] Mọi điều ở "Xong khi" của handoff §8 đạt trên localhost.
+- [x] `git ls-files` không có `HANDOFF-VIDEOS.md`, không có gì dưới `demo-videos/`.
 
 **Verification:**
-- [ ] `node stamp-assets.mjs` → "already up to date" cho cả hai trang.
-- [ ] `auditFeatures()` + `checkLayout()` trang chủ ở mọi cỡ trong README (gồm 1366×657, 1536×730, 1280×632,
+- [x] `node stamp-assets.mjs` → "already up to date" cho cả hai trang.
+- [x] `auditFeatures()` (12 trang) + `checkLayout()` trang chủ ở cả 15 cỡ trong README (gồm 1366×657, 1536×730, 1280×632,
   1920×945), EN + VI.
-- [ ] Bàn phím: Tab tới được nút play của video; trình đọc màn hình đọc `aria-label` đúng ngôn ngữ.
+- [x] Bàn phím: Tab tới được video đang hiện (bản ẩn bị bỏ qua), Space phát/dừng; `aria-label` đúng ngôn ngữ, bản kia
+  `display: none` nên ngoài cây accessibility. (Chưa thử bằng trình đọc màn hình thật.)
 
 **Dependencies:** Task 3, Task 4
 

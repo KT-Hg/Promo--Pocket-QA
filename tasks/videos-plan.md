@@ -61,7 +61,7 @@ Chi tiết từng task (mô tả, tiêu chí, kiểm tra, tệp): [`tasks/videos
 - [x] Network: không `.mp4` nào trước khi bấm play, trên cả 13 trang
 
 ### Phase 3: Hoàn tất
-- [ ] Task 5: README, stamp, kiểm cuối
+- [x] Task 5: README, stamp, kiểm cuối
 - [ ] Task 6: Deploy lên GitHub Pages và kiểm trên bản thật (cần người dùng đồng ý push)
 
 ### Checkpoint: Xong
