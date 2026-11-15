@@ -62,10 +62,10 @@ Chi tiết từng task (mô tả, tiêu chí, kiểm tra, tệp): [`tasks/videos
 
 ### Phase 3: Hoàn tất
 - [x] Task 5: README, stamp, kiểm cuối
-- [ ] Task 6: Deploy lên GitHub Pages và kiểm trên bản thật (cần người dùng đồng ý push)
+- [x] Task 6: Deploy lên GitHub Pages và kiểm trên bản thật (cần người dùng đồng ý push)
 
 ### Checkpoint: Xong
-- [ ] Đủ 6 điều ở "Xong khi" của handoff (§8), kiểm trên `https://kt-hg.github.io/Promo--Pocket-QA/`
+- [x] Đủ 6 điều ở "Xong khi" của handoff (§8), kiểm trên `https://kt-hg.github.io/Promo--Pocket-QA/`
 
 ## Dependency graph
 

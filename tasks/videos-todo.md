@@ -222,14 +222,14 @@ nén lại, không LFS, trường `video` trong `features-*.js`). Chạy lại t
 `https://kt-hg.github.io/Promo--Pocket-QA/`.
 
 **Acceptance criteria:**
-- [ ] Trang chủ và 12 trang tính năng phát được video ở cả hai ngôn ngữ trên bản thật.
-- [ ] `.mp4` trả `206` khi tua (Range), phát ngay khi mới tải một phần (faststart); `.vtt` có
+- [x] Trang chủ và 12 trang tính năng phát được video ở cả hai ngôn ngữ trên bản thật.
+- [x] `.mp4` trả `206` khi tua (Range), phát ngay khi mới tải một phần (faststart); `.vtt` có
   `content-type: text/vtt`.
-- [ ] Không `.mp4` nào tải trước khi bấm play.
+- [x] Không `.mp4` nào tải trước khi bấm play.
 
 **Verification:**
-- [ ] Browser pane: Network trên trang chủ và 2–3 trang tính năng, trước và sau khi bấm play.
-- [ ] Hard-reload (Ctrl+Shift+R) để chắc là đang xem bản mới (`?v=` mới trong HTML).
+- [x] Browser pane: Network trên trang chủ và 2–3 trang tính năng, trước và sau khi bấm play.
+- [x] Hard-reload (Ctrl+Shift+R) để chắc là đang xem bản mới (`?v=` mới trong HTML).
 
 **Dependencies:** Task 5, người dùng đồng ý push
 
@@ -238,7 +238,7 @@ nén lại, không LFS, trường `video` trong `features-*.js`). Chạy lại t
 **Estimated scope:** XS
 
 ### Checkpoint: Xong
-- [ ] Đủ 6 điều ở "Xong khi" của handoff §8, kiểm trên bản thật.
+- [x] Đủ 6 điều ở "Xong khi" của handoff §8, kiểm trên bản thật.
 
 ---
 
