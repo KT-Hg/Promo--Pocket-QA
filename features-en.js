@@ -9,6 +9,8 @@
  *   facts    [[value, label]] under the lead   points   "At a glance" list
  *   tab      the real popup tab id (vendor/popup.html) the live preview opens
  *            on — popup-demo.html supports ?tab=…&theme=… (README "Deep links")
+ *   video    { file, title, length } the demo video right under the hero: videos/en/<file>.mp4/.jpg/.vtt;
+ *            features-vi.js has its own file and title, length is shared (README "Demo videos")
  *   steps    [[title, text]] "How to use it"   notes    "Good to know" list
  *   sections [{ title, nav?, lead?, images?, imagesLayout?, table?: { head, rows },
  *               points?, code? }] — one full-width section each, in order.
@@ -21,6 +23,7 @@ var FEATURES_EN = {
     facts: [['17', 'action types'], ['8', 'selectors saved per element'], ['50', 'undo steps']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
+    video: { file: 'pocket-qa-01-record-a-test-in-one-click', title: 'Record a test in one click', length: '2:23' },
     points: [
       'Records clicks and typed input — typing is debounced to one step per field, and text typed just before a click is recorded before it.',
       'Only the tab the recording started on is recorded, and clicks the page’s own scripts fire are left out: the scenario holds what <em>you</em> did.',

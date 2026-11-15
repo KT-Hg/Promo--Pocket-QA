@@ -530,6 +530,11 @@ pre.code code { padding: 0; background: none; font: inherit; }
 .shot img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100svh - var(--header-h) - var(--fpill-zone) - 260px); border-radius: 10px; }
 .shot figcaption { margin-top: 10px; font-size: .84rem; color: var(--muted); text-align: center; }
 
+/* The demo video under the hero: 16:9 from the start (nothing jumps when it loads), its title above it, both only as
+   wide as lets the section fit one screen — 170px covers the title and the section's padding */
+.vbox { width: min(100%, calc((100svh - var(--header-h) - var(--fpill-zone) - 170px) * 16 / 9)); margin-inline: auto; }
+.vbox video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: var(--radius); background: #000; box-shadow: var(--shadow); }
+
 /* More features: ten compact cards (icon | title, two to a row) beside the closing CTA, like the index's FAQ */
 .more-grid { display: grid; gap: calc(20px + var(--sy) / 3); }
 @media (min-width: 1024px) { .more-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }

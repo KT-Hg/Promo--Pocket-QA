@@ -10,6 +10,7 @@ var FEATURES_VI = {
     lead: 'Bật Pocket QA trên một tab, bấm Start Recording rồi làm thao tác một lần. Mỗi cú click và mỗi ô bạn nhập liệu đều thành một bước sửa được — không phải tự viết selector.',
     facts: [['17', 'loại hành động'], ['8', 'selector lưu cho mỗi phần tử'], ['50', 'bước hoàn tác']],
     tabLabel: 'tab Record & Play',
+    video: { file: 'pocket-qa-01-ghi-kich-ban-chi-voi-mot-cu-nhap', title: 'Ghi kịch bản chỉ với một cú nhấp' },
     points: [
       'Ghi lại click và dữ liệu nhập — thao tác gõ được gộp thành một bước cho mỗi ô, và chữ gõ ngay trước một cú click được ghi trước cú click đó.',
       'Chỉ tab bắt đầu ghi mới được ghi lại, và các cú click do chính script của trang tự phát ra bị bỏ qua: kịch bản chỉ chứa những gì <em>bạn</em> đã làm.',

@@ -164,6 +164,8 @@
   addEventListener('resize', () => { const to = innerWidth + '×' + screenH(); if (to !== fittedTo) { fittedTo = to; queueEven(); } });
   // A screenshot has no size until it loads (and again when the theme swaps it), so its section is fitted again then
   media.forEach(m => m.tagName === 'IMG' && m.addEventListener('load', queueEven));
+  // A video hidden by the switch (display: none) would keep playing, and be heard: stop them all first
+  $('#lang-btn').addEventListener('click', () => $$('video').forEach(v => v.pause()));
   $('#lang-btn').addEventListener('click', () => animate('lang', () => { noAnchor(); d.lang = d.lang === 'vi' ? 'en' : 'vi'; save('lang', d.lang); syncTitle(); }));
   $('#theme-btn').addEventListener('click', () => animate('theme', () => {
     d.dataset.theme = d.dataset.theme === 'dark' ? 'light' : 'dark'; save('theme', d.dataset.theme);

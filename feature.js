@@ -64,6 +64,17 @@
     `The real popup, open on its ${E.tabLabel}: switch tabs and its own <span class="kbd">🌙</span> theme. The other controls are display-only here.`,
     `Popup thật (bằng tiếng Anh), đang mở ở ${V.tabLabel || E.tabLabel}: đổi được tab và nút <span class="kbd">🌙</span> của popup. Các nút khác ở đây chỉ để xem.`);
 
+  // The demo video: one <video> per language, site.css shows the page's own and site.js pauses both on a switch.
+  // preload="none": only the posters load until play. No `default` on the track, the captions are burnt into the picture
+  const EV = E.video, VV = V.video || EV;
+  const video = (lang, v) => `<video lang="${lang}" controls preload="none" playsinline width="1280" height="720"
+    poster="videos/${lang}/${v.file}.jpg" src="videos/${lang}/${v.file}.mp4" aria-label="${v.title} (${EV.length})">
+    <track kind="captions" srclang="${lang}" label="${lang === 'vi' ? 'Tiếng Việt' : 'English'}" src="videos/${lang}/${v.file}.vtt"></video>`;
+  if (EV) {
+    $('#videoTitle').innerHTML = pair('Watch it in ' + EV.length, 'Xem trong ' + EV.length);
+    $('#videoBox').insertAdjacentHTML('beforeend', video('en', EV) + video('vi', VV));
+  } else $('#video').remove();
+
   // Overview: one card per point, steps, notes
   const vp = V.points || [];
   const points = fit($('#detailPoints'), 1);
@@ -111,7 +122,7 @@
     });
     return wrap;
   };
-  const navItems = [['overview', 'Overview', 'Tổng quan'], ['how-to', 'How to use it', 'Cách dùng']];
+  const navItems = [...EV ? [['video', 'Video', 'Video']] : [], ['overview', 'Overview', 'Tổng quan'], ['how-to', 'How to use it', 'Cách dùng']];
   const sections = E.sections.map((s, i) => {
     const v = (V.sections || [])[i] || {};
     const sec = el('section');
