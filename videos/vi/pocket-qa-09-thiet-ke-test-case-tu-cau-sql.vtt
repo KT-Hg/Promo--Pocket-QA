@@ -1,0 +1,55 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.243
+Phần chín.
+
+00:00:01.243 --> 00:00:03.665
+Thiết kế test case từ câu SQL.
+
+00:00:04.833 --> 00:00:08.393
+Phía sau danh sách sách của Demo Books là một câu truy vấn SQL.
+
+00:00:08.393 --> 00:00:12.364
+SQL Test Case Designer biến chính câu đó thành danh sách test case.
+
+00:00:12.500 --> 00:00:14.165
+Mở nó từ tab Tools.
+
+00:00:16.867 --> 00:00:20.248
+Công cụ chạy trong một tab riêng, đủ rộng cho các bảng.
+
+00:00:20.267 --> 00:00:21.770
+Dán câu truy vấn vào.
+
+00:00:21.770 --> 00:00:25.828
+Cú pháp MySQL, PostgreSQL hay SQL Server đều được.
+
+00:00:26.300 --> 00:00:27.527
+Bấm Analyze.
+
+00:00:27.527 --> 00:00:31.227
+Mọi thứ chạy ngay trong trình duyệt, không gửi dữ liệu đi đâu cả.
+
+00:00:31.233 --> 00:00:36.325
+Kết quả là một danh sách test case có đánh số, mức ưu tiên, kỹ thuật kiểm thử và dữ liệu mẫu:
+
+00:00:36.325 --> 00:00:40.343
+phân vùng tương đương, giá trị biên, bảng quyết định, NULL và JOIN.
+
+00:00:41.367 --> 00:00:45.678
+Chọn một ca để xem điều kiện, giá trị được dùng, và kết quả mong đợi.
+
+00:00:51.833 --> 00:00:57.452
+Tab Schema cho thấy các bảng và cột mà công cụ suy ra từ câu truy vấn, kèm khoá chính và khoá ngoại.
+
+00:00:58.167 --> 00:01:03.828
+Bấm Diagram để xem dạng sơ đồ: mỗi bảng là một hộp, còn đường nối là phép JOIN giữa hai bảng.
+
+00:01:04.100 --> 00:01:08.915
+Kéo các hộp để sắp xếp lại, cuộn chuột để phóng to, và bấm Fit để thấy toàn bộ.
+
+00:01:11.800 --> 00:01:16.316
+Rồi xuất ra CSV hoặc JSON, để đưa vào công cụ quản lý test của bạn.
+
+00:01:16.467 --> 00:01:20.864
+Phần tiếp theo vẫn là database, nhưng lần này là dữ liệu thật trong lúc kiểm thử.

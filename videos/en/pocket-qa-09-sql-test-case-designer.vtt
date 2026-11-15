@@ -1,0 +1,52 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.350
+Part nine.
+
+00:00:01.350 --> 00:00:03.340
+The SQL Test Case Designer.
+
+00:00:04.833 --> 00:00:07.606
+Behind the Demo Books list is a SQL query.
+
+00:00:07.606 --> 00:00:12.216
+The SQL Test Case Designer turns that very query into a test case list.
+
+00:00:12.500 --> 00:00:14.242
+Open it from the Tools tab.
+
+00:00:16.867 --> 00:00:20.061
+It runs in its own tab, wide enough for the tables.
+
+00:00:20.267 --> 00:00:21.516
+Paste the query.
+
+00:00:21.516 --> 00:00:26.288
+MySQL, PostgreSQL or SQL Server syntax all work.
+
+00:00:26.300 --> 00:00:27.508
+Click Analyze.
+
+00:00:27.508 --> 00:00:30.901
+It all runs in your browser, and nothing is sent anywhere.
+
+00:00:31.233 --> 00:00:41.367
+You get numbered test cases with a priority, a technique and sample data: equivalence partitions, boundary values, a decision table, NULLs and JOINs.
+
+00:00:41.367 --> 00:00:46.232
+Pick a case to see its condition, the values it uses, and the expected result.
+
+00:00:51.833 --> 00:00:58.167
+The Schema tab shows the tables and columns the tool worked out from the query, with primary and foreign keys.
+
+00:00:58.167 --> 00:01:04.077
+Click Diagram to see it drawn: each table is a box, and the line is the JOIN between them.
+
+00:01:04.100 --> 00:01:08.806
+Drag the boxes around, scroll to zoom, and click Fit to see it all.
+
+00:01:11.800 --> 00:01:15.727
+Then export it to CSV or JSON for your test management tool.
+
+00:01:16.467 --> 00:01:20.612
+Next, still the database, but this time real data during a test.

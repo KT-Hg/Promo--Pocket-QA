@@ -1,0 +1,34 @@
+WEBVTT
+
+00:00:00.250 --> 00:00:02.115
+Web testing without writing code?
+
+00:00:02.115 --> 00:00:03.564
+Meet Pocket QA.
+
+00:00:04.583 --> 00:00:08.772
+Hit record, use the site as usual, and every step is captured.
+
+00:00:09.350 --> 00:00:12.242
+Add steps just by pointing at elements on the page.
+
+00:00:12.817 --> 00:00:15.605
+Play back, loop, chain or schedule.
+
+00:00:16.250 --> 00:00:20.206
+Every run ends with a clear verdict and a ready-made bug report.
+
+00:00:20.783 --> 00:00:23.767
+Run one scenario against a whole CSV file.
+
+00:00:24.383 --> 00:00:28.598
+Export to Selenium, Playwright, Robot Framework or Java.
+
+00:00:29.383 --> 00:00:34.479
+Plus screenshots, API tests, SQL test design and database rollback.
+
+00:00:35.833 --> 00:00:36.942
+Pocket QA.
+
+00:00:36.942 --> 00:00:38.752
+Testing, right in your browser.

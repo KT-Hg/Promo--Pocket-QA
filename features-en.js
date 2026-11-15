@@ -9,6 +9,8 @@
  *   facts    [[value, label]] under the lead   points   "At a glance" list
  *   tab      the real popup tab id (vendor/popup.html) the live preview opens
  *            on — popup-demo.html supports ?tab=…&theme=… (README "Deep links")
+ *   video    { file, title, length } the demo video right under the hero: videos/en/<file>.mp4/.jpg/.vtt;
+ *            features-vi.js has its own file and title, length is shared (README "Demo videos")
  *   steps    [[title, text]] "How to use it"   notes    "Good to know" list
  *   sections [{ title, nav?, lead?, images?, imagesLayout?, table?: { head, rows },
  *               points?, code? }] — one full-width section each, in order.
@@ -21,6 +23,7 @@ var FEATURES_EN = {
     facts: [['17', 'action types'], ['8', 'selectors saved per element'], ['50', 'undo steps']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
+    video: { file: 'pocket-qa-01-record-a-test-in-one-click', title: 'Record a test in one click', length: '2:23' },
     points: [
       'Records clicks and typed input — typing is debounced to one step per field, and text typed just before a click is recorded before it.',
       'Only the tab the recording started on is recorded, and clicks the page’s own scripts fire are left out: the scenario holds what <em>you</em> did.',
@@ -181,6 +184,7 @@ var FEATURES_EN = {
     facts: [['5', 'ways to run'], ['Daily', 'scheduling'], ['Retry · Skip · Stop', 'when a step fails']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
+    video: { file: 'pocket-qa-02-play-it-back-loops-sequences-schedules', title: 'Play it back: loops, sequences, schedules', length: '1:53' },
     points: [
       'Play once, loop N times with a delay between loops, or build a <b>Sequence</b> where each scenario gets its own delay.',
       'Schedule a scenario for a set time — once, or <b>Repeat daily</b> — and it starts on its own in the background.',
@@ -307,6 +311,7 @@ var FEATURES_EN = {
     facts: [['12', 'check types'], ['4', 'verdicts'], ['5 s', 'an Assert waits for the page']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
+    video: { file: 'pocket-qa-03-assertions-verdicts-and-bug-reports', title: 'Assertions, verdicts and bug reports', length: '2:02' },
     points: [
       '<b>Assert (Expect)</b> checks what the page should show — an element, a text, a value, the URL, a class or an attribute: 12 checks in all.',
       'Asserts are waited for: checked every 250 ms for up to 5 seconds, so a page still loading isn’t a failure.',
@@ -416,6 +421,7 @@ var FEATURES_EN = {
     facts: [['4', 'variable types'], ['12', 'condition checks'], ['3', 'layers of priority']],
     tab: 'tabData',
     tabLabel: 'Tools tab',
+    video: { file: 'pocket-qa-04-variables-and-logic', title: 'Variables and logic', length: '2:28' },
     points: [
       'Four variable types: <b>Static</b>, <b>Random</b> (letters, numbers, both, or a datetime stamp), <b>Pick</b> (one of a list) and <b>Fallback</b> (try A, then B, then C).',
       '<code>${var}</code> works in selectors, values, URLs, scripts, expected values, file names and more.',
@@ -511,6 +517,7 @@ var FEATURES_EN = {
     tab: 'tabRecord',
     card: 'csvRunCard',   // the hero opens the CSV card itself (demo.js ?card=)
     tabLabel: 'Record & Play tab',
+    video: { file: 'pocket-qa-05-data-driven-runs-from-a-csv-file', title: 'Data-driven runs from a CSV file', length: '1:52' },
     points: [
       'The first row names the variables: a column <code>email</code> becomes <code>${email}</code>, no mapping step.',
       'A row’s columns override saved variables of the same name, for that row only.',
@@ -581,6 +588,7 @@ var FEATURES_EN = {
     facts: [['6', 'kinds of capture'], ['10', 'capture & record hotkeys'], ['3 · 5 · 10 s', 'countdown']],
     tab: 'tabCapture',
     tabLabel: 'Capture tab',
+    video: { file: 'pocket-qa-06-screenshots-and-image-tools', title: 'Screenshots and image tools', length: '1:33' },
     points: [
       'Visible, Full Page, Scroll (Down / Across), Segment (Down / Across), Element and Window capture.',
       'Every mode has a <b>Edit</b> twin that opens the image editor right after the shot.',
@@ -690,6 +698,7 @@ var FEATURES_EN = {
     facts: [['5', 'output formats'], ['8', 'fallback locators per step'], ['4', 'overrides via env vars']],
     tab: 'tabData',
     tabLabel: 'Tools tab',
+    video: { file: 'pocket-qa-07-export-the-scenario-as-test-code', title: 'Export the scenario as test code', length: '1:31' },
     points: [
       'JS Bookmarklet, Selenium Python (script or pytest), Playwright Test, Robot Framework and Selenium Java (TestNG).',
       'Playback is the standard: the code does what a run does — same locator fallbacks, and the extension’s own in-page helpers wherever a plain driver call would act differently.',
@@ -789,6 +798,7 @@ var FEATURES_EN = {
     facts: [['5', 'colours'], ['Notes', 'on any highlight'], ['JSON', 'export']],
     tab: 'tabHighlight',
     tabLabel: 'Highlight tab',
+    video: { file: 'pocket-qa-08-highlights-and-notes-on-any-page', title: 'Highlights and notes on any page', length: '1:03' },
     points: [
       'Turn Highlight ON, select text on the page, and pick yellow, green, pink, blue or orange from the tooltip.',
       'Add a note to any highlight; hover it later to read it.',
@@ -867,6 +877,7 @@ var FEATURES_EN = {
     facts: [['4', 'technique families'], ['4', 'export formats'], ['VI / EN', 'interface']],
     tab: 'tabData',
     tabLabel: 'Tools tab',
+    video: { file: 'pocket-qa-09-sql-test-case-designer', title: 'SQL Test Case Designer', length: '1:22' },
     points: [
       'Parses <code>SELECT</code> (joins, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>UNION</code>, CTEs, <code>CASE</code>) plus <code>INSERT</code>, <code>UPDATE</code> and <code>DELETE</code>.',
       'EP/BVA cases straight from the query’s conditions, with boundary steps that follow the inferred type.',
@@ -1006,6 +1017,7 @@ var FEATURES_EN = {
     facts: [['8', 'kinds of write recorded'], ['1 click', 'to roll back'], ['0', 'bytes leave your browser']],
     tab: 'tabData',
     tabLabel: 'Tools tab',
+    video: { file: 'pocket-qa-10-db-test-session-and-rollback-for-adminer', title: 'DB Test Session and rollback for Adminer', length: '1:21' },
     points: [
       'Start a session from the small panel Adminer shows bottom-right; nothing is recorded until you do.',
       'Captures the edit form, grid cell edits, bulk and <span class="nw">whole-result</span> deletes, mass edits, <code>INSERT</code>s and the <code>UPDATE</code>/<code>DELETE</code> you type on the SQL page.',
@@ -1139,6 +1151,7 @@ var FEATURES_EN = {
     facts: [['5', 'kinds of check'], ['v2.1', 'Postman export &amp; import'], ['CSV', 'run results']],
     tab: 'tabData',
     tabLabel: 'Tools tab',
+    video: { file: 'pocket-qa-11-api-tests-next-to-your-ui-tests', title: 'API tests next to your UI tests', length: '1:47' },
     points: [
       'Paste a cURL from DevTools — method, URL, headers and body filled in; Copy cURL goes the other way.',
       'Checks on the status, a JSON path, a header, the body and the time — a verdict per Send.',
@@ -1256,6 +1269,7 @@ var FEATURES_EN = {
     facts: [['10', 'rebindable hotkeys'], ['4', 'notification categories'], ['1 file', 'full backup']],
     tab: 'tabSettings',
     tabLabel: 'Settings tab',
+    video: { file: 'pocket-qa-12-hotkeys-backup-and-settings', title: 'Hotkeys, backup and settings', length: '0:51' },
     points: [
       'Every hotkey can be rebound, and the bindings sync across your Chrome profile.',
       'Import and export scenarios or whole folders as JSON; back up and restore all data in one file.',

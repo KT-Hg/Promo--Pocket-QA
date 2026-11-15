@@ -1,0 +1,55 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.270
+Phần sáu.
+
+00:00:01.270 --> 00:00:03.334
+Chụp màn hình và công cụ ảnh.
+
+00:00:04.900 --> 00:00:09.245
+Đây là trang xác nhận của dòng thứ ba, và chẳng có chữ free shipping nào cả.
+
+00:00:09.245 --> 00:00:13.541
+Khi cần báo lỗi, một tấm ảnh rõ ràng đáng giá hơn cả đoạn mô tả dài.
+
+00:00:16.533 --> 00:00:18.339
+Tab Capture có sáu kiểu chụp.
+
+00:00:18.339 --> 00:00:22.589
+Nút xanh lưu ảnh ngay, còn nút viền đứt mở ảnh trong trình chỉnh sửa trước khi lưu.
+
+00:00:24.233 --> 00:00:28.329
+Chụp phần đang thấy, có ba giây đếm ngược để bạn kịp mở menu nếu cần.
+
+00:00:30.333 --> 00:00:32.608
+Trình chỉnh ảnh mở trong một cửa sổ riêng.
+
+00:00:32.608 --> 00:00:36.571
+Khoanh vùng lỗi, thêm mũi tên, và làm mờ những thông tin riêng tư.
+
+00:00:41.500 --> 00:00:42.271
+Lưu lại.
+
+00:00:42.271 --> 00:00:46.093
+Tên tệp có tiền tố và thời gian, nên rất dễ tìm về sau.
+
+00:00:47.667 --> 00:00:49.311
+Muốn chụp riêng một phần tử?
+
+00:00:49.311 --> 00:00:51.763
+Bấm Pick, rồi chọn nó ngay trên trang.
+
+00:00:59.600 --> 00:01:05.219
+Còn Image Diff so sánh hai ảnh chụp và tô màu hồng tím những điểm ảnh khác nhau, rất tiện để kiểm thử giao diện.
+
+00:01:10.333 --> 00:01:16.027
+Giữa hai bản, giá một cuốn sách và một nút bấm đã thay đổi, và Image Diff chỉ ra chính xác vị trí.
+
+00:01:16.533 --> 00:01:20.648
+Bấm Save result để tải ảnh so sánh về, rồi mở ra xem cho rõ.
+
+00:01:21.233 --> 00:01:27.169
+Những điểm ảnh khác nhau được tô màu hồng tím: giá của cuốn Mountain Roads, và nút Add to cart đã thành Sold out.
+
+00:01:28.567 --> 00:01:31.691
+Tiếp theo, mình sẽ biến kịch bản thành mã kiểm thử thật.

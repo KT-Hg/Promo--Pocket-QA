@@ -1,0 +1,109 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.294
+Part one.
+
+00:00:01.294 --> 00:00:03.376
+Record a test in one click.
+
+00:00:04.833 --> 00:00:07.718
+This is Demo Books, a small online bookstore.
+
+00:00:07.718 --> 00:00:13.800
+Today we'll test its checkout, from picking a book to placing the order, without writing a single line of code.
+
+00:00:13.800 --> 00:00:16.395
+Pocket QA sits right in the browser toolbar.
+
+00:00:16.395 --> 00:00:18.250
+Click its icon to open it.
+
+00:00:18.967 --> 00:00:23.849
+On a new tab it starts switched off, so it never touches a page until you say so.
+
+00:00:24.100 --> 00:00:25.472
+Click Start Recording.
+
+00:00:25.472 --> 00:00:28.150
+Pocket QA asks to turn on for this tab.
+
+00:00:28.150 --> 00:00:29.418
+Choose Turn on.
+
+00:00:29.433 --> 00:00:34.835
+The popup closes, a red Recording bar appears on the page, and the toolbar badge says REC.
+
+00:00:34.835 --> 00:00:37.727
+From now on, everything you do is captured.
+
+00:00:37.733 --> 00:00:44.919
+First, click Books in the menu, so the test always starts from the book list, whatever page you are on when it runs.
+
+00:00:44.933 --> 00:00:46.688
+Sort the books by price,
+
+00:00:48.000 --> 00:00:50.392
+then sign in like a regular customer.
+
+00:00:57.533 --> 00:00:59.042
+Add a book to the cart.
+
+00:00:59.567 --> 00:01:06.016
+Open the cart, check out, fill in the name and address, pick express shipping, and place the order.
+
+00:01:12.333 --> 00:01:13.966
+The order is confirmed.
+
+00:01:13.966 --> 00:01:16.053
+Click Stop right on the Recording bar.
+
+00:01:17.867 --> 00:01:19.627
+Open Pocket QA again.
+
+00:01:19.627 --> 00:01:23.516
+Each action is now a step, named after the element it touched.
+
+00:01:23.516 --> 00:01:25.666
+No selectors to write by hand.
+
+00:01:25.667 --> 00:01:28.438
+Name the scenario Buy a book, and save it.
+
+00:01:30.600 --> 00:01:32.713
+A recorder only sees what you did.
+
+00:01:32.713 --> 00:01:36.715
+Say we want a second book in the cart: we can add that step by hand.
+
+00:01:37.033 --> 00:01:40.335
+The plus sign between two steps picks where the new one goes.
+
+00:01:40.335 --> 00:01:42.495
+We choose right after the first book.
+
+00:01:42.500 --> 00:01:48.329
+Choose Click, hit the target button, then point straight at another book's Add to cart button on the page.
+
+00:01:53.633 --> 00:01:58.186
+The popup opens again with the selector filled in, plus fallback locators.
+
+00:01:58.186 --> 00:02:01.501
+Hover the eye icon to see the element outlined on the page.
+
+00:02:01.633 --> 00:02:04.160
+Give it a clear name and click Add Action.
+
+00:02:04.160 --> 00:02:06.954
+The new step lands exactly where we chose.
+
+00:02:09.667 --> 00:02:10.820
+Changed your mind?
+
+00:02:10.820 --> 00:02:16.778
+Undo and Redo go back up to fifty steps, and every edit is saved straight into the scenario.
+
+00:02:16.800 --> 00:02:18.725
+Our first scenario is ready.
+
+00:02:18.725 --> 00:02:21.334
+Next, let's watch it play back on its own.

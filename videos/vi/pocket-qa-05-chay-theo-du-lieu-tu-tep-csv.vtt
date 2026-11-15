@@ -1,0 +1,55 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.200
+Phần năm.
+
+00:00:01.200 --> 00:00:03.716
+Chạy theo dữ liệu từ tệp CSV.
+
+00:00:05.167 --> 00:00:09.967
+Thay vì một khách hàng, giờ mình muốn thử ba khách hàng, với các kiểu giao hàng khác nhau.
+
+00:00:09.967 --> 00:00:13.448
+Trước tiên, sửa bước chọn giao hàng để nó dùng ${shipping},
+
+00:00:22.100 --> 00:00:25.392
+và cho bước Assert lấy chữ cần kiểm tra từ ${expect}.
+
+00:00:34.733 --> 00:00:36.210
+Đây là tệp dữ liệu.
+
+00:00:36.210 --> 00:00:40.146
+Dòng đầu tiên là tên biến: customer, shipping và expect.
+
+00:00:41.333 --> 00:00:47.827
+Mỗi dòng sau đó là một lượt chạy: Bao Tran giao hàng thường, Chris Vo giao hàng nhanh, và Dana Le cũng giao nhanh.
+
+00:00:49.000 --> 00:00:55.394
+Riêng dòng của Dana Le cố tình mong chữ free shipping, thứ mà trang không hề có, để xem một dòng không đạt trông ra sao.
+
+00:00:57.233 --> 00:01:01.104
+Trong thẻ CSV Run, chọn kịch bản Buy a book và tải tệp lên.
+
+00:01:01.104 --> 00:01:03.696
+Pocket QA cho xem trước các dòng sẽ chạy.
+
+00:01:09.033 --> 00:01:14.282
+Chọn định dạng kết quả, ở đây là báo cáo HTML, rồi bấm Start CSV Run.
+
+00:01:14.467 --> 00:01:16.351
+Mỗi dòng là một lượt chạy riêng.
+
+00:01:16.351 --> 00:01:20.877
+Bảng trên trang cho biết đang ở dòng nào, còn popup đếm số dòng đạt và không đạt.
+
+00:01:28.100 --> 00:01:34.105
+Xong ba dòng: hai dòng đạt, còn dòng thứ ba bị đánh dấu Failed, vì trang không hề nhắc tới free shipping.
+
+00:01:35.067 --> 00:01:36.987
+Tải kết quả về và mở ra.
+
+00:01:36.987 --> 00:01:42.315
+Mỗi dòng có dữ liệu, kết luận, và bước bị lỗi kèm lý do, gửi ngay cho cả nhóm được.
+
+00:01:46.833 --> 00:01:51.084
+Phần tiếp theo là bộ công cụ chụp và chỉnh ảnh, để báo lỗi rõ ràng hơn.

@@ -40,7 +40,7 @@
     (window.syncTitle = () => { document.title = (d.lang === 'vi' && d.dataset.titleVi) || d.dataset.titleEn || en; })();
   })();
 </script>
-<link rel="stylesheet" href="site.css?v=97f0cf10">
+<link rel="stylesheet" href="site.css?v=2896e3ef">
 </head>
 <body class="doc">
 <a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="vi">Bỏ qua tới nội dung</span></a>
@@ -150,6 +150,18 @@
        lists that may shorten ([data-fit]) and adds a "Show the rest" button; site.js keeps a list's first items when the
        section would be taller than the screen and puts the rest behind that button. -->
 
+  <!-- ================= VIDEO: this feature's demo, one <video> per language (feature.js); removed for a feature
+       without one ================= -->
+  <section id="video">
+    <div class="container collapsible">
+      <div class="vbox" id="videoBox">
+        <div class="section-head reveal">
+          <h2 class="section-title" id="videoTitle"></h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= OVERVIEW: six points, six cards ================= -->
   <section id="overview">
     <div class="container collapsible">
@@ -223,10 +235,10 @@
   </div>
 </footer>
 
-<script src="features-en.js?v=367fb3be"></script>
-<script src="features-vi.js?v=5f2ecb0a"></script>
-<script src="feature.js?v=c64c752d"></script>
-<script src="site.js?v=c0071d20"></script>
+<script src="features-en.js?v=ce05ebbd"></script>
+<script src="features-vi.js?v=087991a6"></script>
+<script src="feature.js?v=e72723ce"></script>
+<script src="site.js?v=b8db1a08"></script>
 <script src="store-version.js?v=f9330233"></script>
 </body>
 </html>

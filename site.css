@@ -331,6 +331,25 @@ main > section {
   .step-num { grid-row: span 2; }
   .step h3 { margin: 0; }
 }
+/* The index's How it works: the trailer above the steps, beside them from 1024px. Its steps are rows at every width
+   (number beside the text), so the video keeps most of the screen; --vbox-rest is the height the rest of the
+   section takes, the video only as wide as lets it all fit one screen */
+#how .steps { gap: 8px; }
+#how .step { display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: center; gap: 2px 14px; padding: 12px 14px; }
+#how .step-num { grid-row: span 2; }
+#how .step h3 { margin: 0; }
+#how .vbox { --vbox-rest: 360px; margin-bottom: calc(16px + var(--sy) / 3); }
+@media (max-width: 767px) {   /* text behind "Read more": two steps a row, the number beside the title alone, centred on it
+                                  (and room for "Tinh chỉnh" on one line in half a 343px phone) */
+  .js #how .collapsible:not(.expanded) .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .js #how .collapsible:not(.expanded) .step { align-items: center; padding-inline: 12px; column-gap: 10px; }
+  .js #how .collapsible:not(.expanded) .step-num { grid-row: auto; }
+}
+@media (min-width: 1024px) {
+  .how-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: calc(24px + var(--sy) / 2); align-items: center; }
+  #how .steps { grid-template-columns: minmax(0, 1fr); }
+  #how .vbox { --vbox-rest: 170px; margin-bottom: 0; }
+}
 
 /* ---------- Privacy ---------- */
 .grid-2 { display: grid; gap: calc(16px + var(--sy) / 3); }
@@ -529,6 +548,15 @@ pre.code code { padding: 0; background: none; font: inherit; }
 .shot { display: grid; justify-items: center; align-content: center; margin: 0; padding: 10px; }
 .shot img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100svh - var(--header-h) - var(--fpill-zone) - 260px); border-radius: 10px; }
 .shot figcaption { margin-top: 10px; font-size: .84rem; color: var(--muted); text-align: center; }
+
+/* A demo video (feature pages: under the hero, its title above it): 16:9 from the start (nothing jumps when it loads),
+   only as wide as lets the section fit one screen. --vbox-rest is the height the rest of the section takes — on a
+   feature page 170px covers the title and the section's padding, plus the pill's zone; the index sets its own */
+.vbox {
+  --vbox-rest: calc(var(--fpill-zone, 0px) + 170px);
+  width: min(100%, calc((100svh - var(--header-h) - var(--vbox-rest)) * 16 / 9)); margin-inline: auto;
+}
+.vbox video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: var(--radius); background: #000; box-shadow: var(--shadow); }
 
 /* More features: ten compact cards (icon | title, two to a row) beside the closing CTA, like the index's FAQ */
 .more-grid { display: grid; gap: calc(20px + var(--sy) / 3); }

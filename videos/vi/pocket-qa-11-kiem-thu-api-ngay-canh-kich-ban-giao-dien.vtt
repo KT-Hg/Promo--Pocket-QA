@@ -1,0 +1,58 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.395
+Phần mười một.
+
+00:00:01.395 --> 00:00:03.025
+Kiểm thử API.
+
+00:00:04.833 --> 00:00:07.792
+Ứng dụng di động của Demo Books dùng một API riêng.
+
+00:00:07.792 --> 00:00:12.036
+Bạn có thể kiểm thử nó ngay trong Pocket QA, cạnh các kịch bản giao diện.
+
+00:00:12.267 --> 00:00:14.548
+Mở API Tests từ tab Tools.
+
+00:00:15.133 --> 00:00:18.955
+Request được xếp theo thư mục, ở đây là thư mục Demo Books API.
+
+00:00:18.955 --> 00:00:23.057
+Môi trường ở góc trên giữ địa chỉ máy chủ, dùng qua biến baseUrl.
+
+00:00:27.600 --> 00:00:30.912
+Request Sign in gửi email và mật khẩu trong phần Body.
+
+00:00:32.900 --> 00:00:36.645
+Tab Save values lấy token trong phản hồi và lưu vào biến token.
+
+00:00:38.033 --> 00:00:41.575
+Bấm Send: request đạt, và token đã được lưu lại.
+
+00:00:45.633 --> 00:00:50.307
+Thư mục gửi token đó dạng Bearer cho mọi request bên trong, nên không phải dán tay.
+
+00:00:56.067 --> 00:01:00.376
+Nhờ vậy My account chạy được ngay, và nhận về đúng tài khoản của Anna.
+
+00:01:04.867 --> 00:01:09.536
+Với List books, bấm vào một khoá trong JSON trả về để tạo phép kiểm tra ngay từ đó.
+
+00:01:11.133 --> 00:01:14.736
+Phép kiểm tra mới nằm trong tab Checks, và lần gửi sau nó đạt.
+
+00:01:17.433 --> 00:01:21.943
+Run folder chạy lần lượt mọi request trong thư mục, mỗi dòng một dấu đạt hoặc không đạt.
+
+00:01:25.100 --> 00:01:30.377
+Dòng sai cho biết mong gì và nhận gì: mong giá là hai mươi, API trả về mười tám.
+
+00:01:32.533 --> 00:01:35.693
+Export sang Postman để chạy bằng Newman trong CI.
+
+00:01:35.867 --> 00:01:41.318
+Chiều ngược lại, Paste cURL tạo request từ một lệnh curl, còn Import nhận bộ sưu tập Postman.
+
+00:01:42.500 --> 00:01:45.884
+Cuối cùng, hãy xem những cài đặt bạn chỉ cần chỉnh một lần.

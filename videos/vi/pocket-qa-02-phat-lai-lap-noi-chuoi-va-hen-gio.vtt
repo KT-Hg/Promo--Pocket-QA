@@ -1,0 +1,79 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.267
+Phần hai.
+
+00:00:01.267 --> 00:00:04.644
+Phát lại kịch bản: lặp, nối chuỗi và hẹn giờ.
+
+00:00:05.800 --> 00:00:08.214
+Kịch bản Buy a book đã nằm sẵn trong danh sách.
+
+00:00:08.214 --> 00:00:11.687
+Bấm Play, và để Pocket QA làm phần còn lại.
+
+00:00:12.767 --> 00:00:14.422
+Kịch bản chạy ngay trên trang.
+
+00:00:14.422 --> 00:00:18.616
+Bảng nhỏ ở góc cho biết đang chạy tới bước nào, và luôn có sẵn nút Stop.
+
+00:00:19.900 --> 00:00:24.767
+Biểu tượng trên thanh công cụ cũng đếm theo, nên bạn vẫn theo dõi được khi popup đang đóng.
+
+00:00:24.767 --> 00:00:25.544
+Chạy xong.
+
+00:00:25.544 --> 00:00:30.699
+Thẻ Last run ghi Finished, no checks: các bước đã chạy hết, nhưng chưa có gì được kiểm tra.
+
+00:00:31.367 --> 00:00:32.681
+Muốn chạy nhiều lần?
+
+00:00:32.681 --> 00:00:35.901
+Đặt số vòng ở ô Loop, kèm khoảng nghỉ giữa các vòng.
+
+00:00:37.200 --> 00:00:39.469
+Hoặc nối nhiều kịch bản thành một lượt chạy.
+
+00:00:39.469 --> 00:00:44.789
+Mình đã chuẩn bị thêm kịch bản Update profile, có tải ảnh đại diện lên và chọn trong một dropdown.
+
+00:00:48.100 --> 00:00:49.467
+Bấm Start Sequence.
+
+00:00:49.467 --> 00:00:53.573
+Hai kịch bản chạy nối tiếp nhau, và popup cho biết đang ở kịch bản nào.
+
+00:00:59.933 --> 00:01:03.641
+Hộp chọn tệp hay dropdown gốc của trình duyệt cũng không làm nó dừng lại.
+
+00:01:04.800 --> 00:01:09.314
+Xong cả hai: ảnh đại diện đã được tải lên, và danh mục yêu thích đã được chọn.
+
+00:01:09.533 --> 00:01:11.024
+Cuối cùng là hẹn giờ.
+
+00:01:11.024 --> 00:01:13.820
+Chọn kịch bản, giờ chạy và trang bắt đầu.
+
+00:01:23.933 --> 00:01:27.377
+Bật Repeat daily để nó chạy mỗi ngày, rồi bấm Add.
+
+00:01:30.333 --> 00:01:32.326
+Giờ thì chờ tới giờ hẹn.
+
+00:01:34.933 --> 00:01:39.019
+Đến giờ, Pocket QA tự mở trang trong một tab mới và chạy kịch bản.
+
+00:01:39.019 --> 00:01:40.907
+Không ai phải bấm gì cả.
+
+00:01:45.967 --> 00:01:47.411
+Phát lại thì dễ rồi.
+
+00:01:47.411 --> 00:01:49.829
+Nhưng làm sao biết kết quả có đúng hay không?
+
+00:01:49.829 --> 00:01:51.455
+Đó là phần tiếp theo.

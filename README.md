@@ -73,8 +73,8 @@ index.html        ← open this
 ## Files
 | File | Purpose | Lines |
 |------|---------|-------|
-| `index.html`     | Landing page, EN/VI: hero beside the browser mockup, then six numbered one-screen sections (Features, Tools, How it works, Privacy, Permissions, FAQ) — one menu link each | ~500 |
-| `feature.html`   | Feature guide template, shared by all feature cards — `feature.html?id=<key>`: a hero like the index's (copy + the popup open on this feature's tab), then one-screen sections; past the hero an "On this page" pill floats at the bottom centre — the section in view, a ring for how far down, and the list of sections on a click | ~230 |
+| `index.html`     | Landing page, EN/VI: hero beside the browser mockup, then six numbered one-screen sections (Features, Tools, How it works with the 40-second trailer, Privacy, Permissions, FAQ) — one menu link each | ~520 |
+| `feature.html`   | Feature guide template, shared by all feature cards — `feature.html?id=<key>`: a hero like the index's (copy + the popup open on this feature's tab), then the feature's demo video, then one-screen sections; past the hero an "On this page" pill floats at the bottom centre — the section in view, a ring for how far down, and the list of sections on a click | ~240 |
 | `site.css`       | Styles for both pages (portfolio tokens, light/dark) | ~520 |
 | `site.js`        | Both pages' chrome: language/theme switch, `evenOut()` (holds every element at its larger language's size), mockup fitting, menu, "Read more", scroll spy; on feature pages it also shortens lists that would make a section taller than the screen | ~190 |
 | `store-version.js` | Footer version on both pages, read live from the Chrome Web Store via shields.io's JSON badge (the store itself has no CORS); the vendored version stays in the HTML as the fallback | ~20 |
@@ -91,6 +91,7 @@ index.html        ← open this
 | `capture-shots.mjs` | Screenshots of the real extension (loaded in Edge/Chromium) for the feature pages, light + dark, PNG + lossless WebP — see "Screenshot comparison" | ~125 |
 | `vendor/`        | Vendored extension snapshot (`popup.html`, `popup/*.css`, `icon128.png`, `version.txt`) | — |
 | `og-image.png`   | Link-preview image (`og:image`): the light hero at 1200×630 — see "Link preview image" below | — |
+| `videos/`        | The 13 demo videos (the trailer + one per feature page) in `en/` and `vi/`: `.mp4`, poster `.jpg`, captions `.vtt` — see "Demo videos" below | — |
 
 ## Architecture — why an `<iframe>`
 The real popup stylesheets style global elements (`body`, `button`, `input`, `.card`…).
@@ -304,6 +305,41 @@ where neither html2canvas gotcha applies.
 ```
 python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, lossless=True, quality=100, method=6) for w in set(re.findall(r'screenshots/[\w-]+\.webp', open('features-en.js', encoding='utf8').read()))]"
 ```
+
+## Demo videos
+One story told in 13 videos, recorded from extension v1.0.31: testing the checkout of **Demo Books**, a made-up store
+built for the recording. Part *N* is the *N*th feature in `FEATURE_ORDER` and opens that feature page, right under the
+hero; the 40-second trailer plays in the index's How it works. Each video has an English and a Vietnamese cut, the same
+picture with its own voice-over and **subtitles burnt into the picture**.
+
+| Where | Files | Wired by |
+|---|---|---|
+| Feature page `?id=<key>` | `videos/en/<file>.mp4/.jpg/.vtt`, `videos/vi/<file>.…` | `video` in `features-en.js` (`{ file, title, length }`) and `features-vi.js` (`{ file, title }`); `feature.js` renders the section |
+| Index, `#how` | `videos/{en,vi}/pocket-qa-trailer-{en,vi}.…` | written into `index.html` |
+
+How they are embedded, and why:
+- **Two `<video>`s per spot, `lang="en"` and `lang="vi"`**: the language switch hides one like any other text. A video
+  hidden with `display: none` keeps playing and is still heard, so `site.js` pauses every video on a switch.
+- **`preload="none"` + `poster`**: a page loads only the posters (two, ~75 KB each) until someone presses play.
+- **`<track kind="captions">` without `default`**: the captions are for screen readers and search engines; turned on,
+  they would sit on top of the burnt-in subtitles. No `autoplay`: the videos are voiced.
+- **Sized before they load**: `width="1280" height="720"` and `aspect-ratio: 16 / 9`; `.vbox` keeps the video only as
+  wide as lets its section fit one screen (`--vbox-rest` = the height the rest of the section takes).
+
+They are built in the extension repo, which keeps the narration, the tools and the 1080p masters for YouTube. What
+lands here is the web cut: 1280×720, H.264 + AAC, ~300 kbps, faststart (it plays while still downloading), 2–6 MB
+each, 94 MB in all.
+- **Never rename or re-encode** a file: the names match the YouTube uploads. To replace a video, copy its three files
+  over the old ones under the same name; if its length changed, update `length` in `features-en.js` (one value for
+  both languages — the two cuts are the same length):
+  `ffprobe -v error -show_entries format=duration -of csv=p=0 videos/en/<file>.mp4`
+- **No Git LFS** (GitHub Pages doesn't serve LFS files) and no file near GitHub's 100 MB limit. The full 20:27 demo
+  (166 MB) is for YouTube; once it has a URL, link it through a `youtube-nocookie.com` facade (thumbnail first, the
+  iframe only on a click) — not done yet.
+- `demo-videos/` is where a handoff from the extension repo lands (5.5 GB with its tools and masters); it is
+  git-ignored, and only `.mp4` / `.jpg` / `.vtt` are copied into `videos/` (no `.srt`, no handoff notes).
+- The voices are Microsoft Edge's AI voices (Ava, Hoài My) through edge-tts, which is not an official API: check its
+  terms before any commercial use. The background music is generated in code.
 
 ## Link preview image
 `og-image.png` is the hero exactly as a visitor sees it, captured in the light theme at the 1200×630 size link previews use. Re-capture it whenever the hero changes:
