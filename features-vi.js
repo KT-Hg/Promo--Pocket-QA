@@ -158,6 +158,7 @@ var FEATURES_VI = {
     lead: 'Phát lại một kịch bản một lần, chạy lặp, nối nhiều kịch bản hoặc hẹn lịch — và để nó chạy tiếp qua iframe, tải lại trang, dropdown gốc và hộp chọn file, những chỗ khiến hầu hết công cụ ghi phải dừng.',
     facts: [['5', 'cách chạy'], ['Hằng ngày', 'hẹn lịch'], ['Retry · Skip · Stop', 'khi một bước lỗi']],
     tabLabel: 'tab Record & Play',
+    video: { file: 'pocket-qa-02-phat-lai-lap-noi-chuoi-va-hen-gio', title: 'Phát lại: lặp, nối chuỗi và hẹn giờ' },
     points: [
       'Chạy một lần, lặp N lần với thời gian nghỉ giữa các vòng, hoặc tạo một <b>Sequence</b> trong đó mỗi kịch bản có thời gian nghỉ riêng.',
       'Hẹn giờ cho kịch bản — một lần hoặc <b>Repeat daily</b> — và nó tự chạy ở chế độ nền.',
@@ -274,6 +275,7 @@ var FEATURES_VI = {
     lead: 'Mỗi lần chạy kết thúc bằng một kết luận — Passed, Failed, Test broken hoặc Stopped. Khi không đạt, bug report kèm các bước tái hiện và ảnh chụp lúc lỗi chỉ cách một cú click.',
     facts: [['12', 'loại kiểm tra'], ['4', 'kết luận'], ['5 s', 'Assert chờ trang tải']],
     tabLabel: 'tab Record & Play',
+    video: { file: 'pocket-qa-03-assert-ket-luan-va-bao-cao-loi', title: 'Assert, kết luận và báo cáo lỗi' },
     points: [
       '<b>Assert (Expect)</b> kiểm tra những gì trang phải hiển thị — một phần tử, một đoạn chữ, một giá trị, URL, class hoặc thuộc tính: tổng cộng 12 phép kiểm tra.',
       'Assert có chờ: kiểm tra mỗi 250 ms trong tối đa 5 giây, nên trang còn đang tải không bị tính là lỗi.',
@@ -375,6 +377,7 @@ var FEATURES_VI = {
     lead: 'Biến một bản ghi dùng một lần thành script thật: biến dùng lại ở mọi nơi dưới dạng <code>${var}</code>, giá trị đọc từ trang ngay lúc chạy, cùng điều kiện và switch rẽ nhánh theo chúng.',
     facts: [['4', 'loại biến'], ['12', 'phép kiểm tra điều kiện'], ['3', 'lớp ưu tiên']],
     tabLabel: 'tab Tools',
+    video: { file: 'pocket-qa-04-bien-va-logic', title: 'Biến và logic' },
     points: [
       'Bốn loại biến: <b>Static</b>, <b>Random</b> (chữ, số, cả hai, hoặc mốc ngày giờ), <b>Pick</b> (một giá trị trong danh sách) và <b>Fallback</b> (thử A, rồi B, rồi C).',
       '<code>${var}</code> dùng được trong selector, giá trị, URL, script, giá trị mong đợi, tên file và nhiều chỗ khác.',
@@ -463,6 +466,7 @@ var FEATURES_VI = {
     lead: 'Tải file CSV lên và phát lại cùng một kịch bản cho mỗi dòng — tiêu đề cột tự thành <code>${variables}</code>, nên một bản ghi chạy được cả bộ dữ liệu và mỗi dòng có kết luận riêng.',
     facts: [['1', 'bản ghi, bao nhiêu dòng cũng được'], ['3', 'định dạng xuất'], ['Mỗi dòng', 'một kết luận pass / fail']],
     tabLabel: 'tab Record & Play',
+    video: { file: 'pocket-qa-05-chay-theo-du-lieu-tu-tep-csv', title: 'Chạy theo dữ liệu từ tệp CSV' },
     points: [
       'Dòng đầu đặt tên cho biến: cột <code>email</code> thành <code>${email}</code>, không cần bước ánh xạ.',
       'Các cột của một dòng ghi đè biến đã lưu cùng tên, chỉ trong dòng đó.',
@@ -522,6 +526,7 @@ var FEATURES_VI = {
     lead: 'Sáu kiểu chụp bao quát mọi thứ, từ vùng đang hiển thị tới cả một cửa sổ ứng dụng — kiểu nào cũng có một bản Edit mở ảnh thẳng trong trình sửa ảnh.',
     facts: [['6', 'kiểu chụp'], ['10', 'phím tắt chụp & ghi'], ['3 · 5 · 10 s', 'đếm ngược']],
     tabLabel: 'tab Capture',
+    video: { file: 'pocket-qa-06-chup-man-hinh-va-cong-cu-anh', title: 'Chụp màn hình và công cụ ảnh' },
     points: [
       'Chụp Visible, Full Page, Scroll (Down / Across), Segment (Down / Across), Element và Window.',
       'Mỗi chế độ có một bản <b>Edit</b> mở trình sửa ảnh ngay sau khi chụp.',
@@ -623,6 +628,7 @@ var FEATURES_VI = {
     lead: 'Biến mọi kịch bản đã ghi thành code test thật, chạy được — năm định dạng, sinh mới từ các bước hiện tại của kịch bản, không lặng lẽ bỏ sót bước nào.',
     facts: [['5', 'định dạng đầu ra'], ['8', 'locator dự phòng mỗi bước'], ['4', 'biến môi trường ghi đè']],
     tabLabel: 'tab Tools',
+    video: { file: 'pocket-qa-07-xuat-kich-ban-thanh-ma-kiem-thu', title: 'Xuất kịch bản thành mã kiểm thử' },
     points: [
       'JS Bookmarklet, Selenium Python (script hoặc pytest), Playwright Test, Robot Framework và Selenium Java (TestNG).',
       'Lấy lần phát lại làm chuẩn: code làm đúng như một lần chạy — cùng các locator dự phòng, và dùng helper trong trang của chính tiện ích ở mọi chỗ mà lệnh driver thông thường sẽ hành xử khác.',
@@ -712,6 +718,7 @@ var FEATURES_VI = {
     lead: 'Đánh dấu bất kỳ trang nào bằng màu và ghi chú, tự hiện lại ở lần truy cập sau — gom theo mẫu URL, nên một bộ đánh dấu dùng được cho mọi trang có chung bố cục.',
     facts: [['5', 'màu'], ['Ghi chú', 'trên mọi đánh dấu'], ['JSON', 'xuất file']],
     tabLabel: 'tab Highlight',
+    video: { file: 'pocket-qa-08-highlight-va-ghi-chu-tren-trang', title: 'Highlight và ghi chú trên trang' },
     points: [
       'Bật Highlight ON, chọn chữ trên trang, rồi chọn vàng, xanh lá, hồng, xanh dương hoặc cam trong tooltip.',
       'Thêm ghi chú cho bất kỳ đánh dấu nào; rê chuột lên sau đó để đọc.',
@@ -786,6 +793,7 @@ var FEATURES_VI = {
     lead: 'Dán một câu SQL để nhận danh sách test case dựng sẵn — phân vùng tương đương, giá trị biên, bảng quyết định, cùng các trường hợp biên NULL và JOIN mà hầu hết kế hoạch test thủ công bỏ sót — kèm dữ liệu test mà mỗi case cần.',
     facts: [['4', 'nhóm kỹ thuật'], ['4', 'định dạng xuất'], ['VI / EN', 'giao diện']],
     tabLabel: 'tab Tools',
+    video: { file: 'pocket-qa-09-thiet-ke-test-case-tu-cau-sql', title: 'Thiết kế test case từ câu SQL' },
     points: [
       'Phân tích <code>SELECT</code> (join, <code>WHERE</code>, <code>GROUP BY</code>, <code>HAVING</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>UNION</code>, CTE, <code>CASE</code>) cùng <code>INSERT</code>, <code>UPDATE</code> và <code>DELETE</code>.',
       'Case EP/BVA lấy thẳng từ điều kiện của câu truy vấn, với bước giá trị biên theo kiểu dữ liệu suy ra.',
@@ -915,6 +923,7 @@ var FEATURES_VI = {
     lead: 'Thoải mái thay đổi dữ liệu test trong Adminer — mọi thao tác ghi đều được lưu vào một phiên, và một click đưa cơ sở dữ liệu về như cũ, kèm câu SQL chính xác hiện ra trước khi chạy.',
     facts: [['8', 'loại thao tác ghi được lưu'], ['1 click', 'để rollback'], ['0', 'byte rời khỏi trình duyệt']],
     tabLabel: 'tab Tools',
+    video: { file: 'pocket-qa-10-db-test-session-va-hoan-tac-cho-adminer', title: 'DB Test Session và hoàn tác cho Adminer' },
     points: [
       'Bắt đầu phiên từ bảng nhỏ mà Adminer hiện ở góc dưới bên phải; chưa bắt đầu thì không có gì được ghi.',
       'Ghi lại form sửa, sửa ô trong lưới, xoá hàng loạt và xoá cả kết quả, sửa hàng loạt, các lệnh <code>INSERT</code> và <code>UPDATE</code>/<code>DELETE</code> bạn gõ ở trang SQL.',
@@ -1038,6 +1047,7 @@ var FEATURES_VI = {
     lead: 'Giữ request API cạnh bài test giao diện: dán một cURL, gửi đi, kiểm tra response — và chạy cả thư mục với token mà một request đã lưu.',
     facts: [['5', 'loại kiểm tra'], ['v2.1', 'xuất &amp; nhập Postman'], ['CSV', 'kết quả chạy']],
     tabLabel: 'tab Tools',
+    video: { file: 'pocket-qa-11-kiem-thu-api-ngay-canh-kich-ban-giao-dien', title: 'Kiểm thử API ngay cạnh kịch bản giao diện' },
     points: [
       'Dán cURL từ DevTools — method, URL, header và body tự điền; Copy cURL làm chiều ngược lại.',
       'Kiểm tra status, JSON path, header, body và thời gian — mỗi lần Send một kết luận.',
@@ -1143,6 +1153,7 @@ var FEATURES_VI = {
     lead: 'Những thứ bạn chỉ đặt một lần: phím tắt cho việc ghi và mọi kiểu chụp, thông báo theo từng loại, nhập/xuất và sao lưu toàn bộ — trong một popup nhớ cách bạn làm việc.',
     facts: [['10', 'phím tắt đổi được'], ['4', 'loại thông báo'], ['1 file', 'sao lưu toàn bộ']],
     tabLabel: 'tab Settings',
+    video: { file: 'pocket-qa-12-phim-tat-sao-luu-va-cai-dat', title: 'Phím tắt, sao lưu và cài đặt' },
     points: [
       'Mọi phím tắt đều đổi được, và thiết lập được đồng bộ theo hồ sơ Chrome của bạn.',
       'Nhập và xuất kịch bản hoặc cả thư mục dưới dạng JSON; sao lưu và khôi phục toàn bộ dữ liệu trong một file.',
