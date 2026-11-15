@@ -1,0 +1,109 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.146
+Phần một.
+
+00:00:01.146 --> 00:00:03.223
+Ghi kịch bản chỉ với một cú nhấp.
+
+00:00:04.833 --> 00:00:07.859
+Đây là Demo Books, một cửa hàng sách nhỏ trên mạng.
+
+00:00:07.859 --> 00:00:13.800
+Hôm nay mình sẽ kiểm thử luồng mua sách của nó, từ lúc chọn sách tới khi đặt hàng, mà không viết một dòng mã nào.
+
+00:00:13.800 --> 00:00:16.626
+Pocket QA nằm ngay trên thanh công cụ của trình duyệt.
+
+00:00:16.626 --> 00:00:18.931
+Bấm vào biểu tượng để mở nó ra.
+
+00:00:18.967 --> 00:00:24.100
+Trên một tab mới, Pocket QA đang tắt, nên nó không đụng tới trang nào khi bạn chưa cho phép.
+
+00:00:24.100 --> 00:00:25.660
+Bấm Start Recording.
+
+00:00:25.660 --> 00:00:28.149
+Pocket QA hỏi có bật trên tab này không.
+
+00:00:28.149 --> 00:00:29.352
+Chọn Turn on.
+
+00:00:29.433 --> 00:00:34.846
+Popup tự đóng lại, trang hiện thanh Recording màu đỏ, và biểu tượng trên thanh công cụ ghi chữ REC.
+
+00:00:34.846 --> 00:00:37.598
+Từ giờ, mọi thao tác đều được ghi lại.
+
+00:00:37.733 --> 00:00:43.887
+Đầu tiên, bấm vào mục Books trên menu, để kịch bản luôn bắt đầu từ trang sách, dù lúc chạy bạn đang ở trang nào.
+
+00:00:44.933 --> 00:00:47.173
+Sắp xếp sách theo giá cho dễ chọn,
+
+00:00:48.000 --> 00:00:50.343
+rồi đăng nhập như một khách hàng bình thường.
+
+00:00:57.533 --> 00:00:59.517
+Thêm một cuốn sách vào giỏ hàng.
+
+00:00:59.567 --> 00:01:05.297
+Mở giỏ hàng, bấm Checkout, điền họ tên và địa chỉ, chọn giao hàng nhanh, rồi đặt hàng.
+
+00:01:12.333 --> 00:01:13.928
+Đơn hàng đã được xác nhận.
+
+00:01:13.928 --> 00:01:16.829
+Bấm Stop ngay trên thanh Recording để dừng ghi.
+
+00:01:17.867 --> 00:01:19.486
+Mở lại Pocket QA.
+
+00:01:19.486 --> 00:01:23.280
+Mỗi thao tác đã thành một bước, được đặt tên theo đúng phần tử trên trang.
+
+00:01:23.280 --> 00:01:25.649
+Không có selector nào phải viết tay.
+
+00:01:25.667 --> 00:01:28.721
+Đặt tên kịch bản là Buy a book, rồi lưu lại.
+
+00:01:30.600 --> 00:01:32.862
+Trình ghi chỉ thấy những gì bạn đã làm.
+
+00:01:32.862 --> 00:01:37.014
+Giả sử mình muốn mua thêm một cuốn nữa, mình có thể thêm bước đó bằng tay.
+
+00:01:37.033 --> 00:01:39.744
+Dấu cộng nằm giữa hai bước dùng để chọn chỗ chèn.
+
+00:01:39.744 --> 00:01:42.294
+Mình chọn ngay sau bước thêm cuốn sách đầu tiên.
+
+00:01:42.500 --> 00:01:47.683
+Chọn loại Click, bấm nút ngắm, rồi chỉ thẳng vào nút Add to cart của cuốn sách khác ngay trên trang.
+
+00:01:53.633 --> 00:01:58.106
+Popup tự mở lại với selector đã điền sẵn, kèm vài cách định vị dự phòng.
+
+00:01:58.106 --> 00:02:01.609
+Rê chuột lên hình con mắt để xem phần tử được tô sáng trên trang.
+
+00:02:01.633 --> 00:02:04.617
+Đặt một cái tên dễ hiểu, rồi bấm Add Action.
+
+00:02:04.617 --> 00:02:06.695
+Bước mới nằm đúng chỗ đã chọn.
+
+00:02:09.667 --> 00:02:13.536
+Lỡ tay thì đã có Undo và Redo, quay lại được tới năm mươi bước.
+
+00:02:13.536 --> 00:02:16.192
+Mọi chỉnh sửa đều được lưu ngay vào kịch bản.
+
+00:02:16.800 --> 00:02:18.681
+Kịch bản đầu tiên đã sẵn sàng.
+
+00:02:18.681 --> 00:02:21.558
+Ở phần tiếp theo, mình sẽ cho nó tự chạy.

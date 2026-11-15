@@ -1,0 +1,34 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.254
+Phần tám.
+
+00:00:01.254 --> 00:00:03.360
+Highlight và ghi chú trên trang.
+
+00:00:04.867 --> 00:00:10.503
+Pocket QA còn giúp bạn ghi chú ngay trên trang web, ví dụ khi đọc bài hướng dẫn kiểm thử trên blog của nhóm.
+
+00:00:10.933 --> 00:00:13.900
+Bôi đen một đoạn chữ, bảng màu hiện ngay bên cạnh.
+
+00:00:13.900 --> 00:00:15.170
+Chọn màu vàng.
+
+00:00:16.233 --> 00:00:20.080
+Đoạn quan trọng thì tô màu xanh, và thêm một ghi chú cho cả nhóm.
+
+00:00:32.067 --> 00:00:34.794
+Rê chuột lên đoạn đã tô để đọc lại ghi chú.
+
+00:00:36.233 --> 00:00:41.481
+Tab Highlight liệt kê mọi highlight, đếm theo từng trang, có ô tìm kiếm và bộ lọc theo màu.
+
+00:00:45.333 --> 00:00:49.696
+Tải lại trang, các highlight vẫn còn nguyên, kể cả với nội dung tải muộn.
+
+00:00:49.833 --> 00:00:55.676
+Mẫu URL cho nhiều trang cùng bố cục dùng chung một bộ highlight, và nút Export lưu tất cả ra JSON.
+
+00:00:57.133 --> 00:01:01.927
+Từ phần sau, mình chuyển sang các công cụ cho dữ liệu, bắt đầu với SQL.

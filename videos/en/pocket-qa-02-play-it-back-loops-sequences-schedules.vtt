@@ -1,0 +1,79 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.326
+Part two.
+
+00:00:01.326 --> 00:00:04.654
+Play it back: loops, sequences and schedules.
+
+00:00:05.800 --> 00:00:08.490
+Our Buy a book scenario is ready in the list.
+
+00:00:08.490 --> 00:00:11.418
+Click Play, and let Pocket QA do the rest.
+
+00:00:12.767 --> 00:00:14.385
+It plays right on the page.
+
+00:00:14.385 --> 00:00:19.872
+The little panel in the corner shows the current step, with a Stop button always at hand.
+
+00:00:19.900 --> 00:00:24.436
+The toolbar badge counts along too, so you can follow the run with the popup closed.
+
+00:00:24.767 --> 00:00:25.464
+Done.
+
+00:00:25.464 --> 00:00:31.343
+The Last run card says Finished, no checks: every step ran, but nothing was checked yet.
+
+00:00:31.367 --> 00:00:32.713
+Need it more than once?
+
+00:00:32.713 --> 00:00:35.872
+Set a loop count, with a pause between rounds.
+
+00:00:37.200 --> 00:00:39.607
+Or chain several scenarios into one run.
+
+00:00:39.607 --> 00:00:45.592
+I've prepared a second one, Update profile, which uploads an avatar and picks from a dropdown.
+
+00:00:48.100 --> 00:00:49.455
+Start the sequence.
+
+00:00:49.455 --> 00:00:53.888
+The two scenarios run back to back, and the popup shows which one is playing.
+
+00:00:59.933 --> 00:01:03.289
+File pickers and native dropdowns don't stop it either.
+
+00:01:04.800 --> 00:01:09.533
+Both are done: the avatar is uploaded, and the favourite category is set.
+
+00:01:09.533 --> 00:01:11.036
+Finally, schedules.
+
+00:01:11.036 --> 00:01:14.187
+Pick the scenario, a time and a start page.
+
+00:01:23.933 --> 00:01:27.287
+Tick Repeat daily to run it every day, then click Add.
+
+00:01:30.333 --> 00:01:32.424
+Now we wait for the scheduled time.
+
+00:01:34.933 --> 00:01:40.591
+Right on time, Pocket QA opens the start page in a new tab and runs the scenario.
+
+00:01:40.591 --> 00:01:42.529
+Nobody has to click a thing.
+
+00:01:45.967 --> 00:01:47.310
+Playing back is easy.
+
+00:01:47.310 --> 00:01:49.088
+But how do we know the result is right?
+
+00:01:49.088 --> 00:01:50.429
+That comes next.

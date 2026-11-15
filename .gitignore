@@ -8,3 +8,6 @@ desktop.ini
 
 # tasteskill working files (screenshots, reports, direction sheets)
 .taste-skill/
+
+# Video handoff staging (5.5 GB: tools, YouTube masters, old cuts); only videos/ is published
+demo-videos/

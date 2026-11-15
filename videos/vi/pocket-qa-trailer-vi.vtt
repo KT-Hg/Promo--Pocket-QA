@@ -1,0 +1,34 @@
+WEBVTT
+
+00:00:00.250 --> 00:00:02.310
+Kiểm thử web mà không cần viết mã?
+
+00:00:02.310 --> 00:00:04.003
+Đây là Pocket QA.
+
+00:00:04.583 --> 00:00:08.314
+Bấm ghi, thao tác như bình thường, mọi bước đều được ghi lại.
+
+00:00:09.350 --> 00:00:12.070
+Thêm bước chỉ bằng cách chỉ vào phần tử trên trang.
+
+00:00:12.817 --> 00:00:15.652
+Phát lại, lặp, nối chuỗi hay hẹn giờ.
+
+00:00:16.250 --> 00:00:20.029
+Mỗi lần chạy có kết luận rõ ràng, kèm báo cáo lỗi soạn sẵn.
+
+00:00:20.783 --> 00:00:23.794
+Chạy một kịch bản với cả bảng dữ liệu CSV.
+
+00:00:24.383 --> 00:00:28.791
+Xuất ra Selenium, Playwright, Robot Framework hay Java.
+
+00:00:29.383 --> 00:00:35.014
+Thêm công cụ chụp ảnh, kiểm thử API, thiết kế test case từ SQL và hoàn tác database.
+
+00:00:35.833 --> 00:00:36.945
+Pocket QA.
+
+00:00:36.945 --> 00:00:39.000
+Kiểm thử ngay trong trình duyệt của bạn.

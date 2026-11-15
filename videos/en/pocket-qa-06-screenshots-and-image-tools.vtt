@@ -1,0 +1,55 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.493
+Part six.
+
+00:00:01.493 --> 00:00:03.772
+Screenshots and image tools.
+
+00:00:04.900 --> 00:00:09.285
+Here's the third row's confirmation, and there's no free shipping anywhere.
+
+00:00:09.285 --> 00:00:13.403
+When you report a bug, a clear picture beats a long description.
+
+00:00:16.533 --> 00:00:19.130
+The Capture tab has six kinds of capture.
+
+00:00:19.130 --> 00:00:24.222
+Blue buttons save straight away; the dashed ones open the shot in the editor first.
+
+00:00:24.233 --> 00:00:29.975
+Capture the visible area, with a three-second countdown in case you need to open a menu first.
+
+00:00:30.333 --> 00:00:32.762
+The editor opens in a window of its own.
+
+00:00:32.762 --> 00:00:37.021
+Box the problem, add an arrow, and blur anything private.
+
+00:00:41.500 --> 00:00:42.297
+Save it.
+
+00:00:42.297 --> 00:00:46.792
+The file name carries a prefix and the time, so it's easy to find later.
+
+00:00:47.667 --> 00:00:48.944
+Need just one element?
+
+00:00:48.944 --> 00:00:51.311
+Click Pick, then choose it on the page.
+
+00:00:59.600 --> 00:01:06.780
+And Image Diff compares two screenshots and paints the pixels that differ in magenta, which is handy for visual checks.
+
+00:01:10.333 --> 00:01:16.533
+Between the two versions, a price and a button have changed, and Image Diff shows exactly where.
+
+00:01:16.533 --> 00:01:21.233
+Click Save result to download the comparison, and open it to see it up close.
+
+00:01:21.233 --> 00:01:28.377
+The pixels that differ are painted magenta: the price of Mountain Roads, and the Add to cart button that now says Sold out.
+
+00:01:28.567 --> 00:01:31.620
+Next, we'll turn the scenario into real test code.

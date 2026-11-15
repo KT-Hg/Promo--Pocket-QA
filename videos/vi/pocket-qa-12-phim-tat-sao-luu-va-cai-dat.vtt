@@ -1,0 +1,31 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.513
+Phần mười hai.
+
+00:00:01.513 --> 00:00:03.671
+Phím tắt, sao lưu và cài đặt.
+
+00:00:05.267 --> 00:00:08.967
+Cuối cùng là những thứ bạn chỉ cần cài một lần, trong tab Settings.
+
+00:00:08.967 --> 00:00:13.487
+Allow on all tabs bật Pocket QA trên mọi trang, để bạn khỏi phải bật từng tab.
+
+00:00:14.300 --> 00:00:17.995
+Phím tắt cho việc ghi và cho từng kiểu chụp, bạn đổi được tuỳ ý.
+
+00:00:18.700 --> 00:00:25.192
+Cách lưu ảnh: lưu ngay hay hỏi trước, tiền tố tên tệp, đếm ngược, và watermark ghi URL kèm thời gian.
+
+00:00:28.033 --> 00:00:33.108
+Thông báo theo từng nhóm, và phần nhập, xuất, sao lưu, khôi phục toàn bộ dữ liệu.
+
+00:00:35.300 --> 00:00:37.914
+Và giao diện tối, chỉ với một cú nhấp.
+
+00:00:38.500 --> 00:00:46.786
+Từ một lần ghi, mình đã có một bài test biết tự kiểm tra kết quả, chạy với cả bảng dữ liệu và xuất ra mã, cùng các công cụ cho API và database.
+
+00:00:46.786 --> 00:00:49.120
+Tất cả nằm gọn trong trình duyệt của bạn.

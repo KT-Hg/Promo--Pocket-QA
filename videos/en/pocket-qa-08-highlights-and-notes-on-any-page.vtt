@@ -1,0 +1,34 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.344
+Part eight.
+
+00:00:01.344 --> 00:00:03.734
+Highlights and notes on any page.
+
+00:00:04.867 --> 00:00:10.933
+Pocket QA also lets you mark up web pages, say, while reading your team's testing guide on the blog.
+
+00:00:10.933 --> 00:00:14.442
+Select some text, and a colour picker pops up next to it.
+
+00:00:14.442 --> 00:00:15.634
+Choose yellow.
+
+00:00:16.233 --> 00:00:20.071
+Mark the important part in green, and add a note for the team.
+
+00:00:32.067 --> 00:00:34.281
+Hover a highlight to read its note.
+
+00:00:36.233 --> 00:00:41.540
+The Highlight tab lists them all, counted per page, with search and colour filters.
+
+00:00:45.333 --> 00:00:49.831
+Reload the page and they're all still there, even on content that loads late.
+
+00:00:49.833 --> 00:00:56.418
+URL patterns let pages with the same layout share one set, and Export saves everything as JSON.
+
+00:00:57.133 --> 00:01:01.108
+From here on, we move to the data tools, starting with SQL.

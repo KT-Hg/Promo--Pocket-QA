@@ -1,0 +1,58 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.536
+Part eleven.
+
+00:00:01.536 --> 00:00:02.955
+API tests.
+
+00:00:04.833 --> 00:00:07.652
+The Demo Books mobile app talks to an API.
+
+00:00:07.652 --> 00:00:11.536
+You can test it right in Pocket QA, next to your UI scenarios.
+
+00:00:12.267 --> 00:00:14.708
+Open API Tests from the Tools tab.
+
+00:00:15.133 --> 00:00:18.675
+Requests live in folders, here Demo Books API.
+
+00:00:18.675 --> 00:00:23.704
+The environment up top holds the server address, used through a baseUrl variable.
+
+00:00:27.600 --> 00:00:31.649
+The Sign in request posts an email and a password in its body.
+
+00:00:32.900 --> 00:00:38.033
+Its Save values tab takes the token from the reply and keeps it in a token variable.
+
+00:00:38.033 --> 00:00:41.797
+Click Send: it passes, and the token is saved.
+
+00:00:45.633 --> 00:00:51.784
+The folder sends that token as a Bearer header with every request inside, so there is nothing to paste.
+
+00:00:56.067 --> 00:00:59.235
+So My account just works, and gets Anna's account back.
+
+00:01:04.867 --> 00:01:09.311
+For List books, click a key in the JSON reply to turn it into a check.
+
+00:01:11.133 --> 00:01:14.939
+The new check lands in the Checks tab, and passes on the next send.
+
+00:01:17.433 --> 00:01:22.608
+Run folder sends every request in turn, each one marked pass or fail.
+
+00:01:25.100 --> 00:01:31.614
+A failure says what was expected and what came back: a price of 20 expected, 18 returned.
+
+00:01:32.533 --> 00:01:35.642
+Export to Postman to run with Newman in CI.
+
+00:01:35.867 --> 00:01:42.465
+The other way, Paste cURL makes a request from a curl command, and Import takes a Postman collection.
+
+00:01:42.500 --> 00:01:45.940
+Finally, let's look at the settings you only set once.

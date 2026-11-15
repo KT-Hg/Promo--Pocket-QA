@@ -1,0 +1,49 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.273
+Phần bảy.
+
+00:00:01.273 --> 00:00:03.262
+Xuất kịch bản thành mã kiểm thử.
+
+00:00:04.967 --> 00:00:09.601
+Khi kịch bản đã ổn định, bạn có thể biến nó thành mã kiểm thử thật để chạy trong CI.
+
+00:00:09.601 --> 00:00:13.213
+Mở tab Tools, phần Export Code, rồi chọn Buy a book.
+
+00:00:13.233 --> 00:00:17.777
+Selenium Python: một script chạy được ngay, hoặc một bài test pytest.
+
+00:00:18.000 --> 00:00:22.893
+Mỗi bước thành một khối mã có chú thích tên bước, kèm mọi cách định vị phần tử, thử lần lượt.
+
+00:00:22.893 --> 00:00:26.473
+Biến, Condition và Read DOM đều được chuyển thành mã tương ứng.
+
+00:00:28.533 --> 00:00:32.285
+Tab Settings đặt URL bắt đầu, trình duyệt và chế độ chạy ẩn.
+
+00:00:32.285 --> 00:00:33.826
+Mã được cập nhật ngay.
+
+00:00:34.767 --> 00:00:37.362
+Copy, hoặc Download để lưu thành tệp.
+
+00:00:42.167 --> 00:00:50.361
+Ngoài ra còn Playwright Test, Robot Framework, Selenium Java cho TestNG, và một JavaScript bookmarklet chạy được mà không cần extension.
+
+00:00:59.200 --> 00:01:01.411
+Không phải bước nào cũng xuất được nguyên vẹn.
+
+00:01:01.411 --> 00:01:08.182
+Tab Actions đánh dấu từng bước: OK là xuất được, Verify là nên kiểm tra lại bằng tay, còn Skip là không xuất được.
+
+00:01:10.900 --> 00:01:16.418
+Ví dụ, bookmarklet không tải tệp lên được: trong Update profile, bước tải ảnh bị đánh dấu Skip.
+
+00:01:16.418 --> 00:01:21.037
+Bấm vào nó để thấy dòng chú thích để lại trong mã, không bước nào mất đi lặng lẽ.
+
+00:01:26.000 --> 00:01:29.428
+Tiếp theo là một công cụ cho lúc bạn đọc tài liệu: Highlight.

@@ -1,0 +1,58 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.295
+Part ten.
+
+00:00:01.295 --> 00:00:04.290
+DB Test Session and rollback for Adminer.
+
+00:00:05.467 --> 00:00:10.791
+Testing often means changing data in the database, and cleaning up afterwards is a chore.
+
+00:00:10.791 --> 00:00:13.831
+If you use Adminer, Pocket QA does it for you.
+
+00:00:13.833 --> 00:00:17.137
+Here is Adminer, open on the Demo Books database.
+
+00:00:17.137 --> 00:00:20.100
+Pocket QA adds a small panel in the corner.
+
+00:00:20.100 --> 00:00:22.402
+Click Start and name the test session.
+
+00:00:26.100 --> 00:00:31.667
+Change the price of Mountain Roads from 18 to 21, with Adminer's own edit form.
+
+00:00:31.667 --> 00:00:35.901
+Or run some hand-written SQL: mark every Tech book out of stock.
+
+00:00:39.433 --> 00:00:44.614
+The Pocket QA panel records each changed row, with its value before and after.
+
+00:00:46.200 --> 00:00:46.989
+Test done?
+
+00:00:46.989 --> 00:00:48.504
+Click Roll back all.
+
+00:00:48.504 --> 00:00:52.370
+Pocket QA shows the exact SQL it will run to put the data back.
+
+00:00:55.633 --> 00:01:01.033
+And the data is back as it was before the test: a price of 18, stock as before.
+
+00:01:01.033 --> 00:01:02.521
+Every session is kept.
+
+00:01:02.521 --> 00:01:05.534
+Open the DB Test Session page from the Tools tab.
+
+00:01:11.133 --> 00:01:15.742
+Each one lists its changes, the undo SQL, and a drift check.
+
+00:01:15.767 --> 00:01:18.244
+There's one more kind of test: APIs.
+
+00:01:18.244 --> 00:01:19.405
+That's next.

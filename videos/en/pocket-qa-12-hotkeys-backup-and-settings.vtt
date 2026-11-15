@@ -1,0 +1,31 @@
+WEBVTT
+
+00:00:00.450 --> 00:00:01.522
+Part twelve.
+
+00:00:01.522 --> 00:00:04.141
+Hotkeys, backup and settings.
+
+00:00:05.267 --> 00:00:08.634
+Finally, the things you set once, in the Settings tab.
+
+00:00:08.967 --> 00:00:14.296
+Allow on all tabs switches Pocket QA on everywhere, so you never turn it on tab by tab.
+
+00:00:14.300 --> 00:00:18.696
+Hotkeys for recording and for every kind of capture, all changeable.
+
+00:00:18.700 --> 00:00:28.016
+How captures are saved: straight away or ask first, a file name prefix, a countdown, and a watermark with the URL and the time.
+
+00:00:28.033 --> 00:00:34.267
+Notifications by category, plus import, export, and a full backup and restore.
+
+00:00:35.300 --> 00:00:38.100
+And a dark theme, just one click away.
+
+00:00:38.500 --> 00:00:48.264
+From one recording, we now have a test that checks its own results, runs against a data table and exports to code, plus tools for APIs and databases.
+
+00:00:48.264 --> 00:00:49.966
+All of it right in your browser.
