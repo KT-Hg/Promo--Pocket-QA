@@ -66,7 +66,7 @@ Dữ liệu:
 
 Mỗi thẻ: `<video controls preload="none" playsinline width="1280" height="720" lang="en|vi" poster="videos/<lang>/<file>.jpg"
 src="videos/<lang>/<file>.mp4" aria-label="<title> (<length>)">` + `<track kind="captions" srclang="<lang>" label="English|Tiếng
-Việt" src="videos/<lang>/<file>.vtt">`, không `default`. Tiêu đề section: "Watch it in 2:23" / "Xem trong 2:23" (lấy từ
+Việt" src="videos/<lang>/<file>.vtt">`, không `default`. Tiêu đề section: "Watch the demo · 2:23" / "Xem video demo · 2:23" (lấy từ
 `length`). Section cần `.container.collapsible` bên trong, vì `feature.js` gắn nút "Show the rest" vào mọi section có
 trong pill.
 

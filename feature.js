@@ -71,7 +71,7 @@
     poster="videos/${lang}/${v.file}.jpg" src="videos/${lang}/${v.file}.mp4" aria-label="${v.title} (${EV.length})">
     <track kind="captions" srclang="${lang}" label="${lang === 'vi' ? 'Tiếng Việt' : 'English'}" src="videos/${lang}/${v.file}.vtt"></video>`;
   if (EV) {
-    $('#videoTitle').innerHTML = pair('Watch it in ' + EV.length, 'Xem trong ' + EV.length);
+    $('#videoTitle').innerHTML = pair('Watch the demo · ' + EV.length, 'Xem video demo · ' + EV.length);
     $('#videoBox').insertAdjacentHTML('beforeend', video('en', EV) + video('vi', VV));
   } else $('#video').remove();
 
