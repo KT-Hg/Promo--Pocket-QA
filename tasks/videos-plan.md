@@ -45,20 +45,20 @@ Nhúng 13 video đã dựng xong (trailer 0:40 + 12 phần, mỗi phần khớp 
 Chi tiết từng task (mô tả, tiêu chí, kiểm tra, tệp): [`tasks/videos-todo.md`](videos-todo.md).
 
 ### Phase 1: Một lát dọc chạy được
-- [ ] Task 1: Chép tệp video vào `videos/`, chặn `demo-videos/` khỏi git
-- [ ] Task 2: Trang `recording` có section video (dữ liệu + render + CSS + dừng khi đổi ngôn ngữ)
+- [x] Task 1: Chép tệp video vào `videos/`, chặn `demo-videos/` khỏi git
+- [x] Task 2: Trang `recording` có section video (dữ liệu + render + CSS + dừng khi đổi ngôn ngữ)
 
 ### Checkpoint 1: sau Task 2
-- [ ] `feature.html?id=recording` đạt mọi tiêu chí ở 3 cỡ màn chính, EN + VI, sáng + tối
-- [ ] Người dùng xem ảnh chụp và duyệt cách trình bày trước khi nhân ra 11 trang
+- [x] `feature.html?id=recording` đạt mọi tiêu chí ở 3 cỡ màn chính, EN + VI, sáng + tối
+- [x] Người dùng xem ảnh chụp và duyệt cách trình bày trước khi nhân ra 11 trang
 
 ### Phase 2: Phủ hết
-- [ ] Task 3: 11 trang tính năng còn lại có video
-- [ ] Task 4: Trailer trong `#how` trên trang chủ
+- [x] Task 3: 11 trang tính năng còn lại có video
+- [x] Task 4: Trailer trong `#how` trên trang chủ
 
 ### Checkpoint 2: sau Task 3–4
-- [ ] `auditFeatures()` sạch cho cả 12 trang; `checkLayout()` sạch trên trang chủ, ở mọi cỡ màn trong README
-- [ ] Network: không `.mp4` nào trước khi bấm play, trên cả 13 trang
+- [x] `auditFeatures()` sạch cho cả 12 trang; `checkLayout()` sạch trên trang chủ, ở mọi cỡ màn trong README
+- [x] Network: không `.mp4` nào trước khi bấm play, trên cả 13 trang
 
 ### Phase 3: Hoàn tất
 - [ ] Task 5: README, stamp, kiểm cuối

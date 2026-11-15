@@ -98,7 +98,7 @@ trong pill.
 
 ### Checkpoint 1: sau Task 2
 - [x] Mọi tiêu chí Task 2 đạt ở 3 cỡ màn chính, EN + VI, sáng + tối.
-- [ ] Người dùng xem ảnh chụp và duyệt cách trình bày (tiêu đề, cỡ video, vị trí) trước khi nhân ra 11 trang.
+- [x] Người dùng xem ảnh chụp và duyệt cách trình bày (tiêu đề, cỡ video, vị trí) trước khi nhân ra 11 trang. (2026-11-15: đổi tiêu đề thành "Xem video demo · 2:23", rồi duyệt.)
 - [x] Commit trên nhánh `videos`.
 
 ---
@@ -127,20 +127,20 @@ dữ liệu; mã render đã có từ Task 2.
 (Độ dài đo bằng ffprobe 2026-11-15; EN và VI dài bằng nhau.)
 
 **Acceptance criteria:**
-- [ ] Cả 12 trang có section video; tên tệp đúng bảng handoff, đúng thứ tự `FEATURE_ORDER`.
-- [ ] Mọi `.mp4` `.jpg` `.vtt` mà 12 trang trỏ tới đều tồn tại (không 404).
-- [ ] Không trang nào thêm lỗi layout so với trước khi có video.
+- [x] Cả 12 trang có section video; tên tệp đúng bảng handoff, đúng thứ tự `FEATURE_ORDER`.
+- [x] Mọi `.mp4` `.jpg` `.vtt` mà 12 trang trỏ tới đều tồn tại (không 404).
+- [x] Không trang nào thêm lỗi layout so với trước khi có video.
 
 **Verification:**
-- [ ] `checkShape()` → `[]`.
-- [ ] Từ một trang bất kỳ, kiểm 72 URL (12 × 2 ngôn ngữ × 3 đuôi) bằng `HEAD`, không tải thân video:
+- [x] `checkShape()` → `[]`.
+- [x] Từ một trang bất kỳ, kiểm 72 URL (12 × 2 ngôn ngữ × 3 đuôi) bằng `HEAD`, không tải thân video:
   ```js
   const urls = FEATURE_ORDER.flatMap(id => ['en/' + FEATURES_EN[id].video.file, 'vi/' + FEATURES_VI[id].video.file])
     .flatMap(f => ['.mp4', '.jpg', '.vtt'].map(x => 'videos/' + f + x));
   (await Promise.all(urls.map(u => fetch(u, { method: 'HEAD' }).then(r => r.ok ? null : u)))).filter(Boolean)
   ```
   → `[]`.
-- [ ] `await auditFeatures()` ở 1366×657, 1280×632, 375×812: mỗi trang chỉ có mảng rỗng (trừ `hidden` vốn có).
+- [x] `await auditFeatures()` ở 1366×657, 1280×632, 375×812: mỗi trang chỉ có mảng rỗng (trừ `hidden` vốn có).
 
 **Dependencies:** Task 2
 
@@ -153,20 +153,26 @@ dữ liệu; mã render đã có từ Task 2.
 
 **Description:** Trong `index.html` mục `#how`, thêm hai `<video>` trailer (`pocket-qa-trailer-en`, `pocket-qa-trailer-vi`;
 "Pocket QA – No-code web testing (trailer)" / "Pocket QA – Kiểm thử web không cần code (trailer)", 0:40) cạnh danh sách
-4 bước. Từ 1024px: video bên trái, bước bên phải (lưới 2×2). Dưới 1024px: video trên, bước dưới. Thẻ video theo cùng
+4 bước. Từ 1024px: video bên trái, bước bên phải (một cột). Dưới 1024px: video trên, bước dưới. Thẻ video theo cùng
 mẫu Task 2, dùng lại CSS `.vbox` nếu được (`--fpill-zone` chỉ có trên `.doc`, trang chủ phải tự đặt). Việc dừng khi đổi ngôn ngữ đã có từ Task 2.
 
+*Đã làm:* `.vbox` lấy chiều cao chừa ra từ biến `--vbox-rest` (trang tính năng: `--fpill-zone` + 170px như trước; `#how`:
+360px dưới 1024px, 170px từ 1024px). Bước trong `#how` là hàng (số cạnh chữ) ở mọi cỡ. Điện thoại (≤767px): câu mô tả
+vào "Read more", bước xếp 2×2 chỉ còn số + tên, số căn giữa theo tên; mở ra thì về 1 cột. "Tinh&nbsp;chỉnh" không
+xuống dòng. Còn lại, có từ trước và không do việc này: `#faq` cao hơn một màn ở 375×667 (636 > 603), `#tools` + `#faq`
+ở 360×612 — giống hệt trên `master`.
+
 **Acceptance criteria:**
-- [ ] `#how` hiện trailer đúng ngôn ngữ; đổi ngôn ngữ thì trailer đang phát dừng.
-- [ ] `#how` vẫn vừa một màn hình ở mọi cỡ trong README; trên điện thoại nếu tràn thì câu mô tả bước vào `.more`
+- [x] `#how` hiện trailer đúng ngôn ngữ; đổi ngôn ngữ thì trailer đang phát dừng.
+- [x] `#how` vẫn vừa một màn hình ở mọi cỡ trong README; trên điện thoại nếu tràn thì câu mô tả bước vào `.more`
   ("Read more") như các mục khác.
-- [ ] Mở trang chủ chưa bấm play: không `.mp4` nào được tải; popup trong hero vẫn như cũ.
+- [x] Mở trang chủ chưa bấm play: không `.mp4` nào được tải; popup trong hero vẫn như cũ.
 
 **Verification:**
-- [ ] `await checkLayout()` → mọi mảng rỗng ở 375×812, 375×667, 768×1024, 1024×768, 1280×632, 1366×657, 1920×1080;
+- [x] `await checkLayout()` → `#how` không lỗi ở cả 15 cỡ trong README (+ 360×612, 600×900, 767×1000);
   EN + VI.
-- [ ] Snippet "Thẻ video đúng" và "Không tải video" đạt; thử play + đổi ngôn ngữ bằng chuột.
-- [ ] Console không lỗi. `node stamp-assets.mjs` đã chạy. Ảnh chụp desktop + phone gửi người dùng.
+- [x] Snippet "Thẻ video đúng" và "Không tải video" đạt; thử play + đổi ngôn ngữ bằng chuột.
+- [x] Console không lỗi. `node stamp-assets.mjs` đã chạy. Ảnh chụp desktop + phone gửi người dùng.
 
 **Dependencies:** Task 2 (CSS và `pause()`); không phụ thuộc Task 3
 
@@ -177,9 +183,9 @@ mẫu Task 2, dùng lại CSS `.vbox` nếu được (`--fpill-zone` chỉ có t
 **Estimated scope:** Small
 
 ### Checkpoint 2: sau Task 3–4
-- [ ] `auditFeatures()` sạch cho cả 12 trang; `checkLayout()` sạch trên trang chủ, ở mọi cỡ màn trong README.
-- [ ] Không `.mp4` nào tải trước khi bấm play, trên cả 13 trang.
-- [ ] Commit trên nhánh `videos`.
+- [x] `auditFeatures()` sạch cho cả 12 trang; `checkLayout()` sạch trên trang chủ, ở mọi cỡ màn trong README.
+- [x] Không `.mp4` nào tải trước khi bấm play, trên cả 13 trang.
+- [x] Commit trên nhánh `videos`.
 
 ---
 

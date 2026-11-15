@@ -58,7 +58,7 @@
     (window.syncTitle = () => { document.title = (d.lang === 'vi' && d.dataset.titleVi) || d.dataset.titleEn || en; })();
   })();
 </script>
-<link rel="stylesheet" href="site.css?v=fe6d6c59">
+<link rel="stylesheet" href="site.css?v=2896e3ef">
 </head>
 <body>
 <a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="vi">Bỏ qua tới nội dung</span></a>
@@ -303,32 +303,48 @@
 
   <!-- ================= HOW IT WORKS ================= -->
   <section class="alt" id="how">
-    <div class="container">
+    <div class="container collapsible">
       <div class="section-head reveal">
         <h2 class="section-title"><span lang="en">From click to replay in seconds</span><span lang="vi">Từ click đến phát lại trong vài giây</span></h2>
       </div>
-      <ol class="steps">
-        <li class="card step reveal">
-          <span class="step-num">1</span>
-          <h3><span lang="en">Record</span><span lang="vi">Ghi lại</span></h3>
-          <p><span lang="en">Hit <b>Start Recording</b> and do the task once in your browser.</span><span lang="vi">Bấm <b>Start Recording</b> và làm thao tác một lần trên trình duyệt.</span></p>
-        </li>
-        <li class="card step reveal">
-          <span class="step-num">2</span>
-          <h3><span lang="en">Refine</span><span lang="vi">Tinh chỉnh</span></h3>
-          <p><span lang="en">Edit steps, add variables, conditions and waits as needed.</span><span lang="vi">Sửa bước, thêm biến, điều kiện và thời gian chờ khi cần.</span></p>
-        </li>
-        <li class="card step reveal">
-          <span class="step-num">3</span>
-          <h3><span lang="en">Run</span><span lang="vi">Chạy</span></h3>
-          <p><span lang="en">Replay once, loop it, chain scenarios, or drive it from a CSV.</span><span lang="vi">Phát lại một lần, chạy lặp, nối các kịch bản hoặc chạy theo file CSV.</span></p>
-        </li>
-        <li class="card step reveal">
-          <span class="step-num">4</span>
-          <h3><span lang="en">Export</span><span lang="vi">Xuất</span></h3>
-          <p><span lang="en">Export it as test code, or schedule it to run on its own.</span><span lang="vi">Xuất thành code test, hoặc hẹn lịch để tự chạy.</span></p>
-        </li>
-      </ol>
+      <!-- The 40-second trailer, one <video> per language (site.css shows the page's own, site.js pauses both on a
+           switch); beside the steps from 1024px. preload="none": only the posters load until play. No `default` on
+           the track: the captions are burnt into the picture -->
+      <div class="how-grid">
+        <div class="vbox">
+          <video lang="en" controls preload="none" playsinline width="1280" height="720" poster="videos/en/pocket-qa-trailer-en.jpg"
+                 src="videos/en/pocket-qa-trailer-en.mp4" aria-label="Pocket QA – No-code web testing (trailer, 0:40)">
+            <track kind="captions" srclang="en" label="English" src="videos/en/pocket-qa-trailer-en.vtt">
+          </video>
+          <video lang="vi" controls preload="none" playsinline width="1280" height="720" poster="videos/vi/pocket-qa-trailer-vi.jpg"
+                 src="videos/vi/pocket-qa-trailer-vi.mp4" aria-label="Pocket QA – Kiểm thử web không cần code (trailer, 0:40)">
+            <track kind="captions" srclang="vi" label="Tiếng Việt" src="videos/vi/pocket-qa-trailer-vi.vtt">
+          </video>
+        </div>
+        <ol class="steps">
+          <li class="card step reveal">
+            <span class="step-num">1</span>
+            <h3><span lang="en">Record</span><span lang="vi">Ghi lại</span></h3>
+            <p class="more"><span lang="en">Hit <b>Start Recording</b> and do the task once in your browser.</span><span lang="vi">Bấm <b>Start Recording</b> và làm thao tác một lần trên trình duyệt.</span></p>
+          </li>
+          <li class="card step reveal">
+            <span class="step-num">2</span>
+            <h3><span lang="en">Refine</span><span lang="vi">Tinh&nbsp;chỉnh</span></h3>
+            <p class="more"><span lang="en">Edit steps, add variables, conditions and waits as needed.</span><span lang="vi">Sửa bước, thêm biến, điều kiện và thời gian chờ khi cần.</span></p>
+          </li>
+          <li class="card step reveal">
+            <span class="step-num">3</span>
+            <h3><span lang="en">Run</span><span lang="vi">Chạy</span></h3>
+            <p class="more"><span lang="en">Replay once, loop it, chain scenarios, or drive it from a CSV.</span><span lang="vi">Phát lại một lần, chạy lặp, nối các kịch bản hoặc chạy theo file CSV.</span></p>
+          </li>
+          <li class="card step reveal">
+            <span class="step-num">4</span>
+            <h3><span lang="en">Export</span><span lang="vi">Xuất</span></h3>
+            <p class="more"><span lang="en">Export it as test code, or schedule it to run on its own.</span><span lang="vi">Xuất thành code test, hoặc hẹn lịch để tự chạy.</span></p>
+          </li>
+        </ol>
+      </div>
+      <button class="more-btn" type="button" aria-expanded="false"><span class="l-more"><span lang="en">Read more</span><span lang="vi">Xem thêm</span></span><span class="l-less"><span lang="en">Show less</span><span lang="vi">Thu gọn</span></span></button>
     </div>
   </section>
 
