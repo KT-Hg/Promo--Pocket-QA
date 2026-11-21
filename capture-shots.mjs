@@ -12,7 +12,7 @@
  * Tests shots call (api.shop.example): CDP answers its requests, below.
  *
  * The extension repo is found like update-vendor.mjs finds it:
- *   EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   (default ../Pocket QA)
+ *   EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   (default ../01-extension)
  *
  * Usage:  node capture-shots.mjs [name…]     no name = every shot below
  *         node capture-shots.mjs parity      the demo popup against the real one, pixel by pixel (below)
@@ -27,7 +27,7 @@ import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const ext = resolve(process.env.EXT_REPO || join(here, '..', 'Pocket QA'));
+const ext = resolve(process.env.EXT_REPO || join(here, '..', '01-extension'));
 if (!existsSync(join(ext, 'manifest.json')) || !existsSync(join(ext, 'tools', 'lib', 'cdp-browser.mjs'))) {
   console.error('✗ No extension repo with tools/lib/cdp-browser.mjs at', ext, '— set EXT_REPO.');
   process.exit(1);

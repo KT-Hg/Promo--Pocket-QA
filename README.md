@@ -49,7 +49,7 @@ What gets vendored (by `update-vendor.mjs`):
 
 1. CLI arg — `node update-vendor.mjs "D:/path/to/Pocket QA"`
 2. Env var — `EXT_REPO="D:/path/..." node update-vendor.mjs`
-3. Default — `../Pocket QA` (sibling folder on this machine)
+3. Default — `../01-extension` (sibling folder on this machine)
 
 ## Why it's pixel-perfect
 The popup demo **reuses the extension's actual stylesheets** (vendored as
@@ -267,10 +267,10 @@ New shots, and old ones when they are next re-captured, come from one script:
 ```
 node capture-shots.mjs                 # every shot
 node capture-shots.mjs sql-diagram     # one
-EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   # default ../Pocket QA, as update-vendor.mjs
+EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   # default ../01-extension, as update-vendor.mjs
 ```
 
-Shoot the build that is on the Store, not whatever the extension repo has checked out: `git -C "../Pocket QA" archive <commit>`
+Shoot the build that is on the Store, not whatever the extension repo has checked out: `git -C "../01-extension" archive <commit>`
 into an empty folder and point `EXT_REPO` at it (1.0.30 on the Store = `4fb11ce`).
 
 It loads the unpacked extension in Edge or Chromium through the extension repo's own CDP driver
