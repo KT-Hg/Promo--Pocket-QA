@@ -12,68 +12,68 @@ A recording always types the same name and the same address.
 00:00:08.551 --> 00:00:10.488
 Variables make it flexible.
 
-00:00:11.233 --> 00:00:15.515
+00:00:10.867 --> 00:00:15.149
 The variable table lives in the Tools tab and is shared by every scenario.
 
-00:00:15.515 --> 00:00:19.482
+00:00:15.149 --> 00:00:19.116
 Add customer, a static variable, set to Anna Tran.
 
-00:00:19.600 --> 00:00:24.476
+00:00:20.033 --> 00:00:24.909
 Add houseNo as a random value: three digits, different on every run.
 
-00:00:29.800 --> 00:00:39.366
+00:00:30.067 --> 00:00:39.632
 Random can also make test data that looks real: an email, a phone number, a full name, a date or a UUID, fresh on every run.
 
-00:00:41.700 --> 00:00:48.162
+00:00:41.933 --> 00:00:48.395
 There's also Pick, one value at random from a list, and Fallback, which tries values in turn.
 
-00:00:48.167 --> 00:00:54.843
+00:00:48.400 --> 00:00:55.077
 Back in the scenario, edit the name step to use ${customer}, and the address to ${houseNo} Lake Road.
 
-00:01:06.200 --> 00:01:07.727
+00:01:06.267 --> 00:01:07.794
 Next, Read DOM.
 
-00:01:07.727 --> 00:01:12.733
+00:01:07.794 --> 00:01:12.800
 It reads the order number off the page while the test runs, and saves it into orderId.
 
-00:01:12.733 --> 00:01:17.127
+00:01:12.800 --> 00:01:17.194
 Copy the text as it reads on the page, and put ${orderId} on the part to keep.
 
-00:01:22.800 --> 00:01:28.326
+00:01:22.833 --> 00:01:28.360
 Then use it again: open My orders, and check that the order we just read is listed there.
 
-00:01:46.600 --> 00:01:48.184
+00:01:46.667 --> 00:01:48.251
 Last, a Condition.
 
-00:01:48.184 --> 00:01:51.501
+00:01:48.251 --> 00:01:51.568
 If we're already signed in, there's no need to sign in again.
 
-00:01:51.501 --> 00:01:54.267
+00:01:51.568 --> 00:01:54.348
 Insert a Condition right after the sorting steps.
 
-00:01:54.267 --> 00:01:57.263
+00:01:54.367 --> 00:01:57.363
 The check: the greeting still says Not signed in.
 
-00:01:57.263 --> 00:02:00.042
+00:01:57.363 --> 00:02:00.142
 When it holds, the sign-in steps run.
 
-00:02:00.042 --> 00:02:02.156
+00:02:00.142 --> 00:02:02.256
 When it does not, they are skipped.
 
-00:02:12.300 --> 00:02:13.206
+00:02:12.400 --> 00:02:13.306
 Let's run it.
 
-00:02:13.206 --> 00:02:19.456
+00:02:13.306 --> 00:02:19.556
 We're signed in, so the sign-in is skipped, the name comes from the variable, and the house number is random.
 
-00:02:25.500 --> 00:02:28.094
+00:02:25.567 --> 00:02:28.161
 And the order we just placed shows up in My orders.
 
-00:02:28.094 --> 00:02:29.029
+00:02:28.161 --> 00:02:29.095
 Passed.
 
-00:02:32.300 --> 00:02:38.027
+00:02:32.333 --> 00:02:38.060
 Variables open the door to something bigger: running one scenario against a whole table of data.
 
-00:02:38.027 --> 00:02:39.188
+00:02:38.060 --> 00:02:39.221
 That's next.

@@ -21,38 +21,38 @@ Pocket QA adds a small panel in the corner.
 00:00:20.100 --> 00:00:22.402
 Click Start and name the test session.
 
-00:00:26.100 --> 00:00:31.667
+00:00:25.933 --> 00:00:31.506
 Change the price of Mountain Roads from 18 to 21, with Adminer's own edit form.
 
-00:00:31.667 --> 00:00:35.901
+00:00:31.533 --> 00:00:35.768
 Or run some hand-written SQL: mark every Tech book out of stock.
 
-00:00:39.433 --> 00:00:44.614
+00:00:39.167 --> 00:00:44.348
 The Pocket QA panel records each changed row, with its value before and after.
 
-00:00:46.200 --> 00:00:46.989
+00:00:45.933 --> 00:00:46.723
 Test done?
 
-00:00:46.989 --> 00:00:48.504
+00:00:46.723 --> 00:00:48.237
 Click Roll back all.
 
-00:00:48.504 --> 00:00:52.370
+00:00:48.237 --> 00:00:52.104
 Pocket QA shows the exact SQL it will run to put the data back.
 
-00:00:55.633 --> 00:01:01.033
+00:00:55.333 --> 00:01:00.759
 And the data is back as it was before the test: a price of 18, stock as before.
 
-00:01:01.033 --> 00:01:02.521
+00:01:00.767 --> 00:01:02.255
 Every session is kept.
 
-00:01:02.521 --> 00:01:05.534
+00:01:02.255 --> 00:01:05.267
 Open the DB Test Session page from the Tools tab.
 
-00:01:11.133 --> 00:01:15.742
+00:01:10.767 --> 00:01:15.367
 Each one lists its changes, the undo SQL, and a drift check.
 
-00:01:15.767 --> 00:01:18.244
+00:01:15.367 --> 00:01:17.844
 There's one more kind of test: APIs.
 
-00:01:18.244 --> 00:01:19.405
+00:01:17.844 --> 00:01:19.005
 That's next.

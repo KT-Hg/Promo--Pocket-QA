@@ -30,20 +30,20 @@ Mã được cập nhật ngay.
 00:00:34.767 --> 00:00:37.362
 Copy, hoặc Download để lưu thành tệp.
 
-00:00:42.167 --> 00:00:50.361
+00:00:42.133 --> 00:00:50.328
 Ngoài ra còn Playwright Test, Robot Framework, Selenium Java cho TestNG, và một JavaScript bookmarklet chạy được mà không cần extension.
 
-00:00:59.200 --> 00:01:01.411
+00:00:59.133 --> 00:01:01.345
 Không phải bước nào cũng xuất được nguyên vẹn.
 
-00:01:01.411 --> 00:01:08.182
+00:01:01.345 --> 00:01:08.115
 Tab Actions đánh dấu từng bước: OK là xuất được, Verify là nên kiểm tra lại bằng tay, còn Skip là không xuất được.
 
-00:01:10.900 --> 00:01:16.418
+00:01:10.867 --> 00:01:16.384
 Ví dụ, bookmarklet không tải tệp lên được: trong Update profile, bước tải ảnh bị đánh dấu Skip.
 
-00:01:16.418 --> 00:01:21.037
+00:01:16.384 --> 00:01:21.004
 Bấm vào nó để thấy dòng chú thích để lại trong mã, không bước nào mất đi lặng lẽ.
 
-00:01:26.000 --> 00:01:29.428
+00:01:25.967 --> 00:01:29.394
 Tiếp theo là một công cụ cho lúc bạn đọc tài liệu: Highlight.

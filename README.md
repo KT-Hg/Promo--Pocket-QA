@@ -308,7 +308,7 @@ python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, 
 ```
 
 ## Demo videos
-One story told in 13 videos, recorded from extension v1.0.31 — parts 2, 3, 4 and 6 and the trailer re-filmed with v1.0.34 (play part of a scenario, Run as, the run history, test data, Recent captures, Image Diff's views): testing the checkout of **Demo Books**, a made-up store
+One story told in 13 videos, recorded from extension v1.0.34 (`f563479`), every part and the trailer: testing the checkout of **Demo Books**, a made-up store
 built for the recording. Part *N* is the *N*th feature in `FEATURE_ORDER` and opens that feature page, right under the
 hero; the 40-second trailer plays in the index's How it works. Each video has an English and a Vietnamese cut, the same
 picture with its own voice-over and **subtitles burnt into the picture**.
@@ -334,8 +334,8 @@ each, 94 MB in all.
   over the old ones under the same name; if its length changed, update `length` in `features-en.js` (one value for
   both languages — the two cuts are the same length):
   `ffprobe -v error -show_entries format=duration -of csv=p=0 videos/en/<file>.mp4`
-- **No Git LFS** (GitHub Pages doesn't serve LFS files) and no file near GitHub's 100 MB limit. The full 21:20 demo
-  (172 MB) is for YouTube; once it has a URL, link it through a `youtube-nocookie.com` facade (thumbnail first, the
+- **No Git LFS** (GitHub Pages doesn't serve LFS files) and no file near GitHub's 100 MB limit. The full 21:51 demo
+  (175 MB) is for YouTube; once it has a URL, link it through a `youtube-nocookie.com` facade (thumbnail first, the
   iframe only on a click) — not done yet.
 - `demo-videos/` is where a handoff from the extension repo lands (5.5 GB with its tools and masters); it is
   git-ignored, and only `.mp4` / `.jpg` / `.vtt` are copied into `videos/` (no `.srt`, no handoff notes).

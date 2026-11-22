@@ -15,20 +15,20 @@ Bôi đen một đoạn chữ, bảng màu hiện ngay bên cạnh.
 00:00:13.900 --> 00:00:15.170
 Chọn màu vàng.
 
-00:00:16.233 --> 00:00:20.080
+00:00:16.133 --> 00:00:19.980
 Đoạn quan trọng thì tô màu xanh, và thêm một ghi chú cho cả nhóm.
 
-00:00:32.067 --> 00:00:34.794
+00:00:32.933 --> 00:00:35.661
 Rê chuột lên đoạn đã tô để đọc lại ghi chú.
 
-00:00:36.233 --> 00:00:41.481
+00:00:37.100 --> 00:00:42.348
 Tab Highlight liệt kê mọi highlight, đếm theo từng trang, có ô tìm kiếm và bộ lọc theo màu.
 
-00:00:45.333 --> 00:00:49.696
+00:00:46.067 --> 00:00:50.429
 Tải lại trang, các highlight vẫn còn nguyên, kể cả với nội dung tải muộn.
 
-00:00:49.833 --> 00:00:55.676
+00:00:50.567 --> 00:00:56.410
 Mẫu URL cho nhiều trang cùng bố cục dùng chung một bộ highlight, và nút Export lưu tất cả ra JSON.
 
-00:00:57.133 --> 00:01:01.927
+00:00:57.800 --> 00:01:02.593
 Từ phần sau, mình chuyển sang các công cụ cho dữ liệu, bắt đầu với SQL.

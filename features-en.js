@@ -23,7 +23,7 @@ var FEATURES_EN = {
     facts: [['18', 'action types'], ['8', 'selectors saved per element'], ['50', 'undo steps']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
-    video: { file: 'pocket-qa-01-record-a-test-in-one-click', title: 'Record a test in one click', length: '2:23' },
+    video: { file: 'pocket-qa-01-record-a-test-in-one-click', title: 'Record a test in one click', length: '2:31' },
     points: [
       'Records clicks and typed input — typing is debounced to one step per field, and text typed just before a click is recorded before it.',
       'Only the tab the recording started on is recorded, and clicks the page’s own scripts fire are left out: the scenario holds what <em>you</em> did.',
@@ -346,7 +346,7 @@ var FEATURES_EN = {
     facts: [['12', 'check types'], ['4', 'verdicts'], ['5 s', 'an Assert waits for the page']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
-    video: { file: 'pocket-qa-03-assertions-verdicts-and-bug-reports', title: 'Assertions, verdicts and bug reports', length: '2:14' },
+    video: { file: 'pocket-qa-03-assertions-verdicts-and-bug-reports', title: 'Assertions, verdicts and bug reports', length: '2:35' },
     points: [
       '<b>Assert (Expect)</b> checks what the page should show — an element, a text, a value, the URL, a class or an attribute: 12 checks in all.',
       'Asserts are waited for: checked every 250 ms for up to 5 seconds, so a page still loading isn’t a failure.',
@@ -675,7 +675,7 @@ var FEATURES_EN = {
     facts: [['6', 'kinds of capture'], ['10', 'capture & record hotkeys'], ['3 · 5 · 10 s', 'countdown']],
     tab: 'tabCapture',
     tabLabel: 'Capture tab',
-    video: { file: 'pocket-qa-06-screenshots-and-image-tools', title: 'Screenshots and image tools', length: '1:46' },
+    video: { file: 'pocket-qa-06-screenshots-and-image-tools', title: 'Screenshots and image tools', length: '1:49' },
     points: [
       'Visible, Full Page, Scroll (Down / Across), Segment (Down / Across), Element and Window capture.',
       'Every mode has a <b>Edit</b> twin that opens the image editor right after the shot.',
@@ -902,7 +902,7 @@ var FEATURES_EN = {
     facts: [['5', 'colours'], ['Notes', 'on any highlight'], ['JSON', 'export']],
     tab: 'tabHighlight',
     tabLabel: 'Highlight tab',
-    video: { file: 'pocket-qa-08-highlights-and-notes-on-any-page', title: 'Highlights and notes on any page', length: '1:03' },
+    video: { file: 'pocket-qa-08-highlights-and-notes-on-any-page', title: 'Highlights and notes on any page', length: '1:04' },
     points: [
       'Turn Highlight ON, select text on the page, and pick yellow, green, pink, blue or orange from the tooltip.',
       'Add a note to any highlight; hover it later to read it.',

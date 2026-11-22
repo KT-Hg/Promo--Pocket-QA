@@ -27,20 +27,20 @@ The Settings tab sets the start URL, the browser and headless mode, and the code
 00:00:34.767 --> 00:00:37.306
 Copy it, or download it as a file.
 
-00:00:42.167 --> 00:00:51.391
+00:00:42.133 --> 00:00:51.358
 There's also Playwright Test, Robot Framework, Selenium Java for TestNG, and a JavaScript bookmarklet that runs without the extension.
 
-00:00:59.200 --> 00:01:01.417
+00:00:59.133 --> 00:01:01.350
 Not every step exports as is.
 
-00:01:01.417 --> 00:01:09.547
+00:01:01.350 --> 00:01:09.481
 The Actions tab marks each one: OK when it exports, Verify when you should check it by hand, and Skip when it can't be exported.
 
-00:01:10.900 --> 00:01:17.664
+00:01:10.867 --> 00:01:17.631
 For example, a bookmarklet can't upload files: in Update profile, the upload step is marked Skip.
 
-00:01:17.664 --> 00:01:22.358
+00:01:17.631 --> 00:01:22.325
 Click it to see the comment left in its place, so nothing goes missing silently.
 
-00:01:26.000 --> 00:01:29.831
+00:01:25.967 --> 00:01:29.797
 Next, a tool for when you read documentation: Highlights.

@@ -18,59 +18,68 @@ Thêm một bước Assert ở cuối.
 00:00:15.352 --> 00:00:19.113
 Chọn kiểu Text contains, rồi ngắm thẳng vào dòng xác nhận trên trang.
 
-00:00:29.000 --> 00:00:30.750
+00:00:28.633 --> 00:00:30.383
 Chữ cần có là confirmed.
 
-00:00:30.750 --> 00:00:33.478
+00:00:30.383 --> 00:00:33.111
 Đặt tên cho bước, rồi thêm vào kịch bản.
 
-00:00:38.967 --> 00:00:40.689
+00:00:38.533 --> 00:00:40.256
 Giờ chạy lại kịch bản.
 
-00:00:52.933 --> 00:00:53.387
+00:00:52.667 --> 00:00:53.121
 Passed.
 
-00:00:53.387 --> 00:00:58.516
+00:00:53.121 --> 00:00:58.250
 Lần này Pocket QA không chỉ chạy hết các bước, mà còn chứng minh được là đơn hàng đã thành công.
 
-00:00:58.633 --> 00:01:03.833
-Bây giờ giả sử nhóm phát triển vừa tung ra một bản cập nhật, và trang xác nhận đơn hàng bị thay đổi.
+00:00:58.333 --> 00:01:05.827
+Bây giờ giả sử nhóm phát triển vừa tung ra một bản cập nhật: trang xác nhận đơn hàng bị thay đổi, và nút Place order đổi thành Confirm order.
 
-00:01:03.833 --> 00:01:05.277
+00:01:05.833 --> 00:01:07.277
 Chạy lại lần nữa.
 
-00:01:22.633 --> 00:01:23.187
+00:01:23.933 --> 00:01:27.309
+Lần chạy không tìm thấy nút Place order nên dừng lại và hỏi.
+
+00:01:27.309 --> 00:01:32.547
+Không cần làm lại từ đầu: bấm Pick it, chỉ vào nút mới trên trang, rồi chọn This run only.
+
+00:01:32.547 --> 00:01:34.618
+Bước đó chạy lại với nút mới.
+
+00:01:43.733 --> 00:01:44.287
 Failed.
 
-00:01:23.187 --> 00:01:28.239
+00:01:44.287 --> 00:01:49.339
 Kết luận ghi rõ bước nào sai: mong đợi chữ confirmed, nhưng trang lại hiện payment pending.
 
-00:01:28.239 --> 00:01:31.340
+00:01:49.339 --> 00:01:52.440
 Biểu tượng trên thanh công cụ cũng chuyển sang dấu chéo đỏ.
 
-00:01:32.333 --> 00:01:36.343
+00:01:53.433 --> 00:01:57.443
 Các chấm dưới kết luận là lịch sử chạy của kịch bản, mỗi lần chạy một chấm.
 
-00:01:36.343 --> 00:01:41.872
+00:01:57.443 --> 00:02:02.972
 Khi test cứ lỗi mãi sau những lần đạt, hay lúc lỗi lúc đạt dù các bước không đổi, thẻ sẽ nói rõ.
 
-00:01:43.100 --> 00:01:48.597
+00:02:04.167 --> 00:02:09.664
 Mỗi lần chạy kết thúc bằng một trong bốn kết luận: Passed, Failed, Test broken khi chính bài test có vấn đề,
 
-00:01:48.597 --> 00:01:52.255
+00:02:09.664 --> 00:02:13.322
 ví dụ không tìm thấy phần tử, và Stopped khi bạn dừng giữa chừng.
 
-00:01:52.867 --> 00:01:53.976
+00:02:13.933 --> 00:02:15.043
 Bấm Bug report.
 
-00:01:53.976 --> 00:02:00.994
+00:02:15.043 --> 00:02:22.061
 Pocket QA soạn sẵn một báo cáo Markdown, có URL, trình duyệt, các bước để tái hiện, và ảnh chụp lúc lỗi xảy ra.
 
-00:02:01.867 --> 00:02:04.610
+00:02:22.933 --> 00:02:25.677
 Giá trị đã gõ và mật khẩu được ẩn theo mặc định.
 
-00:02:04.610 --> 00:02:07.721
+00:02:25.677 --> 00:02:28.788
 Copy, dán vào issue, vậy là xong.
 
-00:02:08.567 --> 00:02:12.931
+00:02:29.600 --> 00:02:33.964
 Ở phần tiếp theo, mình sẽ làm cho kịch bản linh hoạt hơn bằng biến và điều kiện.

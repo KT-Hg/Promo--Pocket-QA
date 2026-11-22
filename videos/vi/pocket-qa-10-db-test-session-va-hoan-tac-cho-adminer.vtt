@@ -21,35 +21,35 @@ Pocket QA thêm một bảng nhỏ ở góc trang.
 00:00:20.100 --> 00:00:22.652
 Bấm Start và đặt tên cho phiên kiểm thử.
 
-00:00:26.100 --> 00:00:31.069
+00:00:25.933 --> 00:00:30.902
 Sửa giá cuốn Mountain Roads từ mười tám lên hai mươi mốt, bằng form có sẵn của Adminer.
 
-00:00:31.667 --> 00:00:35.618
+00:00:31.533 --> 00:00:35.485
 Hoặc chạy một câu SQL viết tay: cho toàn bộ sách Tech hết hàng.
 
-00:00:39.433 --> 00:00:43.650
+00:00:39.167 --> 00:00:43.383
 Bảng Pocket QA ghi lại từng dòng đã đổi, cùng giá trị trước và sau.
 
-00:00:46.200 --> 00:00:48.152
+00:00:45.933 --> 00:00:47.885
 Test xong, bấm Roll back all.
 
-00:00:48.152 --> 00:00:52.299
+00:00:47.885 --> 00:00:52.032
 Pocket QA cho xem trước đúng câu SQL sẽ chạy để trả dữ liệu về.
 
-00:00:55.633 --> 00:01:00.244
+00:00:55.333 --> 00:00:59.944
 Dữ liệu đã trở về như trước khi kiểm thử: giá mười tám, tồn kho như cũ.
 
-00:01:01.033 --> 00:01:02.743
+00:01:00.767 --> 00:01:02.476
 Mọi phiên đều được lưu lại.
 
-00:01:02.743 --> 00:01:05.406
+00:01:02.476 --> 00:01:05.139
 Mở trang DB Test Session từ tab Tools.
 
-00:01:11.133 --> 00:01:15.698
+00:01:10.767 --> 00:01:15.332
 Mỗi phiên có từng thay đổi, câu SQL hoàn tác, và cả kiểm tra drift.
 
-00:01:15.767 --> 00:01:18.246
+00:01:15.367 --> 00:01:17.846
 Còn một loại kiểm thử nữa: API.
 
-00:01:18.246 --> 00:01:19.872
+00:01:17.846 --> 00:01:19.472
 Đó là phần tiếp theo.

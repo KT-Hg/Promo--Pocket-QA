@@ -12,47 +12,47 @@ Kiểm thử API.
 00:00:07.792 --> 00:00:12.036
 Bạn có thể kiểm thử nó ngay trong Pocket QA, cạnh các kịch bản giao diện.
 
-00:00:12.267 --> 00:00:14.548
+00:00:12.100 --> 00:00:14.382
 Mở API Tests từ tab Tools.
 
-00:00:15.133 --> 00:00:18.955
+00:00:14.967 --> 00:00:18.788
 Request được xếp theo thư mục, ở đây là thư mục Demo Books API.
 
-00:00:18.955 --> 00:00:23.057
+00:00:18.788 --> 00:00:22.890
 Môi trường ở góc trên giữ địa chỉ máy chủ, dùng qua biến baseUrl.
 
-00:00:27.600 --> 00:00:30.912
+00:00:27.400 --> 00:00:30.712
 Request Sign in gửi email và mật khẩu trong phần Body.
 
-00:00:32.900 --> 00:00:36.645
+00:00:32.667 --> 00:00:36.411
 Tab Save values lấy token trong phản hồi và lưu vào biến token.
 
-00:00:38.033 --> 00:00:41.575
+00:00:37.833 --> 00:00:41.375
 Bấm Send: request đạt, và token đã được lưu lại.
 
-00:00:45.633 --> 00:00:50.307
+00:00:45.367 --> 00:00:50.040
 Thư mục gửi token đó dạng Bearer cho mọi request bên trong, nên không phải dán tay.
 
-00:00:56.067 --> 00:01:00.376
+00:00:55.733 --> 00:01:00.042
 Nhờ vậy My account chạy được ngay, và nhận về đúng tài khoản của Anna.
 
-00:01:04.867 --> 00:01:09.536
+00:01:04.567 --> 00:01:09.236
 Với List books, bấm vào một khoá trong JSON trả về để tạo phép kiểm tra ngay từ đó.
 
-00:01:11.133 --> 00:01:14.736
+00:01:10.867 --> 00:01:14.469
 Phép kiểm tra mới nằm trong tab Checks, và lần gửi sau nó đạt.
 
-00:01:17.433 --> 00:01:21.943
+00:01:17.133 --> 00:01:21.643
 Run folder chạy lần lượt mọi request trong thư mục, mỗi dòng một dấu đạt hoặc không đạt.
 
-00:01:25.100 --> 00:01:30.377
+00:01:24.767 --> 00:01:30.044
 Dòng sai cho biết mong gì và nhận gì: mong giá là hai mươi, API trả về mười tám.
 
-00:01:32.533 --> 00:01:35.693
+00:01:32.200 --> 00:01:35.360
 Export sang Postman để chạy bằng Newman trong CI.
 
-00:01:35.867 --> 00:01:41.318
+00:01:35.533 --> 00:01:40.985
 Chiều ngược lại, Paste cURL tạo request từ một lệnh curl, còn Import nhận bộ sưu tập Postman.
 
-00:01:42.500 --> 00:01:45.884
+00:01:42.133 --> 00:01:45.517
 Cuối cùng, hãy xem những cài đặt bạn chỉ cần chỉnh một lần.

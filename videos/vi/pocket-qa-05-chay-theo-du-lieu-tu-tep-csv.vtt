@@ -6,50 +6,50 @@ Phần năm.
 00:00:01.200 --> 00:00:03.716
 Chạy theo dữ liệu từ tệp CSV.
 
-00:00:05.167 --> 00:00:09.967
+00:00:05.167 --> 00:00:09.980
 Thay vì một khách hàng, giờ mình muốn thử ba khách hàng, với các kiểu giao hàng khác nhau.
 
-00:00:09.967 --> 00:00:13.448
+00:00:10.000 --> 00:00:13.481
 Trước tiên, sửa bước chọn giao hàng để nó dùng ${shipping},
 
-00:00:22.100 --> 00:00:25.392
+00:00:22.033 --> 00:00:25.325
 và cho bước Assert lấy chữ cần kiểm tra từ ${expect}.
 
-00:00:34.733 --> 00:00:36.210
+00:00:34.667 --> 00:00:36.143
 Đây là tệp dữ liệu.
 
-00:00:36.210 --> 00:00:40.146
+00:00:36.143 --> 00:00:40.079
 Dòng đầu tiên là tên biến: customer, shipping và expect.
 
-00:00:41.333 --> 00:00:47.827
+00:00:41.233 --> 00:00:47.727
 Mỗi dòng sau đó là một lượt chạy: Bao Tran giao hàng thường, Chris Vo giao hàng nhanh, và Dana Le cũng giao nhanh.
 
-00:00:49.000 --> 00:00:55.394
+00:00:48.933 --> 00:00:55.328
 Riêng dòng của Dana Le cố tình mong chữ free shipping, thứ mà trang không hề có, để xem một dòng không đạt trông ra sao.
 
-00:00:57.233 --> 00:01:01.104
+00:00:57.133 --> 00:01:01.004
 Trong thẻ CSV Run, chọn kịch bản Buy a book và tải tệp lên.
 
-00:01:01.104 --> 00:01:03.696
+00:01:01.004 --> 00:01:03.596
 Pocket QA cho xem trước các dòng sẽ chạy.
 
-00:01:09.033 --> 00:01:14.282
+00:01:08.867 --> 00:01:14.115
 Chọn định dạng kết quả, ở đây là báo cáo HTML, rồi bấm Start CSV Run.
 
-00:01:14.467 --> 00:01:16.351
+00:01:14.333 --> 00:01:16.217
 Mỗi dòng là một lượt chạy riêng.
 
-00:01:16.351 --> 00:01:20.877
+00:01:16.217 --> 00:01:20.744
 Bảng trên trang cho biết đang ở dòng nào, còn popup đếm số dòng đạt và không đạt.
 
-00:01:28.100 --> 00:01:34.105
+00:01:27.967 --> 00:01:33.972
 Xong ba dòng: hai dòng đạt, còn dòng thứ ba bị đánh dấu Failed, vì trang không hề nhắc tới free shipping.
 
-00:01:35.067 --> 00:01:36.987
+00:01:34.933 --> 00:01:36.854
 Tải kết quả về và mở ra.
 
-00:01:36.987 --> 00:01:42.315
+00:01:36.854 --> 00:01:42.182
 Mỗi dòng có dữ liệu, kết luận, và bước bị lỗi kèm lý do, gửi ngay cho cả nhóm được.
 
-00:01:46.833 --> 00:01:51.084
+00:01:46.667 --> 00:01:50.917
 Phần tiếp theo là bộ công cụ chụp và chỉnh ảnh, để báo lỗi rõ ràng hơn.

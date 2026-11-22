@@ -15,20 +15,20 @@ Select some text, and a colour picker pops up next to it.
 00:00:14.442 --> 00:00:15.634
 Choose yellow.
 
-00:00:16.233 --> 00:00:20.071
+00:00:16.133 --> 00:00:19.971
 Mark the important part in green, and add a note for the team.
 
-00:00:32.067 --> 00:00:34.281
+00:00:32.933 --> 00:00:35.148
 Hover a highlight to read its note.
 
-00:00:36.233 --> 00:00:41.540
+00:00:37.100 --> 00:00:42.407
 The Highlight tab lists them all, counted per page, with search and colour filters.
 
-00:00:45.333 --> 00:00:49.831
+00:00:46.067 --> 00:00:50.565
 Reload the page and they're all still there, even on content that loads late.
 
-00:00:49.833 --> 00:00:56.418
+00:00:50.567 --> 00:00:57.151
 URL patterns let pages with the same layout share one set, and Export saves everything as JSON.
 
-00:00:57.133 --> 00:01:01.108
+00:00:57.800 --> 00:01:01.774
 From here on, we move to the data tools, starting with SQL.
