@@ -18,16 +18,16 @@
 var FEATURES_EN = {
   recording: {
     title: 'Record in one click',
-    summary: 'Clicks and typing become editable, reorderable steps — 17 action types in all, from hovers to file uploads.',
+    summary: 'Clicks and typing become editable, reorderable steps — 18 action types in all, from hovers to file uploads.',
     lead: 'Turn Pocket QA on for a tab, hit Start Recording and do the task once. Every click and every field you type into becomes an editable step — no selectors to write by hand.',
-    facts: [['17', 'action types'], ['8', 'selectors saved per element'], ['50', 'undo steps']],
+    facts: [['18', 'action types'], ['8', 'selectors saved per element'], ['50', 'undo steps']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
     video: { file: 'pocket-qa-01-record-a-test-in-one-click', title: 'Record a test in one click', length: '2:23' },
     points: [
       'Records clicks and typed input — typing is debounced to one step per field, and text typed just before a click is recorded before it.',
       'Only the tab the recording started on is recorded, and clicks the page’s own scripts fire are left out: the scenario holds what <em>you</em> did.',
-      'Everything else is one of 17 action types added with <b>Add Manual Action</b> — hover, dropdowns, drag &amp; drop, waits, Run JS, conditions, asserts, switches, Read DOM, screenshots and file uploads.',
+      'Everything else is one of 18 action types added with <b>Add Manual Action</b> — hover, dropdowns, drag &amp; drop, waits, Run JS, switching tabs, conditions, asserts, switches, Read DOM, screenshots and file uploads.',
       'Every step stays editable: fix a selector, change a value, give it a label, disable it, or drag it to a new place.',
       'Undo/redo up to 50 steps while you edit, cleared when you start a new scenario or load another one.',
       '<b>Pick element</b> picks a target straight off the page instead of writing a selector.'
@@ -39,11 +39,11 @@ var FEATURES_EN = {
       ['Refine', 'Add what a recorder can’t see — a hover, a wait, an Assert — with Add Manual Action, and drag it into place.']
     ],
     sections: [
-      // Seventeen actions as three short tables, so each fits one screen
+      // Eighteen actions as three short tables, so each fits one screen
       {
         title: 'Page actions',
         nav: 'Page actions',
-        lead: 'Seventeen building blocks in all. Click and Input are recorded; the rest come from Add Manual Action.',
+        lead: 'Eighteen building blocks in all. Click and Input are recorded; the rest come from Add Manual Action.',
         table: {
           head: ['Action', 'What it does'],
           rows: [
@@ -51,7 +51,8 @@ var FEATURES_EN = {
             ['Input', 'Sets a field’s value and fires <code>input</code>, <code>change</code> and <code>blur</code>, as typing would.'],
             ['Hover', 'Fires the mouse-over events — opens menus and tooltips.'],
             ['Dropdown', 'A real, trusted click for dropdowns that ignore a scripted one, and optionally <b>Choose item #</b>.'],
-            ['Drag &amp; Drop', 'An HTML5 drag from a source selector onto a target.']
+            ['Drag &amp; Drop', 'An HTML5 drag from a source selector onto a target.'],
+            ['Switch tab', 'To the tab the page opened, or back. A link that opens a new tab while you record writes it for you.']
           ]
         }
       },
@@ -122,18 +123,18 @@ var FEATURES_EN = {
       {
         title: 'While you record',
         nav: 'While recording',
-        lead: 'The page says it is being recorded, and each step is named after what you clicked or typed into.',
+        lead: 'The page says it is being recorded, and <b>✓ Check</b> turns what you point at into an Assert.',
         images: [{
-          src: 'screenshots/shot-page-recording.webp',
-          srcDark: 'screenshots/shot-page-recording-dark.webp',
-          alt: 'The sample Checkout page while recording: bottom right, a bar reads ● Recording — Pocket QA, with a red ■ Stop button.',
-          caption: 'Recording: the page says so, and its own ■ Stop ends it.'
+          src: 'screenshots/shot-page-check.webp',
+          srcDark: 'screenshots/shot-page-check-dark.webp',
+          alt: 'The sample Checkout page while recording: under the toast Error: coupon expired, a menu headed ✓ Check offers Text is “Error: coupon expired”, Text contains, Is visible and URL contains; bottom right, the bar reads ● Recording — Pocket QA with ✓ Check and ■ Stop.',
+          caption: 'Alt + click on the toast: pick the check to record.'
         }],
         points: [
-          'In the popup, Start Recording reads <b>● Recording…</b> and Stop turns red; on the page, a bar bottom right has its own <b>■ Stop</b>.',
-          'A step is named after its element — its label, placeholder, aria-label or text — so the list reads <i>Email</i>, <i>Password</i>, <i>Log in</i>, the selector on the line under.',
-          'Typing into a password field marks the step <b>🔒</b>: it is kept as typed, so put it in a variable to keep it out of exports.',
-          'A click on the bar itself is never recorded.'
+          'On the page, a bar bottom right has <b>✓ Check</b> and <b>■ Stop</b>; in the popup, Start Recording reads <b>● Recording…</b>.',
+          '<b>✓ Check</b> or <span class="kbd">Alt</span> + click: pick a check — text, value, visible, URL — to record it as an Assert.',
+          'A step is named after its element — label, placeholder, aria-label or text — so the list reads <i>Email</i>, <i>Password</i>, <i>Log in</i>.',
+          'Typing into a password field marks the step <b>🔒</b>: it is kept as typed, so put it in a variable to keep it out of exports.'
         ]
       },
       {
@@ -184,7 +185,7 @@ var FEATURES_EN = {
     facts: [['5', 'ways to run'], ['Daily', 'scheduling'], ['Retry · Skip · Stop', 'when a step fails']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
-    video: { file: 'pocket-qa-02-play-it-back-loops-sequences-schedules', title: 'Play it back: loops, sequences, schedules', length: '1:53' },
+    video: { file: 'pocket-qa-02-play-it-back-loops-sequences-schedules', title: 'Play it back: loops, sequences, schedules', length: '2:08' },
     points: [
       'Play once, loop N times with a delay between loops, or build a <b>Sequence</b> where each scenario gets its own delay.',
       'Schedule a scenario for a set time — once, or <b>Repeat daily</b> — and it starts on its own in the background.',
@@ -283,7 +284,41 @@ var FEATURES_EN = {
           '<b>Upload File</b> puts local files into an <code>&lt;input type="file"&gt;</code> or a drop zone, <code>${variable}</code> names allowed — a file missing from disk fails the step and names it.',
           '<b>Run JS</b> executes your script on the page through the DevTools protocol, so the site’s Content Security Policy doesn’t block it.',
           '<b>Drag &amp; Drop</b> fires real HTML5 drag events from a source onto a target.',
-          'Navigate and Wait run from the background worker, so a page change never cuts a run short.'
+          'A new tab the page opens is followed, and the run comes back when the page closes it; Navigate and Wait run from the worker, so a page change never cuts a run short.'
+        ]
+      },
+      {
+        title: 'Play only part of it',
+        nav: 'Play a part',
+        lead: 'Click a step’s number to play from it, up to it, or only it — on the page as it is now.',
+        images: [{
+          src: 'screenshots/shot-pop-play-range.webp',
+          srcDark: 'screenshots/shot-pop-play-range-dark.webp',
+          alt: 'The action list of Checkout with coupon, step 3 Apply clicked by its number: a menu offers ▶ Play from #3, ▶ Play #1–#3 and ▶ Play only #3, with a hint that Shift + click on a second number plays the steps between.',
+          caption: 'Step 3’s number: from it, up to it, or only it.'
+        }],
+        points: [
+          '<b>▶ Play from #N</b> plays N to the end; <b>▶ Play #1–#N</b> stops after N, the page left as N left it; <b>▶ Play only #N</b> plays that step alone.',
+          '<span class="kbd">Shift</span> + click a second number plays the steps between the two.',
+          'A Read DOM the part leaves out but needs can be played first, so its <code>${variable}</code> is not empty.',
+          'A part shows on the Last run card as a part, and is never counted in the run history.'
+        ]
+      },
+      {
+        title: 'Run as a phone, on a slow network',
+        nav: 'Run as',
+        lead: 'Under Manage Scenarios, <b>Run as</b> sets the device and the network a scenario plays on.',
+        images: [{
+          src: 'screenshots/shot-pop-run-as.webp',
+          srcDark: 'screenshots/shot-pop-run-as-dark.webp',
+          alt: 'The Manage Scenarios card with Checkout with coupon selected: Play and Stop, the loop and delay controls, and under them the Run as row set to iPhone 14 and 3G.',
+          caption: 'Checkout with coupon plays as an iPhone 14, on 3G.'
+        }],
+        points: [
+          'Devices: iPhone SE, iPhone 14, Pixel 7, Galaxy S20, iPad and iPad Pro — screen size, pixel ratio, touch and user agent.',
+          'Networks: Fast 4G, 3G, Slow 3G or Offline — Chrome DevTools’ own throttling.',
+          'The run holds one debugger session for all of it, so Chrome shows its debugging bar while it plays.',
+          'Selenium, Playwright, Robot and Java exports set the same device and network (Playwright through <code>test.use</code>).'
         ]
       },
       {
@@ -311,7 +346,7 @@ var FEATURES_EN = {
     facts: [['12', 'check types'], ['4', 'verdicts'], ['5 s', 'an Assert waits for the page']],
     tab: 'tabRecord',
     tabLabel: 'Record & Play tab',
-    video: { file: 'pocket-qa-03-assertions-verdicts-and-bug-reports', title: 'Assertions, verdicts and bug reports', length: '2:02' },
+    video: { file: 'pocket-qa-03-assertions-verdicts-and-bug-reports', title: 'Assertions, verdicts and bug reports', length: '2:14' },
     points: [
       '<b>Assert (Expect)</b> checks what the page should show — an element, a text, a value, the URL, a class or an attribute: 12 checks in all.',
       'Asserts are waited for: checked every 250 ms for up to 5 seconds, so a page still loading isn’t a failure.',
@@ -372,6 +407,40 @@ var FEATURES_EN = {
         ]
       },
       {
+        title: 'Run history: flaky, or broken since when',
+        nav: 'Run history',
+        lead: 'The Last run card keeps the last runs of its scenario as dots — and says when a test is flaky, or since when it fails.',
+        images: [{
+          src: 'screenshots/shot-pop-run-history.webp',
+          srcDark: 'screenshots/shot-pop-run-history-dark.webp',
+          alt: 'The Last run card: ✓ Passed, Checkout with coupon, just now; seven dots, two of them red — 2 of the last 7 failed, All runs — and the line 〰 Flaky? #4 Check the toast failed 2 of the last 7 runs, and passed again with the same steps.',
+          caption: 'Seven runs of the same steps, two failed: 〰 Flaky?'
+        }],
+        points: [
+          'Every Play, scheduled run, Resume, Sequence item and CSV run is kept — 20 per scenario; the card shows the last 10.',
+          '<b>〰 Flaky?</b> when it failed and passed again with the same steps — a pass that needed no edit.',
+          '<b>⤵ Failing since …</b> when it has failed run after run, after passing before.',
+          'Click a dot for that run: how it started, how long it took, its first failure; <b>All runs</b> lists them all.'
+        ]
+      },
+      {
+        title: 'Fix a step while it runs',
+        nav: 'Fix in a run',
+        lead: 'A step that cannot find its element asks Retry, Skip or Stop — or <b>🎯 Pick it</b> on the page.',
+        images: [{
+          src: 'screenshots/shot-page-run.webp',
+          srcDark: 'screenshots/shot-page-run-dark.webp',
+          alt: 'The sample Checkout page with a run held at its fourth step: Action 4 of 5 failed — click “Place order” — Element not found on the page within 5 s (looked for it by CSS), with Retry, 🎯 Pick it, Skip and Stop; bottom right, the run panel in amber.',
+          caption: 'Held at a failed step: Retry, 🎯 Pick it, Skip or Stop.'
+        }],
+        points: [
+          '<b>🎯 Pick it</b>: click the element on the page, then <b>Save &amp; go on</b> or <b>This run only</b> — the step plays again.',
+          '🩹 <b>Locator check</b>: a step whose other locators point elsewhere, or mostly find nothing, is listed on the card.',
+          '<b>Review</b> shows what each locator found, and takes them again from the element the run used.',
+          'The notes never change the verdict: playback uses the first locator found, as exported code does.'
+        ]
+      },
+      {
         title: '12 checks for Conditions and Asserts',
         nav: '12 checks',
         lead: 'The same list drives both: a Condition decides whether to skip steps, an Assert decides whether the run passes.',
@@ -421,7 +490,7 @@ var FEATURES_EN = {
     facts: [['4', 'variable types'], ['12', 'condition checks'], ['3', 'layers of priority']],
     tab: 'tabData',
     tabLabel: 'Tools tab',
-    video: { file: 'pocket-qa-04-variables-and-logic', title: 'Variables and logic', length: '2:28' },
+    video: { file: 'pocket-qa-04-variables-and-logic', title: 'Variables and logic', length: '2:40' },
     points: [
       'Four variable types: <b>Static</b>, <b>Random</b> (letters, numbers, both, or a datetime stamp), <b>Pick</b> (one of a list) and <b>Fallback</b> (try A, then B, then C).',
       '<code>${var}</code> works in selectors, values, URLs, scripts, expected values, file names and more.',
@@ -445,7 +514,7 @@ var FEATURES_EN = {
           head: ['Type', 'Stored as', 'At run time'],
           rows: [
             ['Static', '<code>https://staging.example.com</code>', 'Used as-is.'],
-            ['Random', '<code>{random:alphanumeric:8}</code>', 'Fresh every run — letters, numbers, both, or <code>datetime</code>&nbsp;(<span class="nw">YYYY-MM-DD_HH-MM-SS</span>).'],
+            ['Random', '<code>{random:alphanumeric:8}</code>', 'Fresh every run — letters, numbers, both, <code>datetime</code>, or test data (below).'],
             ['Pick', '<code>{pick:alice|bob|carol}</code>', 'One value chosen at random per run; a CSV column of the same name overrides it.'],
             ['Fallback', '<code>{fallback:A|B|C}</code>', 'Tried in order until one matches on the page; it sticks for the rest of the run.']
           ]
@@ -498,7 +567,25 @@ var FEATURES_EN = {
           '<b>Condition (If)</b>: one of 12 checks — when it is false, the next N steps are skipped.',
           '<b>Switch</b>: each value runs another scenario, jumps, or runs only its own block.',
           '<b>Always</b>: no variable — a scenario or a #–# range of it plays every time.',
-          'A new Switch goes in front of its steps; no case can cut through another Switch’s block.'
+          'A new Switch goes in front of its steps; no case can cut through another Switch’s block.',
+          '<b>✂</b> in the gap between two actions of a case splits it there, <b>+ case</b> adds an empty one, and an overlap in the form offers <b>Take from case …</b>.'
+        ]
+      },
+      {
+        title: 'Test data that looks real',
+        nav: 'Test data',
+        lead: 'A Random variable can draw an email, a phone number, a name, a number, a date or a UUID — a new one every run.',
+        images: [{
+          src: 'screenshots/shot-pop-test-data.webp',
+          srcDark: 'screenshots/shot-pop-test-data-dark.webp',
+          alt: 'The Add Variable dialog: name email, the Random tab, Type Email under Test data, Domain shop.test, and a sample address at shop.test with ↻ to draw another.',
+          caption: 'An Email at shop.test, new every run.'
+        }],
+        points: [
+          '<b>Email</b> at the domain you set, <b>Phone number</b> in the Vietnamese format, <b>Full name</b> in Vietnamese or English.',
+          '<b>Number between…</b> two numbers, <b>Date</b> today ± N days in the format the field wants, or a <b>UUID</b>.',
+          'The dialog shows a sample, and ↻ draws another.',
+          'The five code exports draw them by the same rules, so an exported test gets fresh data too.'
         ]
       }
     ],
@@ -588,14 +675,14 @@ var FEATURES_EN = {
     facts: [['6', 'kinds of capture'], ['10', 'capture & record hotkeys'], ['3 · 5 · 10 s', 'countdown']],
     tab: 'tabCapture',
     tabLabel: 'Capture tab',
-    video: { file: 'pocket-qa-06-screenshots-and-image-tools', title: 'Screenshots and image tools', length: '1:33' },
+    video: { file: 'pocket-qa-06-screenshots-and-image-tools', title: 'Screenshots and image tools', length: '1:46' },
     points: [
       'Visible, Full Page, Scroll (Down / Across), Segment (Down / Across), Element and Window capture.',
       'Every mode has a <b>Edit</b> twin that opens the image editor right after the shot.',
       'A 3, 5 or 10-second countdown before a visible capture — time to open the dropdown or hover state you need in the shot.',
       'Watermark with <code>{url}</code> and <code>{datetime}</code> tokens, stamped onto the image.',
-      '<b>Image Diff</b> compares two screenshots pixel by pixel, with an adjustable sensitivity.',
-      'Save automatically with a filename prefix, or be asked where to save each one.'
+      '<b>Image Diff</b> compares two screenshots pixel by pixel: in pink, with a line you drag, blinking, or side by side.',
+      'Every capture is copied to the clipboard as well, and kept under <b>Recent captures</b> to copy, edit, save or compare again.'
     ],
     steps: [
       ['Pick a mode', 'Capture tab — filter by All, Visible, Scroll, Segment, Element or Window.'],
@@ -632,6 +719,23 @@ var FEATURES_EN = {
         ]
       },
       {
+        title: 'Copied, and kept for later',
+        nav: 'Recent captures',
+        lead: 'Every capture goes to the clipboard as it is saved, and stays under <b>Recent captures</b> in the Capture tab.',
+        images: [{
+          src: 'screenshots/shot-pop-recent.webp',
+          srcDark: 'screenshots/shot-pop-recent-dark.webp',
+          alt: 'Recent captures in the Capture tab: a count and size, a Clear button, and three thumbnails of the sample Checkout page — Page, Full and Page, each with its time — then a line saying every capture is also copied to the clipboard.',
+          caption: 'Three captures of the Checkout page, ready to paste.'
+        }],
+        points: [
+          'Paste a capture into a bug tracker or a chat with <span class="kbd">Ctrl+V</span> — no file to look for.',
+          'Click one: 📋 Copy, ✂ Edit, ⬇ Save again, 🔍 Compare with… another one, 🗑 Remove.',
+          'The last 20 captures, up to 50 MB, kept in the browser — not part of Backup.',
+          'A page that can’t write to the clipboard (plain http, not in focus) still saves the file, and says it was not copied.'
+        ]
+      },
+      {
         title: 'Inside the Image Editor',
         nav: 'Image Editor',
         lead: 'Any capture — or any image from the clipboard or a file — opens in an editor of its own window.',
@@ -642,7 +746,7 @@ var FEATURES_EN = {
           caption: 'A rectangle, an arrow and the Stamp panel.'
         }],
         points: [
-          'Crop, Draw, Rectangle, Ellipse, Arrow, Text and Blur — one key each: C, D, R, E, A, T, B.',
+          'Crop, Draw, Rectangle, Ellipse, Arrow, Text, Blur, ① Step number, ▮ Redact and ◎ Spotlight — one key each.',
           'Rotate, flip, and undo or redo every edit.',
           'Adjust brightness, contrast, saturation and sharpness; resize exactly or by 10–300%.',
           'Stamp a timestamp or your own text in one of 9 places; zoom, with 1:1 a key away.'
@@ -655,14 +759,14 @@ var FEATURES_EN = {
         images: [{
           src: 'screenshots/shot-pop-image-diff.webp',
           srcDark: 'screenshots/shot-pop-image-diff-dark.webp',
-          alt: 'The Image Diff dialog: image A and image B chosen, sensitivity at 10, Compare pressed, the result 4,123 px (0.65% of total area), and a preview with the changed row marked in magenta, with Save result.',
+          alt: 'The Image Diff dialog: image A and image B chosen, sensitivity at 10, Compare pressed; the views Pink, ↔ Drag, ◑ Blink and Side by side over a preview with the changed row in pink; Leave a box out; Diff: 4,123 px (0.65% of the area compared); Save result.',
           caption: 'One row changed: 4,123 px, 0.65% of the image.'
         }],
         points: [
-          'Pick image A and image B from disk — any two images, not only captures.',
-          'Sensitivity: low catches faint changes, high ignores noise.',
-          'The count of changed pixels, its share of the area, and the changes marked on the picture.',
-          '<b>Save result</b> keeps the marked-up image.'
+          'Image A and image B from disk, or <b>Compare with…</b> on a recent capture.',
+          'Four views: <b>Pink</b>, <b>↔ Drag</b>, <b>◑ Blink</b> and <b>▥ Side by side</b>.',
+          'Two sizes are named; only the part they share is compared.',
+          'Changed pixels and their share; <b>Save result</b> keeps the marked-up image.'
         ]
       },
       {
@@ -753,13 +857,13 @@ var FEATURES_EN = {
       {
         title: 'What each format covers',
         nav: 'Coverage',
-        lead: 'Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM and Condition run in all five. The rest:',
+        lead: 'Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM, Condition and test data run in all five. The rest:',
         table: {
           head: ['Step', 'Bookmarklet', 'Selenium', 'Playwright', 'Robot', 'Java'],
           rows: [
             ['Navigate', 'Verify', 'Yes', 'Yes', 'Yes', 'Yes'],
             ['Run JS', 'Verify', 'Verify', 'Verify', 'Verify', 'Verify'],
-            ['Screenshots, Upload&nbsp;File', '—', 'Yes', 'Yes', 'Yes', 'Yes'],
+            ['Screenshots, Upload&nbsp;File, Switch&nbsp;tab, Run&nbsp;as', '—', 'Yes', 'Yes', 'Yes', 'Yes'],
             ['Inside an iframe', 'Same site', 'Yes', 'Yes', 'Yes', 'Yes'],
             ['Switch block on a variable', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes'],
             ['Switch to a scenario, #N, Always', '—', '—', '—', '—', '—'],
@@ -820,8 +924,8 @@ var FEATURES_EN = {
         lead: 'Highlights are made where you read: select the text, pick a colour.',
         points: [
           'Select text → a small panel offers five colours and a note field.',
-          'Click a highlight to change its colour, edit its note or delete just that one.',
-          'Hover a highlight that has a note to read it, without clicking.',
+          'Click a highlight to change its colour, edit its note or delete it; hover one to read its note.',
+          'Painted over the text, never into it: the page’s own markup stays as it was. Hold <span class="kbd">Alt</span> to select text a page won’t let you select.',
           'They come back on the next visit, after a restart too — even on content that loads late.',
           'The switch in the popup hides them all; switched back on, every one returns.'
         ]

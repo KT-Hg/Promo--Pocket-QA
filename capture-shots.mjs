@@ -826,6 +826,148 @@ const SHOTS = [
       await wait(300);
       return '.modal.ac-import';
     `
+  },
+  // ── 1.0.34 ────────────────────────────────────────────────────────────────────────────────────────────────
+  {
+    // The Last run card's run history: seven real runs of one scenario, its Assert held or not by ${want} — the
+    // same steps each time, so the card says "Flaky?" (popup/run/run-history.js, shared/run-history.js)
+    name: 'pop-run-history',
+    page: 'popup.html',
+    size: [480, 900],
+    seed: async ({ send, scenario, play, set }) => {
+      const id = await scenario('Checkout with coupon', [
+        { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+        { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+        click('#apply', 'Apply'),
+        { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: '${want}', label: 'Check the toast' }
+      ]);
+      await set({ lastSelectedScenario: id });
+      for (const pass of [true, true, false, true, true, false, true]) {
+        await send(vars({ want: pass ? 'coupon expired' : 'Saved' }));
+        await play(id);
+      }
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      await until(() => !$('#lastRunCard').hidden && !$('#lastRunHistory').hidden && !$('#lastRunHistFlag').hidden, 'the run history');
+      await wait(500);
+      return '#lastRunCard';
+    `
+  },
+  {
+    // Recording, Alt + click on the page: the menu of checks the element offers; the one picked is recorded as an
+    // Assert (content.js ✓ Check, content-overlays.js). The click is a real one, sent through CDP with Alt held
+    name: 'page-check',
+    page: 'web',
+    size: [1000, 500],   // room under the toast, so the menu opens below it rather than over the text
+    seed: async ({ send, web, webTabId }) => {
+      await send({ type: 'START_RECORD', tabId: webTabId, scenarioId: null });
+      await sleep(900);
+      const at = async sel => JSON.parse(await web.evaluate(`JSON.stringify((() => { const r = document.querySelector(${JSON.stringify(sel)}).getBoundingClientRect(); return [r.left + Math.min(40, r.width / 2), r.top + r.height / 2]; })())`));
+      const clickAt = async ([x, y], modifiers = 0) => {
+        for (const type of ['mousePressed', 'mouseReleased']) await web.send('Input.dispatchMouseEvent', { type, x, y, button: 'left', clickCount: 1, modifiers });
+        await sleep(400);
+      };
+      await clickAt(await at('#apply'));        // the page writes its toast: "Error: coupon expired"
+      await clickAt(await at('#toast'), 1);     // Alt
+    },
+    cleanup: ({ send }) => send({ type: 'STOP_RECORD' }),
+    setup: `
+      await until(() => $('#__pqa_check_menu') && $('#__pqa_recording'), 'the check menu', 15000);
+      await wait(500);
+      return ['#email', '#__pqa_check_menu', '#__pqa_recording'];   // from the form down: the paragraphs above say nothing here
+    `
+  },
+  {
+    // ▶ on a row number: play from it, up to it, or only it (popup/run/play-range.js)
+    name: 'pop-play-range',
+    page: 'popup.html',
+    size: [480, 1200],
+    seed: async ({ scenario, set }) => {
+      const id = await scenario('Checkout with coupon', [
+        { type: 'input', ...css('#email'), value: 'qa@shop.test', label: 'Email' },
+        { type: 'input', ...css('#coupon'), value: 'SPRING25', label: 'Coupon' },
+        click('#apply', 'Apply'),
+        { type: 'assert', conditionType: 'textContains', ...css('#toast'), expectedValue: 'Saved', label: 'Check the toast' },
+        click('#place-order', 'Place order')
+      ]);
+      await set({ lastSelectedScenario: id });
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      if (!$('#actions').getClientRects().length) $('#preview').click();
+      await until(() => document.querySelectorAll('#actions > li.action').length >= 5, 'the action list');
+      $('#actions').style.maxHeight = 'none';
+      $('#actions > li.action[data-index="2"] > .index').click();
+      await until(() => $('.pr-menu'), 'the play menu');
+      await wait(400);
+      return [mark($('#actions')), '.pr-menu'];
+    `
+  },
+  {
+    // Manage Scenarios: the scenario plays as an iPhone 14 on 3G (shared/run-as.js, popup/scenarios/run-as.js)
+    name: 'pop-run-as',
+    page: 'popup.html',
+    size: [480, 1200],
+    seed: async ({ scenario, set }) => {
+      for (const name of ['Login', 'Refund an order']) await scenario(name, [click('#go')]);
+      const id = await scenario('Checkout with coupon', [click('#apply', 'Apply')]);
+      await set({ lastSelectedScenario: id });
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabRecord');
+      const c = opened(card('manage'));
+      await until(() => $('#runAsDevice').options.length > 1, 'the devices');
+      pick('#runAsDevice', 'iphone14');
+      pick('#runAsNetwork', '3g');
+      await wait(600);
+      $('#toast')?.classList.remove('show');
+      return mark(c);
+    `
+  },
+  {
+    // Capture: every capture is kept under Recent captures — three real ones of the sample page (popup/capture/recent.js)
+    name: 'pop-recent',
+    page: 'popup.html',
+    size: [480, 1400],
+    seed: async ({ send, web, webTabId, extPage }) => {
+      // Recent captures live in IndexedDB, which the storage clear between shots leaves alone
+      await extPage.evaluate(`import('/shared/recent-captures.js').then(m => m.clearRecent())`);
+      await web.bringToFront();
+      for (const type of ['TAKE_SCREENSHOT', 'TAKE_SCREENSHOT_FULL', 'TAKE_SCREENSHOT']) {
+        await send({ type, tabId: webTabId });
+        await sleep(1200);
+      }
+    },
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabCapture');
+      await until(() => !$('#recentCaptures').hidden && document.querySelectorAll('#recentGrid > *').length >= 3, 'Recent captures');
+      await wait(600);
+      return '#recentCaptures';
+    `
+  },
+  {
+    // Tools → Variables → + Add Row: a Random variable of the Test data kind, Email, with its sample
+    name: 'pop-test-data',
+    page: 'popup.html',
+    size: [480, 900],
+    setup: `
+      await themed('#toggleTheme', THEME);
+      tab('tabData');
+      $('#addVariableRow').click();
+      await until(() => $('#randomModal').classList.contains('show'), 'the variable dialog');
+      type('#randomVarName', 'email');
+      $('#rndTabString').click();
+      pick('#randomType', 'email');
+      type('#randomDomain', 'shop.test');
+      await until(() => $('#randomSample').textContent.includes('@shop.test'), 'the sample');
+      await wait(400);
+      return mark($('#randomModal').firstElementChild);
+    `
   }
 ];
 
@@ -941,7 +1083,7 @@ try {
     await sleep(500);
     for (let t = 0; t < 30_000 && (await send({ type: 'GET_EXTENSION_STATUS' }))?.playing; t += 250) await sleep(250);
   };
-  const ctx = { base, send, set, scenario, play, web, webTabId };
+  const ctx = { base, send, set, scenario, play, web, webTabId, extPage };
   if (parity) {
     // The tab the popup is on: https://app.example.com/login, answered here through CDP like the API shots
     const app = await browser.openPage('about:blank', { width: 1000, height: 700 });

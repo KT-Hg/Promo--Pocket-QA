@@ -12,44 +12,53 @@ Chụp màn hình và công cụ ảnh.
 00:00:09.245 --> 00:00:13.541
 Khi cần báo lỗi, một tấm ảnh rõ ràng đáng giá hơn cả đoạn mô tả dài.
 
-00:00:16.533 --> 00:00:18.339
+00:00:16.633 --> 00:00:18.439
 Tab Capture có sáu kiểu chụp.
 
-00:00:18.339 --> 00:00:22.589
+00:00:18.439 --> 00:00:22.689
 Nút xanh lưu ảnh ngay, còn nút viền đứt mở ảnh trong trình chỉnh sửa trước khi lưu.
 
-00:00:24.233 --> 00:00:28.329
+00:00:24.333 --> 00:00:28.429
 Chụp phần đang thấy, có ba giây đếm ngược để bạn kịp mở menu nếu cần.
 
-00:00:30.333 --> 00:00:32.608
+00:00:31.100 --> 00:00:33.374
 Trình chỉnh ảnh mở trong một cửa sổ riêng.
 
-00:00:32.608 --> 00:00:36.571
+00:00:33.374 --> 00:00:37.337
 Khoanh vùng lỗi, thêm mũi tên, và làm mờ những thông tin riêng tư.
 
-00:00:41.500 --> 00:00:42.271
+00:00:42.267 --> 00:00:43.038
 Lưu lại.
 
-00:00:42.271 --> 00:00:46.093
+00:00:43.038 --> 00:00:46.860
 Tên tệp có tiền tố và thời gian, nên rất dễ tìm về sau.
 
-00:00:47.667 --> 00:00:49.311
+00:00:48.400 --> 00:00:52.819
+Mỗi ảnh chụp cũng được chép sẵn vào clipboard, dán thẳng vào báo cáo lỗi được ngay.
+
+00:00:52.819 --> 00:00:56.564
+Và tab Capture giữ lại những ảnh vừa chụp ở mục Recent captures.
+
+00:00:57.100 --> 00:00:58.744
 Muốn chụp riêng một phần tử?
 
-00:00:49.311 --> 00:00:51.763
+00:00:58.744 --> 00:01:01.197
 Bấm Pick, rồi chọn nó ngay trên trang.
 
-00:00:59.600 --> 00:01:05.219
+00:01:05.033 --> 00:01:10.653
 Còn Image Diff so sánh hai ảnh chụp và tô màu hồng tím những điểm ảnh khác nhau, rất tiện để kiểm thử giao diện.
 
-00:01:10.333 --> 00:01:16.027
+00:01:15.800 --> 00:01:21.494
 Giữa hai bản, giá một cuốn sách và một nút bấm đã thay đổi, và Image Diff chỉ ra chính xác vị trí.
 
-00:01:16.533 --> 00:01:20.648
+00:01:22.000 --> 00:01:28.463
+Có bốn cách xem: tô hồng chỗ khác, kéo một đường chia giữa hai ảnh, cho hai ảnh nháy qua lại, hoặc đặt cạnh nhau.
+
+00:01:30.267 --> 00:01:34.382
 Bấm Save result để tải ảnh so sánh về, rồi mở ra xem cho rõ.
 
-00:01:21.233 --> 00:01:27.169
+00:01:35.000 --> 00:01:40.935
 Những điểm ảnh khác nhau được tô màu hồng tím: giá của cuốn Mountain Roads, và nút Add to cart đã thành Sold out.
 
-00:01:28.567 --> 00:01:31.691
+00:01:42.167 --> 00:01:45.291
 Tiếp theo, mình sẽ biến kịch bản thành mã kiểm thử thật.

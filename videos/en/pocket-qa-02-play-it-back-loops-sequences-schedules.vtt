@@ -33,47 +33,56 @@ Need it more than once?
 00:00:32.713 --> 00:00:35.872
 Set a loop count, with a pause between rounds.
 
-00:00:37.200 --> 00:00:39.607
+00:00:37.167 --> 00:00:38.329
+Only need part of it?
+
+00:00:38.329 --> 00:00:43.072
+Click a step's number: play from it, up to it, or just that one step.
+
+00:00:44.000 --> 00:00:50.783
+And Run as plays it like a phone, or on a slow network: an iPhone 14 on 3G, for example.
+
+00:00:51.267 --> 00:00:53.674
 Or chain several scenarios into one run.
 
-00:00:39.607 --> 00:00:45.592
+00:00:53.674 --> 00:00:59.659
 I've prepared a second one, Update profile, which uploads an avatar and picks from a dropdown.
 
-00:00:48.100 --> 00:00:49.455
+00:01:02.267 --> 00:01:03.622
 Start the sequence.
 
-00:00:49.455 --> 00:00:53.888
+00:01:03.622 --> 00:01:08.054
 The two scenarios run back to back, and the popup shows which one is playing.
 
-00:00:59.933 --> 00:01:03.289
+00:01:14.633 --> 00:01:17.989
 File pickers and native dropdowns don't stop it either.
 
-00:01:04.800 --> 00:01:09.533
+00:01:19.267 --> 00:01:24.000
 Both are done: the avatar is uploaded, and the favourite category is set.
 
-00:01:09.533 --> 00:01:11.036
+00:01:24.000 --> 00:01:25.503
 Finally, schedules.
 
-00:01:11.036 --> 00:01:14.187
+00:01:25.503 --> 00:01:28.654
 Pick the scenario, a time and a start page.
 
-00:01:23.933 --> 00:01:27.287
+00:01:39.033 --> 00:01:42.387
 Tick Repeat daily to run it every day, then click Add.
 
-00:01:30.333 --> 00:01:32.424
+00:01:45.467 --> 00:01:47.557
 Now we wait for the scheduled time.
 
-00:01:34.933 --> 00:01:40.591
+00:01:50.067 --> 00:01:55.724
 Right on time, Pocket QA opens the start page in a new tab and runs the scenario.
 
-00:01:40.591 --> 00:01:42.529
+00:01:55.724 --> 00:01:57.663
 Nobody has to click a thing.
 
-00:01:45.967 --> 00:01:47.310
+00:02:01.333 --> 00:02:02.677
 Playing back is easy.
 
-00:01:47.310 --> 00:01:49.088
+00:02:02.677 --> 00:02:04.455
 But how do we know the result is right?
 
-00:01:49.088 --> 00:01:50.429
+00:02:04.455 --> 00:02:05.796
 That comes next.

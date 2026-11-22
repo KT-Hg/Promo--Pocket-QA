@@ -12,44 +12,53 @@ Here's the third row's confirmation, and there's no free shipping anywhere.
 00:00:09.285 --> 00:00:13.403
 When you report a bug, a clear picture beats a long description.
 
-00:00:16.533 --> 00:00:19.130
+00:00:16.633 --> 00:00:19.230
 The Capture tab has six kinds of capture.
 
-00:00:19.130 --> 00:00:24.222
+00:00:19.230 --> 00:00:24.322
 Blue buttons save straight away; the dashed ones open the shot in the editor first.
 
-00:00:24.233 --> 00:00:29.975
+00:00:24.333 --> 00:00:30.075
 Capture the visible area, with a three-second countdown in case you need to open a menu first.
 
-00:00:30.333 --> 00:00:32.762
+00:00:31.100 --> 00:00:33.529
 The editor opens in a window of its own.
 
-00:00:32.762 --> 00:00:37.021
+00:00:33.529 --> 00:00:37.788
 Box the problem, add an arrow, and blur anything private.
 
-00:00:41.500 --> 00:00:42.297
+00:00:42.267 --> 00:00:43.063
 Save it.
 
-00:00:42.297 --> 00:00:46.792
+00:00:43.063 --> 00:00:47.559
 The file name carries a prefix and the time, so it's easy to find later.
 
-00:00:47.667 --> 00:00:48.944
+00:00:48.400 --> 00:00:53.213
+Every capture is copied to the clipboard as well, ready to paste into a bug report.
+
+00:00:53.213 --> 00:00:57.086
+And the Capture tab keeps the latest ones under Recent captures.
+
+00:00:57.100 --> 00:00:58.378
 Need just one element?
 
-00:00:48.944 --> 00:00:51.311
+00:00:58.378 --> 00:01:00.745
 Click Pick, then choose it on the page.
 
-00:00:59.600 --> 00:01:06.780
+00:01:05.033 --> 00:01:12.213
 And Image Diff compares two screenshots and paints the pixels that differ in magenta, which is handy for visual checks.
 
-00:01:10.333 --> 00:01:16.533
+00:01:15.800 --> 00:01:21.999
 Between the two versions, a price and a button have changed, and Image Diff shows exactly where.
 
-00:01:16.533 --> 00:01:21.233
+00:01:22.000 --> 00:01:29.123
+There are four ways to look at it: the changes in pink, a line you drag between the two, a blink, or side by side.
+
+00:01:30.267 --> 00:01:34.980
 Click Save result to download the comparison, and open it to see it up close.
 
-00:01:21.233 --> 00:01:28.377
+00:01:35.000 --> 00:01:42.143
 The pixels that differ are painted magenta: the price of Mountain Roads, and the Add to cart button that now says Sold out.
 
-00:01:28.567 --> 00:01:31.620
+00:01:42.167 --> 00:01:45.220
 Next, we'll turn the scenario into real test code.

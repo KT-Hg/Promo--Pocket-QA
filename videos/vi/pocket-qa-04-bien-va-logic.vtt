@@ -12,68 +12,71 @@ Kịch bản ghi sẵn lúc nào cũng gõ cùng một cái tên, cùng một đ
 00:00:08.640 --> 00:00:10.612
 Biến sẽ giúp nó linh hoạt hơn.
 
-00:00:11.033 --> 00:00:14.310
+00:00:11.233 --> 00:00:14.510
 Bảng biến nằm ở tab Tools, dùng chung cho mọi kịch bản.
 
-00:00:14.310 --> 00:00:18.359
+00:00:14.510 --> 00:00:18.559
 Thêm biến customer, kiểu Static, giá trị là Anna Tran.
 
-00:00:19.467 --> 00:00:24.180
+00:00:19.600 --> 00:00:24.313
 Thêm biến houseNo kiểu Random: ba chữ số, mỗi lần chạy ra một số khác.
 
-00:00:29.500 --> 00:00:34.815
+00:00:29.800 --> 00:00:38.069
+Kiểu Random còn sinh được dữ liệu test trông như thật: email, số điện thoại, họ tên, một ngày hay UUID, mỗi lần chạy một giá trị mới.
+
+00:00:41.700 --> 00:00:47.015
 Ngoài ra còn kiểu Pick, chọn ngẫu nhiên trong một danh sách, và Fallback, thử lần lượt từng giá trị.
 
-00:00:35.967 --> 00:00:37.237
+00:00:48.167 --> 00:00:49.437
 Quay lại kịch bản.
 
-00:00:37.237 --> 00:00:42.255
+00:00:49.437 --> 00:00:54.455
 Sửa bước điền họ tên thành ${customer}, và địa chỉ thành ${houseNo} Lake Road.
 
-00:00:53.867 --> 00:00:55.305
+00:01:06.200 --> 00:01:07.638
 Tiếp theo là Read DOM.
 
-00:00:55.305 --> 00:00:59.923
+00:01:07.638 --> 00:01:12.257
 Bước này đọc số đơn hàng ngay trên trang trong lúc chạy, và lưu vào biến orderId.
 
-00:01:00.400 --> 00:01:04.855
+00:01:12.733 --> 00:01:17.188
 Chép lại dòng chữ trên trang, và đặt ${orderId} vào đúng phần cần giữ.
 
-00:01:10.467 --> 00:01:15.677
+00:01:22.800 --> 00:01:28.011
 Rồi dùng lại nó: mở trang My orders, và kiểm tra đơn hàng vừa đọc được có nằm trong danh sách.
 
-00:01:34.233 --> 00:01:35.927
+00:01:46.600 --> 00:01:48.294
 Cuối cùng là Condition.
 
-00:01:35.927 --> 00:01:38.367
+00:01:48.294 --> 00:01:50.734
 Đã đăng nhập rồi thì không cần đăng nhập lại.
 
-00:01:38.367 --> 00:01:40.896
+00:01:50.734 --> 00:01:53.263
 Chèn một Condition ngay sau bước sắp xếp sách.
 
-00:01:41.933 --> 00:01:44.889
+00:01:54.267 --> 00:01:57.222
 Điều kiện là ô chào hỏi còn hiện chữ Not signed in.
 
-00:01:44.889 --> 00:01:47.050
+00:01:57.222 --> 00:01:59.384
 Khi đúng, nó chạy các bước đăng nhập.
 
-00:01:47.050 --> 00:01:49.533
+00:01:59.384 --> 00:02:01.866
 Khi sai, các bước đó được bỏ qua.
 
-00:01:59.967 --> 00:02:00.760
+00:02:12.300 --> 00:02:13.093
 Chạy thử.
 
-00:02:00.760 --> 00:02:06.132
+00:02:13.093 --> 00:02:18.465
 Trang đã đăng nhập nên phần đăng nhập được bỏ qua, họ tên lấy từ biến, còn số nhà là ngẫu nhiên.
 
-00:02:13.133 --> 00:02:15.755
+00:02:25.500 --> 00:02:28.122
 Đơn hàng vừa đặt được tìm thấy trong My orders.
 
-00:02:15.755 --> 00:02:16.359
+00:02:28.122 --> 00:02:28.726
 Passed.
 
-00:02:19.933 --> 00:02:24.513
+00:02:32.300 --> 00:02:36.880
 Biến còn mở ra một khả năng lớn hơn: chạy cùng một kịch bản với cả một bảng dữ liệu.
 
-00:02:24.513 --> 00:02:26.140
+00:02:36.880 --> 00:02:38.506
 Đó là phần tiếp theo.
