@@ -33,47 +33,56 @@ Muốn chạy nhiều lần?
 00:00:32.681 --> 00:00:35.901
 Đặt số vòng ở ô Loop, kèm khoảng nghỉ giữa các vòng.
 
-00:00:37.200 --> 00:00:39.469
+00:00:37.167 --> 00:00:38.597
+Chỉ cần chạy một đoạn?
+
+00:00:38.597 --> 00:00:43.818
+Bấm vào số của một bước: chạy từ bước đó, chạy tới bước đó, hoặc chỉ riêng bước đó.
+
+00:00:44.000 --> 00:00:49.590
+Còn Run as cho kịch bản chạy như trên điện thoại hay trên mạng chậm, ví dụ iPhone 14 với mạng 3G.
+
+00:00:51.267 --> 00:00:53.535
 Hoặc nối nhiều kịch bản thành một lượt chạy.
 
-00:00:39.469 --> 00:00:44.789
+00:00:53.535 --> 00:00:58.856
 Mình đã chuẩn bị thêm kịch bản Update profile, có tải ảnh đại diện lên và chọn trong một dropdown.
 
-00:00:48.100 --> 00:00:49.467
+00:01:02.267 --> 00:01:03.634
 Bấm Start Sequence.
 
-00:00:49.467 --> 00:00:53.573
+00:01:03.634 --> 00:01:07.739
 Hai kịch bản chạy nối tiếp nhau, và popup cho biết đang ở kịch bản nào.
 
-00:00:59.933 --> 00:01:03.641
+00:01:14.633 --> 00:01:18.341
 Hộp chọn tệp hay dropdown gốc của trình duyệt cũng không làm nó dừng lại.
 
-00:01:04.800 --> 00:01:09.314
+00:01:19.267 --> 00:01:23.780
 Xong cả hai: ảnh đại diện đã được tải lên, và danh mục yêu thích đã được chọn.
 
-00:01:09.533 --> 00:01:11.024
+00:01:24.000 --> 00:01:25.490
 Cuối cùng là hẹn giờ.
 
-00:01:11.024 --> 00:01:13.820
+00:01:25.490 --> 00:01:28.287
 Chọn kịch bản, giờ chạy và trang bắt đầu.
 
-00:01:23.933 --> 00:01:27.377
+00:01:39.033 --> 00:01:42.477
 Bật Repeat daily để nó chạy mỗi ngày, rồi bấm Add.
 
-00:01:30.333 --> 00:01:32.326
+00:01:45.467 --> 00:01:47.460
 Giờ thì chờ tới giờ hẹn.
 
-00:01:34.933 --> 00:01:39.019
+00:01:50.067 --> 00:01:54.152
 Đến giờ, Pocket QA tự mở trang trong một tab mới và chạy kịch bản.
 
-00:01:39.019 --> 00:01:40.907
+00:01:54.152 --> 00:01:56.041
 Không ai phải bấm gì cả.
 
-00:01:45.967 --> 00:01:47.411
+00:02:01.333 --> 00:02:02.777
 Phát lại thì dễ rồi.
 
-00:01:47.411 --> 00:01:49.829
+00:02:02.777 --> 00:02:05.196
 Nhưng làm sao biết kết quả có đúng hay không?
 
-00:01:49.829 --> 00:01:51.455
+00:02:05.196 --> 00:02:06.822
 Đó là phần tiếp theo.

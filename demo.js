@@ -221,7 +221,9 @@
     if (a.label) subHtml = '<span class="value-target">' + esc(a.value) + '</span>' + subHtml;
     var secretHtml = a.secret ? '<span class="secret-mark" title="' + esc(SECRET_TITLE) + '">🔒</span>' : '';
     li.innerHTML =
-      '<span class="index">' + (i + 1) + '.</span>' +
+      // A saved scenario's number is ▶ since 1.0.34: play from / to / only this step (preview.js indexAttrs)
+      '<span class="index" title="Play from here, up to here or only this step — Shift+click another number: the steps between"' +
+        ' role="button" tabindex="0" aria-haspopup="menu" aria-label="Play action ' + (i + 1) + '…">' + (i + 1) + '.</span>' +
       '<span' + (typeAttrs || ' class="type"') + '>' + (ACTION_ICONS[a.type] || '') + esc(a.type) + toggleHtml + '</span>' +
       '<span class="value" title="' + (a.label ? esc(a.label) + '&#10;' : '') + esc(a.value) + esc(delayText) + '">' +
         '<span class="value-main">' + secretHtml + esc(a.label || a.value) + esc(delayText) + '</span>' +

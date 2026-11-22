@@ -8,13 +8,13 @@ var FEATURES_VI = {
   recording: {
     title: 'Ghi lại bằng một click',
     lead: 'Bật Pocket QA trên một tab, bấm Start Recording rồi làm thao tác một lần. Mỗi cú click và mỗi ô bạn nhập liệu đều thành một bước sửa được — không phải tự viết selector.',
-    facts: [['17', 'loại hành động'], ['8', 'selector lưu cho mỗi phần tử'], ['50', 'bước hoàn tác']],
+    facts: [['18', 'loại hành động'], ['8', 'selector lưu cho mỗi phần tử'], ['50', 'bước hoàn tác']],
     tabLabel: 'tab Record & Play',
     video: { file: 'pocket-qa-01-ghi-kich-ban-chi-voi-mot-cu-nhap', title: 'Ghi kịch bản chỉ với một cú nhấp' },
     points: [
       'Ghi lại click và dữ liệu nhập — thao tác gõ được gộp thành một bước cho mỗi ô, và chữ gõ ngay trước một cú click được ghi trước cú click đó.',
       'Chỉ tab bắt đầu ghi mới được ghi lại, và các cú click do chính script của trang tự phát ra bị bỏ qua: kịch bản chỉ chứa những gì <em>bạn</em> đã làm.',
-      'Mọi thứ khác là một trong 17 loại hành động, thêm bằng <b>Add Manual Action</b> — hover, dropdown, kéo thả, chờ, Run JS, điều kiện, assert, switch, Read DOM, chụp màn hình và tải file lên.',
+      'Mọi thứ khác là một trong 18 loại hành động, thêm bằng <b>Add Manual Action</b> — hover, dropdown, kéo thả, chờ, Run JS, chuyển tab, điều kiện, assert, switch, Read DOM, chụp màn hình và tải file lên.',
       'Mọi bước đều sửa được: chỉnh selector, đổi giá trị, đặt nhãn, tắt bước, hoặc kéo sang vị trí mới.',
       'Hoàn tác/làm lại tối đa 50 bước trong lúc sửa; lịch sử được xoá khi bạn bắt đầu kịch bản mới hoặc mở một kịch bản khác.',
       '<b>Pick element</b> chọn phần tử đích ngay trên trang thay vì phải viết selector.'
@@ -29,7 +29,7 @@ var FEATURES_VI = {
       {
         title: 'Thao tác trên trang',
         nav: 'Thao tác trang',
-        lead: 'Tổng cộng mười bảy khối. Click và Input được ghi tự động; số còn lại lấy từ Add Manual Action.',
+        lead: 'Tổng cộng mười tám khối. Click và Input được ghi tự động; số còn lại lấy từ Add Manual Action.',
         table: {
           head: ['Hành động', 'Chức năng'],
           rows: [
@@ -37,7 +37,8 @@ var FEATURES_VI = {
             ['Input', 'Đặt giá trị cho ô nhập và phát <code>input</code>, <code>change</code>, <code>blur</code> như khi gõ.'],
             ['Hover', 'Phát các sự kiện rê chuột — mở menu và tooltip.'],
             ['Dropdown', 'Một cú click thật cho dropdown bỏ qua click giả lập, kèm tuỳ chọn <b>Choose item #</b>.'],
-            ['Drag &amp; Drop', 'Kéo thả HTML5 từ selector nguồn sang đích.']
+            ['Drag &amp; Drop', 'Kéo thả HTML5 từ selector nguồn sang đích.'],
+            ['Switch tab', 'Sang tab trang vừa mở, hoặc quay về. Khi đang ghi mà liên kết mở tab mới, bước này tự được ghi.']
           ]
         }
       },
@@ -104,16 +105,16 @@ var FEATURES_VI = {
       {
         title: 'Trong lúc ghi',
         nav: 'Trong lúc ghi',
-        lead: 'Trang web cho biết nó đang được ghi, và mỗi bước được đặt tên theo thứ bạn đã click hay nhập vào.',
+        lead: 'Trang web cho biết nó đang được ghi, và <b>✓ Check</b> biến thứ bạn chỉ vào thành một Assert.',
         images: [{
-          alt: 'Trang Checkout mẫu trong lúc ghi: góc dưới bên phải có thanh ● Recording — Pocket QA với nút đỏ ■ Stop.',
-          caption: 'Đang ghi: trang báo rõ, và nút ■ Stop của chính nó dừng ghi.'
+          alt: 'Trang Checkout mẫu trong lúc ghi: dưới dòng thông báo Error: coupon expired, một menu ✓ Check đưa ra Text is “Error: coupon expired”, Text contains, Is visible và URL contains; góc dưới bên phải, thanh ● Recording — Pocket QA có ✓ Check và ■ Stop.',
+          caption: 'Alt + click vào dòng thông báo: chọn phép kiểm tra để ghi.'
         }],
         points: [
-          'Trong popup, Start Recording thành <b>● Recording…</b> và Stop chuyển đỏ; trên trang, thanh ở góc dưới phải có nút <b>■ Stop</b> riêng.',
-          'Bước được đặt tên theo phần tử — label, placeholder, aria-label hoặc chữ trên nó — nên danh sách đọc là <i>Email</i>, <i>Password</i>, <i>Log in</i>, selector ở dòng dưới.',
-          'Nhập vào ô mật khẩu thì bước có dấu <b>🔒</b>: mật khẩu được giữ nguyên như đã gõ, nên hãy đưa vào biến để nó không lọt vào file xuất.',
-          'Click lên chính thanh đó không bao giờ bị ghi lại.'
+          'Trên trang, thanh ở góc dưới phải có <b>✓ Check</b> và <b>■ Stop</b>; trong popup, Start Recording thành <b>● Recording…</b>.',
+          '<b>✓ Check</b> hoặc <span class="kbd">Alt</span> + click: chọn một phép kiểm tra — chữ, giá trị, hiển thị, URL — để ghi thành Assert.',
+          'Bước được đặt tên theo phần tử — label, placeholder, aria-label hoặc chữ trên nó — nên danh sách đọc là <i>Email</i>, <i>Password</i>, <i>Log in</i>.',
+          'Nhập vào ô mật khẩu thì bước có dấu <b>🔒</b>: mật khẩu được giữ nguyên như đã gõ, nên hãy đưa vào biến để nó không lọt vào file xuất.'
         ]
       },
       {
@@ -249,7 +250,37 @@ var FEATURES_VI = {
           '<b>Upload File</b> đưa file trên máy vào <code>&lt;input type="file"&gt;</code> hoặc vùng kéo thả, tên file dùng được <code>${variable}</code> — file không còn trên đĩa thì bước lỗi và nêu tên file.',
           '<b>Run JS</b> chạy script của bạn trên trang qua DevTools protocol, nên Content Security Policy của trang không chặn được.',
           '<b>Drag &amp; Drop</b> phát sự kiện kéo HTML5 thật từ nguồn sang đích.',
-          'Navigate và Wait chạy từ background worker, nên việc chuyển trang không bao giờ cắt ngang lần chạy.'
+          'Tab mới do trang mở được đi theo, và lần chạy quay về khi trang đóng tab đó; Navigate và Wait chạy từ worker, nên việc chuyển trang không bao giờ cắt ngang lần chạy.'
+        ]
+      },
+      {
+        title: 'Chỉ chạy một phần',
+        nav: 'Chạy một phần',
+        lead: 'Bấm vào số của một bước để chạy từ nó, tới nó, hoặc chỉ nó — trên trang đúng như hiện tại.',
+        images: [{
+          alt: 'Danh sách bước của Checkout with coupon, bấm vào số của bước 3 Apply: một menu đưa ra ▶ Play from #3, ▶ Play #1–#3 và ▶ Play only #3, kèm gợi ý Shift + click vào số thứ hai để chạy các bước ở giữa.',
+          caption: 'Số của bước 3: từ nó, tới nó, hoặc chỉ nó.'
+        }],
+        points: [
+          '<b>▶ Play from #N</b> chạy từ N tới hết; <b>▶ Play #1–#N</b> dừng sau N, trang để nguyên như N để lại; <b>▶ Play only #N</b> chỉ chạy riêng bước đó.',
+          '<span class="kbd">Shift</span> + click vào số thứ hai thì chạy các bước nằm giữa hai số.',
+          'Read DOM mà phần đó bỏ ra ngoài nhưng lại cần thì có thể chạy trước, để <code>${variable}</code> của nó không rỗng.',
+          'Một phần hiện trên thẻ Last run là một phần, và không bao giờ được tính vào lịch sử chạy.'
+        ]
+      },
+      {
+        title: 'Chạy như trên điện thoại, mạng chậm',
+        nav: 'Run as',
+        lead: 'Trong Manage Scenarios, <b>Run as</b> chọn thiết bị và mạng mà kịch bản chạy trên đó.',
+        images: [{
+          alt: 'Thẻ Manage Scenarios đang chọn Checkout with coupon: Play và Stop, ô lặp và thời gian nghỉ, bên dưới là hàng Run as đặt iPhone 14 và 3G.',
+          caption: 'Checkout with coupon chạy như trên iPhone 14, mạng 3G.'
+        }],
+        points: [
+          'Thiết bị: iPhone SE, iPhone 14, Pixel 7, Galaxy S20, iPad và iPad Pro — kích thước màn hình, tỉ lệ điểm ảnh, cảm ứng và user agent.',
+          'Mạng: Fast 4G, 3G, Slow 3G hoặc Offline — bộ giả lập mạng của chính Chrome DevTools.',
+          'Lần chạy giữ một phiên debugger từ đầu tới cuối, nên Chrome hiện thanh gỡ lỗi trong lúc chạy.',
+          'Code xuất cho Selenium, Playwright, Robot và Java đặt cùng thiết bị và mạng đó (Playwright qua <code>test.use</code>).'
         ]
       },
       {
@@ -332,6 +363,36 @@ var FEATURES_VI = {
         ]
       },
       {
+        title: 'Lịch sử chạy: chập chờn, hay hỏng từ lúc nào',
+        nav: 'Lịch sử chạy',
+        lead: 'Thẻ Last run giữ các lần chạy gần nhất của kịch bản thành chấm — và cho biết khi nào test chập chờn, hay hỏng từ lúc nào.',
+        images: [{
+          alt: 'Thẻ Last run: ✓ Passed, Checkout with coupon, just now; bảy chấm, hai chấm đỏ — 2 of the last 7 failed, All runs — và dòng 〰 Flaky? #4 Check the toast failed 2 of the last 7 runs, and passed again with the same steps.',
+          caption: 'Bảy lần chạy cùng các bước, hai lần lỗi: 〰 Flaky?'
+        }],
+        points: [
+          'Mọi lần Play, chạy theo lịch, Resume, mục trong Sequence và lần chạy CSV đều được giữ — 20 lần mỗi kịch bản; thẻ hiện 10 lần gần nhất.',
+          '<b>〰 Flaky?</b> khi test lỗi rồi lại đạt với đúng các bước đó — đạt mà không cần sửa gì.',
+          '<b>⤵ Failing since …</b> khi test lỗi liên tiếp nhiều lần, sau khi từng đạt.',
+          'Bấm vào một chấm để xem lần chạy đó: chạy bằng cách nào, mất bao lâu, lỗi đầu tiên; <b>All runs</b> liệt kê tất cả.'
+        ]
+      },
+      {
+        title: 'Sửa bước ngay khi đang chạy',
+        nav: 'Sửa khi chạy',
+        lead: 'Bước không tìm thấy phần tử sẽ hỏi Retry, Skip hay Stop — hoặc <b>🎯 Pick it</b> ngay trên trang.',
+        images: [{
+          alt: 'Trang Checkout mẫu với lần chạy dừng ở bước thứ tư: Action 4 of 5 failed — click “Place order” — Element not found on the page within 5 s (looked for it by CSS), kèm Retry, 🎯 Pick it, Skip và Stop; góc dưới bên phải là bảng chạy màu hổ phách.',
+          caption: 'Dừng ở bước lỗi: Retry, 🎯 Pick it, Skip hoặc Stop.'
+        }],
+        points: [
+          '<b>🎯 Pick it</b>: click phần tử trên trang, rồi <b>Save &amp; go on</b> hoặc <b>This run only</b> — bước được chạy lại.',
+          '🩹 <b>Kiểm tra locator</b>: bước có locator khác trỏ sang chỗ khác, hoặc phần lớn không tìm thấy gì, được liệt kê trên thẻ.',
+          '<b>Review</b> cho thấy mỗi locator tìm được gì, và lấy lại locator từ phần tử mà lần chạy đã dùng.',
+          'Các ghi chú không bao giờ đổi kết luận: phát lại vẫn dùng locator đầu tiên tìm thấy, như code xuất ra.'
+        ]
+      },
+      {
         title: '12 phép kiểm tra cho Condition và Assert',
         nav: '12 phép kiểm tra',
         lead: 'Cùng một danh sách cho cả hai: Condition quyết định có bỏ qua bước hay không, Assert quyết định lần chạy có đạt hay không.',
@@ -401,7 +462,7 @@ var FEATURES_VI = {
           head: ['Loại', 'Lưu dưới dạng', 'Khi chạy'],
           rows: [
             ['Static', '<code>https://staging.example.com</code>', 'Dùng nguyên giá trị.'],
-            ['Random', '<code>{random:alphanumeric:8}</code>', 'Tạo mới mỗi lần chạy — chữ, số, cả hai, hoặc <code>datetime</code>&nbsp;(<span class="nw">YYYY-MM-DD_HH-MM-SS</span>).'],
+            ['Random', '<code>{random:alphanumeric:8}</code>', 'Tạo mới mỗi lần chạy — chữ, số, cả hai, <code>datetime</code>, hoặc dữ liệu test (bên dưới).'],
             ['Pick', '<code>{pick:alice|bob|carol}</code>', 'Chọn ngẫu nhiên một giá trị mỗi lần chạy; cột CSV cùng tên sẽ ghi đè.'],
             ['Fallback', '<code>{fallback:A|B|C}</code>', 'Thử lần lượt cho tới khi một giá trị khớp trên trang; giá trị đó được giữ tới hết lần chạy.']
           ]
@@ -450,7 +511,23 @@ var FEATURES_VI = {
           '<b>Condition (If)</b>: một trong 12 phép kiểm tra — sai thì bỏ qua N bước tiếp theo.',
           '<b>Switch</b>: mỗi giá trị chạy kịch bản khác, nhảy tới bước khác, hoặc chỉ chạy khối của nó.',
           '<b>Always</b>: không cần biến — một kịch bản hay đoạn #–# của nó chạy mỗi lần.',
-          'Switch mới đứng trước các bước của nó; không case nào được cắt ngang khối của Switch khác.'
+          'Switch mới đứng trước các bước của nó; không case nào được cắt ngang khối của Switch khác.',
+          '<b>✂</b> ở khe giữa hai bước của một case tách case tại đó, <b>+ case</b> thêm một case trống, và khi hai case chồng nhau, form đưa ra <b>Take from case …</b>.'
+        ]
+      },
+      {
+        title: 'Dữ liệu test trông như thật',
+        nav: 'Dữ liệu test',
+        lead: 'Biến Random có thể sinh email, số điện thoại, họ tên, một số, một ngày hoặc UUID — mỗi lần chạy một giá trị mới.',
+        images: [{
+          alt: 'Hộp thoại Add Variable: tên email, tab Random, Type là Email trong nhóm Test data, Domain shop.test, và một địa chỉ mẫu ở shop.test kèm nút ↻ để sinh giá trị khác.',
+          caption: 'Một Email ở shop.test, mỗi lần chạy một địa chỉ mới.'
+        }],
+        points: [
+          '<b>Email</b> theo tên miền bạn đặt, <b>Phone number</b> theo định dạng Việt Nam, <b>Full name</b> tiếng Việt hoặc tiếng Anh.',
+          '<b>Number between…</b> giữa hai số, <b>Date</b> hôm nay ± N ngày theo định dạng ô nhập cần, hoặc <b>UUID</b>.',
+          'Hộp thoại hiện một giá trị mẫu, và ↻ sinh giá trị khác.',
+          'Năm định dạng code xuất ra cũng sinh theo đúng các quy tắc đó, nên test đã xuất vẫn có dữ liệu mới mỗi lần chạy.'
         ]
       }
     ],
@@ -532,8 +609,8 @@ var FEATURES_VI = {
       'Mỗi chế độ có một bản <b>Edit</b> mở trình sửa ảnh ngay sau khi chụp.',
       'Đếm ngược 3, 5 hoặc 10 giây trước khi chụp vùng hiển thị — đủ thời gian mở dropdown hay trạng thái hover cần có trong ảnh.',
       'Watermark với token <code>{url}</code> và <code>{datetime}</code>, in thẳng lên ảnh.',
-      '<b>Image Diff</b> so sánh hai ảnh chụp theo từng điểm ảnh, độ nhạy tuỳ chỉnh.',
-      'Tự lưu với tiền tố tên file, hoặc hỏi nơi lưu cho từng ảnh.'
+      '<b>Image Diff</b> so sánh hai ảnh chụp theo từng điểm ảnh: tô hồng, kéo đường chia, nháy qua lại, hoặc đặt cạnh nhau.',
+      'Mọi ảnh chụp đều được chép vào clipboard, và giữ trong <b>Recent captures</b> để chép, sửa, lưu hoặc so sánh lại.'
     ],
     steps: [
       ['Chọn chế độ', 'Tab Capture — lọc theo All, Visible, Scroll, Segment, Element hoặc Window.'],
@@ -570,6 +647,21 @@ var FEATURES_VI = {
         ]
       },
       {
+        title: 'Đã chép, và giữ lại để dùng sau',
+        nav: 'Ảnh vừa chụp',
+        lead: 'Mỗi ảnh chụp được chép vào clipboard ngay khi lưu, và nằm trong <b>Recent captures</b> ở tab Capture.',
+        images: [{
+          alt: 'Recent captures trong tab Capture: số ảnh và dung lượng, nút Clear, ba ảnh thu nhỏ của trang Checkout mẫu — Page, Full và Page, mỗi ảnh kèm giờ chụp — rồi một dòng cho biết mọi ảnh chụp cũng được chép vào clipboard.',
+          caption: 'Ba ảnh chụp trang Checkout, sẵn sàng để dán.'
+        }],
+        points: [
+          'Dán ảnh vào công cụ quản lý bug hay khung chat bằng <span class="kbd">Ctrl+V</span> — không phải đi tìm file.',
+          'Bấm vào một ảnh: 📋 Copy, ✂ Edit, ⬇ Save again, 🔍 Compare with… một ảnh khác, 🗑 Remove.',
+          '20 ảnh gần nhất, tối đa 50 MB, giữ trong trình duyệt — không nằm trong Backup.',
+          'Trang không ghi được vào clipboard (http thường, không có focus) vẫn lưu file, và báo là chưa chép.'
+        ]
+      },
+      {
         title: 'Bên trong Image Editor',
         nav: 'Image Editor',
         lead: 'Mọi ảnh chụp — hoặc ảnh bất kỳ từ clipboard hay file — mở trong trình sửa có cửa sổ riêng.',
@@ -578,7 +670,7 @@ var FEATURES_VI = {
           caption: 'Một khung chữ nhật, một mũi tên và bảng Stamp.'
         }],
         points: [
-          'Crop, Draw, Rectangle, Ellipse, Arrow, Text và Blur — mỗi công cụ một phím: C, D, R, E, A, T, B.',
+          'Crop, Draw, Rectangle, Ellipse, Arrow, Text, Blur, ① số thứ tự bước, ▮ Redact và ◎ Spotlight — mỗi công cụ một phím.',
           'Xoay, lật, và hoàn tác hay làm lại mọi thao tác.',
           'Chỉnh độ sáng, tương phản, bão hoà, độ nét; đổi kích thước chính xác hoặc theo 10–300%.',
           'Đóng dấu thời gian hay chữ riêng ở 1 trong 9 vị trí; phóng to, về 1:1 chỉ bằng một phím.'
@@ -589,14 +681,14 @@ var FEATURES_VI = {
         nav: 'So sánh ảnh',
         lead: 'Hai ảnh chụp, trước và sau một lần deploy: cái gì đã đổi, tính bằng điểm ảnh và đánh dấu trên ảnh.',
         images: [{
-          alt: 'Hộp thoại Image Diff: đã chọn ảnh A và ảnh B, độ nhạy 10, đã bấm Compare, kết quả 4,123 px (0.65% diện tích), và ảnh xem trước với dòng thay đổi được tô màu hồng tím, cùng nút Save result.',
+          alt: 'Hộp thoại Image Diff: đã chọn ảnh A và ảnh B, độ nhạy 10, đã bấm Compare; các cách xem Pink, ↔ Drag, ◑ Blink và Side by side phía trên ảnh xem trước có dòng thay đổi tô hồng; Leave a box out; Diff: 4,123 px (0.65% of the area compared); Save result.',
           caption: 'Một dòng thay đổi: 4,123 px, 0.65% ảnh.'
         }],
         points: [
-          'Chọn ảnh A và ảnh B từ máy — hai ảnh bất kỳ, không chỉ ảnh chụp.',
-          'Độ nhạy: thấp thì bắt cả thay đổi rất nhỏ, cao thì bỏ qua nhiễu.',
-          'Số điểm ảnh thay đổi, tỉ lệ trên diện tích, và vùng thay đổi được đánh dấu trên ảnh.',
-          '<b>Save result</b> lưu lại ảnh đã đánh dấu.'
+          'Ảnh A và ảnh B từ máy, hoặc <b>Compare with…</b> trên một ảnh vừa chụp.',
+          'Bốn cách xem: <b>Pink</b>, <b>↔ Drag</b>, <b>◑ Blink</b> và <b>▥ Side by side</b>.',
+          'Hai ảnh khác cỡ thì được báo; chỉ phần chung được so.',
+          'Số điểm ảnh thay đổi và tỉ lệ; <b>Save result</b> lưu ảnh đã đánh dấu.'
         ]
       },
       {
@@ -676,13 +768,13 @@ var FEATURES_VI = {
       {
         title: 'Mỗi định dạng hỗ trợ những gì',
         nav: 'Phạm vi hỗ trợ',
-        lead: 'Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM và Condition chạy ở cả năm. Phần còn lại:',
+        lead: 'Click, Input, Hover, Dropdown, Drag &amp; Drop, Wait, Read DOM, Condition và dữ liệu test chạy ở cả năm. Phần còn lại:',
         table: {
           head: ['Bước', 'Bookmarklet', 'Selenium', 'Playwright', 'Robot', 'Java'],
           rows: [
             ['Navigate', 'Kiểm tra', 'Có', 'Có', 'Có', 'Có'],
             ['Run JS', 'Kiểm tra', 'Kiểm tra', 'Kiểm tra', 'Kiểm tra', 'Kiểm tra'],
-            ['Chụp màn hình, Upload&nbsp;File', '—', 'Có', 'Có', 'Có', 'Có'],
+            ['Chụp màn hình, Upload&nbsp;File, Switch&nbsp;tab, Run&nbsp;as', '—', 'Có', 'Có', 'Có', 'Có'],
             ['Trong iframe', 'Cùng site', 'Có', 'Có', 'Có', 'Có'],
             ['Khối Switch theo biến', 'Có', 'Có', 'Có', 'Có', 'Có'],
             ['Switch sang kịch bản, #N, Always', '—', '—', '—', '—', '—'],
@@ -740,8 +832,8 @@ var FEATURES_VI = {
         lead: 'Đánh dấu ngay nơi bạn đọc: chọn đoạn chữ, chọn một màu.',
         points: [
           'Chọn chữ → một bảng nhỏ hiện năm màu và ô ghi chú.',
-          'Bấm vào một đánh dấu để đổi màu, sửa ghi chú hoặc xoá riêng nó.',
-          'Rê chuột lên đánh dấu có ghi chú để đọc, không cần bấm.',
+          'Bấm vào một đánh dấu để đổi màu, sửa ghi chú hoặc xoá nó; rê chuột lên để đọc ghi chú.',
+          'Tô lên trên chữ, không chèn vào chữ: mã HTML của trang giữ nguyên. Giữ <span class="kbd">Alt</span> để chọn được cả chữ mà trang không cho chọn.',
           'Chúng trở lại ở lần ghé sau, kể cả sau khi khởi động lại — cả với nội dung tải muộn.',
           'Công tắc trong popup ẩn tất cả; bật lại thì mọi đánh dấu quay về.'
         ]

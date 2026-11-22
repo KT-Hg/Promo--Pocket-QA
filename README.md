@@ -236,7 +236,8 @@ See [`screenshots/`](screenshots/):
 | `shot-pop-insert`, `-eye`, `-lastrun-nochecks`, `-turnon`, `-nowplaying` (`.png` / `-dark.png`) | The real popup, as the other `pop-*`: `pop-insert` (the `+` under a step in a Switch case — the dashed row and the Add card's *Insert at #6 · Switch 4 › case "admin"*), `pop-eye` (👁 on the selector `input`: *2 matches — playback uses the first…*), `pop-lastrun-nochecks` (a played run with no Assert: *✓ Finished · no checks* and its hint), `pop-turnon` (the *Off on this tab* question Start Recording asks on a tab that is off), `pop-nowplaying` (Now Playing, amber, during a run held at a failed step). `capture-shots.mjs` |
 | `shot-page-recording`, `shot-page-run` (`.png` / `-dark.png`) | The sample Checkout page itself (`page: 'web'` in `capture-shots.mjs`), drawn on by the content script in the popup's theme: `page-recording` (the *● Recording — Pocket QA* bar after a real `START_RECORD`), `page-run` (a real run held at a step whose element is missing: the *Action 4 of 5 failed* question with Retry / Skip / Stop, and the run panel in amber) |
 | `shot-db-risk.png` / `-dark.png` | The Adminer panel's question before a statement that may change a whole table — the extension's own `panel.preview()` with the `risk.*` strings, called the way `dbtools/capture-sql.js` `confirmRisks` calls it for `DELETE FROM orders`; no Adminer runs in the script to type it into. `capture-shots.mjs` |
-| `shot-api-*.png` / `-dark.png` | `apitest.html` with a seeded "Shop" folder (`apiCasesState`) whose requests to `api.shop.example` are answered over CDP inside the browser: `api-send` (a request sent, Passed), `api-checks` (one check of three false — Failed), `api-env` (the Environments dialog over the Tools tab's variables — the 1.0.30 dialog still heads them "From the Data tab"), `api-run` (a folder run: 3 passed, 1 failed, 1 broken), `api-import` (a Postman collection previewed), `api-ask` (the question before a run that writes; not on a page yet). Taken from the Store build, `4fb11ce`. `capture-shots.mjs` |
+| `shot-api-*.png` / `-dark.png` | `apitest.html` with a seeded "Shop" folder (`apiCasesState`) whose requests to `api.shop.example` are answered over CDP inside the browser: `api-send` (a request sent, Passed), `api-checks` (one check of three false — Failed), `api-env` (the Environments dialog over the Tools tab's variables), `api-run` (a folder run: 3 passed, 1 failed, 1 broken), `api-import` (a Postman collection previewed), `api-ask` (the question before a run that writes; not on a page yet). Taken from the 1.0.34 build (`b03e09b`; `page-check` from `f563479`, which fixed the dark menu's title). `capture-shots.mjs` |
+| `shot-pop-run-history`, `-play-range`, `-run-as`, `-recent`, `-test-data`, `shot-page-check` (`.png` / `-dark.png`) | 1.0.34, the real popup and page as the other `pop-*` / `page-*`: `pop-run-history` (seven real runs of one scenario, its Assert held or not by `${want}` — *〰 Flaky?*), `pop-play-range` (▶ on a row number: Play from / up to / only #3), `pop-run-as` (Manage Scenarios set to iPhone 14 on 3G), `pop-recent` (three real captures of the sample page under Recent captures), `pop-test-data` (a Random variable of the Test data kind, Email at shop.test), `page-check` (recording, a real Alt + click through CDP on the toast: the ✓ Check menu). `capture-shots.mjs` |
 
 ### Parity check: the demo against the real popup
 
@@ -248,7 +249,7 @@ at the toolbar popup's 480×600. It takes `popup-demo.html?tab=…&theme=…` at
 pair: identical, or how much differs and where. The real | demo | diff strips go to `PARITY_OUT` (a temp folder by
 default); Record & Play light is copied to `screenshots/shot-parity.png`.
 
-Last run (2026-11-12, `4fb11ce`): **8 of 10 pairs identical**; Record & Play differs in one 12×10 box, light and dark.
+Last run (2026-11-22, `b03e09b`, 1.0.34): **8 of 10 pairs identical**; Record & Play differs in one 12×10 box, light and dark. (1.0.34 made a saved scenario's row numbers buttons — ▶ Play from / up to / only — and `demo.js` §5 builds them the same way, or the dark numbers differ.)
 
 | Allowed difference | Why |
 |---|---|
@@ -271,7 +272,7 @@ EXT_REPO="D:/path/to/Pocket QA" node capture-shots.mjs   # default ../01-extensi
 ```
 
 Shoot the build that is on the Store, not whatever the extension repo has checked out: `git -C "../01-extension" archive <commit>`
-into an empty folder and point `EXT_REPO` at it (1.0.30 on the Store = `4fb11ce`).
+into an empty folder and point `EXT_REPO` at it (1.0.34 = `f563479`, the build zipped in `03-store/releases`; 1.0.30 was `4fb11ce`).
 
 It loads the unpacked extension in Edge or Chromium through the extension repo's own CDP driver
 (`tools/lib/cdp-browser.mjs`, the one its e2e tests run on — branded Chrome ignores `--load-extension`), opens the
@@ -307,7 +308,7 @@ python -c "import re; from PIL import Image; [Image.open(w[:-5]+'.png').save(w, 
 ```
 
 ## Demo videos
-One story told in 13 videos, recorded from extension v1.0.31: testing the checkout of **Demo Books**, a made-up store
+One story told in 13 videos, recorded from extension v1.0.31 — parts 2, 3, 4 and 6 and the trailer re-filmed with v1.0.34 (play part of a scenario, Run as, the run history, test data, Recent captures, Image Diff's views): testing the checkout of **Demo Books**, a made-up store
 built for the recording. Part *N* is the *N*th feature in `FEATURE_ORDER` and opens that feature page, right under the
 hero; the 40-second trailer plays in the index's How it works. Each video has an English and a Vietnamese cut, the same
 picture with its own voice-over and **subtitles burnt into the picture**.
@@ -333,8 +334,8 @@ each, 94 MB in all.
   over the old ones under the same name; if its length changed, update `length` in `features-en.js` (one value for
   both languages — the two cuts are the same length):
   `ffprobe -v error -show_entries format=duration -of csv=p=0 videos/en/<file>.mp4`
-- **No Git LFS** (GitHub Pages doesn't serve LFS files) and no file near GitHub's 100 MB limit. The full 20:27 demo
-  (166 MB) is for YouTube; once it has a URL, link it through a `youtube-nocookie.com` facade (thumbnail first, the
+- **No Git LFS** (GitHub Pages doesn't serve LFS files) and no file near GitHub's 100 MB limit. The full 21:20 demo
+  (172 MB) is for YouTube; once it has a URL, link it through a `youtube-nocookie.com` facade (thumbnail first, the
   iframe only on a click) — not done yet.
 - `demo-videos/` is where a handoff from the extension repo lands (5.5 GB with its tools and masters); it is
   git-ignored, and only `.mp4` / `.jpg` / `.vtt` are copied into `videos/` (no `.srt`, no handoff notes).
